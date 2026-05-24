@@ -102,7 +102,12 @@ import {
   buildSourceLabel,
 } from "@/lib/content/channelSource";
 import { buildImageGenerationContext } from "@/lib/images/imagePurposeConfig";
-import { buildResearchBrief, serializeResearchForStorage } from "@/lib/research/buildResearchBrief";
+import { applyResearchToPipeline } from "@/lib/research/applyResearchToPipeline";
+import {
+  buildAutoResearchQuery,
+  defaultAutoResearchTypes,
+  needsOnlineResearch,
+} from "@/lib/research/needsOnlineResearch";
 import { AUTO_RUN_PROMPT_ON_BLOG } from "@/lib/channels/channelProducts";
 import { isAutoPipelineAfterBlog } from "@/lib/config/productFlags";
 import { setGenerationSessionActive } from "@/lib/generation/generationSession";
@@ -217,6 +222,9 @@ export function ContentProvider({
     startedAt: null,
     estimatedMs: null,
     sensitiveIndustry: false,
+    completeMessage: null,
+    peekResults: false,
+    quietSuccess: false,
   });
   const [editorImproving, setEditorImproving] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -250,6 +258,9 @@ export function ContentProvider({
       startedAt: null,
       estimatedMs: null,
       sensitiveIndustry: false,
+      completeMessage: null,
+      peekResults: false,
+      quietSuccess: false,
     });
   }, [clearOverlayFinishTimers]);
 
@@ -302,6 +313,9 @@ export function ContentProvider({
         immediate = false,
         hintIsAuth = false,
         quietSuccess = false,
+        revealSuccess = false,
+        revealMs = 450,
+        completeMessage = null,
       } = {}
     ) => {
       clearOverlayFinishTimers();
@@ -323,6 +337,40 @@ export function ContentProvider({
         if (message) onToast?.(message, "error");
         return;
       }
+      if (revealSuccess) {
+        setLoadingOverlay((prev) => ({
+          active: true,
+          channel,
+          complete: true,
+          stepLabel: null,
+          startedAt: prev.startedAt,
+          estimatedMs: null,
+          sensitiveIndustry: false,
+          completeMessage: completeMessage || "이야기가 준비됐어요",
+          peekResults: true,
+          quietSuccess,
+        }));
+        const tDismiss = window.setTimeout(() => {
+          setLoadingOverlay({
+            active: false,
+            channel,
+            complete: false,
+            stepLabel: null,
+            startedAt: null,
+            estimatedMs: null,
+            sensitiveIndustry: false,
+            completeMessage: null,
+            peekResults: false,
+            quietSuccess: false,
+          });
+        }, revealMs);
+        overlayFinishTimers.current.push(tDismiss);
+        if (!quietSuccess) {
+          if (message) onToast?.(message, "success");
+          else onToast?.(getCompleteMessage(channel), "success");
+        }
+        return;
+      }
       if (immediate || quietSuccess) {
         setLoadingOverlay({
           active: false,
@@ -332,6 +380,9 @@ export function ContentProvider({
           startedAt: null,
           estimatedMs: null,
           sensitiveIndustry: false,
+          completeMessage: null,
+          peekResults: false,
+          quietSuccess: false,
         });
         return;
       }
@@ -356,6 +407,9 @@ export function ContentProvider({
               startedAt: null,
               estimatedMs: null,
               sensitiveIndustry: false,
+              completeMessage: null,
+              peekResults: false,
+              quietSuccess: false,
             }),
           1000
         );
@@ -748,25 +802,13 @@ export function ContentProvider({
         if (input.researchEnabled && input.researchQuery?.trim()) {
           setPipelineStep("자료조사 중...");
           try {
-            const researchRes = await generateResearchAsync({
-              ...pipelineInput,
-              researchQuery: input.researchQuery.trim(),
-              researchTypes: input.researchTypes || [],
+            researchStorage = await applyResearchToPipeline({
+              pipelineInput,
+              query: input.researchQuery.trim(),
+              types: input.researchTypes || [],
+              generateResearchAsync,
+              setResearchResult,
             });
-            if (researchRes?.research) {
-              setResearchResult(researchRes.research);
-              const brief = buildResearchBrief(researchRes.research, {
-                query: input.researchQuery.trim(),
-                types: input.researchTypes || [],
-              });
-              researchStorage = serializeResearchForStorage(
-                input.researchQuery.trim(),
-                researchRes.research,
-                input.researchTypes || []
-              );
-              pipelineInput.researchBrief = brief;
-              pipelineInput.researchPayload = researchStorage;
-            }
           } catch (researchErr) {
             blogGenLock.current = false;
             setGenerationSessionActive(false);
@@ -779,7 +821,34 @@ export function ContentProvider({
             return;
           }
         } else {
-          setResearchResult(null);
+          const autoQuery = buildAutoResearchQuery(input);
+          if (autoQuery.length >= 4) {
+            const autoTypes = defaultAutoResearchTypes();
+            setPipelineStep("자료조사 중...");
+            if (needsOnlineResearch(input)) {
+              onToast?.(
+                "생소한 주제·용어가 있어 온라인 자료를 참고해 작성합니다",
+                "info"
+              );
+            }
+            try {
+              researchStorage = await applyResearchToPipeline({
+                pipelineInput,
+                query: autoQuery,
+                types: autoTypes,
+                generateResearchAsync,
+                setResearchResult,
+              });
+            } catch (researchErr) {
+              console.warn(
+                "[blog] default research failed, continuing",
+                researchErr
+              );
+              setResearchResult(null);
+            }
+          } else {
+            setResearchResult(null);
+          }
         }
 
         setPipelineStep("검색 의도 분석 중...");
@@ -883,8 +952,10 @@ export function ContentProvider({
           setGenerationSessionActive(false);
           finishLoadingOverlay(overlayChannel, startedAt, {
             success: true,
-            immediate: true,
+            revealSuccess: true,
             quietSuccess: true,
+            completeMessage: "이야기가 준비됐어요",
+            revealMs: 450,
           });
         };
 

@@ -53,6 +53,20 @@ export default function BlogResultView({
   const [showSubheadings, setShowSubheadings] = useState(
     blog?._meta?.includeSubheadings !== false
   );
+  const [contentRevealed, setContentRevealed] = useState(false);
+  const blogRevealKey =
+    blog?.id ||
+    blog?._meta?.generatedAt ||
+    blog?._meta?.savedAt ||
+    blog?.representativeTitle;
+
+  useEffect(() => {
+    setContentRevealed(false);
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setContentRevealed(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [blogRevealKey]);
 
   useEffect(() => {
     setDraft(blog);
@@ -158,7 +172,11 @@ export default function BlogResultView({
   };
 
   return (
-    <div className="space-y-3">
+    <div
+      className={`space-y-3 transition-opacity duration-[400ms] ease-out ${
+        contentRevealed ? "opacity-100" : "opacity-0"
+      }`}
+    >
       {showCompliance && (
         <div className="rounded-xl border border-[#FFE0B2] bg-[#FFF8E6] px-4 py-3 text-[12px] leading-relaxed text-[#4E5968]">
           <p className="font-semibold text-[#191F28]">⚖️ {complianceBanner}</p>

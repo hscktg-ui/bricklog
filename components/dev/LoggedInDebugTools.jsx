@@ -1,6 +1,5 @@
 "use client";
 
-import ClickBlockerDebugPanel from "@/components/dev/ClickBlockerDebugPanel";
 import DebugStatePublisher from "@/components/dev/DebugStatePublisher";
 import { isClickDebugEnabled } from "@/lib/dev/debugStateRegistry";
 
@@ -16,7 +15,6 @@ export default function LoggedInDebugTools({ pageSnapshot, children }) {
     <>
       <DebugStatePublisher fragmentKey="page" snapshot={pageSnapshot} />
       {children}
-      <ClickBlockerDebugPanel />
     </>
   );
 }

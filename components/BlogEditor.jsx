@@ -47,6 +47,7 @@ import {
   resolveQuickDemoInput,
 } from "@/lib/onboarding/resolveQuickDemoInput";
 import ChannelPackToggle from "@/components/blog/ChannelPackToggle";
+import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
 import QuotaExhaustedCallout from "@/components/billing/QuotaExhaustedCallout";
 import { useBillingUsage } from "@/hooks/useBillingUsage";
@@ -508,6 +509,9 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogContent.fullCopyText &&
     (isMobile || (isTablet && concise));
 
+  const showGeneratingPlaceholder =
+    (generating.blog || loadingOverlay?.active) && !blogContent;
+
   return (
       <div
         className={`workspace-result-scroll relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#F7F8FA] p-4 md:p-6 lg:p-8 ${
@@ -693,6 +697,8 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   </p>
                 ) : null}
               </div>
+            ) : showGeneratingPlaceholder ? (
+              <GeneratingResultPlaceholder compact={compact} />
             ) : (
               <EmptyStoryPanel
                 compact={compact}

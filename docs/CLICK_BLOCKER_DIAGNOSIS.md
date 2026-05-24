@@ -57,8 +57,8 @@ BRICLOG_TEST_PASSWORD=...
 `npm run dev` 후 로그인 상태에서:
 
 1. 화면 **왼쪽 하단 「클릭 진단」** 버튼 (development 기본 표시, production은 `?debugClick=1`)
-2. **진단 실행** → 콘솔 + 패널에 자동 출력
-3. **다음 클릭 캡처** → 막히는 버튼을 한 번 눌러 `elementFromPoint` 경로 확인
+2. **진단 실행** → 지금 화면을 스캔 (콘솔 + 패널). **기다렸다 눌러도 동일** — 시점은 버튼을 누른 순간입니다.
+3. **막히는 버튼 1회** → 패널에 「대기 중」이 뜬 **뒤**, 화면에서 문제 버튼을 **한 번** 누름. 그 전에 기다려도 되고, **확인 창(alert)은 사용하지 않음**. 첫 클릭 1회만 기록 후 자동 해제됩니다.
 
 출력 항목: 중앙 hit, fixed/inset-0 목록, z-index≥30, pointer-events:auto, opacity:0+pe:auto, Terms/Pricing/Confirm/Loading/Sidebar DOM·React flags, 버튼 좌표별 hit.
 

@@ -15,6 +15,9 @@ export default function GenerationLoadingOverlayHost() {
       sensitiveIndustry={loadingOverlay?.sensitiveIndustry}
       startedAt={loadingOverlay?.startedAt}
       estimatedMs={loadingOverlay?.estimatedMs}
+      completeMessage={loadingOverlay?.completeMessage}
+      peekResults={loadingOverlay?.peekResults}
+      quietSuccess={loadingOverlay?.quietSuccess}
     />
   );
 }

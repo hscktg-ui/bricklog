@@ -39,6 +39,7 @@ import {
   useContentPipeline,
   useContentPipelineState,
 } from "@/context/ContentContext";
+import ClickBlockerDebugPanel from "@/components/dev/ClickBlockerDebugPanel";
 import GenerationLoadingOverlayHost from "@/components/GenerationLoadingOverlayHost";
 import BriclogAssistantHost from "@/components/BriclogAssistantHost";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
@@ -350,6 +351,7 @@ function DashboardWithBrands({
       onToast={showToast}
       brandHooks={brandHooks}
     >
+      <ClickBlockerDebugPanel />
       <DashboardLayout
         user={user}
         profile={profile}
