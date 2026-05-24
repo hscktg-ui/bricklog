@@ -62,12 +62,13 @@ export default function BlogResultView({
   const [contentRevealed, setContentRevealed] = useState(true);
 
   useEffect(() => {
-    setContentRevealed(true);
+    setContentRevealed(false);
     if (!blog) return undefined;
-    const frame = requestAnimationFrame(() => {
+    const t = window.setTimeout(() => {
+      setContentRevealed(true);
       onResultDisplayed?.();
-    });
-    return () => cancelAnimationFrame(frame);
+    }, 120);
+    return () => window.clearTimeout(t);
   }, [blogRevealKey, blog, onResultDisplayed]);
 
   useEffect(() => {

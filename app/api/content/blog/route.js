@@ -14,6 +14,11 @@ import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { buildDeliverableBlogFallback } from "@/lib/llm/blogDeliveryFallback";
 import { enrichMinimalBlogInput } from "@/lib/llm/blogDeliveryFallback";
+import {
+  blockUnverifiedBlogApiResponse,
+  requiresV2ResearchGate,
+  researchGateBlockedResult,
+} from "@/lib/content/v2PipelineGate";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -86,12 +91,17 @@ export async function POST(request) {
       input.personalizationAddon = personalization.combinedPromptAddon;
       input.combinedPersonalizationAddon = personalization.combinedPromptAddon;
     }
-    const result = await generateBlogWithLLMFirst(input);
+    input.v2AxisRequired = input.v2AxisRequired !== false;
+    input.v2PipelineEnforced = true;
+    input.v3EngineEnforced = true;
+    const rawResult = await generateBlogWithLLMFirst(input);
+    const result = blockUnverifiedBlogApiResponse(rawResult, input);
 
     if (
       result.blogContent &&
       !result.withheld &&
-      (result.mode === "llm" || result.mode === "draft_fallback")
+      result.mode === "llm" &&
+      (result.meta?.v2PipelineVerified || result.meta?.v3PipelineVerified)
     ) {
       await incrementContentUsage(auth.supabase, auth.user.id);
     }
@@ -115,6 +125,20 @@ export async function POST(request) {
       message: err.message,
       accessToken: auth.token,
     });
+    if (requiresV2ResearchGate({ ...savedInput, v2AxisRequired: true })) {
+      return NextResponse.json(
+        researchGateBlockedResult(
+          { ...savedInput, v2AxisRequired: true },
+          {
+            ok: false,
+            userMessage:
+              "조사·검증 없이 오류 대체 글을 출력할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+            reasons: ["server_error_no_fallback"],
+          }
+        ),
+        { status: 422 }
+      );
+    }
     try {
       const enriched = enrichMinimalBlogInput(savedInput);
       const { pack } = buildDeliverableBlogFallback({

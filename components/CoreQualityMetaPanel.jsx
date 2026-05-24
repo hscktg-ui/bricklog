@@ -45,6 +45,7 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
     meta?.qualityScore?.breakdown || meta?.coreQuality?.breakdown || {};
   const failReasons = meta?.failReasons || meta?.coreQuality?.failReasons || [];
   const suggestions = meta?.improvementSuggestions || [];
+  const v2Axis = meta?.qualityScore?.v2Axis;
   const passed =
     typeof score === "number" && score >= USER_QUALITY_GOAL;
 
@@ -60,6 +61,37 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
       </button>
       {open && (
         <div className="space-y-3 border-t border-[#E8EBED] px-4 py-3 text-[12px] text-[#4E5968]">
+          {v2Axis?.scores && (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {(
+                meta?.qualityScore?.v3?.scores
+                  ? [
+                      ["브랜드", meta.qualityScore.v3.scores.brand],
+                      ["지역", meta.qualityScore.v3.scores.region],
+                      ["주제", meta.qualityScore.v3.scores.topic],
+                      ["정보성", meta.qualityScore.v3.scores.informational],
+                      ["SEO", meta.qualityScore.v3.scores.seo],
+                      ["신뢰", meta.qualityScore.v3.scores.trust],
+                      ["기억", meta.qualityScore.v3.scores.readerMemory],
+                    ]
+                  : [
+                      ["브랜드", v2Axis.scores.brand],
+                      ["지역", v2Axis.scores.region],
+                      ["주제", v2Axis.scores.product],
+                      ["SEO", v2Axis.scores.seo],
+                      ["조사근거", v2Axis.scores.grounding],
+                      ["정보량", v2Axis.scores.researchVolume],
+                    ]
+              ).map(([label, s]) => (
+                <span
+                  key={label}
+                  className="rounded-lg border border-[#E8EBED] bg-white px-2 py-1"
+                >
+                  {label} {s}점
+                </span>
+              ))}
+            </div>
+          )}
           {typeof score === "number" && (
             <p className="font-semibold text-[#03A94D]">
               {passed ? CUSTOMER_DRAFT_READY : CUSTOMER_DRAFT_REVIEW}

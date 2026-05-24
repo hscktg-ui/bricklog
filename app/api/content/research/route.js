@@ -65,7 +65,13 @@ export async function POST(request) {
       };
     }
 
-    const research = await runResearch({ query, types, brandContext });
+    const research = await runResearch({
+      query,
+      types,
+      brandContext,
+      mode: body.researchMode || body.mode || "standard",
+      regionKeywordHints: body.regionKeywordHints || [],
+    });
 
     return NextResponse.json({
       ok: true,

@@ -190,6 +190,17 @@ export function createPromptContext(input) {
       .filter(Boolean)
       .join("\n\n");
   }
+  ctx.v2AxisBrief = input.v2AxisBrief || input.researchBrief || "";
+  ctx.v2ProductName = input.v2ProductName || "";
+  ctx.v2AxisVerified = input.v2AxisVerified === true;
+  ctx.v3EngineEnforced = input.v3EngineEnforced === true;
+  ctx.v3MasterBrief = input.v3MasterBrief || "";
+  ctx.v3ContentStrategy = input.v3ContentStrategy || null;
+  ctx.v3SeoStrategy = input.v3SeoStrategy || null;
+  ctx.researchFacts = input.researchFacts || [];
+  ctx.researchFactCount = input.researchFactCount ?? ctx.researchFacts.length;
+  ctx.factsPrompt = input.factsPrompt || "";
+  ctx.v2ResearchReady = input.v2ResearchReady === true;
   if (input.researchPayload) {
     ctx.researchPayload = input.researchPayload;
   }

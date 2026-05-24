@@ -509,6 +509,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
   const { blogInput } = useContentForm();
 
   const [resultTab, setResultTab] = useState("blog");
+  const resultScrollRef = useRef(null);
   const { isMobile, isTablet } = useViewport();
   const { compact } = useWorkspaceCompact();
   const { layoutMode, concise, setLayoutMode } = useChannelLayoutMode("blog");
@@ -531,16 +532,45 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogContent.fullCopyText &&
     (isMobile || (isTablet && concise));
 
-  const showResultPlaceholder =
-    !blogContent &&
-    (generating.blog ||
-      Boolean(loadingOverlay?.active) ||
-      blogResultRevealPending);
+  const [revealReady, setRevealReady] = useState(true);
+  const blogRevealKey =
+    blogContent?.representativeTitle ||
+    blogContent?.title ||
+    blogContent?._meta?.generatedAt;
 
   useEffect(() => {
-    if (!blogContent) return;
-    resultScrollRef.current?.scrollIntoView?.({ behavior: "smooth", block: "start" });
-  }, [blogContent]);
+    if (!blogResultRevealPending || !blogContent) {
+      setRevealReady(true);
+      return undefined;
+    }
+    setRevealReady(false);
+    const id = window.setTimeout(() => {
+      setRevealReady(true);
+      acknowledgeBlogResultDisplayed();
+    }, 1100);
+    return () => window.clearTimeout(id);
+  }, [
+    blogResultRevealPending,
+    blogRevealKey,
+    blogContent,
+    acknowledgeBlogResultDisplayed,
+  ]);
+
+  const storyInFlight =
+    generating.blog ||
+    Boolean(loadingOverlay?.active) ||
+    (blogResultRevealPending && !revealReady);
+
+  const showResultPlaceholder = storyInFlight;
+  const showFullResult = Boolean(blogContent) && revealReady && !storyInFlight;
+
+  useEffect(() => {
+    if (!showFullResult || !blogContent) return;
+    resultScrollRef.current?.scrollIntoView?.({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [showFullResult, blogContent]);
 
   return (
       <div
@@ -549,18 +579,21 @@ const BlogEditorResults = memo(function BlogEditorResults({
           showStickyCopy ? "has-sticky-copy" : ""
         } ${hideFormPanel ? "" : ""}`}
       >
-        {blogResultRevealPending && blogContent ? (
-          <div className="mb-4">
-            <GenerationStayBanner variant="result" />
-          </div>
-        ) : null}
         {showResultPlaceholder ? (
           <GeneratingResultPlaceholder
             compact={compact}
-            phase="writing"
-            previewTitle={null}
+            phase={
+              blogContent && blogResultRevealPending ? "revealing" : "writing"
+            }
+            previewTitle={
+              blogContent?.representativeTitle ||
+              blogContent?.title ||
+              null
+            }
+            stepLabel={loadingOverlay?.stepLabel}
+            startedAt={loadingOverlay?.startedAt}
           />
-        ) : blogContent ? (
+        ) : showFullResult ? (
           <>
             {!simpleMode && !isMobile && (
               <div className="mb-4 flex items-center justify-end gap-3">

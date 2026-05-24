@@ -102,10 +102,8 @@ import {
 } from "@/lib/content/channelSource";
 import { buildImageGenerationContext } from "@/lib/images/imagePurposeConfig";
 import { applyResearchToPipeline } from "@/lib/research/applyResearchToPipeline";
-import {
-  buildDefaultResearchQuery,
-  defaultAutoResearchTypes,
-} from "@/lib/research/needsOnlineResearch";
+import { applyV2AxisResearch } from "@/lib/content/applyV2AxisResearch";
+import { assertPostWriteDeliverable } from "@/lib/content/v2PipelineGate";
 import { AUTO_RUN_PROMPT_ON_BLOG } from "@/lib/channels/channelProducts";
 import { isAutoPipelineAfterBlog } from "@/lib/config/productFlags";
 import { setGenerationSessionActive } from "@/lib/generation/generationSession";
@@ -797,11 +795,13 @@ export function ContentProvider({
       }));
 
     flushSync(() => {
+      setBlogContent(null);
+      setBlogResultRevealPending(false);
       setLoadingOverlay({
         active: true,
         channel: overlayChannel,
         complete: false,
-        stepLabel: "준비 중…",
+        stepLabel: "브랜드 분석 중…",
         startedAt,
         estimatedMs,
         sensitiveIndustry: false,
@@ -839,6 +839,9 @@ export function ContentProvider({
       topic: input.topic?.trim() || topicMain,
       mainKeyword: topicMain || input.mainKeyword,
       brandMemory: provisional,
+      v2AxisRequired: true,
+      v2PipelineEnforced: true,
+      v3EngineEnforced: true,
       brandId:
         syncBrand?.id ||
         brandHooks?.activeBrandId ||
@@ -861,52 +864,38 @@ export function ContentProvider({
       let isFullBlog = false;
       let researchStorage = null;
       try {
-        if (input.researchEnabled && input.researchQuery?.trim()) {
-          setPipelineStep("브랜드·주제 맞춤 자료 확인 중…");
-          try {
-            researchStorage = await applyResearchToPipeline({
-              pipelineInput,
-              query: input.researchQuery.trim(),
-              types: input.researchTypes || [],
-              generateResearchAsync,
-              setResearchResult,
-            });
-          } catch (researchErr) {
+        if (blogDerive?.deriveBlog && blogContent?._meta?.writtenFromVerifiedResearch) {
+          pipelineInput.channelDeriveExempt = true;
+          pipelineInput.v2PreWriteVerified = true;
+          pipelineInput.v3PreWriteVerified = true;
+          pipelineInput.v2ResearchReady = true;
+        } else {
+          const axis = await applyV2AxisResearch({
+            pipelineInput,
+            generateResearchAsync,
+            setResearchResult,
+            onStep: setPipelineStep,
+          });
+          if (!axis.ok) {
             blogGenLock.current = false;
             setGenerationSessionActive(false);
             setGenerating((g) => ({ ...g, blog: false }));
+            setResearchResult(null);
+            setBlogGenHint(axis.userMessage);
+            setBlogGenHintSoft(true);
             finishLoadingOverlay("blog", startedAt, {
               success: false,
-              message:
-                researchErr?.message || "자료조사에 실패했습니다.",
+              message: axis.userMessage,
+              toastType: "info",
             });
             return;
           }
-        } else {
-          const defaultQuery = buildDefaultResearchQuery(input);
-          if (defaultQuery.length >= 2) {
-            setPipelineStep("브랜드·주제 맞춤 자료 확인 중…");
-            try {
-              researchStorage = await applyResearchToPipeline({
-                pipelineInput,
-                query: defaultQuery,
-                types: defaultAutoResearchTypes(input),
-                generateResearchAsync,
-                setResearchResult,
-              });
-            } catch (researchErr) {
-              console.warn(
-                "[blog] default research failed, continuing",
-                researchErr
-              );
-              setResearchResult(null);
-            }
-          } else {
-            setResearchResult(null);
-          }
+          researchStorage = axis.storage;
+          pipelineInput.v2AxisVerified = true;
+          pipelineInput.v2ResearchReady = true;
         }
 
-        setPipelineStep("검색 의도 분석 중...");
+        setPipelineStep("콘텐츠 작성 중…");
         const sensitive = resolveSensitiveCompliance(pipelineInput);
         if (sensitive.isSensitive) {
         setLoadingOverlay((prev) => ({
@@ -918,7 +907,6 @@ export function ContentProvider({
           sensitiveIndustry: true,
         }));
         }
-        setPipelineStep("블로그 작성 중...");
         const [result, ensuredBrand] = await Promise.all([
           ensureBlogDelivery(pipelineInput, {
             setPipelineStep,
@@ -931,7 +919,7 @@ export function ContentProvider({
           pipelineInput.brandMemory = ensuredBrand;
         }
         if (result.blogContent) {
-          setPipelineStep("콘텐츠 품질 검수 중…");
+          setPipelineStep("최종 검수 중…");
         }
         if (result.personalization) {
           personalizationRef.current = result.personalization;
@@ -939,12 +927,30 @@ export function ContentProvider({
         if (sensitive.isSensitive) {
           setPipelineStep(SENSITIVE_VERIFY_STEP.text);
         }
-        let blog = result.blogContent;
-        if (!blog?.sections?.length) {
+        if (result.ok === false && !result.blogContent) {
+          const failMsg =
+            result.userMessage ||
+            "조사·검증·작성 단계를 완료하지 못했습니다. 브랜드·지역·주제를 구체적으로 입력해 주세요.";
+          setBlogGenHint(failMsg);
+          setBlogGenHintSoft(true);
           finishLoadingOverlay("blog", startedAt, {
             success: false,
-            message:
-              "글을 화면에 올리지 못했습니다. 같은 주제로 다시 「이야기 쓰기」를 눌러 주세요.",
+            message: failMsg,
+            toastType: "info",
+          });
+          return;
+        }
+
+        let blog = result.blogContent;
+        if (!blog?.sections?.length) {
+          const failMsg =
+            result.userMessage ||
+            "글을 화면에 올리지 못했습니다. 같은 주제로 다시 「이야기 쓰기」를 눌러 주세요.";
+          setBlogGenHint(failMsg);
+          setBlogGenHintSoft(true);
+          finishLoadingOverlay("blog", startedAt, {
+            success: false,
+            message: failMsg,
             toastType: "info",
           });
           return;
@@ -983,22 +989,40 @@ export function ContentProvider({
         };
         blog._initialPlain = extractBlogPlainText(blog);
         isFullBlog =
-          (result.mode === "llm" || result.mode === "draft_fallback") &&
+          result.mode === "llm" &&
+          (Boolean(result.meta?.v2PipelineVerified) ||
+            Boolean(result.meta?.v3PipelineVerified) ||
+            blog._meta?.writtenFromVerifiedResearch) &&
           !blog._meta?.isBriefOnly &&
           !blog._meta?.draftFallback;
 
         const deliverBlogResult = () => {
+          const outputGate = assertPostWriteDeliverable(pipelineInput, blog);
+          if (!outputGate.ok) {
+            const failMsg =
+              outputGate.userMessage ||
+              "작성 후 검증에 통과하지 못했습니다. 다시 「이야기 쓰기」를 눌러 주세요.";
+            setBlogGenHint(failMsg);
+            setBlogGenHintSoft(true);
+            finishLoadingOverlay(overlayChannel, startedAt, {
+              success: false,
+              message: failMsg,
+              toastType: "info",
+            });
+            return;
+          }
+          const verifiedBlog = outputGate.pack;
           const nextSource =
             blogDerive?.sourceChannel && blogDerive.sourceChannel !== "blog"
               ? blogDerive.sourceChannel
               : "blog";
           stashPendingBlogResult(user?.id, {
-            blog,
+            blog: verifiedBlog,
             baseContentLabel: result.baseContentLabel,
             sourceChannel: nextSource,
           });
           flushSync(() => {
-            setBlogContent(blog);
+            setBlogContent(verifiedBlog);
             setBaseContentLabel(result.baseContentLabel);
             setSourceChannel(nextSource);
             clearDerived();

@@ -1,50 +1,146 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import SkeletonPreview from "@/components/SkeletonPreview";
+import { CONTENT_V3_BLOG_UI_STEPS } from "@/lib/loading/generationSteps";
+
+function resolveActiveStepIndex(stepLabel, steps) {
+  if (!stepLabel) return 0;
+  const norm = String(stepLabel).replace(/\s/g, "");
+  const idx = steps.findIndex((s) =>
+    norm.includes(String(s.text).replace(/\s/g, "").slice(0, 4))
+  );
+  return idx >= 0 ? idx : 0;
+}
 
 export default function GeneratingResultPlaceholder({
   compact = false,
   phase = "writing",
   previewTitle = null,
   channelLabel = "이야기",
+  stepLabel = null,
+  startedAt = null,
 }) {
   const revealing = phase === "revealing";
+  const steps = CONTENT_V3_BLOG_UI_STEPS;
+  const activeIndex = useMemo(
+    () => resolveActiveStepIndex(stepLabel, steps),
+    [stepLabel, steps]
+  );
+  const [pulseStep, setPulseStep] = useState(activeIndex);
+
+  useEffect(() => {
+    setPulseStep(activeIndex);
+  }, [activeIndex]);
+
+  useEffect(() => {
+    if (revealing || stepLabel) return undefined;
+    const id = window.setInterval(() => {
+      setPulseStep((i) => (i + 1) % steps.length);
+    }, 2400);
+    return () => window.clearInterval(id);
+  }, [revealing, stepLabel, steps.length]);
+
+  const displayIndex = stepLabel ? activeIndex : pulseStep;
+  const currentStep = steps[displayIndex] || steps[0];
+  const progressPct = Math.round(
+    ((displayIndex + (revealing ? 1 : 0.35)) / steps.length) * 100
+  );
+
   const title = revealing
     ? `${channelLabel} 표시 중…`
-    : `${channelLabel} 작성 중…`;
+    : `${channelLabel} 만드는 중…`;
   const body = revealing
-    ? "완성본을 불러오는 중입니다. 화면이 비어 보여도 정상이에요."
-    : "브랜드·주제에 맞는 정보를 확인한 뒤, 요청하신 톤으로 글을 쓰고 있어요.";
+    ? "완성본을 화면에 올리고 있어요. 잠시만 기다려 주세요."
+    : stepLabel ||
+      "브랜드·지역·주제를 분석한 뒤, 조사한 내용만으로 글을 쓰고 있어요.";
+
+  const elapsedSec =
+    startedAt && !revealing
+      ? Math.max(0, Math.floor((Date.now() - startedAt) / 1000))
+      : null;
 
   return (
     <div
-      className="mx-auto flex w-full max-w-2xl flex-col px-2 py-8 md:py-12"
+      className="mx-auto flex w-full max-w-2xl flex-col px-2 py-6 md:py-10"
       aria-busy="true"
       aria-live="polite"
+      aria-label={title}
     >
       <div className="rounded-2xl border border-[#E8EBED] bg-white px-5 py-6 shadow-sm md:px-7 md:py-8">
         <div className="flex items-center gap-2">
           <span
-            className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#03C75A]"
+            className="inline-flex h-5 w-5 items-center justify-center"
             aria-hidden
-          />
-          <p className="text-[15px] font-semibold text-[#191F28]">{title}</p>
+          >
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#03C75A]" />
+          </span>
+          <p className="text-[16px] font-semibold text-[#191F28]">{title}</p>
         </div>
-        <p className="mt-2 text-[13px] leading-relaxed text-[#8B95A1]">{body}</p>
+        <p className="mt-2 text-[13px] leading-relaxed text-[#4E5968]">{body}</p>
+
+        <div className="mt-4">
+          <div className="mb-1.5 flex items-center justify-between text-[11px] text-[#8B95A1]">
+            <span>진행</span>
+            <span>{Math.min(progressPct, 100)}%</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-[#EEF1F4]">
+            <div
+              className="h-full rounded-full bg-[#03C75A] transition-all duration-700 ease-out"
+              style={{ width: `${Math.min(progressPct, 100)}%` }}
+            />
+          </div>
+        </div>
+
+        <ol className="mt-5 space-y-2" aria-label="생성 단계">
+          {steps.map((step, i) => {
+            const done = i < displayIndex || (revealing && i < steps.length);
+            const active = i === displayIndex && !revealing;
+            const upcoming = i > displayIndex && !revealing;
+            return (
+              <li
+                key={step.text}
+                className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] ${
+                  active
+                    ? "bg-[#F0FFF5] font-semibold text-[#03A94D]"
+                    : done
+                      ? "text-[#4E5968]"
+                      : upcoming
+                        ? "text-[#B0B8C1]"
+                        : "text-[#4E5968]"
+                }`}
+              >
+                <span className="w-5 shrink-0 text-center" aria-hidden>
+                  {done && !active ? "✓" : step.icon}
+                </span>
+                <span>{step.text}</span>
+                {active ? (
+                  <span className="ml-auto text-[11px] font-normal text-[#03A94D]">
+                    진행 중
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
+
         {revealing && previewTitle ? (
-          <p className="mt-3 rounded-lg bg-[#F7F8FA] px-3 py-2 text-[13px] font-medium text-[#4E5968]">
+          <p className="mt-4 rounded-lg border border-[#03C75A]/20 bg-[#F7FDF9] px-3 py-2.5 text-[13px] font-medium leading-snug text-[#191F28]">
             {previewTitle}
           </p>
         ) : null}
+
         <div className="mt-6">
           <SkeletonPreview />
         </div>
       </div>
       {!compact ? (
-        <p className="mt-4 text-center text-[12px] text-[#B0B8C1]">
+        <p className="mt-4 text-center text-[12px] text-[#8B95A1]">
           {revealing
-            ? "완성본을 불러오는 중입니다. 닫지 마세요."
-            : "완성되면 이 영역에 표시됩니다"}
+            ? "곧 아래에 전체 글이 펼쳐집니다"
+            : elapsedSec != null && elapsedSec >= 8
+              ? `약 ${elapsedSec}초 경과 · 완성되면 이 영역에 바로 표시됩니다`
+              : "완성되면 이 영역에 바로 표시됩니다 · 창을 닫지 마세요"}
         </p>
       ) : null}
     </div>
