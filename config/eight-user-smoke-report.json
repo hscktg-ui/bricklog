@@ -1,0 +1,148 @@
+{
+  "base": "http://127.0.0.1:3005",
+  "personas": [
+    {
+      "id": "p1_first_visit",
+      "label": "첫 방문자 — 랜딩·인트로·가입 CTA",
+      "needsAuth": false
+    },
+    {
+      "id": "p2_returning_guest",
+      "label": "재방문 게스트 — 인트로 스킵·랜딩 스크롤",
+      "needsAuth": false
+    },
+    {
+      "id": "p3_mobile_only",
+      "label": "모바일 전용 — 하단 네비·터치 타깃",
+      "needsAuth": false
+    },
+    {
+      "id": "p4_signup_fast",
+      "label": "빠른 온보딩 가입 — FAST_ONBOARDING",
+      "needsAuth": true
+    },
+    {
+      "id": "p5_email_unverified",
+      "label": "이메일 미인증 — 생성 차단",
+      "needsAuth": true
+    },
+    {
+      "id": "p6_new_brand",
+      "label": "신규 브랜드 — 폼 입력·병렬 ensure",
+      "needsAuth": true
+    },
+    {
+      "id": "p7_channel_switch",
+      "label": "채널 전환 — 블로그↔인스타↔플레이스",
+      "needsAuth": true
+    },
+    {
+      "id": "p8_history_research",
+      "label": "기록·리서치 — 히스토리·자료조사 모드",
+      "needsAuth": true
+    }
+  ],
+  "runs": [
+    {
+      "id": "p1_first_visit",
+      "label": "첫 방문자 — 랜딩·인트로·가입 CTA",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro_dismiss",
+          "ok": true,
+          "detail": "dismissed"
+        },
+        {
+          "step": "no_fullscreen_blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "step": "landing_cta",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "p2_returning_guest",
+      "label": "재방문 게스트 — 인트로 스킵·랜딩 스크롤",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro_skipped",
+          "ok": true
+        },
+        {
+          "step": "no_fullscreen_blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "step": "landing_cta",
+          "ok": true
+        },
+        {
+          "step": "sample_scroll",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "p3_mobile_only",
+      "label": "모바일 전용 — 하단 네비·터치 타깃",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro_dismiss",
+          "ok": true,
+          "detail": "dismissed"
+        },
+        {
+          "step": "no_fullscreen_blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "step": "landing_cta",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "p4_signup_fast",
+      "label": "빠른 온보딩 가입 — FAST_ONBOARDING",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    },
+    {
+      "id": "p5_email_unverified",
+      "label": "이메일 미인증 — 생성 차단",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    },
+    {
+      "id": "p6_new_brand",
+      "label": "신규 브랜드 — 폼 입력·병렬 ensure",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    },
+    {
+      "id": "p7_channel_switch",
+      "label": "채널 전환 — 블로그↔인스타↔플레이스",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    },
+    {
+      "id": "p8_history_research",
+      "label": "기록·리서치 — 히스토리·자료조사 모드",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    }
+  ]
+}

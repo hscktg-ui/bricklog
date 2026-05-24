@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "personas": {
+    "brand_intro": { "opening": "브랜드를 처음 소개하는 톤", "avoid": "후기 1인칭만 쓰기" },
+    "visit_review": { "opening": "방문 후기, 담백한 1인칭", "avoid": "광고 카피" },
+    "info_provider": { "opening": "정보·팁 중심", "avoid": "과한 감성" },
+    "local_pick": { "opening": "지역 추천·비교", "avoid": "타 지역 혼입" },
+    "magazine": { "opening": "매거진형 서술", "avoid": "딱딱한 목록만" },
+    "plain_review": { "opening": "담백 후기", "avoid": "과장 형용사" }
+  },
+  "consistencyChecks": ["opening_tone", "pronoun_stable", "no_mid_shift_to_sales"]
+}

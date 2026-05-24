@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "forbiddenPhrases": [
+    "소중한 순간",
+    "특별한 경험",
+    "품격 있는",
+    "최고의 선택",
+    "완벽한 하루",
+    "가치를 전달",
+    "감동을 선사"
+  ],
+  "requiredSignals": [
+    "scene_opening",
+    "brand_mention",
+    "search_intent_line"
+  ],
+  "structureTemplate": "hook_scene → local_context → brand_story → practical_info → visit_tip → soft_cta",
+  "rewriteHints": {
+    "ai_cliche": "관용구 대신 구체 장면·대화 한 줄",
+    "weak_search_intent": "위치·이용·비교 중 하나를 본문 중간에 명확히",
+    "length": "공백 포함 2000자 이상, 소제목별 280자+"
+  }
+}

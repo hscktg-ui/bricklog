@@ -1,0 +1,134 @@
+{
+  "passed": 4,
+  "total": 4,
+  "report": [
+    {
+      "id": "vu_agency_01",
+      "label": "김대행 — 광고대행 AE",
+      "steps": [
+        {
+          "signup": "ok",
+          "primaryChannel": "blog"
+        },
+        {
+          "memoryLayers": [
+            "user",
+            "brand",
+            "content"
+          ]
+        },
+        {
+          "channels": {
+            "blog": true,
+            "place": true,
+            "insta": true,
+            "image": true
+          },
+          "promptOrder": true,
+          "forbiddenInBrand": true
+        },
+        {
+          "promptOrder": true
+        }
+      ],
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "vu_cafe_owner",
+      "label": "이사장 — 단일 카페",
+      "steps": [
+        {
+          "signup": "ok",
+          "primaryChannel": "blog"
+        },
+        {
+          "memoryLayers": [
+            "user",
+            "brand",
+            "content"
+          ]
+        },
+        {
+          "channels": {
+            "blog": true,
+            "place": true,
+            "insta": true,
+            "image": true
+          },
+          "promptOrder": true,
+          "forbiddenInBrand": true
+        },
+        {
+          "promptOrder": true
+        }
+      ],
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "vu_clinic_dir",
+      "label": "박원장 — 의료 클리닉",
+      "steps": [
+        {
+          "signup": "ok",
+          "primaryChannel": "place"
+        },
+        {
+          "memoryLayers": [
+            "user",
+            "brand",
+            "content"
+          ]
+        },
+        {
+          "channels": {
+            "blog": true,
+            "place": true,
+            "insta": true,
+            "image": true
+          },
+          "promptOrder": true,
+          "forbiddenInBrand": true
+        },
+        {
+          "promptOrder": true
+        }
+      ],
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "vu_creator_01",
+      "label": "수아 — 인스타·꽃집 MD",
+      "steps": [
+        {
+          "signup": "ok",
+          "primaryChannel": "insta"
+        },
+        {
+          "memoryLayers": [
+            "user",
+            "brand",
+            "content"
+          ]
+        },
+        {
+          "channels": {
+            "blog": true,
+            "place": true,
+            "insta": true,
+            "image": true
+          },
+          "promptOrder": true,
+          "forbiddenInBrand": true
+        },
+        {
+          "promptOrder": true
+        }
+      ],
+      "pass": true,
+      "error": null
+    }
+  ]
+}

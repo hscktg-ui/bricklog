@@ -1,0 +1,554 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f8fa;
+  --foreground: #191f28;
+  --brand: #03c75a;
+  --brand-hover: #02b350;
+  --border: #e8ebed;
+  --muted: #8b95a1;
+  --footer-bg: #f2f4f6;
+  /* 모바일·태블릿 하단 빠른 메뉴 높이 (lg 미만) */
+  --workspace-mobile-nav-h: 3.5rem;
+  /* 클릭 가능 요소 — 항상 같은 손 모양 (깜빡임 방지) */
+  --briclog-cursor-interactive: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #12141a;
+    --foreground: #e8eaed;
+    --brand: #2dd673;
+    --brand-hover: #03c75a;
+    --border: #2a3038;
+    --muted: #9aa3ad;
+    --footer-bg: #0d0f14;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), "Pretendard", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/*
+ * 클릭 영역 고정 — ::after 투명 슬랩이 텍스트·아이콘·SVG 위를 덮어
+ * 커서가 default↔pointer로 깜빡이지 않음 (텍스트 노드는 * 선택자로 막을 수 없음)
+ */
+.briclog-pressable:not(:disabled):not(.briclog-no-slab),
+button:enabled:not(.briclog-no-slab),
+[role="button"]:not([aria-disabled="true"]):not(.briclog-no-slab),
+.briclog-btn-primary:not(:disabled),
+.briclog-btn-secondary:not(:disabled),
+.tab-btn:not(:disabled),
+a.briclog-btn-primary,
+a.briclog-btn-secondary {
+  position: relative;
+  isolation: isolate;
+  cursor: var(--briclog-cursor-interactive) !important;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.briclog-pressable:not(:disabled):not(.briclog-no-slab)::after,
+button:enabled:not(.briclog-no-slab)::after,
+[role="button"]:not([aria-disabled="true"]):not(.briclog-no-slab)::after,
+.briclog-btn-primary:not(:disabled)::after,
+.briclog-btn-secondary:not(:disabled)::after,
+.tab-btn:not(:disabled)::after,
+a.briclog-btn-primary::after,
+a.briclog-btn-secondary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border-radius: inherit;
+  cursor: var(--briclog-cursor-interactive) !important;
+  pointer-events: auto;
+  background: transparent;
+}
+
+.briclog-pressable:not(:disabled):not(.briclog-no-slab) > *,
+button:enabled:not(.briclog-no-slab) > *,
+[role="button"]:not([aria-disabled="true"]):not(.briclog-no-slab) > *,
+.briclog-btn-primary:not(:disabled) > *,
+.briclog-btn-secondary:not(:disabled) > *,
+.tab-btn:not(:disabled) > * {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+button:disabled,
+.briclog-pressable:disabled,
+.briclog-btn-primary:disabled,
+.briclog-btn-secondary:disabled,
+.tab-btn:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
+
+button:disabled::after,
+.briclog-pressable:disabled::after,
+.briclog-btn-secondary:disabled::after,
+.tab-btn:disabled::after,
+[role="button"][aria-disabled="true"]::after {
+  content: none;
+  display: none;
+  pointer-events: none;
+}
+
+/* 터치·클릭 즉시 반응 (300ms 지연 완화) */
+.briclog-pressable,
+button:enabled,
+[role="button"]:not([aria-disabled="true"]) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes briclog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.briclog-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #e8ebed;
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: briclog-spin 0.65s linear infinite;
+}
+
+/* 주요 CTA 통일 */
+.briclog-btn-primary {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--brand);
+  padding: 0.875rem 1rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: none;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease,
+    filter 0.12s ease;
+}
+
+.briclog-btn-primary:not(:disabled)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 4px 16px rgba(3, 199, 90, 0.35);
+  pointer-events: none;
+}
+
+.briclog-btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+.briclog-btn-primary:active:not(:disabled) {
+  filter: brightness(0.97);
+}
+
+.briclog-btn-primary:disabled {
+  cursor: not-allowed !important;
+  background: #b0b8c1;
+  box-shadow: none;
+  opacity: 0.65;
+}
+
+.briclog-btn-primary:disabled::after,
+.briclog-btn-primary:disabled::before {
+  content: none;
+}
+
+.briclog-btn-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0.625rem 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4e5968;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.briclog-btn-secondary:hover:not(:disabled) {
+  background: #f7f8fa;
+  border-color: rgba(3, 199, 90, 0.35);
+}
+
+.briclog-btn-secondary:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.65;
+}
+
+.briclog-btn-secondary:disabled::after {
+  content: none;
+  display: none;
+}
+
+/* 탭 패널 전환 */
+.tab-panel {
+  animation: tabFade 0.28s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tabFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ticker-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-ticker-up {
+  animation: ticker-up 0.6s ease-out;
+}
+
+.tab-btn {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Toast */
+.toast-enter {
+  animation: toastIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Workspace: prevent horizontal scroll on narrow viewports */
+.workspace-shell {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.workspace-shell-inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 72rem;
+}
+
+@media (min-width: 1024px) {
+  .workspace-shell-inner {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* 공통 표면 — 카드·패널 */
+.briclog-surface {
+  background: #ffffff;
+  border: 1px solid rgb(232 235 237 / 0.9);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgb(25 31 40 / 0.04);
+}
+
+.briclog-workspace-header {
+  border-bottom: 1px solid rgb(232 235 237 / 0.65);
+  background: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 rgb(25 31 40 / 0.04);
+}
+
+.workspace-result-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .workspace-result-scroll.has-sticky-copy {
+    padding-bottom: 5.5rem;
+  }
+}
+
+/* Legal pages */
+.legal-prose {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--foreground);
+}
+
+.legal-prose > * + * {
+  margin-top: 1.25rem;
+}
+
+.legal-prose section > * + * {
+  margin-top: 0.75rem;
+}
+
+.legal-prose h2 {
+  margin-top: 2rem;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.legal-prose h2:first-child {
+  margin-top: 0;
+}
+
+.legal-prose h3 {
+  margin-top: 1.25rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.legal-prose ul,
+.legal-prose ol {
+  padding-left: 1.25rem;
+}
+
+.legal-prose ul {
+  list-style: disc;
+}
+
+.legal-prose ol {
+  list-style: decimal;
+}
+
+.legal-prose li + li {
+  margin-top: 0.35rem;
+}
+
+.legal-prose a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-prose a:hover {
+  color: var(--brand-hover);
+}
+
+.legal-prose strong {
+  font-weight: 600;
+}
+
+/* 랜딩 풀스크린 인트로 — PC 에디터 */
+@keyframes briclog-intro-desk-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes briclog-intro-cursor {
+  0%,
+  42% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes briclog-intro-cta-blink {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes briclog-intro-start-cta {
+  0%,
+  100% {
+    box-shadow: 0 4px 18px rgba(3, 199, 90, 0.32);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 6px 28px rgba(3, 199, 90, 0.48);
+    transform: scale(1.015);
+  }
+}
+
+@keyframes briclog-intro-brand-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes briclog-intro-exit {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes briclog-intro-chevron {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+
+.briclog-intro-desk-in {
+  animation: briclog-intro-desk-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.briclog-intro-cursor {
+  animation: briclog-intro-cursor 1.15s step-end infinite;
+}
+
+.briclog-intro-cta-blink {
+  animation: briclog-intro-cta-blink 4.2s ease-in-out infinite;
+}
+
+.briclog-intro-start-cta {
+  background-color: #03c75a;
+  color: #ffffff;
+  animation: briclog-intro-start-cta 2.2s ease-in-out infinite;
+}
+
+.briclog-intro-editor-fade {
+  transition: opacity 0.75s ease-out;
+}
+
+.briclog-intro-brand-fade {
+  animation: briclog-intro-brand-fade 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.briclog-intro-reveal {
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.briclog-intro-exit {
+  animation: briclog-intro-exit 0.45s ease-out forwards;
+}
+
+.briclog-intro-card {
+  border: 1px solid rgb(232 235 237 / 0.85);
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgb(25 31 40 / 0.04),
+    0 12px 40px rgb(25 31 40 / 0.08);
+}
+
+@media (min-width: 640px) {
+  .briclog-intro-card {
+    border-radius: 1.25rem;
+  }
+}
+
+.briclog-landing-reveal {
+  animation: briclog-landing-reveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes briclog-landing-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.briclog-intro-chevron {
+  animation: briclog-intro-chevron 1.6s ease-in-out infinite;
+}

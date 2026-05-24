@@ -1,0 +1,302 @@
+{
+  "generatedAt": "2026-05-23T10:44:38.008Z",
+  "targetScore": 80,
+  "personas": 3,
+  "passed": 3,
+  "results": [
+    {
+      "id": "journey_cafe_gangnam",
+      "label": "민지 — 강남 로컬 카페 사장",
+      "category": "카페·F&B",
+      "entryPoint": "blog",
+      "steps": [
+        "blog_form → place+insta 파생",
+        "blog → 피드백(place·insta 톤) → insta 재파생"
+      ],
+      "linkage": [
+        {
+          "target": "place",
+          "ok": true,
+          "source": "blog",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "instagram",
+          "ok": true,
+          "source": "blog",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "image",
+          "ok": true,
+          "source": "blog",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "blog",
+          "ok": false,
+          "source": null,
+          "hasProxy": false,
+          "standalone": false,
+          "deriveBlog": false
+        }
+      ],
+      "feedbackApplied": [
+        "fb:place training=65 core=84 seed=1",
+        "fb:instagram training=65 core=84 seed=2"
+      ],
+      "issues": [],
+      "qualityWarnings": [
+        "blog:training 59<80",
+        "place:training 65<80",
+        "instagram:training 65<80"
+      ],
+      "scores": {
+        "blog": {
+          "training": 59,
+          "trainingPass": false,
+          "blockers": [
+            "no_scene",
+            "brand_feature",
+            "length",
+            "industry_cross",
+            "length_under_min",
+            "brand_missing",
+            "scenes_insufficient",
+            "quality_score",
+            "length"
+          ],
+          "core": 66,
+          "corePass": false
+        },
+        "place": {
+          "training": 65,
+          "trainingPass": false,
+          "blockers": [
+            "place_quality"
+          ],
+          "core": 84,
+          "corePass": false
+        },
+        "instagram": {
+          "training": 65,
+          "trainingPass": false,
+          "blockers": [
+            "insta_quality"
+          ],
+          "core": 84,
+          "corePass": false
+        }
+      },
+      "latestChannel": "blog",
+      "pass": true
+    },
+    {
+      "id": "journey_clinic_songdo",
+      "label": "박원장 — 송도 정형외과 (민감 업종)",
+      "category": "의료·클리닉",
+      "entryPoint": "paste_place",
+      "steps": [
+        "paste_place audit=95 pass=false",
+        "paste_place → 피드백 → insta 파생",
+        "medical_guard:법·의료 정보는 반드시 전문가 확인",
+        "paste_place after_fb audit=77"
+      ],
+      "linkage": [
+        {
+          "target": "place",
+          "ok": true,
+          "source": "form",
+          "hasProxy": false,
+          "standalone": true,
+          "deriveBlog": false
+        },
+        {
+          "target": "instagram",
+          "ok": true,
+          "source": "place",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "image",
+          "ok": true,
+          "source": "place",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "blog",
+          "ok": true,
+          "source": "place",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": true
+        }
+      ],
+      "feedbackApplied": [
+        "keyword_repeat_guard:on",
+        "sensitive:medical",
+        "fb:blog training=64 core=92 seed=0",
+        "sensitive:medical",
+        "fb:place training=65 core=87 seed=1"
+      ],
+      "issues": [],
+      "qualityWarnings": [
+        "paste_place:검수 전 과장·키워드 과다(의도된 실패 케이스)",
+        "place:training 65<80",
+        "instagram:training 65<80"
+      ],
+      "scores": {
+        "blog": null,
+        "place": {
+          "training": 65,
+          "trainingPass": false,
+          "blockers": [
+            "place_quality"
+          ],
+          "core": 87,
+          "corePass": false
+        },
+        "instagram": {
+          "training": 65,
+          "trainingPass": false,
+          "blockers": [
+            "insta_quality"
+          ],
+          "core": 92,
+          "corePass": false
+        },
+        "pasteAuditAfter": 77
+      },
+      "latestChannel": "place",
+      "pass": true
+    },
+    {
+      "id": "journey_flower_haeundae",
+      "label": "수아 — 해운대 꽃집 마케터",
+      "category": "꽃집·이커머스",
+      "entryPoint": "instagram",
+      "steps": [
+        "insta 단독 → blog 프록시 연계",
+        "insta 기준 → place 파생"
+      ],
+      "linkage": [
+        {
+          "target": "place",
+          "ok": true,
+          "source": "blog",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "instagram",
+          "ok": true,
+          "source": "blog",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "image",
+          "ok": true,
+          "source": "blog",
+          "hasProxy": true,
+          "standalone": false,
+          "deriveBlog": false
+        },
+        {
+          "target": "blog",
+          "ok": false,
+          "source": null,
+          "hasProxy": false,
+          "standalone": false,
+          "deriveBlog": false
+        }
+      ],
+      "feedbackApplied": [
+        "fb:instagram training=65 core=92 seed=3",
+        "fb:instagram training=65 core=92 seed=2"
+      ],
+      "issues": [],
+      "qualityWarnings": [
+        "blog:training 67<80",
+        "place:training 65<80",
+        "instagram:training 65<80"
+      ],
+      "scores": {
+        "blog": {
+          "training": 67,
+          "trainingPass": false,
+          "blockers": [
+            "brand_feature",
+            "length",
+            "industry_cross",
+            "length_under_min",
+            "brand_missing",
+            "scenes_insufficient",
+            "quality_score",
+            "length"
+          ],
+          "core": 59,
+          "corePass": false
+        },
+        "place": {
+          "training": 65,
+          "trainingPass": false,
+          "blockers": [
+            "place_quality"
+          ],
+          "core": 92,
+          "corePass": false
+        },
+        "instagram": {
+          "training": 65,
+          "trainingPass": false,
+          "blockers": [
+            "insta_quality"
+          ],
+          "core": 92,
+          "corePass": false
+        }
+      },
+      "latestChannel": "blog",
+      "pass": true
+    }
+  ],
+  "extractedFeedback": [
+    {
+      "id": "journey_cafe_gangnam",
+      "feedback": [
+        "플레이스는 더 짧고 담백하게 써줘",
+        "인스타는 이모지 조금만 넣어줘"
+      ],
+      "entryPoint": "blog"
+    },
+    {
+      "id": "journey_clinic_songdo",
+      "feedback": [
+        "의료 광고 느낌 줄이고 키워드는 덜 넣어줘",
+        "상담 안내만 담백하게"
+      ],
+      "entryPoint": "paste_place"
+    },
+    {
+      "id": "journey_flower_haeundae",
+      "feedback": [
+        "블로그는 정보형으로 차분하게",
+        "해시태그는 부산·해운대 로컬 위주로"
+      ],
+      "entryPoint": "instagram"
+    }
+  ]
+}

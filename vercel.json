@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/trends/collect",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/daily-develop",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron/daily-digest",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

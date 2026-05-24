@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "minTotalScore": 90,
+  "weights": {
+    "topicFit": 8,
+    "searchIntent": 10,
+    "personaConsistency": 8,
+    "emotionTone": 7,
+    "brandFeatures": 8,
+    "factualCaution": 8,
+    "scenePresence": 8,
+    "aiSmell": 10,
+    "repetition": 8,
+    "readability": 7,
+    "dwellTime": 6,
+    "clickIntent": 6
+  },
+  "blockers": {
+    "placeholder": { "penalty": 25, "maxRewrites": 5 },
+    "ai_cliche": { "penalty": 12, "maxRewrites": 5 },
+    "repetition": { "penalty": 10, "maxRewrites": 4 },
+    "weak_search_intent": { "penalty": 15, "maxRewrites": 5 },
+    "no_scene": { "penalty": 10, "maxRewrites": 4 },
+    "persona_drift": { "penalty": 12, "maxRewrites": 4 },
+    "length": { "penalty": 20, "maxRewrites": 5 }
+  },
+  "naverBlogHints": [
+    "도입 2~4문장 안에 방문·선택 맥락",
+    "소제목 5~7개, 문단 3~5줄",
+    "이미지 자리: 소제목 직후 1회 권장",
+    "지역+업종 키워드는 자연스럽게 3~5회",
+    "마무리는 부담 없는 CTA"
+  ]
+}

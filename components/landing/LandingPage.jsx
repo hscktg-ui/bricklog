@@ -1,0 +1,180 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import Logo from "@/components/Logo";
+import LandingIntroOverlay from "@/components/landing/LandingIntroOverlay";
+import { useLandingVisit } from "@/lib/landing/useLandingVisit";
+import {
+  hasPlayedLandingSignature,
+  markLandingIntroDone,
+  markLandingSignaturePlayed,
+  shouldShowLandingIntro,
+} from "@/lib/landing/landingSession";
+import BgmToggle from "@/components/audio/BgmToggle";
+import {
+  unlockAudioFromUserGesture,
+  playSignatureSound,
+} from "@/lib/audio/briclogSounds";
+import { maybeStartBgmAfterGestureUnlock } from "@/lib/audio/briclogBgm";
+import LandingPreviewShell from "./LandingPreviewShell";
+import HeroSection from "./HeroSection";
+import LiveStatsBanner from "./LiveStatsBanner";
+import DemoFlow from "./DemoFlow";
+import DemoPreviewSection from "./DemoPreviewSection";
+import ChannelPreview from "./ChannelPreview";
+import WorkflowSection from "./WorkflowSection";
+import WhyBriclog from "./WhyBriclog";
+import PricingSection from "./PricingSection";
+import {
+  LANDING_CTA_FOOTNOTE,
+  LANDING_CTA_HEADLINE,
+  LANDING_CTA_PHILOSOPHY,
+  LANDING_CTA_SUB,
+} from "@/lib/landing/ctaCopy";
+
+export default function LandingPage({ onAuthOpen, onStart }) {
+  const { greeting, sample, contentIdea, seasonCopy, theme } =
+    useLandingVisit();
+  /** 세션당 1회만 인트로 (landingSession) */
+  const [introOpen, setIntroOpen] = useState(true);
+
+  useEffect(() => {
+    if (!shouldShowLandingIntro()) setIntroOpen(false);
+  }, []);
+
+  const withLandingCta = useCallback(
+    (fn) => () => {
+      unlockAudioFromUserGesture();
+      void maybeStartBgmAfterGestureUnlock();
+      if (!hasPlayedLandingSignature()) {
+        markLandingSignaturePlayed();
+        void playSignatureSound();
+      }
+      fn?.();
+    },
+    []
+  );
+
+  const handleStart = withLandingCta(onStart);
+
+  const scrollToSample = () => {
+    document
+      .getElementById("landing-sample")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleIntroDismiss = useCallback(() => {
+    markLandingIntroDone();
+    setIntroOpen(false);
+    unlockAudioFromUserGesture();
+    void maybeStartBgmAfterGestureUnlock();
+    if (!hasPlayedLandingSignature()) {
+      markLandingSignaturePlayed();
+      void playSignatureSound();
+    }
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }, []);
+
+  return (
+    <div className="min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]">
+      <LandingIntroOverlay
+        open={introOpen}
+        onDismiss={handleIntroDismiss}
+        onSkip={handleIntroDismiss}
+      />
+
+      <header
+        className={`sticky top-0 z-30 border-b border-[#E8EBED]/80 bg-[#F7F8FA]/95 backdrop-blur-md transition-opacity duration-500 ${
+          introOpen ? "pointer-events-none" : "briclog-landing-reveal opacity-100"
+        }`}
+      >
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5 md:px-8 md:py-3">
+          <Logo iconSize={28} />
+          <nav className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <BgmToggle fullWidth={false} className="hidden shrink-0 bg-white/90 sm:flex" />
+            <button
+              type="button"
+              onClick={() => onAuthOpen("login")}
+              className="hidden rounded-lg px-2 py-2 text-[12px] font-medium text-[#4E5968] hover:bg-white sm:inline-block sm:px-3 sm:text-[13px]"
+            >
+              로그인
+            </button>
+            <button
+              type="button"
+              data-briclog-cta="start"
+              onClick={handleStart}
+              className="briclog-btn-primary !min-h-[40px] !w-auto !py-2 !text-[12px] sm:!px-4 sm:!text-[13px]"
+            >
+              <span>무료 시작</span>
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <LandingPreviewShell>
+      <main
+        id="landing-main"
+        className={`pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 ${
+          introOpen ? "pointer-events-none" : "briclog-landing-reveal"
+        }`}
+      >
+        <HeroSection
+          greeting={greeting}
+          seasonCopy={seasonCopy}
+          theme={theme}
+          contentIdea={contentIdea}
+          onStart={handleStart}
+          onSample={withLandingCta(scrollToSample)}
+        />
+        <LiveStatsBanner introOpen={introOpen} />
+        <DemoFlow sample={sample} />
+        <DemoPreviewSection sample={sample} />
+        <ChannelPreview sample={sample} />
+        <WorkflowSection />
+        <WhyBriclog />
+        <PricingSection onStart={handleStart} />
+
+        <section className="border-t border-[#E8EBED] bg-[#191F28] px-4 py-14 text-center md:px-8 md:py-16">
+          <p className="text-[20px] font-bold leading-snug text-white md:text-[26px]">
+            {LANDING_CTA_HEADLINE}
+          </p>
+          <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-[#B0B8C1]">
+            {LANDING_CTA_SUB}
+          </p>
+          {LANDING_CTA_PHILOSOPHY ? (
+            <p className="mx-auto mt-4 max-w-xl text-[13px] leading-relaxed text-[#8B95A1]">
+              {LANDING_CTA_PHILOSOPHY}
+            </p>
+          ) : null}
+          <button
+            type="button"
+            data-briclog-cta="start"
+            onClick={handleStart}
+            className="briclog-btn-primary mt-8 !w-auto px-10"
+          >
+            <span>무료로 시작하기</span>
+          </button>
+          <p className="mt-6 text-[12px] text-[#6B7684]">{LANDING_CTA_FOOTNOTE}</p>
+        </section>
+      </main>
+      </LandingPreviewShell>
+
+      <div
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#E8EBED]/90 bg-[#F7F8FA]/95 px-4 py-3 backdrop-blur-md transition-opacity duration-500 sm:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))] ${
+          introOpen ? "pointer-events-none opacity-60" : "opacity-100"
+        }`}
+      >
+        <button
+          type="button"
+          data-briclog-cta="start"
+          onClick={handleStart}
+          className="briclog-btn-primary"
+        >
+          <span>무료로 시작하기</span>
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,50 @@
+{
+  "name": "briclog",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:3005": "next dev -p 3005",
+    "dev:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next dev",
+    "build": "next build",
+    "start": "next start",
+    "start:3005": "next start -p 3005",
+    "local:status": "node scripts/local-server-status.mjs",
+    "setup:local": "node scripts/setup-local.mjs",
+    "lint": "eslint",
+    "trends:collect": "node scripts/run-trend-collect.mjs",
+    "daily:develop": "node scripts/run-daily-develop.mjs",
+    "test:quality": "node scripts/test-quality-cases.mjs",
+    "test:director": "node scripts/test-director-scenarios.mjs",
+    "test:channels": "node scripts/test-channel-modules.mjs",
+    "test:persona": "node --import ./scripts/register-alias.mjs scripts/simulate-persona-channels.mjs",
+    "test:persona-journey": "node --import ./scripts/register-alias.mjs scripts/simulate-three-persona-journeys.mjs",
+    "test:users": "node --import ./scripts/register-alias.mjs scripts/simulate-four-users-personalization.mjs",
+    "test:brand-memory-journey": "node --import ./scripts/register-alias.mjs scripts/simulate-brand-memory-four-journey.mjs",
+    "test:click-blockers": "node scripts/diagnose-click-blockers.mjs",
+    "test:ui-stability": "node scripts/ui-interaction-stability.mjs",
+    "test:eight-journeys": "node scripts/eight-user-smoke.mjs",
+    "test:eight-users": "node scripts/eight-user-smoke.mjs",
+    "test:channel-sla": "node scripts/channel-sla-smoke.mjs",
+    "prelaunch": "node scripts/prelaunch.mjs",
+    "debug:click": "echo Dev panel: npm run dev then click bottom-left 클릭 진단 or ?debugClick=1"
+  },
+  "imports": {
+    "@/": "./"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.1",
+    "@tosspayments/tosspayments-sdk": "^2.7.0",
+    "next": "16.2.6",
+    "openai": "^6.38.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "playwright": "^1.49.1",
+    "tailwindcss": "^4"
+  }
+}

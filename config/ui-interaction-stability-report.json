@@ -1,0 +1,93 @@
+{
+  "base": "http://127.0.0.1:3005",
+  "runs": [
+    {
+      "label": "desktop",
+      "steps": [
+        {
+          "step": "landing_after_intro",
+          "ok": true
+        },
+        {
+          "step": "landing_cta_click",
+          "ok": true
+        }
+      ],
+      "diagnostics": [
+        {
+          "step": "landing_after_intro",
+          "clickTarget": null,
+          "elementFromPointCenter": {
+            "tag": "HTML",
+            "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "cursor": "auto"
+          },
+          "fixedOverlays": [],
+          "pointerEventsNoneLarge": [],
+          "zIndex50Plus": []
+        },
+        {
+          "step": "landing_cta_click",
+          "clickTarget": null,
+          "elementFromPointCenter": {
+            "tag": "HTML",
+            "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "cursor": "auto"
+          },
+          "fixedOverlays": [],
+          "pointerEventsNoneLarge": [],
+          "zIndex50Plus": []
+        }
+      ],
+      "skippedLogin": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    },
+    {
+      "label": "mobile",
+      "steps": [
+        {
+          "step": "landing_after_intro",
+          "ok": true
+        },
+        {
+          "step": "landing_cta_click",
+          "ok": true
+        }
+      ],
+      "diagnostics": [
+        {
+          "step": "landing_after_intro",
+          "clickTarget": null,
+          "elementFromPointCenter": {
+            "tag": "HTML",
+            "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "cursor": "auto"
+          },
+          "fixedOverlays": [],
+          "pointerEventsNoneLarge": [],
+          "zIndex50Plus": []
+        },
+        {
+          "step": "landing_cta_click",
+          "clickTarget": null,
+          "elementFromPointCenter": {
+            "tag": "HTML",
+            "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "cursor": "auto"
+          },
+          "fixedOverlays": [],
+          "pointerEventsNoneLarge": [],
+          "zIndex50Plus": []
+        }
+      ],
+      "skippedLogin": "BRICLOG_TEST_EMAIL/PASSWORD not set"
+    }
+  ]
+}

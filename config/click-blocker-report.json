@@ -1,0 +1,1835 @@
+{
+  "base": "http://localhost:3005",
+  "phases": {
+    "pre_login_intro_open": {
+      "url": "http://localhost:3005/",
+      "title": "BRICLOG",
+      "viewport": {
+        "w": 1280,
+        "h": 800
+      },
+      "bodyPointerEvents": "auto",
+      "htmlPointerEvents": "auto",
+      "hasDashboardMarker": false,
+      "hasLandingMain": true,
+      "hasIntroDialog": true,
+      "loadingText": [
+        "BRICLOG3분 가입3분 가입결제 없이 무료 5회폰에서 바로 복사주제 하나로세 채널까지긴 이야기 · 한 줄 공지 · 인스타 캡션을 한곳에서 맞춰 씁니다. 확인하고 복사해 올리면 됩니다.봄 시즌이야기플레이스인스타오늘 쓰기 좋은 주제최근 후기 한 줄을 블로그·플레이스·인스타에 각각 다르게 풀어보기무료로 시작하기샘플 보기브릭로그에 쌓인 글이번 주 제작된 글···이번 달 이용 브랜드···누적 이용자···이번 달 제작된 글···쓰는 순서브랜드 · 지역 → 오늘의 주제 → 이야기 쓰기 → 플레이스 · 인스타 → 복사브릭로그 · 글쓰기단계 1 / 51. 브랜드 정하기이름 · 지역 · 말투를 한 번만 저장해요브랜드명꽃다발 공방한 주제, 채널별 초안실제 화면과 비슷한 예시입니다. 가입 후 같은 흐름으로 씁니다.꽃다발 공방 · 부산 해운대 · 어버이날 꽃다발·픽업 예약샘플 초안접속할 때마다 다른 업종 예시가 보입니다 · 가입 후 같은 흐름으로 작성됩니다이야기플레이스인스타이야기어버이날, 말 대신 꽃으로 전하는 마음조용히 들어온 손님의 한 마디에서 시작된 꽃다발 — 색·무게·포장까지 맞춘 이야기입니다.그날의 요청어제 손님 한 분이 조용히 들어와 “아버지 생신인데, 너무 화려하진 않았으면 해요”라고 하셨습니다. 메뉴판이 아니라, 그날의 마음을 먼저 듣는 게 우리 공방의 시작이에요.차분한 색, 부드러운 향, 손에 쥐었을 때의 무게까지 골라 드렸어요. 화려한 포장보다, 오래 두고 봐도 편한 조합을 우선합니다.어버이날 예약어버이날 시즌에는 예약이 빠르게 차는 편입니다. 픽업은 오전 10시부터 가능하고, 당일 배송은 오후에 마감될 수 있어요. 원하시는 분위기를 전화나 메시지로 말씀해 주시면, 그에 맞춰 꽃과 리본을 준비합니다.매장 픽업을 선택하시면 포장 상태를 직접 확인하실 수 있습니다. 사진으로만 고르기 어려운 분들께 특히 도움이 된다는 말을 자주 들어요.꽃이 전하는 말꽃은 선물이 아니라, 전하고 싶었던 말에 가깝다고 생각합니다. 그래서 본문에 없는 약속이나 가격은 적지 않고, 준비 과정과 마음을 담는 방향으로 글을 씁니다.해운대 근처에서 픽업하시는 분들은 주차 안내를 미리 보내 드리고 있어요. 배송을 원하시면 받으실 분의 일정을 함께 알려 주시면 일정 조율이 수월합니다.시즌 운영어버이날 전후 일주일은 작업대가 빠르게 돌아갑니다. 같은 꽃이라도 리본 색·포장지에 따라 인상이 달라지니, 참고 사진을 보내 주시면 준비가 더 정확해집니다.매장 앞 주차는 두 대까지 가능합니다. 픽업 시간 10분 전에 도착하시면 포장 상태를 함께 확인하실 수 있어요.어버이날, 말 대신 꽃으로 전하는 마음. 예약·픽업은 미리 연락 주시면 차분히 맞춰 드립니다.본문 약 579자 · 발행 전 읽기 쉽게 정리된 장문프롬프트·붙여넣기 검수는 가입 후 메뉴에서 이용할 수 있어요네 가지 채널각각 따로 쓰거나, 이야기부터 한 번에 이어갈 수 있어요이야이야기블로그·네이버용 긴 글조용히 들어온 손님의 한 마디에서 시작된 꽃다발 — 색·무게·포장까지 맞춘 이야기입니다.플레플레이스공지·한 줄 소식어버이날 예약이 빠르게 차고 있어요. 픽업·배송 일정은 미리 연락 주시면 안내드립니다.인스인스타 캡션피드·해시태그🌷 어버이날, 너무 화려하지 않은 꽃다발.프롬프롬프트썸네일·카드 문구꽃다발 공방 · 어버이날 꽃다발·픽업 예약이렇게 쓰시면 돼요브랜드와 주제를 정한 뒤, 이야기 → 플레이스 · 인스타 순으로 이어갑니다01브랜드 · 지역가게 이름과 말투를 정해 두면, 다음 글도 같은 목소리로 이어집니다.02오늘의 주제이번 주 소식 한 줄만 넣어도 글 방향이 잡혀요.03이야기 쓰기네이버형 긴 글을 먼저 씁니다. 키워드와 장면도 함께 맞춰요.04플레이스 · 인스타한 줄 공지와 캡션은 이야기를 바탕으로 짧게 정리돼요.05확인 · 복사읽기 편한지 본 뒤, 각 앱에 붙여 넣으면 됩니다.왜 브릭로그인가주제 하나로 이야기 · 플레이스 · 인스타 글을 차곡 쌓는 브랜드 글쓰기입니다01브랜드가 쌓여요말투와 주제가 겹겹이 남아, 다음 글도 같은 결로 이어져요.02한 주제, 세 채널이야기 한 번이면 플레이스 · 인스타까지 이어집니다. 필요하면 프롬프트 메뉴에서 비주얼 문구도 더할 수 있어요.03게시 전에 다듬기너무 길거나 어색한 표현을 미리 짚어 드려, 올리기 전에 마음이 편해집니다.04기록이 남는 운영지난 글 기록과 작업실에서 주제를 보고 다시 쓸 수 있어요.요금제쓰는 만큼만 골라요무료로 이야기부터 써 보세요. 채널이 늘면 플러스 · 스튜디오로 이어가면 됩니다.Free무료무료✓브랜드 1개✓월 5회 · 이야기✓도움말✓초안 기록 7일무료로 시작Plus플러스19,900원/월✓브랜드 3개✓월 15회 · 이야기·플레이스·인스타✓브랜드 톤·자료 저장✓초안 기록 30일✓업종별 표현 가이드✓비주얼 프롬프트가입 후 이용Studio스튜디오39,000원/월✓브랜드 무제한✓월 30회 · 3채널 + 프롬프트✓자료·톤 무제한✓초안 기록 무제한✓발행 전 꼼꼼 점검✓주제 추천가입 후 이용무료로 이야기 글부터 쓸 수 있습니다. 유료 전환 시 매월 결제일에 자동 갱신되며, 해지는 다음 결제일 전까지 앱에서 변경할 수 있습니다.무료로 운영 시작무료 월 5회 · 플러스 19,900원/월 · 스튜디오 39,000원/월오늘 쓸 글, 여기서 차곡 쌓기먼저 무료로 써 보시고, 채널이 늘면 플러스 · 스튜디오를 고르시면 됩니다.무료로 시작하기무료 월 5회 · 플러스 19,900원/월 · 스튜디오 39,000원/월",
+        "긴 이야기 · 한 줄 공지 · 인스타 캡션을 한곳에서 맞춰 씁니다. 확인하고 복사해 올리면 됩니다.",
+        "한 주제, 채널별 초안실제 화면과 비슷한 예시입니다. 가입 후 같은 흐름으로 씁니다.꽃다발 공방 · 부산 해운대 · 어버이날 꽃다발·픽업 예약샘플 초안접속할 때마다 다른 업종 예시가 보입니다 · 가입 후 같은 흐름으로 작성됩니다이야기플레이스인스타이야기어버이날, 말 대신 꽃으로 전하는 마음조용히 들어온 손님의 한 마디에서 시작된 꽃다발 — 색·무게·포장까지 맞춘 이야기입니다.그날의 요청어제 손님 한 분이 조용히 들어와 “아버지 생신인데, 너무 화려하진 않았으면 해요”라고 하셨습니다. 메뉴판이 아니라, 그날의 마음을 먼저 듣는 게 우리 공방의 시작이에요.차분한 색, 부드러운 향, 손에 쥐었을 때의 무게까지 골라 드렸어요. 화려한 포장보다, 오래 두고 봐도 편한 조합을 우선합니다.어버이날 예약어버이날 시즌에는 예약이 빠르게 차는 편입니다. 픽업은 오전 10시부터 가능하고, 당일 배송은 오후에 마감될 수 있어요. 원하시는 분위기를 전화나 메시지로 말씀해 주시면, 그에 맞춰 꽃과 리본을 준비합니다.매장 픽업을 선택하시면 포장 상태를 직접 확인하실 수 있습니다. 사진으로만 고르기 어려운 분들께 특히 도움이 된다는 말을 자주 들어요.꽃이 전하는 말꽃은 선물이 아니라, 전하고 싶었던 말에 가깝다고 생각합니다. 그래서 본문에 없는 약속이나 가격은 적지 않고, 준비 과정과 마음을 담는 방향으로 글을 씁니다.해운대 근처에서 픽업하시는 분들은 주차 안내를 미리 보내 드리고 있어요. 배송을 원하시면 받으실 분의 일정을 함께 알려 주시면 일정 조율이 수월합니다.시즌 운영어버이날 전후 일주일은 작업대가 빠르게 돌아갑니다. 같은 꽃이라도 리본 색·포장지에 따라 인상이 달라지니, 참고 사진을 보내 주시면 준비가 더 정확해집니다.매장 앞 주차는 두 대까지 가능합니다. 픽업 시간 10분 전에 도착하시면 포장 상태를 함께 확인하실 수 있어요.어버이날, 말 대신 꽃으로 전하는 마음. 예약·픽업은 미리 연락 주시면 차분히 맞춰 드립니다.본문 약 579자 · 발행 전 읽기 쉽게 정리된 장문프롬프트·붙여넣기 검수는 가입 후 메뉴에서 이용할 수 있어요",
+        "어버이날, 말 대신 꽃으로 전하는 마음조용히 들어온 손님의 한 마디에서 시작된 꽃다발 — 색·무게·포장까지 맞춘 이야기입니다.그날의 요청어제 손님 한 분이 조용히 들어와 “아버지 생신인데, 너무 화려하진 않았으면 해요”라고 하셨습니다. 메뉴판이 아니라, 그날의 마음을 먼저 듣는 게 우리 공방의 시작이에요.차분한 색, 부드러운 향, 손에 쥐었을 때의 무게까지 골라 드렸어요. 화려한 포장보다, 오래 두고 봐도 편한 조합을 우선합니다.어버이날 예약어버이날 시즌에는 예약이 빠르게 차는 편입니다. 픽업은 오전 10시부터 가능하고, 당일 배송은 오후에 마감될 수 있어요. 원하시는 분위기를 전화나 메시지로 말씀해 주시면, 그에 맞춰 꽃과 리본을 준비합니다.매장 픽업을 선택하시면 포장 상태를 직접 확인하실 수 있습니다. 사진으로만 고르기 어려운 분들께 특히 도움이 된다는 말을 자주 들어요.꽃이 전하는 말꽃은 선물이 아니라, 전하고 싶었던 말에 가깝다고 생각합니다. 그래서 본문에 없는 약속이나 가격은 적지 않고, 준비 과정과 마음을 담는 방향으로 글을 씁니다.해운대 근처에서 픽업하시는 분들은 주차 안내를 미리 보내 드리고 있어요. 배송을 원하시면 받으실 분의 일정을 함께 알려 주시면 일정 조율이 수월합니다.시즌 운영어버이날 전후 일주일은 작업대가 빠르게 돌아갑니다. 같은 꽃이라도 리본 색·포장지에 따라 인상이 달라지니, 참고 사진을 보내 주시면 준비가 더 정확해집니다.매장 앞 주차는 두 대까지 가능합니다. 픽업 시간 10분 전에 도착하시면 포장 상태를 함께 확인하실 수 있어요.어버이날, 말 대신 꽃으로 전하는 마음. 예약·픽업은 미리 연락 주시면 차분히 맞춰 드립니다.본문 약 579자 · 발행 전 읽기 쉽게 정리된 장문",
+        "어버이날 시즌에는 예약이 빠르게 차는 편입니다. 픽업은 오전 10시부터 가능하고, 당일 배송은 오후에 마감될 수 있어요. 원하시는 분위기를 전화나 메시지로 말씀해 주시면, 그에 맞춰 꽃과 리본을 준비합니다.매장 픽업을 선택하시면 포장 상태를 직접 확인하실 수 있습니다. 사진으로만 고르기 어려운 분들께 특히 도움이 된다는 말을 자주 들어요."
+      ],
+      "samplePoints": {
+        "center": {
+          "coords": {
+            "name": "center",
+            "x": 640,
+            "y": 400
+          },
+          "top": {
+            "tag": "P",
+            "id": null,
+            "className": "text-[21px] font-bold tracking-tight text-[#191F28] sm:text-[28px] mt-2",
+            "position": "static",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "block",
+            "visibility": "visible",
+            "rect": {
+              "w": 94,
+              "h": 42,
+              "top": 365,
+              "left": 593
+            }
+          },
+          "path": [
+            {
+              "tag": "P",
+              "id": null,
+              "className": "text-[21px] font-bold tracking-tight text-[#191F28] sm:text-[28px] mt-2",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 94,
+                "h": 42,
+                "top": 365,
+                "left": 593
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-[112px] flex-col items-center justify-center py-2 text-center sm:min-h-[132px]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 462,
+                "h": 132,
+                "top": 287,
+                "left": 409
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "px-4 py-6 sm:min-h-[200px] sm:px-6 sm:py-8",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 510,
+                "h": 200,
+                "top": 255,
+                "left": 385
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "briclog-intro-card w-full overflow-hidden",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 512,
+                "h": 241,
+                "top": 215,
+                "left": 384
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "relative z-10 flex w-full max-w-lg flex-col items-center ",
+              "position": "relative",
+              "zIndex": "10",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 512,
+                "h": 370,
+                "top": 215,
+                "left": 384
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+              "position": "fixed",
+              "zIndex": "100",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "mx-auto mt-5 max-w-md rounded-2xl border border-[#E8EBED] bg-white px-4 py-3 text-left shadow-sm",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 448,
+                "h": 64,
+                "top": 397,
+                "left": 416
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "relative mx-auto max-w-3xl text-center",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 768,
+                "h": 430,
+                "top": 104,
+                "left": 256
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": null,
+              "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 534,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "MAIN",
+              "id": "landing-main",
+              "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 opacity-0",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "0",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5154,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5154,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5218,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        },
+        "sidebar": {
+          "coords": {
+            "name": "sidebar",
+            "x": 120,
+            "y": 300
+          },
+          "top": {
+            "tag": "DIV",
+            "id": null,
+            "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+            "position": "fixed",
+            "zIndex": "100",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "flex",
+            "visibility": "visible",
+            "rect": {
+              "w": 1280,
+              "h": 800,
+              "top": 0,
+              "left": 0
+            }
+          },
+          "path": [
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+              "position": "fixed",
+              "zIndex": "100",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": null,
+              "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 534,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "MAIN",
+              "id": "landing-main",
+              "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 opacity-0",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "0",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5154,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5154,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5218,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-0 flex-1 flex-col",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5314,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "BODY",
+              "id": null,
+              "className": "flex min-h-dvh flex-col font-sans antialiased",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5436,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "HTML",
+              "id": null,
+              "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        },
+        "main": {
+          "coords": {
+            "name": "main",
+            "x": 704,
+            "y": 300
+          },
+          "top": {
+            "tag": "P",
+            "id": null,
+            "className": "font-mono text-[28px] font-bold tracking-[0.14em] text-[#5BC77A] sm:text-[38px] ",
+            "position": "static",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "block",
+            "visibility": "visible",
+            "rect": {
+              "w": 197,
+              "h": 57,
+              "top": 300,
+              "left": 542
+            }
+          },
+          "path": [
+            {
+              "tag": "P",
+              "id": null,
+              "className": "font-mono text-[28px] font-bold tracking-[0.14em] text-[#5BC77A] sm:text-[38px] ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 197,
+                "h": 57,
+                "top": 300,
+                "left": 542
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-[112px] flex-col items-center justify-center py-2 text-center sm:min-h-[132px]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 462,
+                "h": 132,
+                "top": 287,
+                "left": 409
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "px-4 py-6 sm:min-h-[200px] sm:px-6 sm:py-8",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 510,
+                "h": 200,
+                "top": 255,
+                "left": 385
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "briclog-intro-card w-full overflow-hidden",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 512,
+                "h": 241,
+                "top": 215,
+                "left": 384
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "relative z-10 flex w-full max-w-lg flex-col items-center ",
+              "position": "relative",
+              "zIndex": "10",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 512,
+                "h": 370,
+                "top": 215,
+                "left": 384
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+              "position": "fixed",
+              "zIndex": "100",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "P",
+              "id": null,
+              "className": "mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-[#4E5968] sm:max-w-xl sm:text-[16px]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 576,
+                "h": 26,
+                "top": 284,
+                "left": 352
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "relative mx-auto max-w-3xl text-center",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 768,
+                "h": 430,
+                "top": 104,
+                "left": 256
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": null,
+              "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 534,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "MAIN",
+              "id": "landing-main",
+              "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 opacity-0",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "0",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5154,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5154,
+                "top": 64,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5218,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        },
+        "header": {
+          "coords": {
+            "name": "header",
+            "x": 640,
+            "y": 40
+          },
+          "top": {
+            "tag": "DIV",
+            "id": null,
+            "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+            "position": "fixed",
+            "zIndex": "100",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "flex",
+            "visibility": "visible",
+            "rect": {
+              "w": 1280,
+              "h": 800,
+              "top": 0,
+              "left": 0
+            }
+          },
+          "path": [
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+              "position": "fixed",
+              "zIndex": "100",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5218,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-0 flex-1 flex-col",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5314,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "BODY",
+              "id": null,
+              "className": "flex min-h-dvh flex-col font-sans antialiased",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5436,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "HTML",
+              "id": null,
+              "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        }
+      },
+      "centerElement": {
+        "tag": "P",
+        "id": null,
+        "className": "text-[21px] font-bold tracking-tight text-[#191F28] sm:text-[28px] mt-2",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto",
+        "opacity": "1",
+        "display": "block",
+        "visibility": "visible",
+        "rect": {
+          "w": 94,
+          "h": 42,
+          "top": 365,
+          "left": 593
+        }
+      },
+      "overlayCandidates": [
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+          "position": "fixed",
+          "zIndex": "100",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "flex",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 800,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": "dialog",
+          "ariaHidden": null
+        },
+        {
+          "tag": "HTML",
+          "id": null,
+          "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 800,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "BODY",
+          "id": null,
+          "className": "flex min-h-dvh flex-col font-sans antialiased",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "flex",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5436,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "flex min-h-0 flex-1 flex-col",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "flex",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5314,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5218,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(3,199,90,0.07),transparent_55%)]",
+          "position": "absolute",
+          "zIndex": "auto",
+          "pointerEvents": "none",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 800,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": false,
+          "role": null,
+          "ariaHidden": "true"
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5154,
+            "top": 64,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "SECTION",
+          "id": "landing-sample",
+          "className": "scroll-mt-20 bg-white px-4 py-12 md:px-8 md:py-16",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 939,
+            "top": 1407,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "SECTION",
+          "id": "pricing",
+          "className": "border-t border-[#E8EBED] bg-white px-4 py-16 md:px-8",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 748,
+            "top": 4146,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        }
+      ],
+      "blockingOverlays": [
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#FAFBFC] px-3 sm:px-6  cursor-pointer",
+          "position": "fixed",
+          "zIndex": "100",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "flex",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 800,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": "dialog",
+          "ariaHidden": null
+        }
+      ]
+    },
+    "pre_login_after_intro": {
+      "url": "http://localhost:3005/",
+      "title": "BRICLOG",
+      "viewport": {
+        "w": 1280,
+        "h": 800
+      },
+      "bodyPointerEvents": "auto",
+      "htmlPointerEvents": "auto",
+      "hasDashboardMarker": false,
+      "hasLandingMain": true,
+      "hasIntroDialog": false,
+      "loadingText": [
+        "BRICLOG3분 가입3분 가입결제 없이 무료 5회폰에서 바로 복사주제 하나로세 채널까지긴 이야기 · 한 줄 공지 · 인스타 캡션을 한곳에서 맞춰 씁니다. 확인하고 복사해 올리면 됩니다.봄 시즌이야기플레이스인스타오늘 쓰기 좋은 주제최근 후기 한 줄을 블로그·플레이스·인스타에 각각 다르게 풀어보기무료로 시작하기샘플 보기브릭로그에 쌓인 글2026.05.24 갱신이번 주 제작된 글1,181+이번 달 이용 브랜드382+누적 이용자1,933+이번 달 제작된 글3,228+쓰는 순서브랜드 · 지역 → 오늘의 주제 → 이야기 쓰기 → 플레이스 · 인스타 → 복사브릭로그 · 글쓰기단계 3 / 53. 이야기 쓰기긴 글을 먼저 맞춰 씁니다 · 읽기 쉽게 다듬어 드려요말투 정리채널별 길이올리기 전 확인한 주제, 채널별 초안실제 화면과 비슷한 예시입니다. 가입 후 같은 흐름으로 씁니다.꽃다발 공방 · 부산 해운대 · 어버이날 꽃다발·픽업 예약샘플 초안접속할 때마다 다른 업종 예시가 보입니다 · 가입 후 같은 흐름으로 작성됩니다이야기플레이스인스타이야기어버이날, 말 대신 꽃으로 전하는 마음조용히 들어온 손님의 한 마디에서 시작된 꽃다발 — 색·무게·포장까지 맞춘 이야기입니다.그날의 요청어제 손님 한 분이 조용히 들어와 “아버지 생신인데, 너무 화려하진 않았으면 해요”라고 하셨습니다. 메뉴판이 아니라, 그날의 마음을 먼저 듣는 게 우리 공방의 시작이에요.차분한 색, 부드러운 향, 손에 쥐었을 때의 무게까지 골라 드렸어요. 화려한 포장보다, 오래 두고 봐도 편한 조합을 우선합니다.어버이날 예약어버이날 시즌에는 예약이 빠르게 차는 편입니다. 픽업은 오전 10시부터 가능하고, 당일 배송은 오후에 마감될 수 있어요. 원하시는 분위기를 전화나 메시지로 말씀해 주시면, 그에 맞춰 꽃과 리본을 준비합니다.매장 픽업을 선택하시면 포장 상태를 직접 확인하실 수 있습니다. 사진으로만 고르기 어려운 분들께 특히 도움이 된다는 말을 자주 들어요.꽃이 전하는 말꽃은 선물이 아니라, 전하고 싶었던 말에 가깝다고 생각합니다. 그래서 본문에 없는 약속이나 가격은 적지 않고, 준비 과정과 마음을 담는 방향으로 글을 씁니다.해운대 근처에서 픽업하시는 분들은 주차 안내를 미리 보내 드리고 있어요. 배송을 원하시면 받으실 분의 일정을 함께 알려 주시면 일정 조율이 수월합니다.시즌 운영어버이날 전후 일주일은 작업대가 빠르게 돌아갑니다. 같은 꽃이라도 리본 색·포장지에 따라 인상이 달라지니, 참고 사진을 보내 주시면 준비가 더 정확해집니다.매장 앞 주차는 두 대까지 가능합니다. 픽업 시간 10분 전에 도착하시면 포장 상태를 함께 확인하실 수 있어요.어버이날, 말 대신 꽃으로 전하는 마음. 예약·픽업은 미리 연락 주시면 차분히 맞춰 드립니다.본문 약 579자 · 발행 전 읽기 쉽게 정리된 장문프롬프트·붙여넣기 검수는 가입 후 메뉴에서 이용할 수 있어요네 가지 채널각각 따로 쓰거나, 이야기부터 한 번에 이어갈 수 있어요이야이야기블로그·네이버용 긴 글조용히 들어온 손님의 한 마디에서 시작된 꽃다발 — 색·무게·포장까지 맞춘 이야기입니다.플레플레이스공지·한 줄 소식어버이날 예약이 빠르게 차고 있어요. 픽업·배송 일정은 미리 연락 주시면 안내드립니다.인스인스타 캡션피드·해시태그🌷 어버이날, 너무 화려하지 않은 꽃다발.프롬프롬프트썸네일·카드 문구꽃다발 공방 · 어버이날 꽃다발·픽업 예약이렇게 쓰시면 돼요브랜드와 주제를 정한 뒤, 이야기 → 플레이스 · 인스타 순으로 이어갑니다01브랜드 · 지역가게 이름과 말투를 정해 두면, 다음 글도 같은 목소리로 이어집니다.02오늘의 주제이번 주 소식 한 줄만 넣어도 글 방향이 잡혀요.03이야기 쓰기네이버형 긴 글을 먼저 씁니다. 키워드와 장면도 함께 맞춰요.04플레이스 · 인스타한 줄 공지와 캡션은 이야기를 바탕으로 짧게 정리돼요.05확인 · 복사읽기 편한지 본 뒤, 각 앱에 붙여 넣으면 됩니다.왜 브릭로그인가주제 하나로 이야기 · 플레이스 · 인스타 글을 차곡 쌓는 브랜드 글쓰기입니다01브랜드가 쌓여요말투와 주제가 겹겹이 남아, 다음 글도 같은 결로 이어져요.02한 주제, 세 채널이야기 한 번이면 플레이스 · 인스타까지 이어집니다. 필요하면 프롬프트 메뉴에서 비주얼 문구도 더할 수 있어요.03게시 전에 다듬기너무 길거나 어색한 표현을 미리 짚어 드려, 올리기 전에 마음이 편해집니다.04기록이 남는 운영지난 글 기록과 작업실에서 주제를 보고 다시 쓸 수 있어요.요금제쓰는 만큼만 골라요무료로 이야기부터 써 보세요. 채널이 늘면 플러스 · 스튜디오로 이어가면 됩니다.Free무료무료✓브랜드 1개✓월 5회 · 이야기✓도움말✓초안 기록 7일무료로 시작Plus플러스19,900원/월✓브랜드 3개✓월 15회 · 이야기·플레이스·인스타✓브랜드 톤·자료 저장✓초안 기록 30일✓업종별 표현 가이드✓비주얼 프롬프트가입 후 이용Studio스튜디오39,000원/월✓브랜드 무제한✓월 30회 · 3채널 + 프롬프트✓자료·톤 무제한✓초안 기록 무제한✓발행 전 꼼꼼 점검✓주제 추천가입 후 이용무료로 이야기 글부터 쓸 수 있습니다. 유료 전환 시 매월 결제일에 자동 갱신되며, 해지는 다음 결제일 전까지 앱에서 변경할 수 있습니다.무료로 운영 시작무료 월 5회 · 플러스 19,900원/월 · 스튜디오 39,000원/월오늘 쓸 글, 여기서 차곡 쌓기먼저 무료로 써 보시고, 채널이 늘면 플러스 · 스튜디오를 고르시면 됩니다.무료로 시작하기무료 월 5회 · 플러스 19,900원/월 · 스튜디오 39,000원/월",
+        "긴 이야기 · 한 줄 공지 · 인스타 캡션을 한곳에서 맞춰 씁니다. 확인하고 복사해 올리면 됩니다.",
+        "쓰는 순서브랜드 · 지역 → 오늘의 주제 → 이야기 쓰기 → 플레이스 · 인스타 → 복사브릭로그 · 글쓰기단계 3 / 53. 이야기 쓰기긴 글을 먼저 맞춰 씁니다 · 읽기 쉽게 다듬어 드려요말투 정리채널별 길이올리기 전 확인",
+        "말투 정리채널별 길이올리기 전 확인",
+        "말투 정리채널별 길이올리기 전 확인"
+      ],
+      "samplePoints": {
+        "center": {
+          "coords": {
+            "name": "center",
+            "x": 640,
+            "y": 400
+          },
+          "top": {
+            "tag": "DIV",
+            "id": null,
+            "className": "mx-auto mt-5 max-w-md rounded-2xl border border-[#E8EBED] bg-white px-4 py-3 text-left shadow-sm",
+            "position": "static",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "block",
+            "visibility": "visible",
+            "rect": {
+              "w": 448,
+              "h": 64,
+              "top": 398,
+              "left": 416
+            }
+          },
+          "path": [
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "mx-auto mt-5 max-w-md rounded-2xl border border-[#E8EBED] bg-white px-4 py-3 text-left shadow-sm",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 448,
+                "h": 64,
+                "top": 398,
+                "left": 416
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "relative mx-auto max-w-3xl text-center",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 768,
+                "h": 430,
+                "top": 105,
+                "left": 256
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": null,
+              "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 534,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "MAIN",
+              "id": "landing-main",
+              "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 briclog-landing-reveal opacity-100",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5181,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5181,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5246,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-0 flex-1 flex-col",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5342,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "BODY",
+              "id": null,
+              "className": "flex min-h-dvh flex-col font-sans antialiased",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5464,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "HTML",
+              "id": null,
+              "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        },
+        "sidebar": {
+          "coords": {
+            "name": "sidebar",
+            "x": 120,
+            "y": 300
+          },
+          "top": {
+            "tag": "SECTION",
+            "id": null,
+            "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+            "position": "relative",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "block",
+            "visibility": "visible",
+            "rect": {
+              "w": 1280,
+              "h": 534,
+              "top": 65,
+              "left": 0
+            }
+          },
+          "path": [
+            {
+              "tag": "SECTION",
+              "id": null,
+              "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 534,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "MAIN",
+              "id": "landing-main",
+              "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 briclog-landing-reveal opacity-100",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5181,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5181,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5246,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-0 flex-1 flex-col",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5342,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "BODY",
+              "id": null,
+              "className": "flex min-h-dvh flex-col font-sans antialiased",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5464,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "HTML",
+              "id": null,
+              "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        },
+        "main": {
+          "coords": {
+            "name": "main",
+            "x": 704,
+            "y": 300
+          },
+          "top": {
+            "tag": "P",
+            "id": null,
+            "className": "mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-[#4E5968] sm:max-w-xl sm:text-[16px]",
+            "position": "static",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "block",
+            "visibility": "visible",
+            "rect": {
+              "w": 576,
+              "h": 26,
+              "top": 285,
+              "left": 352
+            }
+          },
+          "path": [
+            {
+              "tag": "P",
+              "id": null,
+              "className": "mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-[#4E5968] sm:max-w-xl sm:text-[16px]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 576,
+                "h": 26,
+                "top": 285,
+                "left": 352
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "relative mx-auto max-w-3xl text-center",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 768,
+                "h": 430,
+                "top": 105,
+                "left": 256
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": null,
+              "className": "relative overflow-hidden px-4 pb-8 pt-6 md:px-8 md:pb-16 md:pt-10",
+              "position": "relative",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 534,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "MAIN",
+              "id": "landing-main",
+              "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 briclog-landing-reveal opacity-100",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5181,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5181,
+                "top": 65,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5246,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-0 flex-1 flex-col",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5342,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "BODY",
+              "id": null,
+              "className": "flex min-h-dvh flex-col font-sans antialiased",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5464,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "HTML",
+              "id": null,
+              "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        },
+        "header": {
+          "coords": {
+            "name": "header",
+            "x": 640,
+            "y": 40
+          },
+          "top": {
+            "tag": "DIV",
+            "id": null,
+            "className": "mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5 md:px-8 md:py-3",
+            "position": "static",
+            "zIndex": "auto",
+            "pointerEvents": "auto",
+            "opacity": "1",
+            "display": "flex",
+            "visibility": "visible",
+            "rect": {
+              "w": 1152,
+              "h": 64,
+              "top": 0,
+              "left": 64
+            }
+          },
+          "path": [
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5 md:px-8 md:py-3",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1152,
+                "h": 64,
+                "top": 0,
+                "left": 64
+              }
+            },
+            {
+              "tag": "HEADER",
+              "id": null,
+              "className": "sticky top-0 z-30 transition-opacity duration-500 briclog-landing-reveal border-b border-[#E8EBED]/80 bg-[#F7F8FA]/95 opacity-100 backdrop-blur-md",
+              "position": "sticky",
+              "zIndex": "30",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 65,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5246,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": null,
+              "className": "flex min-h-0 flex-1 flex-col",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5342,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "BODY",
+              "id": null,
+              "className": "flex min-h-dvh flex-col font-sans antialiased",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "flex",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 5464,
+                "top": 0,
+                "left": 0
+              }
+            },
+            {
+              "tag": "HTML",
+              "id": null,
+              "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+              "position": "static",
+              "zIndex": "auto",
+              "pointerEvents": "auto",
+              "opacity": "1",
+              "display": "block",
+              "visibility": "visible",
+              "rect": {
+                "w": 1280,
+                "h": 800,
+                "top": 0,
+                "left": 0
+              }
+            }
+          ]
+        }
+      },
+      "centerElement": {
+        "tag": "DIV",
+        "id": null,
+        "className": "mx-auto mt-5 max-w-md rounded-2xl border border-[#E8EBED] bg-white px-4 py-3 text-left shadow-sm",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto",
+        "opacity": "1",
+        "display": "block",
+        "visibility": "visible",
+        "rect": {
+          "w": 448,
+          "h": 64,
+          "top": 398,
+          "left": 416
+        }
+      },
+      "overlayCandidates": [
+        {
+          "tag": "HTML",
+          "id": null,
+          "className": "geist_2ae47f08-module__h69qWW__variable geist_mono_eb58308d-module__w_p2Lq__variable h-full",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 800,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "BODY",
+          "id": null,
+          "className": "flex min-h-dvh flex-col font-sans antialiased",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "flex",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5464,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "flex min-h-0 flex-1 flex-col",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "flex",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5342,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5246,
+            "top": 0,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "DIV",
+          "id": null,
+          "className": "@container mx-auto w-full transition-[max-width] duration-300 ease-out  ",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5181,
+            "top": 65,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "MAIN",
+          "id": "landing-main",
+          "className": "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 briclog-landing-reveal opacity-100",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 5181,
+            "top": 65,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "SECTION",
+          "id": "landing-sample",
+          "className": "scroll-mt-20 bg-white px-4 py-12 md:px-8 md:py-16",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 939,
+            "top": 1436,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        },
+        {
+          "tag": "SECTION",
+          "id": "pricing",
+          "className": "border-t border-[#E8EBED] bg-white px-4 py-16 md:px-8",
+          "position": "static",
+          "zIndex": "auto",
+          "pointerEvents": "auto",
+          "opacity": "1",
+          "display": "block",
+          "visibility": "visible",
+          "rect": {
+            "w": 1280,
+            "h": 748,
+            "top": 4174,
+            "left": 0
+          },
+          "coversViewport": true,
+          "blocksClicks": true,
+          "role": null,
+          "ariaHidden": null
+        }
+      ],
+      "blockingOverlays": []
+    }
+  },
+  "introDismiss": "dismissed",
+  "loginAttempt": "skipped — set BRICLOG_TEST_EMAIL and BRICLOG_TEST_PASSWORD in .env.local for post-login phase",
+  "diff": null
+}
