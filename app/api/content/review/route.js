@@ -17,6 +17,7 @@ import {
 import { logError } from "@/lib/api/logEvent";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
+import { applySignatureResearchServer } from "@/lib/content/applySignatureResearchServer";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -141,11 +142,36 @@ export async function POST(request) {
       personalizationAddon = personalization.combinedPromptAddon || "";
     }
 
+    let signatureBrief = "";
+    const topic =
+      String(body.topic || "").trim() ||
+      String(body.mainKeyword || "").trim();
+    if (body.brandName?.trim() && body.region?.trim() && topic) {
+      const sig = await applySignatureResearchServer(
+        {
+          brandName: body.brandName,
+          region: body.region,
+          topic,
+          mainKeyword: body.mainKeyword,
+          industry: body.industry,
+          brandDescription: body.brandDescription,
+          brandMemory: body.brandMemory,
+        },
+        channelId === "instagram" ? "instagram" : channelId === "place" ? "place" : "blog"
+      );
+      if (sig.ok) {
+        signatureBrief = sig.input?.v3MasterBrief || sig.input?.v2AxisBrief || "";
+      }
+    }
+
     const improved = await improvePastedDraft({
       text,
       channel: channelId,
       ...ctx,
+      topic,
       personalizationAddon,
+      signatureBrief,
+      v3MasterBrief: signatureBrief,
       issueHints: [
         ...audit.issues.map((i) => i.message),
         ...extraHints.filter(Boolean),

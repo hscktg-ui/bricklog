@@ -97,9 +97,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   } = useContentPipelineState();
 
   const storyBusy =
-    generating.blog ||
-    blogResultRevealPending ||
-    Boolean(loadingOverlay?.active);
+    generating.blog || Boolean(loadingOverlay?.active);
 
   const { usage: billingUsage, phase: billingPhase } = useBillingUsage();
   const { simpleMode } = useSimpleWorkspaceMode(userId);
@@ -772,14 +770,14 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 <p className="text-[14px] font-semibold text-[#191F28]">
                   {blogGenHintSoft
                     ? "조금 더 시간이 필요해요"
-                    : "다시 시도해 주세요"}
+                    : "입력을 확인해 주세요"}
                 </p>
                 <p className="mt-2 text-[13px] leading-relaxed text-[#4E5968]">
                   {blogGenHint}
                 </p>
                 {!blogGenHintIsAuth ? (
                   <p className="mt-3 text-[12px] text-[#8B95A1]">
-                    왼쪽에서 「이야기 쓰기」를 다시 눌러 주세요.
+                    왼쪽 폼에서 「이야기 쓰기」로 이어갈 수 있어요.
                   </p>
                 ) : null}
               </div>
