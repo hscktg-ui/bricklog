@@ -21,6 +21,8 @@ import { saveChannelGenPref } from "@/lib/preferences/channelGenerationPrefs";
 import ChannelGenPrefToggle, {
   useChannelPreferStandalone,
 } from "@/components/channels/ChannelGenPrefToggle";
+import ChannelCapabilityCards from "@/components/channels/ChannelCapabilityCards";
+import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 
 const ICON_MAP = {
   blog: "document",
@@ -202,6 +204,16 @@ export default function ChannelStartScreen({
           <p className="rounded-xl border border-[#03C75A]/25 bg-[#F0FFF5] px-3 py-2.5 text-[12px] leading-relaxed text-[#03A94D]">
             {linkBanner}
           </p>
+        )}
+
+        {generating ? (
+          <GeneratingResultPlaceholder
+            compact={compact}
+            phase="writing"
+            channelLabel={product.menuLabel}
+          />
+        ) : (
+          <ChannelCapabilityCards channel={channel} compact={compact} />
         )}
 
         <div

@@ -49,7 +49,6 @@ import {
 } from "@/lib/formValidation";
 import { isClientBetaActive } from "@/lib/billing/betaAccessClient";
 import {
-  generateBlogPipelineAsync,
   generateResearchAsync,
   runPlacePipeline,
   runInstagramPipeline,
@@ -110,8 +109,15 @@ import {
 import { AUTO_RUN_PROMPT_ON_BLOG } from "@/lib/channels/channelProducts";
 import { isAutoPipelineAfterBlog } from "@/lib/config/productFlags";
 import { setGenerationSessionActive } from "@/lib/generation/generationSession";
+import {
+  stashPendingBlogResult,
+  clearPendingBlogResult,
+  restorePendingBlogResult,
+} from "@/lib/generation/pendingBlogRecovery";
 import { emitBrandFormSync } from "@/lib/workspace/brandFormSync";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
+import { ensureBlogDelivery } from "@/lib/generation/ensureBlogDelivery";
+import { normalizeBlogGenerationFailure } from "@/lib/generation/normalizeGenerationError";
 
 const ContentContext = createContext(null);
 const ContentFormContext = createContext(null);
@@ -235,7 +241,9 @@ export function ContentProvider({
   });
   const [blogGenHint, setBlogGenHint] = useState(null);
   const [blogGenHintIsAuth, setBlogGenHintIsAuth] = useState(false);
+  const [blogGenHintSoft, setBlogGenHintSoft] = useState(false);
   const [researchResult, setResearchResult] = useState(null);
+  const [blogResultRevealPending, setBlogResultRevealPending] = useState(false);
   const personalizationRef = useRef(null);
   const overlayFinishTimers = useRef([]);
 
@@ -249,6 +257,7 @@ export function ContentProvider({
     blogGenLock.current = false;
     setGenerationSessionActive(false);
     setGenerating(INITIAL_GENERATING);
+    setBlogResultRevealPending(false);
     setLoadingOverlay({
       active: false,
       channel: "blog",
@@ -278,10 +287,51 @@ export function ContentProvider({
   }, [user?.id, dismissLoadingOverlay]);
 
   useEffect(() => {
-    if (!loadingOverlay.active) return undefined;
-    const id = window.setTimeout(dismissLoadingOverlay, 90_000);
+    if (!user?.id || blogContent) return;
+    const restored = restorePendingBlogResult(user.id);
+    if (!restored?.blog) return;
+    setBlogContent(restored.blog);
+    if (restored.baseContentLabel) {
+      setBaseContentLabel(restored.baseContentLabel);
+    }
+    if (restored.sourceChannel) {
+      setSourceChannel(restored.sourceChannel);
+    }
+    clearPendingBlogResult();
+    onToast?.("방금 작성한 이야기를 복구해 표시했습니다.", "info");
+  }, [user?.id, blogContent, onToast]);
+
+  const acknowledgeBlogResultDisplayed = useCallback(() => {
+    setBlogResultRevealPending(false);
+    setGenerating((g) => ({ ...g, blog: false }));
+    setGenerationSessionActive(false);
+    blogGenLock.current = false;
+    clearPendingBlogResult();
+  }, []);
+
+  useEffect(() => {
+    if (!blogResultRevealPending || !blogContent) return undefined;
+    const id = window.setTimeout(() => acknowledgeBlogResultDisplayed(), 5000);
     return () => window.clearTimeout(id);
-  }, [loadingOverlay.active, dismissLoadingOverlay]);
+  }, [blogResultRevealPending, blogContent, acknowledgeBlogResultDisplayed]);
+
+  useEffect(() => {
+    if (!loadingOverlay.active) return undefined;
+    const est = loadingOverlay.estimatedMs || 120_000;
+    const warnAt = est + 45_000;
+    const warnId = window.setTimeout(() => {
+      setLoadingOverlay((prev) =>
+        prev.active && !prev.complete
+          ? {
+              ...prev,
+              stepLabel:
+                "조금 더 걸리고 있어요. 이 화면을 유지한 채 기다려 주세요.",
+            }
+          : prev
+      );
+    }, warnAt);
+    return () => window.clearTimeout(warnId);
+  }, [loadingOverlay.active, loadingOverlay.estimatedMs]);
 
   useEffect(() => {
     fetch("/api/content/status")
@@ -315,6 +365,7 @@ export function ContentProvider({
         revealSuccess = false,
         revealMs = 450,
         completeMessage = null,
+        toastType = "success",
       } = {}
     ) => {
       clearOverlayFinishTimers();
@@ -322,6 +373,7 @@ export function ContentProvider({
         if (success) {
           setBlogGenHint(null);
           setBlogGenHintIsAuth(false);
+          setBlogGenHintSoft(false);
         } else {
           setBlogGenHint(message || null);
           setBlogGenHintIsAuth(
@@ -333,7 +385,7 @@ export function ContentProvider({
       }
       if (!success) {
         dismissLoadingOverlay();
-        if (message) onToast?.(message, "error");
+        if (message) onToast?.(message, toastType === "error" ? "error" : "info");
         return;
       }
       if (revealSuccess) {
@@ -362,6 +414,13 @@ export function ContentProvider({
             peekResults: false,
             quietSuccess: false,
           });
+          if (channel === "blog" || channel === "pipeline") {
+            const tReveal = window.setTimeout(
+              () => setBlogResultRevealPending(false),
+              520
+            );
+            overlayFinishTimers.current.push(tReveal);
+          }
         }, revealMs);
         overlayFinishTimers.current.push(tDismiss);
         if (!quietSuccess) {
@@ -558,6 +617,8 @@ export function ContentProvider({
   }, []);
 
   const resetToHome = useCallback(() => {
+    setBlogResultRevealPending(false);
+    clearPendingBlogResult();
     setBlogContent(null);
     setBaseContentLabel(null);
     setSourceChannel(null);
@@ -716,11 +777,13 @@ export function ContentProvider({
     blogGenLock.current = true;
     setBlogGenHint(null);
     setBlogGenHintIsAuth(false);
+    setBlogResultRevealPending(false);
     setGenerationSessionActive(true);
     const startedAt = Date.now();
     const overlayChannel = runChannelPack ? "pipeline" : "blog";
     const estimatedMs = estimateBlogGenerationMs(input, {
       blogOnly: !runChannelPack,
+      withDefaultResearch: true,
     });
     const setPipelineStep = (stepLabel) =>
       setLoadingOverlay((prev) => ({
@@ -799,7 +862,7 @@ export function ContentProvider({
       let researchStorage = null;
       try {
         if (input.researchEnabled && input.researchQuery?.trim()) {
-          setPipelineStep("자료조사 중...");
+          setPipelineStep("브랜드·주제 맞춤 자료 확인 중…");
           try {
             researchStorage = await applyResearchToPipeline({
               pipelineInput,
@@ -822,7 +885,7 @@ export function ContentProvider({
         } else {
           const defaultQuery = buildDefaultResearchQuery(input);
           if (defaultQuery.length >= 2) {
-            setPipelineStep("자료조사 중…");
+            setPipelineStep("브랜드·주제 맞춤 자료 확인 중…");
             try {
               researchStorage = await applyResearchToPipeline({
                 pipelineInput,
@@ -857,7 +920,10 @@ export function ContentProvider({
         }
         setPipelineStep("블로그 작성 중...");
         const [result, ensuredBrand] = await Promise.all([
-          generateBlogPipelineAsync(pipelineInput),
+          ensureBlogDelivery(pipelineInput, {
+            setPipelineStep,
+            onRetry: () => setPipelineStep("다시 이어서 쓰는 중…"),
+          }),
           brandEnsureTask,
         ]);
         if (ensuredBrand?.id) {
@@ -873,22 +939,13 @@ export function ContentProvider({
         if (sensitive.isSensitive) {
           setPipelineStep(SENSITIVE_VERIFY_STEP.text);
         }
-        if (!result.blogContent) {
-          finishLoadingOverlay("blog", startedAt, {
-            success: false,
-            message:
-              result.mode === "brief_only"
-                ? result.userMessage || LLM_USER_MESSAGES.engineNotConnected
-                : result.userMessage || LLM_USER_MESSAGES.qualityWithheld,
-          });
-          return;
-        }
         let blog = result.blogContent;
-        if (!blog) {
+        if (!blog?.sections?.length) {
           finishLoadingOverlay("blog", startedAt, {
             success: false,
             message:
-              result.userMessage || LLM_USER_MESSAGES.engineNotConnected,
+              "글을 화면에 올리지 못했습니다. 같은 주제로 다시 「이야기 쓰기」를 눌러 주세요.",
+            toastType: "info",
           });
           return;
         }
@@ -925,29 +982,33 @@ export function ContentProvider({
           },
         };
         blog._initialPlain = extractBlogPlainText(blog);
-        isFullBlog = result.mode === "llm" && !blog._meta?.isBriefOnly;
+        isFullBlog =
+          (result.mode === "llm" || result.mode === "draft_fallback") &&
+          !blog._meta?.isBriefOnly &&
+          !blog._meta?.draftFallback;
 
         const deliverBlogResult = () => {
+          const nextSource =
+            blogDerive?.sourceChannel && blogDerive.sourceChannel !== "blog"
+              ? blogDerive.sourceChannel
+              : "blog";
+          stashPendingBlogResult(user?.id, {
+            blog,
+            baseContentLabel: result.baseContentLabel,
+            sourceChannel: nextSource,
+          });
           flushSync(() => {
             setBlogContent(blog);
             setBaseContentLabel(result.baseContentLabel);
-            setSourceChannel(
-              blogDerive?.sourceChannel && blogDerive.sourceChannel !== "blog"
-                ? blogDerive.sourceChannel
-                : "blog"
-            );
+            setSourceChannel(nextSource);
             clearDerived();
-            setGenerating((g) => ({ ...g, blog: false }));
+            setBlogResultRevealPending(true);
           });
           overlaySuccess = true;
-          blogGenLock.current = false;
-          setGenerationSessionActive(false);
           finishLoadingOverlay(overlayChannel, startedAt, {
             success: true,
-            revealSuccess: true,
+            immediate: true,
             quietSuccess: true,
-            completeMessage: "이야기가 준비됐어요. 잠시 후 표시됩니다",
-            revealMs: 750,
           });
         };
 
@@ -1183,17 +1244,15 @@ export function ContentProvider({
 
         void runPostBlogTail();
       } catch (err) {
-        const msg =
-          err?.status === 401
-            ? "로그인이 필요합니다. 다시 로그인한 뒤 이야기 쓰기를 눌러 주세요."
-            : err?.status === 429
-              ? err?.message || "이번 달 사용 한도에 도달했습니다."
-              : err?.message || "블로그 생성 중 오류가 발생했습니다.";
-        onToast?.(msg, err?.status === 429 ? "info" : "error");
-        finishLoadingOverlay("blog", startedAt, {
+        const norm = normalizeBlogGenerationFailure(err);
+        setBlogGenHint(norm.message);
+        setBlogGenHintSoft(norm.soft);
+        setBlogGenHintIsAuth(err?.status === 401 || err?.status === 403);
+        finishLoadingOverlay(overlayChannel, startedAt, {
           success: false,
-          message: msg,
+          message: norm.message,
           hintIsAuth: err?.status === 401 || err?.status === 403,
+          toastType: norm.toastType,
         });
       } finally {
         if (!overlaySuccess) {
@@ -2207,6 +2266,7 @@ export function ContentProvider({
       llmStatus,
       blogGenHint,
       blogGenHintIsAuth,
+      blogGenHintSoft,
       pipelineReady,
       isBusy,
       channelStartReady,
@@ -2226,6 +2286,8 @@ export function ContentProvider({
       editorImprove: applyEditorImprove,
       editorImproving,
       loadingOverlay,
+      blogResultRevealPending,
+      acknowledgeBlogResultDisplayed,
       researchResult,
       clearResearchResult: () => setResearchResult(null),
       clearDerived,
@@ -2256,6 +2318,7 @@ export function ContentProvider({
       llmStatus,
       blogGenHint,
       blogGenHintIsAuth,
+      blogGenHintSoft,
       researchResult,
       pipelineReady,
       isBusy,
@@ -2275,6 +2338,8 @@ export function ContentProvider({
       applyEditorImprove,
       editorImproving,
       loadingOverlay,
+      blogResultRevealPending,
+      acknowledgeBlogResultDisplayed,
       clearDerived,
       resetToHome,
       getSnapshot,

@@ -71,6 +71,27 @@ export default function ResearchResultPanel({ result, query = "", types = [] }) 
           </div>
         ) : null}
 
+        {(result.channelInsights || []).length > 0 ? (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8B95A1]">
+              채널별 참고 (국내·해외)
+            </p>
+            <ul className="mt-1.5 space-y-2 text-[12px] leading-relaxed text-[#4E5968]">
+              {result.channelInsights.map((row, i) => (
+                <li
+                  key={`${row.channel}-${i}`}
+                  className="rounded-lg bg-white px-3 py-2 ring-1 ring-[#E8EBED]"
+                >
+                  <span className="font-semibold text-[#191F28]">
+                    {row.channel || "채널"}
+                  </span>
+                  <p className="mt-0.5">{row.finding || row.note}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         {(result.competitors || []).length > 0 ? (
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8B95A1]">

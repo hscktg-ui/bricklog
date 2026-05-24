@@ -16,6 +16,7 @@ import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import StickyCopyBar from "@/components/StickyCopyBar";
 import MobileSecondaryAccordion from "@/components/MobileSecondaryAccordion";
 import Icon from "@/components/Icon";
+import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import {
   useContentForm,
   useContentPipelineState,
@@ -232,7 +233,13 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
             {placeContent._meta.baseLabel}
           </p>
         )}
-        {placeContent ? (
+        {generating.place ? (
+          <GeneratingResultPlaceholder
+            compact={compact}
+            phase="writing"
+            channelLabel="플레이스"
+          />
+        ) : placeContent ? (
           <>
             {!showStickyCopy && (
               <div className="mb-4 flex justify-end">

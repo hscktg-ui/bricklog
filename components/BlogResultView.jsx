@@ -43,6 +43,7 @@ export default function BlogResultView({
   editorImproving = false,
   blogInput = null,
   onFeedbackReflected,
+  onResultDisplayed,
   conciseView = false,
 }) {
   const [draft, setDraft] = useState(blog);
@@ -53,20 +54,21 @@ export default function BlogResultView({
   const [showSubheadings, setShowSubheadings] = useState(
     blog?._meta?.includeSubheadings !== false
   );
-  const [contentRevealed, setContentRevealed] = useState(false);
   const blogRevealKey =
     blog?.id ||
     blog?._meta?.generatedAt ||
     blog?._meta?.savedAt ||
     blog?.representativeTitle;
+  const [contentRevealed, setContentRevealed] = useState(true);
 
   useEffect(() => {
-    setContentRevealed(false);
+    setContentRevealed(true);
+    if (!blog) return undefined;
     const frame = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setContentRevealed(true));
+      onResultDisplayed?.();
     });
     return () => cancelAnimationFrame(frame);
-  }, [blogRevealKey]);
+  }, [blogRevealKey, blog, onResultDisplayed]);
 
   useEffect(() => {
     setDraft(blog);
@@ -173,7 +175,7 @@ export default function BlogResultView({
 
   return (
     <div
-      className={`space-y-3 transition-opacity duration-500 ease-out ${
+      className={`space-y-3 transition-opacity duration-200 ease-out ${
         contentRevealed ? "opacity-100" : "opacity-0"
       }`}
     >

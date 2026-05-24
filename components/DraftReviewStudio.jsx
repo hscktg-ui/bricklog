@@ -14,6 +14,7 @@ import { resolveBlogLengthTier } from "@/lib/constants";
 import FullCopyButton from "@/components/FullCopyButton";
 import { persistReviewDraft } from "@/lib/review/persistReviewDraft";
 import BrandDraftHistoryStrip from "@/components/review/BrandDraftHistoryStrip";
+import PasteReviewGuide from "@/components/review/PasteReviewGuide";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 
 const EMPTY_FIELDS = {
@@ -419,11 +420,14 @@ export default function DraftReviewStudio({
               2. 검수 결과 <span className="font-normal text-[#8B95A1]">(무료)</span>
             </h2>
             {!audit ? (
-              <p className="mt-2 text-[13px] text-[#8B95A1]">
-                {canAudit
-                  ? "점검 중…"
-                  : `글을 ${channelConfig.auditMinChars}자 이상 붙이면 자동으로 점검합니다.`}
-              </p>
+              <div className="mt-2 space-y-3">
+                <p className="text-[13px] text-[#8B95A1]">
+                  {canAudit
+                    ? "점검 중…"
+                    : `글을 ${channelConfig.auditMinChars}자 이상 붙이면 자동으로 점검합니다.`}
+                </p>
+                {!canAudit ? <PasteReviewGuide /> : null}
+              </div>
             ) : (
               <>
                 <div className="mt-2 flex flex-wrap items-center gap-2">

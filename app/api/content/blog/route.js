@@ -12,9 +12,11 @@ import {
 import { logError } from "@/lib/api/logEvent";
 import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
+import { buildDeliverableBlogFallback } from "@/lib/llm/blogDeliveryFallback";
+import { enrichMinimalBlogInput } from "@/lib/llm/blogDeliveryFallback";
 
 export const runtime = "nodejs";
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 const MAX_PER_MIN =
   Number(process.env.BRICLOG_BLOG_RATE_LIMIT_PER_MIN) || 8;
@@ -60,8 +62,10 @@ export async function POST(request) {
     );
   }
 
+  let savedInput = {};
   try {
     const input = await request.json();
+    savedInput = input;
     input.billingPlan = entitlement.usage?.planId || "free";
     let personalization = null;
     if (input.brandId || input.brandMemory) {
@@ -111,18 +115,44 @@ export async function POST(request) {
       message: err.message,
       accessToken: auth.token,
     });
-    return NextResponse.json(
-      {
-        ok: false,
-        mode: "error",
+    try {
+      const enriched = enrichMinimalBlogInput(savedInput);
+      const { pack } = buildDeliverableBlogFallback({
+        input: enriched,
+        prep: { ok: false, reason: "server_error" },
+        failures: ["server_error"],
+      });
+      return NextResponse.json({
+        ok: true,
+        mode: "draft_fallback",
         llmAvailable: false,
-        userMessage: mapServiceError("ai_generate"),
-        error:
-          process.env.NODE_ENV === "development"
-            ? String(err.message)
-            : undefined,
-      },
-      { status: 500 }
-    );
+        blogContent: pack,
+        softPass: true,
+        withheld: false,
+        meta: {
+          generationMode: "server_error_fallback",
+          draftFallback: true,
+          blogCharCount: pack._meta?.charCount,
+        },
+        userMessage: null,
+        userDetail: mapServiceError("ai_generate"),
+        baseContentLabel: null,
+      });
+    } catch (fallbackErr) {
+      console.error("[api/content/blog] fallback", fallbackErr);
+      return NextResponse.json(
+        {
+          ok: false,
+          mode: "error",
+          llmAvailable: false,
+          userMessage: mapServiceError("ai_generate"),
+          error:
+            process.env.NODE_ENV === "development"
+              ? String(err.message)
+              : undefined,
+        },
+        { status: 500 }
+      );
+    }
   }
 }

@@ -48,6 +48,8 @@ import {
 } from "@/lib/onboarding/resolveQuickDemoInput";
 import ChannelPackToggle from "@/components/blog/ChannelPackToggle";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
+import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
+import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
 import QuotaExhaustedCallout from "@/components/billing/QuotaExhaustedCallout";
 import { useBillingUsage } from "@/hooks/useBillingUsage";
@@ -90,7 +92,14 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     demoMode,
     billingPlanId,
     billingBypassQuotas,
+    blogResultRevealPending,
+    loadingOverlay,
   } = useContentPipelineState();
+
+  const storyBusy =
+    generating.blog ||
+    blogResultRevealPending ||
+    Boolean(loadingOverlay?.active);
 
   const { usage: billingUsage, phase: billingPhase } = useBillingUsage();
   const { simpleMode } = useSimpleWorkspaceMode(userId);
@@ -310,13 +319,19 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             </>
           )}
 
+          {storyBusy && (
+            <div className={`${compact ? "mt-3" : "mt-4"}`}>
+              <GenerationStayBanner variant="form" />
+            </div>
+          )}
+
           <div
             className={`${compact ? "mt-3" : "mt-5"} ${
-              generating.blog ? "pointer-events-none opacity-55" : ""
+              storyBusy ? "pointer-events-none opacity-55" : ""
             }`}
-            aria-busy={generating.blog || undefined}
+            aria-busy={storyBusy || undefined}
           >
-            {generating.blog && (
+            {generating.blog && !blogContent && (
               <p className="mb-3 rounded-lg border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 text-[12px] leading-relaxed text-[#8B95A1]">
                 {WORKSPACE_BLOG.generatingNote}
               </p>
@@ -369,20 +384,24 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             type="button"
             disabled={
               !formValidNow ||
-              generating.blog ||
+              storyBusy ||
               needsEmailVerify ||
               quotaExhausted
             }
             onClick={runGenerate}
             className="briclog-btn-primary mt-6 disabled:opacity-50"
           >
-            {generating.blog ? (
+            {storyBusy ? (
               <span className="inline-flex items-center justify-center gap-2">
                 <span
                   className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
                   aria-hidden
                 />
-                <span>{WORKSPACE_BLOG.ctaBusy}</span>
+                <span>
+                  {blogContent && blogResultRevealPending
+                    ? "표시 중…"
+                    : WORKSPACE_BLOG.ctaBusy}
+                </span>
               </span>
             ) : (
               <span className="inline-flex items-center justify-center gap-2">
@@ -471,7 +490,10 @@ const BlogEditorResults = memo(function BlogEditorResults({
     generating,
     blogGenHint,
     blogGenHintIsAuth,
+    blogGenHintSoft,
     loadingOverlay,
+    blogResultRevealPending,
+    acknowledgeBlogResultDisplayed,
     updateBlogContent,
     saveEditedBlog,
     updatePlaceContent,
@@ -509,20 +531,34 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogContent.fullCopyText &&
     (isMobile || (isTablet && concise));
 
-  const isStoryInFlight =
-    generating.blog || Boolean(loadingOverlay?.active);
+  const showResultPlaceholder =
+    !blogContent &&
+    (generating.blog ||
+      Boolean(loadingOverlay?.active) ||
+      blogResultRevealPending);
+
+  useEffect(() => {
+    if (!blogContent) return;
+    resultScrollRef.current?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+  }, [blogContent]);
 
   return (
       <div
+        ref={resultScrollRef}
         className={`workspace-result-scroll relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#F7F8FA] p-4 md:p-6 lg:p-8 ${
           showStickyCopy ? "has-sticky-copy" : ""
         } ${hideFormPanel ? "" : ""}`}
       >
-        {isStoryInFlight ? (
+        {blogResultRevealPending && blogContent ? (
+          <div className="mb-4">
+            <GenerationStayBanner variant="result" />
+          </div>
+        ) : null}
+        {showResultPlaceholder ? (
           <GeneratingResultPlaceholder
             compact={compact}
-            phase={blogContent ? "revealing" : "writing"}
-            previewTitle={blogContent?.representativeTitle || null}
+            phase="writing"
+            previewTitle={null}
           />
         ) : blogContent ? (
           <>
@@ -555,6 +591,11 @@ const BlogEditorResults = memo(function BlogEditorResults({
             )}
             {resultTab === "blog" && (
               <>
+                {simpleMode && researchResult?.summary ? (
+                  <p className="mb-4 rounded-xl border border-[#03C75A]/20 bg-[#F0FFF5] px-4 py-3 text-[12px] leading-relaxed text-[#03A94D]">
+                    브랜드·주제에 맞춰 참고 자료를 반영해 작성했습니다.
+                  </p>
+                ) : null}
                 {!simpleMode && (
                 <ResearchResultPanel
                   result={researchResult}
@@ -587,6 +628,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 <BlogResultView
                   blog={blogContent}
                   billingPlanId={billingPlanId}
+                  onResultDisplayed={acknowledgeBlogResultDisplayed}
                   conciseView={concise && (isMobile || isTablet)}
                   onCopy={(text) => {
                     onCopy?.(text);
@@ -687,16 +729,24 @@ const BlogEditorResults = memo(function BlogEditorResults({
         ) : (
           <div className="mx-auto flex max-w-lg flex-col justify-center py-16">
             {blogGenHint ? (
-              <div className="rounded-2xl border border-[#FFE0B2] bg-[#FFF8E6] px-5 py-4 text-center">
+              <div
+                className={`rounded-2xl border px-5 py-4 text-center ${
+                  blogGenHintSoft
+                    ? "border-[#03C75A]/25 bg-[#F0FFF5]"
+                    : "border-[#FFE0B2] bg-[#FFF8E6]"
+                }`}
+              >
                 <p className="text-[14px] font-semibold text-[#191F28]">
-                  이번에는 글이 나오지 않았어요
+                  {blogGenHintSoft
+                    ? "조금 더 시간이 필요해요"
+                    : "다시 시도해 주세요"}
                 </p>
                 <p className="mt-2 text-[13px] leading-relaxed text-[#4E5968]">
                   {blogGenHint}
                 </p>
                 {!blogGenHintIsAuth ? (
                   <p className="mt-3 text-[12px] text-[#8B95A1]">
-                    브랜드명 · 지역 · 주제를 확인한 뒤 왼쪽에서 다시 시도해 주세요.
+                    왼쪽에서 「이야기 쓰기」를 다시 눌러 주세요.
                   </p>
                 ) : null}
               </div>
@@ -730,7 +780,22 @@ export default function BlogEditor({
   onPlanChange,
 }) {
   const { activeBrand } = useBrandWorkspace();
-  const { blogContent, billingPlanId } = useContentPipelineState();
+  const {
+    blogContent,
+    billingPlanId,
+    generating,
+    loadingOverlay,
+    blogResultRevealPending,
+  } = useContentPipelineState();
+
+  const leaveGuardActive =
+    generating.blog ||
+    blogResultRevealPending ||
+    (loadingOverlay?.active &&
+      (loadingOverlay.channel === "blog" ||
+        loadingOverlay.channel === "pipeline"));
+
+  useGenerationLeaveGuard(leaveGuardActive);
   const { isMobile } = useViewport();
   const { compact } = useWorkspaceCompact();
   const { concise } = useChannelLayoutMode("blog");
@@ -741,6 +806,20 @@ export default function BlogEditor({
       setFormOpen(false);
     }
   }, [blogContent, isMobile, concise]);
+
+  useEffect(() => {
+    if (
+      isMobile &&
+      (generating.blog || loadingOverlay?.active || blogResultRevealPending)
+    ) {
+      setFormOpen(false);
+    }
+  }, [
+    isMobile,
+    generating.blog,
+    loadingOverlay?.active,
+    blogResultRevealPending,
+  ]);
 
   const hideFormPanel = isMobile && concise && blogContent && !formOpen;
 

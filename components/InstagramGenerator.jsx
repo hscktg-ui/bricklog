@@ -15,6 +15,7 @@ import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import StickyCopyBar from "@/components/StickyCopyBar";
 import MobileSecondaryAccordion from "@/components/MobileSecondaryAccordion";
 import Icon from "@/components/Icon";
+import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import {
   useContentForm,
   useContentPipelineState,
@@ -238,7 +239,13 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
             {instagramContent._meta.baseLabel}
           </p>
         )}
-        {instagramContent ? (
+        {generating.instagram ? (
+          <GeneratingResultPlaceholder
+            compact={compact}
+            phase="writing"
+            channelLabel="인스타 캡션"
+          />
+        ) : instagramContent ? (
           <>
             {!showStickyCopy && (
               <div className="mb-4 flex justify-end">

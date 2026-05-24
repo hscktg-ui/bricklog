@@ -6,12 +6,15 @@ export default function GeneratingResultPlaceholder({
   compact = false,
   phase = "writing",
   previewTitle = null,
+  channelLabel = "이야기",
 }) {
   const revealing = phase === "revealing";
-  const title = revealing ? "이야기를 표시하는 중…" : "이야기를 쓰는 중…";
+  const title = revealing
+    ? `${channelLabel} 표시 중…`
+    : `${channelLabel} 작성 중…`;
   const body = revealing
-    ? "잠시만 기다려 주세요. 곧 이 영역에 완성본이 나타납니다."
-    : "브랜드·주제를 바탕으로 자료를 확인한 뒤 글을 쓰고 있어요.";
+    ? "완성본을 불러오는 중입니다. 화면이 비어 보여도 정상이에요."
+    : "브랜드·주제에 맞는 정보를 확인한 뒤, 요청하신 톤으로 글을 쓰고 있어요.";
 
   return (
     <div
