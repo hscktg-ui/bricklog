@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useContentPipelineState } from "@/context/ContentContext";
 import { runClickBlockerDiagnostics } from "@/lib/dev/clickBlockerDiagnostics";
 import { isClickDebugEnabled } from "@/lib/dev/debugStateRegistry";
+import { GENERATION_ACTIVE_EVENT } from "@/lib/generation/generationSession";
 
 function describeClickTarget(target) {
   const t = target;
@@ -25,8 +26,7 @@ function describeClickTarget(target) {
 
 export default function ClickBlockerDebugPanel() {
   const { generating, loadingOverlay } = useContentPipelineState();
-  const hideDuringGeneration =
-    Boolean(generating?.blog) || Boolean(loadingOverlay?.active);
+  const [generationSessionActive, setGenerationSessionActive] = useState(false);
   const [open, setOpen] = useState(false);
   const [report, setReport] = useState(null);
   const [lastClick, setLastClick] = useState(null);
@@ -68,6 +68,32 @@ export default function ClickBlockerDebugPanel() {
     window.addEventListener("briclog-click-captured", onCaptured);
     return () => window.removeEventListener("briclog-click-captured", onCaptured);
   }, []);
+
+  useEffect(() => {
+    if (!isClickDebugEnabled()) return undefined;
+    const onSession = (e) => {
+      setGenerationSessionActive(Boolean(e.detail?.active));
+    };
+    window.addEventListener(GENERATION_ACTIVE_EVENT, onSession);
+    return () => window.removeEventListener(GENERATION_ACTIVE_EVENT, onSession);
+  }, []);
+
+  const hideDuringGeneration =
+    generationSessionActive ||
+    Boolean(loadingOverlay?.active) ||
+    Boolean(
+      generating?.blog ||
+        generating?.place ||
+        generating?.instagram ||
+        generating?.image
+    );
+
+  useEffect(() => {
+    if (!hideDuringGeneration || !open) return;
+    setOpen(false);
+    setCaptureArmed(false);
+    window.__BRICLOG_DEBUG_CAPTURE_CLICK__ = false;
+  }, [hideDuringGeneration, open]);
 
   useEffect(() => {
     if (!isClickDebugEnabled()) return undefined;

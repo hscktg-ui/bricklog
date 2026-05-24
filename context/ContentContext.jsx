@@ -104,9 +104,8 @@ import {
 import { buildImageGenerationContext } from "@/lib/images/imagePurposeConfig";
 import { applyResearchToPipeline } from "@/lib/research/applyResearchToPipeline";
 import {
-  buildAutoResearchQuery,
+  buildDefaultResearchQuery,
   defaultAutoResearchTypes,
-  needsOnlineResearch,
 } from "@/lib/research/needsOnlineResearch";
 import { AUTO_RUN_PROMPT_ON_BLOG } from "@/lib/channels/channelProducts";
 import { isAutoPipelineAfterBlog } from "@/lib/config/productFlags";
@@ -821,21 +820,14 @@ export function ContentProvider({
             return;
           }
         } else {
-          const autoQuery = buildAutoResearchQuery(input);
-          if (autoQuery.length >= 4) {
-            const autoTypes = defaultAutoResearchTypes();
-            setPipelineStep("자료조사 중...");
-            if (needsOnlineResearch(input)) {
-              onToast?.(
-                "생소한 주제·용어가 있어 온라인 자료를 참고해 작성합니다",
-                "info"
-              );
-            }
+          const defaultQuery = buildDefaultResearchQuery(input);
+          if (defaultQuery.length >= 2) {
+            setPipelineStep("자료조사 중…");
             try {
               researchStorage = await applyResearchToPipeline({
                 pipelineInput,
-                query: autoQuery,
-                types: autoTypes,
+                query: defaultQuery,
+                types: defaultAutoResearchTypes(input),
                 generateResearchAsync,
                 setResearchResult,
               });
@@ -954,8 +946,8 @@ export function ContentProvider({
             success: true,
             revealSuccess: true,
             quietSuccess: true,
-            completeMessage: "이야기가 준비됐어요",
-            revealMs: 450,
+            completeMessage: "이야기가 준비됐어요. 잠시 후 표시됩니다",
+            revealMs: 750,
           });
         };
 

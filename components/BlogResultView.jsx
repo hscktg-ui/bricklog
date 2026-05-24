@@ -173,7 +173,7 @@ export default function BlogResultView({
 
   return (
     <div
-      className={`space-y-3 transition-opacity duration-[400ms] ease-out ${
+      className={`space-y-3 transition-opacity duration-500 ease-out ${
         contentRevealed ? "opacity-100" : "opacity-0"
       }`}
     >

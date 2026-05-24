@@ -509,8 +509,8 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogContent.fullCopyText &&
     (isMobile || (isTablet && concise));
 
-  const showGeneratingPlaceholder =
-    (generating.blog || loadingOverlay?.active) && !blogContent;
+  const isStoryInFlight =
+    generating.blog || Boolean(loadingOverlay?.active);
 
   return (
       <div
@@ -518,7 +518,13 @@ const BlogEditorResults = memo(function BlogEditorResults({
           showStickyCopy ? "has-sticky-copy" : ""
         } ${hideFormPanel ? "" : ""}`}
       >
-        {blogContent && (
+        {isStoryInFlight ? (
+          <GeneratingResultPlaceholder
+            compact={compact}
+            phase={blogContent ? "revealing" : "writing"}
+            previewTitle={blogContent?.representativeTitle || null}
+          />
+        ) : blogContent ? (
           <>
             {!simpleMode && !isMobile && (
               <div className="mb-4 flex items-center justify-end gap-3">
@@ -678,12 +684,9 @@ const BlogEditorResults = memo(function BlogEditorResults({
               </p>
             )}
           </>
-        )}
-        {!blogContent ? (
+        ) : (
           <div className="mx-auto flex max-w-lg flex-col justify-center py-16">
-            {blogGenHint &&
-            !generating.blog &&
-            !loadingOverlay?.active ? (
+            {blogGenHint ? (
               <div className="rounded-2xl border border-[#FFE0B2] bg-[#FFF8E6] px-5 py-4 text-center">
                 <p className="text-[14px] font-semibold text-[#191F28]">
                   이번에는 글이 나오지 않았어요
@@ -697,8 +700,6 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   </p>
                 ) : null}
               </div>
-            ) : showGeneratingPlaceholder ? (
-              <GeneratingResultPlaceholder compact={compact} />
             ) : (
               <EmptyStoryPanel
                 compact={compact}
@@ -716,7 +717,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
               />
             )}
           </div>
-        ) : null}
+        )}
       </div>
   );
 });
