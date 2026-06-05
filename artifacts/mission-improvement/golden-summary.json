@@ -1,0 +1,69 @@
+{
+  "startedAt": "2026-06-04T04:28:41.316Z",
+  "total": 4,
+  "pass": 4,
+  "fail": 0,
+  "passRate": 100,
+  "results": [
+    {
+      "id": "ace-opimo",
+      "label": "파주·에이스침대·오피모 전시",
+      "sections": 2,
+      "beliefAfter": 92,
+      "beliefOk": true,
+      "checklistAfter": true,
+      "briclogScore": 84,
+      "briclogOk": false,
+      "delivered": true,
+      "hasPlaceholder": false,
+      "hasJosaError": false,
+      "naverIssues": [
+        "naver_avoid_phrase"
+      ],
+      "sampleTitle": "파주에서 오피모 전시 소식을 바라보는 시선, 에이스침대 오피모 전시 소식 체험 전 알아둘 것",
+      "ok": true
+    },
+    {
+      "id": "checklist-flower",
+      "label": "인천 송도·꽃집·체크리스트 주제",
+      "sections": 5,
+      "beliefAfter": 100,
+      "beliefOk": true,
+      "checklistAfter": true,
+      "briclogScore": 89,
+      "briclogOk": false,
+      "delivered": true,
+      "hasPlaceholder": false,
+      "hasJosaError": false,
+      "naverIssues": [
+        "naver_avoid_phrase"
+      ],
+      "sampleTitle": "인천 송도에서 방문 전 체크리스트 꽃집을 바라보는 시선, 인천꽃집 방문 전 체크리스트 꽃집 체",
+      "ok": true
+    },
+    {
+      "id": "checklist-hospital",
+      "label": "광주 상무·병원·체크리스트 주제",
+      "sections": 5,
+      "beliefAfter": 100,
+      "beliefOk": true,
+      "checklistAfter": true,
+      "briclogScore": 91,
+      "briclogOk": false,
+      "delivered": true,
+      "hasPlaceholder": false,
+      "hasJosaError": false,
+      "naverIssues": [
+        "naver_avoid_phrase"
+      ],
+      "sampleTitle": "광주 상무에서 방문 전 체크리스트 병원을 바라보는 시선, 광주병원 방문 전 체크리스트 병원 체",
+      "ok": true
+    },
+    {
+      "id": "brand-subengine",
+      "label": "브랜드 서브엔진·승인본 2편+",
+      "ok": true,
+      "promptOnly": true
+    }
+  ]
+}

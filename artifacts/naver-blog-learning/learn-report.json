@@ -1,0 +1,191 @@
+{
+  "fieldRate": 16.2,
+  "voiceRate": 42.7,
+  "checklistRate": 2.7,
+  "titleGoodRate": 36.3,
+  "avgTitleLen": 25,
+  "sampleCount": 10000,
+  "queryCount": 376,
+  "categoryCount": 21,
+  "categories": {
+    "카페": {
+      "count": 734,
+      "fieldRate": 28.2,
+      "voiceRate": 73.8,
+      "checklistRate": 2.9
+    },
+    "꽃집": {
+      "count": 548,
+      "fieldRate": 11.9,
+      "voiceRate": 45.8,
+      "checklistRate": 2.9
+    },
+    "음식점": {
+      "count": 432,
+      "fieldRate": 15.5,
+      "voiceRate": 50.7,
+      "checklistRate": 2.3
+    },
+    "미용실": {
+      "count": 435,
+      "fieldRate": 18.9,
+      "voiceRate": 60.7,
+      "checklistRate": 1.4
+    },
+    "학원": {
+      "count": 589,
+      "fieldRate": 28.7,
+      "voiceRate": 50.3,
+      "checklistRate": 2.2
+    },
+    "가구점": {
+      "count": 536,
+      "fieldRate": 27.4,
+      "voiceRate": 59,
+      "checklistRate": 0.7
+    },
+    "인테리어": {
+      "count": 430,
+      "fieldRate": 5.1,
+      "voiceRate": 23.5,
+      "checklistRate": 10.5
+    },
+    "헬스장": {
+      "count": 431,
+      "fieldRate": 16.7,
+      "voiceRate": 52.9,
+      "checklistRate": 2.1
+    },
+    "광고대행사": {
+      "count": 438,
+      "fieldRate": 18.5,
+      "voiceRate": 34.7,
+      "checklistRate": 2.3
+    },
+    "온라인 쇼핑몰": {
+      "count": 595,
+      "fieldRate": 16.5,
+      "voiceRate": 41.2,
+      "checklistRate": 2.4
+    },
+    "펜션": {
+      "count": 380,
+      "fieldRate": 10.5,
+      "voiceRate": 47.4,
+      "checklistRate": 2.1
+    },
+    "공방": {
+      "count": 407,
+      "fieldRate": 9.6,
+      "voiceRate": 46.2,
+      "checklistRate": 0.5
+    },
+    "병원": {
+      "count": 500,
+      "fieldRate": 19.8,
+      "voiceRate": 43.6,
+      "checklistRate": 2.2
+    },
+    "약국": {
+      "count": 625,
+      "fieldRate": 25.9,
+      "voiceRate": 42.4,
+      "checklistRate": 2.9
+    },
+    "법률": {
+      "count": 381,
+      "fieldRate": 2.1,
+      "voiceRate": 17.6,
+      "checklistRate": 5.2
+    },
+    "세무": {
+      "count": 389,
+      "fieldRate": 6.2,
+      "voiceRate": 27,
+      "checklistRate": 1
+    },
+    "노무": {
+      "count": 391,
+      "fieldRate": 13,
+      "voiceRate": 30.2,
+      "checklistRate": 1.5
+    },
+    "부동산": {
+      "count": 637,
+      "fieldRate": 17.4,
+      "voiceRate": 35.6,
+      "checklistRate": 4.2
+    },
+    "금융": {
+      "count": 425,
+      "fieldRate": 2.4,
+      "voiceRate": 12.5,
+      "checklistRate": 2.8
+    },
+    "보험": {
+      "count": 384,
+      "fieldRate": 4.7,
+      "voiceRate": 22.1,
+      "checklistRate": 1.6
+    },
+    "건강기능식품": {
+      "count": 313,
+      "fieldRate": 16.6,
+      "voiceRate": 46.3,
+      "checklistRate": 1
+    }
+  },
+  "learnMeta": {
+    "apiCalls": 1115,
+    "errors": 1,
+    "queriesAttempted": 377,
+    "queriesUsed": 376,
+    "dedupedTitles": 10000,
+    "maxPages": 3,
+    "perPage": 10
+  },
+  "elapsedSec": 181,
+  "topTitles": [
+    {
+      "phrase": "뭉클돈 광주상무점 솔직 후기, 분위기부터 고기 퀄리티까지...",
+      "count": 1
+    },
+    {
+      "phrase": "대전 반석동 감성카페... 시오베이글 내돈내먹 솔직후기",
+      "count": 1
+    },
+    {
+      "phrase": "24시 약국 수원 솔직후기, 급할 때 가보니 좋았어요",
+      "count": 1
+    },
+    {
+      "phrase": "상무지구pt 후기 쌍촌동 헬스장 직접 다녀온 누브피트니스...",
+      "count": 1
+    },
+    {
+      "phrase": "일산꽃집 고양시 아난플랜트마켓 방문 후기 식물추천",
+      "count": 1
+    },
+    {
+      "phrase": "홍대음식점 추천 24시 식당, 콩불 추억의맛집 발견",
+      "count": 1
+    },
+    {
+      "phrase": "수원 다이어트병원 고민끝에 큰맘먹고 간 내돈내산 방문 후기",
+      "count": 1
+    },
+    {
+      "phrase": "요즘 핫한 수원 대형약국 다녀온 후기 (종류,가격,꿀팁)내돈내산",
+      "count": 1
+    },
+    {
+      "phrase": "케이팩토리_수원역 드럭스토어 창고형매장 다녀온 솔직후기",
+      "count": 1
+    },
+    {
+      "phrase": "일산실용음악학원 비교해본 학생의 솔직한 추천 후기",
+      "count": 1
+    }
+  ],
+  "learnedAt": "2026-05-31T06:04:51.263Z"
+}

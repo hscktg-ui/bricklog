@@ -31,6 +31,14 @@ export default function PlaceMarketerForm({
   compact: compactProp,
   deferParentSync = isDeferFormUntilCommit(),
 }) {
+  const HANGUL_JAMO_ONLY_RE = /^[\u3131-\u318E\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FF]+$/;
+  const isMeaningfulKeyword = (value) => {
+    const v = String(value || "").trim();
+    if (!v) return false;
+    if (HANGUL_JAMO_ONLY_RE.test(v)) return false;
+    return true;
+  };
+  const composingRef = useRef(false);
   const { compact: compactViewport } = useWorkspaceCompact();
   const compact = compactProp ?? compactViewport;
   const {
@@ -64,12 +72,14 @@ export default function PlaceMarketerForm({
   const textBlur = flushPending;
 
   const syncTopic = (headline) => {
+    const candidate = headline.split(/[,，]/)[0]?.trim();
+    const derivedKeyword = isMeaningfulKeyword(candidate) ? candidate : "";
+    const currentMain = String(formValues.mainKeyword || "").trim();
     patch({
       placeHeadline: headline,
       topic: formValues.topic?.trim() || headline,
       mainKeyword:
-        formValues.mainKeyword?.trim() ||
-        headline.split(/[,，]/)[0]?.trim(),
+        (isMeaningfulKeyword(currentMain) && currentMain) || derivedKeyword,
     });
   };
 
@@ -138,16 +148,15 @@ export default function PlaceMarketerForm({
           <input
             className={channelFieldClass}
             value={formValues.placeHeadline || formValues.topic || ""}
+            onCompositionStart={() => {
+              composingRef.current = true;
+            }}
+            onCompositionEnd={(e) => {
+              composingRef.current = false;
+              syncTopic(e.target.value);
+            }}
             onChange={(e) => syncTopic(e.target.value)}
             placeholder="예: 5월 연휴 휴무 안내 · 신메뉴 입고"
-          />
-        </ChannelField>
-        <ChannelField label="보조 키워드 (선택)">
-          <input
-            className={channelFieldClass}
-            value={formValues.mainKeyword || ""}
-            onChange={(e) => set("mainKeyword", e.target.value)}
-            placeholder="지역·메뉴·이벤트명"
           />
         </ChannelField>
       </ChannelFormSection>

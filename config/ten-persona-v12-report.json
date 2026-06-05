@@ -1,0 +1,599 @@
+{
+  "summary": {
+    "at": "2026-05-26T00:10:18.306Z",
+    "engine": "V12",
+    "personaCount": 10,
+    "allOk": false,
+    "pipelinePassCount": 1,
+    "qualityAtTarget": 10,
+    "templateWarnCount": 10,
+    "naverConfigured": true,
+    "webSearchConfigured": true,
+    "avgTraining": 100,
+    "avgCore": 100,
+    "researchOk": 10
+  },
+  "rows": [
+    {
+      "id": "p1_cafe",
+      "label": "강남 카페 사장",
+      "v4Speaker": "brand_intro",
+      "persona": "brand_story",
+      "subtype": "philosophy",
+      "clueVariants": [
+        "봄 시즌 브런치 메뉴",
+        "봄시즌브런치메뉴",
+        "모닝브루 강남 봄 시즌 브런치 메뉴",
+        "모닝브루 강남 봄시즌브런치메뉴"
+      ],
+      "clueQueries": [
+        "모닝브루 강남 봄 시즌 브런치 메뉴",
+        "봄 시즌 브런치 메뉴 특징",
+        "모닝브루 강남 봄시즌브런치메뉴"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "industry_cross",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 563,
+        "webResults": 20,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 733자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 733자"
+      ]
+    },
+    {
+      "id": "p2_salon",
+      "label": "홍대 미용실 원장",
+      "v4Speaker": "real_use",
+      "persona": "visit_review",
+      "subtype": "experience",
+      "clueVariants": [
+        "시즌 컬러 이벤트",
+        "시즌컬러이벤트",
+        "레이어드살롱 시즌 컬러 이벤트",
+        "레이어드살롱 시즌컬러이벤트"
+      ],
+      "clueQueries": [
+        "레이어드살롱 시즌 컬러 이벤트",
+        "시즌 컬러 이벤트 특징",
+        "레이어드살롱 시즌컬러이벤트"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "industry_cross",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 609,
+        "webResults": 19,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 674자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 674자"
+      ]
+    },
+    {
+      "id": "p3_academy",
+      "label": "대구 학원 원장",
+      "v4Speaker": "expert_info",
+      "persona": "info_intro",
+      "subtype": "guide",
+      "clueVariants": [
+        "여름방학 특강 모집",
+        "여름방학특강모집",
+        "수학플러스 여름방학 특강 모집",
+        "수학플러스 여름방학특강모집"
+      ],
+      "clueQueries": [
+        "수학플러스 여름방학 특강 모집",
+        "여름방학 특강 모집 특징",
+        "수학플러스 여름방학특강모집"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "industry_cross",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 587,
+        "webResults": 20,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 774자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 774자"
+      ]
+    },
+    {
+      "id": "p4_flower",
+      "label": "꽃집 마케터",
+      "v4Speaker": "plain_review",
+      "persona": "visit_review",
+      "subtype": "review",
+      "clueVariants": [
+        "어버이날 꽃다발 예약",
+        "어버이날꽃다발예약",
+        "플로라하우스 어버이날 꽃다발 예약",
+        "플로라하우스 어버이날꽃다발예약"
+      ],
+      "clueQueries": [
+        "플로라하우스 어버이날 꽃다발 예약",
+        "어버이날 꽃다발 예약 특징",
+        "플로라하우스 어버이날꽃다발예약"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "industry_cross",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 578,
+        "webResults": 19,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 781자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 781자"
+      ]
+    },
+    {
+      "id": "p5_pension",
+      "label": "제주 펜션 운영",
+      "v4Speaker": "local_blogger",
+      "persona": "local_guide",
+      "subtype": "local",
+      "clueVariants": [
+        "비수기 장박 할인",
+        "비수기장박할인",
+        "애월바다펜션 비수기 장박 할인",
+        "애월바다펜션 비수기장박할인"
+      ],
+      "clueQueries": [
+        "애월바다펜션 비수기 장박 할인",
+        "비수기 장박 할인 특징",
+        "애월바다펜션 비수기장박할인"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 605,
+        "webResults": 19,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 771자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 771자"
+      ]
+    },
+    {
+      "id": "p6_clinic",
+      "label": "병원 마케팅 (민감)",
+      "v4Speaker": "expert_info",
+      "persona": "info_intro",
+      "subtype": "guide",
+      "clueVariants": [
+        "무릎 통증 상담 안내",
+        "무릎통증상담안내",
+        "연세정형외과 무릎 통증 상담 안내",
+        "연세정형외과 무릎통증상담안내"
+      ],
+      "clueQueries": [
+        "연세정형외과 무릎 통증 상담 안내",
+        "무릎 통증 상담 안내 특징",
+        "연세정형외과 무릎통증상담안내"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 587,
+        "webResults": 19,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "llm",
+      "qualityPass": true,
+      "pipelineOk": true,
+      "pipelineIssues": [],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 480자"
+      ],
+      "ok": true,
+      "issues": [
+        "붙여넣기 검수 100 · 480자"
+      ]
+    },
+    {
+      "id": "p7_agency",
+      "label": "광고대행사 B2B",
+      "v4Speaker": "magazine",
+      "persona": "info_intro",
+      "subtype": "explain",
+      "clueVariants": [
+        "로컬 브랜드 콘텐츠 패키지",
+        "로컬브랜드콘텐츠패키지",
+        "브릭애드 로컬 브랜드 콘텐츠 패키지",
+        "브릭애드 로컬브랜드콘텐츠패키지"
+      ],
+      "clueQueries": [
+        "브릭애드 로컬 브랜드 콘텐츠 패키지",
+        "로컬 브랜드 콘텐츠 패키지 특징",
+        "브릭애드 로컬브랜드콘텐츠패키지"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 629,
+        "webResults": 19,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 737자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 737자"
+      ]
+    },
+    {
+      "id": "p8_craft",
+      "label": "공방 작가",
+      "v4Speaker": "essay",
+      "persona": "brand_story",
+      "subtype": "product",
+      "clueVariants": [
+        "원데이 클래스 오픈",
+        "원데이클래스오픈",
+        "도자기온 원데이 클래스 오픈",
+        "도자기온 원데이클래스오픈"
+      ],
+      "clueQueries": [
+        "도자기온 원데이 클래스 오픈",
+        "원데이 클래스 오픈 특징",
+        "도자기온 원데이클래스오픈"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 629,
+        "webResults": 20,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 688자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 688자"
+      ]
+    },
+    {
+      "id": "p9_restaurant",
+      "label": "음식점 점주",
+      "v4Speaker": "plain_review",
+      "persona": "visit_review",
+      "subtype": "review",
+      "clueVariants": [
+        "점심 특선 리뉴얼",
+        "점심특선리뉴얼",
+        "한상차림 점심 특선 리뉴얼",
+        "한상차림 점심특선리뉴얼"
+      ],
+      "clueQueries": [
+        "한상차림 점심 특선 리뉴얼",
+        "점심 특선 리뉴얼 특징",
+        "한상차림 점심특선리뉴얼"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 610,
+        "webResults": 19,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 677자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 677자"
+      ]
+    },
+    {
+      "id": "p10_shop",
+      "label": "온라인 쇼핑몰 MD",
+      "v4Speaker": "column",
+      "persona": "info_intro",
+      "subtype": "compare",
+      "clueVariants": [
+        "여름 운동복 출시",
+        "여름운동복출시",
+        "데일리핏몰 여름 운동복 출시",
+        "데일리핏몰 여름운동복출시"
+      ],
+      "clueQueries": [
+        "데일리핏몰 여름 운동복 출시",
+        "여름 운동복 출시 특징",
+        "데일리핏몰 여름운동복출시"
+      ],
+      "scores": {
+        "training": 100,
+        "core": 100,
+        "blockers": [
+          "placeholder_detected",
+          "repetition_detected",
+          "length_too_short",
+          "placeholder",
+          "duplicate",
+          "length",
+          "duplicate_sentence",
+          "quality_score",
+          "length"
+        ],
+        "pass": true
+      },
+      "paste": {
+        "pass": false,
+        "score": 100
+      },
+      "research": {
+        "ok": true,
+        "summaryLen": 582,
+        "webResults": 20,
+        "insufficient": false,
+        "skipped": false
+      },
+      "blogMode": "draft_fallback",
+      "qualityPass": true,
+      "pipelineOk": false,
+      "pipelineIssues": [
+        "금지문구:다시 시도"
+      ],
+      "templateWarnings": [
+        "붙여넣기 검수 100 · 742자"
+      ],
+      "ok": false,
+      "issues": [
+        "금지문구:다시 시도",
+        "붙여넣기 검수 100 · 742자"
+      ]
+    }
+  ]
+}

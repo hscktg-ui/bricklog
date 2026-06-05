@@ -44,8 +44,11 @@ export async function POST(request) {
       region: body.region,
       industry: body.industry,
       mainKeyword: body.mainKeyword,
+      topic: body.topic,
       competitors: body.competitors,
       brandDescription: body.brandDescription,
+      clueDiscovery: body.clueDiscovery,
+      _webLeadsCache: body._webLeadsCache,
     };
 
     if (body.brandId || body.brandMemory) {
@@ -78,6 +81,7 @@ export async function POST(request) {
       research,
       researchQuery: query,
       researchTypes: types,
+      geminiResearchFallback: brandContext._geminiLastError || null,
     });
   } catch (err) {
     console.error("[api/content/research]", err);

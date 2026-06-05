@@ -7,11 +7,12 @@ import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { EIGHT_USER_PERSONAS } from "../lib/qa/eightUserPersonas.js";
+import { resolveLiveBaseUrl } from "./resolve-base-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
-const BASE = process.env.BASE_URL || "http://localhost:3005";
 const OUT = join(root, "config", "eight-user-smoke-report.json");
+let resolvedBase = "http://127.0.0.1:3005";
 
 function loadEnvLocal() {
   try {
@@ -112,7 +113,7 @@ async function runPersona(page, persona) {
   }
 
   try {
-    await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+    await page.goto(resolvedBase, { waitUntil: "domcontentloaded", timeout: 90_000 });
     await page
       .waitForSelector('[data-briclog-cta="start"], button', {
         timeout: 20_000,
@@ -258,6 +259,7 @@ async function runPersona(page, persona) {
 
 async function main() {
   loadEnvLocal();
+  resolvedBase = await resolveLiveBaseUrl();
   let chromium;
   try {
     ({ chromium } = await import("playwright"));
@@ -269,7 +271,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
 
   const report = {
-    base: BASE,
+    base: resolvedBase,
     personas: EIGHT_USER_PERSONAS.map((p) => ({
       id: p.id,
       label: p.label,

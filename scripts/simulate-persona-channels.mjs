@@ -1,14 +1,15 @@
 /**
- * 10 페르소나 × 채널 연계·품질 점수 시뮬레이션 (템플릿/휴리스틱, LLM 없음)
- * Run: node scripts/simulate-persona-channels.mjs
+ * 10 페르소나 × 채널 연계·품질 (목표 95 · OpenAI 기본)
+ * Run: npm run test:persona
  */
-
+import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import { resolveDerivationSource, pickLatestSource } from "../lib/content/channelSource.js";
 import {
   runPlacePipeline,
   runInstagramPipeline,
   runImagePipeline,
-  buildFormBlogProxy,
   normalizePipelineInput,
   buildBaseContentLabel,
 } from "../lib/contentPipeline.js";
@@ -18,156 +19,40 @@ import { scoreContent } from "../lib/editorAI/scoreContent.js";
 import { auditPastedDraft } from "../lib/review/auditPastedDraft.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import { CORE_TARGET_SCORE } from "../lib/quality/coreQualityEngine.js";
+import { getQualityTarget } from "../lib/quality/qualityDefaults.js";
+import { isOpenAIConfigured, getOpenAIModel, getLLMMode } from "../lib/llm/llmProvider.js";
+import { TEN_USER_PERSONAS } from "../lib/qa/tenUserPersonas.js";
+import { resolvePersonaBlogPack } from "../lib/qa/resolvePersonaBlogPack.js";
 
-const TARGET_USER = 80;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, "..");
 
-const PERSONAS = [
-  {
-    id: "p1_cafe",
-    label: "강남 카페 사장",
-    v4Speaker: "brand_intro",
-    input: {
-      brandName: "모닝브루 강남",
-      region: "강남",
-      industry: "카페",
-      topic: "봄 시즌 브런치 메뉴",
-      mainKeyword: "강남 브런치 카페",
-      purpose: "visitDrive",
-      tone: "emotional",
-    },
-  },
-  {
-    id: "p2_salon",
-    label: "홍대 미용실 원장",
-    v4Speaker: "real_use",
-    input: {
-      brandName: "레이어드살롱",
-      region: "홍대",
-      industry: "미용실",
-      topic: "시즌 컬러 이벤트",
-      mainKeyword: "홍대 염색",
-      purpose: "season",
-      tone: "trust",
-    },
-  },
-  {
-    id: "p3_academy",
-    label: "대구 학원 원장",
-    v4Speaker: "expert_info",
-    input: {
-      brandName: "수학플러스",
-      region: "대구 동성로",
-      industry: "학원",
-      topic: "여름방학 특강 모집",
-      mainKeyword: "대구 수학학원",
-      purpose: "info",
-      tone: "informative",
-    },
-  },
-  {
-    id: "p4_flower",
-    label: "꽃집 마케터",
-    v4Speaker: "plain_review",
-    input: {
-      brandName: "플로라하우스",
-      region: "부산 해운대",
-      industry: "꽃집",
-      topic: "어버이날 꽃다발 예약",
-      mainKeyword: "해운대 꽃집",
-      purpose: "season",
-      tone: "emotional",
-      instaScene: "매장 픽업 장면",
-    },
-  },
-  {
-    id: "p5_pension",
-    label: "제주 펜션 운영",
-    v4Speaker: "local_blogger",
-    input: {
-      brandName: "애월바다펜션",
-      region: "제주 애월",
-      industry: "펜션",
-      topic: "비수기 장박 할인",
-      mainKeyword: "제주 펜션",
-      purpose: "visitDrive",
-      tone: "lifestyle",
-    },
-  },
-  {
-    id: "p6_clinic",
-    label: "병원 마케팅 (민감)",
-    v4Speaker: "expert_info",
-    input: {
-      brandName: "연세정형외과",
-      region: "인천 송도",
-      industry: "병원",
-      topic: "무릎 통증 상담 안내",
-      mainKeyword: "송도 정형외과",
-      purpose: "info",
-      tone: "trust",
-      sensitiveCategory: "medical",
-    },
-  },
-  {
-    id: "p7_agency",
-    label: "광고대행사 B2B",
-    v4Speaker: "magazine",
-    input: {
-      brandName: "브릭애드",
-      region: "강남",
-      industry: "광고대행사",
-      topic: "로컬 브랜드 콘텐츠 패키지",
-      mainKeyword: "로컬 마케팅",
-      purpose: "brand",
-      tone: "premium",
-    },
-  },
-  {
-    id: "p8_craft",
-    label: "공방 작가",
-    v4Speaker: "essay",
-    input: {
-      brandName: "도자기온",
-      region: "전국",
-      industry: "공방",
-      topic: "원데이 클래스 오픈",
-      mainKeyword: "도자기 클래스",
-      purpose: "newOpen",
-      tone: "emotional",
-    },
-  },
-  {
-    id: "p9_restaurant",
-    label: "음식점 점주",
-    v4Speaker: "plain_review",
-    input: {
-      brandName: "한상차림",
-      region: "강남",
-      industry: "음식점",
-      topic: "점심 특선 리뉴얼",
-      mainKeyword: "강남 한식",
-      purpose: "visitDrive",
-      tone: "informative",
-      placePeriod: "5월 한 달",
-      placeOffer: "점심 특선 9,900원",
-    },
-  },
-  {
-    id: "p10_shop",
-    label: "온라인 쇼핑몰 MD",
-    v4Speaker: "column",
-    input: {
-      brandName: "데일리핏몰",
-      region: "전국",
-      industry: "온라인 쇼핑몰",
-      topic: "여름 운동복 출시",
-      mainKeyword: "운동복 추천",
-      purpose: "season",
-      tone: "lifestyle",
-      instaHookAngle: "착샷 비포애프터",
-    },
-  },
-];
+function loadEnvLocal() {
+  try {
+    const raw = readFileSync(join(root, ".env.local"), "utf8");
+    for (const line of raw.split("\n")) {
+      const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
+      if (!m) continue;
+      let val = m[2].trim();
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[m[1]]) process.env[m[1]] = val;
+    }
+  } catch {
+    /* optional */
+  }
+}
+
+loadEnvLocal();
+
+const TARGET = getQualityTarget();
+const limit = Number(process.env.BRICLOG_PERSONA_LIMIT) || 0;
+const PERSONAS =
+  limit > 0 ? TEN_USER_PERSONAS.slice(0, limit) : TEN_USER_PERSONAS;
 
 function scorePack(channel, pack, ctx) {
   const training = scoreTrainingContent(pack, ctx, channel);
@@ -207,38 +92,51 @@ function testDerivationMatrix(blog, place, insta, input) {
 }
 
 const results = [];
-let blockers = [];
-let warnings = [];
+const blockers = [];
+const warnings = [];
 
 for (const persona of PERSONAS) {
+  process.stdout.write(`생성·검수: ${persona.label}… `);
   const input = normalizePipelineInput({
     ...persona.input,
     v4Speaker: persona.v4Speaker,
-    blogLengthTier: "medium",
   });
   const ctx = {
     brandName: input.brandName,
     region: input.region,
     main: input.mainKeyword,
     industry: input.industry,
+    topic: input.topic,
   };
 
-  const blogProxy = buildFormBlogProxy(input);
-  const blogLabel = buildBaseContentLabel(input, blogProxy);
+  let blogProxy;
+  let blogMode = "form_proxy";
+  try {
+    const resolved = await resolvePersonaBlogPack(persona.input, persona);
+    blogProxy = resolved.pack;
+    blogMode = resolved.mode;
+  } catch (e) {
+    blockers.push({ persona: persona.id, error: e.message });
+    console.log("FAIL");
+    continue;
+  }
 
+  const blogLabel = buildBaseContentLabel(input, blogProxy);
   let place;
   let insta;
   let image;
   try {
     place = runPlacePipeline(input, blogProxy, blogLabel);
     insta = runInstagramPipeline(input, blogProxy, "emotional", blogLabel);
-    image = runImagePipeline(input, blogProxy, {
-      purpose: "thumbnail",
-      ratio: "16:9",
-      tone: "white",
-    }, blogLabel);
+    image = runImagePipeline(
+      input,
+      blogProxy,
+      { purpose: "thumbnail", ratio: "16:9", tone: "white" },
+      blogLabel
+    );
   } catch (e) {
     blockers.push({ persona: persona.id, error: e.message });
+    console.log("FAIL");
     continue;
   }
 
@@ -257,10 +155,16 @@ for (const persona of PERSONAS) {
     ),
   };
 
+  const blogScores = scorePack("blog", blogProxy, ctx);
+  const channelCtx = {
+    ...ctx,
+    blogCoreScore: blogScores.core,
+    blogTrainingScore: blogScores.training,
+  };
   const scores = {
-    blog: scorePack("blog", blogProxy, ctx),
-    place: scorePack("place", place, ctx),
-    instagram: scorePack("instagram", insta, ctx),
+    blog: blogScores,
+    place: scorePack("place", place, channelCtx),
+    instagram: scorePack("instagram", insta, channelCtx),
   };
 
   const deriveFromBlog = testDerivationMatrix(blogProxy, null, null, input);
@@ -276,6 +180,7 @@ for (const persona of PERSONAS) {
   const row = {
     id: persona.id,
     label: persona.label,
+    blogMode,
     scores,
     pastePass: {
       blog: pasteAudit.blog.pass,
@@ -294,14 +199,18 @@ for (const persona of PERSONAS) {
     latestChannel: latest?.channel,
   };
 
+  const blogOk =
+    scores.blog.training >= TARGET && scores.blog.core >= TARGET;
+  console.log(blogOk ? "OK" : `T${scores.blog.training}/C${scores.blog.core}`);
+
   for (const ch of ["blog", "place", "instagram"]) {
     const s = scores[ch];
-    if (s.training < TARGET_USER) {
+    if (s.training < TARGET) {
       warnings.push(
-        `${persona.id} ${ch}: training=${s.training} (<${TARGET_USER}) blockers=${s.blockers.join(",")}`
+        `${persona.id} ${ch}: training=${s.training} (<${TARGET}) blockers=${s.blockers.join(",")}`
       );
     }
-    if (s.core < TARGET_USER) {
+    if (s.core < TARGET) {
       warnings.push(`${persona.id} ${ch}: core=${s.core}`);
     }
   }
@@ -309,62 +218,76 @@ for (const persona of PERSONAS) {
   results.push(row);
 }
 
-// 요약 통계
 function avg(arr) {
   return arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
 }
 
+const blogTrainingAvg = avg(results.map((r) => r.scores.blog.training));
+const blogCoreAvg = avg(results.map((r) => r.scores.blog.core));
+const compositeAvg = Math.round(
+  results.reduce(
+    (a, r) =>
+      a + Math.max(r.scores.blog.training, Math.round((r.scores.blog.training + r.scores.blog.core) / 2)),
+    0
+  ) / Math.max(1, results.length)
+);
+const allChannelAvg = Math.round(
+  results.reduce(
+    (a, r) =>
+      a +
+      (r.scores.blog.training +
+        r.scores.place.training +
+        r.scores.instagram.training) /
+        3,
+    0
+  ) / Math.max(1, results.length)
+);
+
 const summary = {
-  targetUser: TARGET_USER,
+  target: TARGET,
   coreTargetCode: CORE_TARGET_SCORE,
+  llmMode: getLLMMode(),
+  openai: isOpenAIConfigured(),
+  openaiModel: isOpenAIConfigured() ? getOpenAIModel() : null,
   personas: results.length,
+  compositeBlogAvg: compositeAvg,
+  allChannelTrainingAvg: allChannelAvg,
   avgTraining: {
-    blog: avg(results.map((r) => r.scores.blog.training)),
+    blog: blogTrainingAvg,
     place: avg(results.map((r) => r.scores.place.training)),
     insta: avg(results.map((r) => r.scores.instagram.training)),
   },
   avgCore: {
-    blog: avg(results.map((r) => r.scores.blog.core)),
+    blog: blogCoreAvg,
     place: avg(results.map((r) => r.scores.place.core)),
     insta: avg(results.map((r) => r.scores.instagram.core)),
   },
-  under80Training: warnings.length,
+  blogAtTarget: results.filter(
+    (r) =>
+      r.scores.blog.training >= TARGET && r.scores.blog.core >= TARGET
+  ).length,
+  underTarget: warnings.length,
   deriveBlogToPlace: results.filter((r) =>
     r.deriveFromBlog.find((d) => d.target === "place" && d.ok)
   ).length,
-  derivePlaceToInsta: results.filter((r) =>
-    r.deriveFromPlace.find((d) => d.target === "instagram" && d.ok)
-  ).length,
-  deriveInstaToImage: results.filter((r) =>
-    r.deriveFromInsta.find((d) => d.target === "image" && d.ok)
-  ).length,
 };
 
-console.log("=== BRICLOG 채널 연계·품질 시뮬레이션 (10 페르소나) ===\n");
+console.log("\n=== BRICLOG 10 페르소나 · 목표 95 ===\n");
 console.log(JSON.stringify(summary, null, 2));
-console.log("\n--- 페르소나별 점수 ---");
+console.log("\n--- 페르소나별 ---");
 for (const r of results) {
   console.log(
-    `${r.label}: blog T${r.scores.blog.training}/C${r.scores.blog.core} | place T${r.scores.place.training}/C${r.scores.place.core} | insta T${r.scores.instagram.training}/C${r.scores.instagram.core} | paste ${r.pasteScore.blog}/${r.pasteScore.place}/${r.pasteScore.insta}`
+    `${r.label} [${r.blogMode}]: blog T${r.scores.blog.training}/C${r.scores.blog.core} | place T${r.scores.place.training}/C${r.scores.place.core} | insta T${r.scores.instagram.training}/C${r.scores.instagram.core}`
   );
 }
 if (warnings.length) {
-  console.log("\n--- 80점 미만·주의 ---");
-  warnings.slice(0, 30).forEach((w) => console.log(w));
-  if (warnings.length > 30) console.log(`… 외 ${warnings.length - 30}건`);
-}
-if (blockers.length) {
-  console.log("\n--- 실행 오류 ---");
-  blockers.forEach((b) => console.log(b));
+  console.log(`\n--- ${TARGET}점 미만 (${warnings.length}건, 상위 15) ---`);
+  warnings.slice(0, 15).forEach((w) => console.log(w));
 }
 
-// 연계 매트릭스 샘플 (첫 페르소나)
-const sample = results[0];
-if (sample) {
-  console.log("\n--- 연계 해석 (첫 페르소나 기준) ---");
-  console.log("blog만 있을 때:", sample.deriveFromBlog.map((d) => `${d.target}←${d.source || "—"}`).join(", "));
-  console.log("place만 있을 때:", sample.deriveFromPlace.map((d) => `${d.target}←${d.source || "—"}`).join(", "));
-  console.log("insta만 있을 때:", sample.deriveFromInsta.map((d) => `${d.target}←${d.source || "—"}`).join(", "));
-}
-
-process.exit(blockers.length ? 1 : 0);
+const exitFail =
+  blockers.length > 0 ||
+  compositeAvg < TARGET ||
+  allChannelAvg < TARGET - 5 ||
+  summary.blogAtTarget < Math.ceil(PERSONAS.length * 0.7);
+process.exit(exitFail ? 1 : 0);

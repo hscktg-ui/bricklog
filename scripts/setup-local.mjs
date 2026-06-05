@@ -36,6 +36,15 @@ function ensureEnv() {
   if (!keys.has("OPENAI_API_KEY") && !cur.includes("OPENAI_API_KEY=")) {
     console.warn("⚠ OPENAI_API_KEY 가 없으면 글은 구성안만 나옵니다.");
   }
+  const hasGoogle =
+    keys.has("GOOGLE_CSE_API_KEY") && keys.has("GOOGLE_CSE_CX");
+  const hasSerp = keys.has("SERPAPI_API_KEY");
+  if (!hasGoogle && !hasSerp) {
+    console.warn(
+      "⚠ GOOGLE_CSE_API_KEY+GOOGLE_CSE_CX 또는 SERPAPI_API_KEY 가 없으면 실시간 Google 검색 없이 LLM·입력 단서만 사용합니다."
+    );
+    console.warn("   → .env.example 참고");
+  }
   if (!keys.has("NEXT_PUBLIC_SUPABASE_URL")) {
     console.warn("⚠ Supabase URL/키가 없으면 로그인이 안 됩니다.");
   }

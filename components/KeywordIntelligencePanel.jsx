@@ -64,6 +64,16 @@ export default function KeywordIntelligencePanel({ values, onApplyKeyword }) {
   ]);
 
   const strategy = useMemo(() => report?.strategy, [report]);
+  const normalizedSubs = useMemo(() => {
+    const rawKeywords = Array.isArray(report?.subs)
+      ? report.subs.map((item) => item?.keyword)
+      : [];
+    const keywords = rawKeywords
+      .map((v) => (typeof v === "string" ? v.trim() : ""))
+      .filter(Boolean);
+    const uniq = new Set(keywords);
+    return [...uniq];
+  }, [report]);
 
   if (!ready) {
     return (
@@ -113,21 +123,23 @@ export default function KeywordIntelligencePanel({ values, onApplyKeyword }) {
         </div>
       </div>
 
-      <div>
-        <p className="mb-1.5 text-[11px] font-semibold text-[#4E5968]">서브</p>
-        <div className="flex flex-wrap gap-1.5">
-          {report.subs.slice(0, 6).map((k) => (
-            <button
-              key={k.keyword}
-              type="button"
-              onClick={() => onApplyKeyword(k.keyword, "sub")}
-              className="rounded-full border border-[#E8EBED] px-2.5 py-1 text-[11px] hover:border-[#03C75A]"
-            >
-              {k.keyword}
-            </button>
-          ))}
+      {normalizedSubs.length > 0 ? (
+        <div>
+          <p className="mb-1.5 text-[11px] font-semibold text-[#4E5968]">서브</p>
+          <div className="flex flex-wrap gap-1.5">
+            {normalizedSubs.slice(0, 6).map((keyword) => (
+              <button
+                key={keyword}
+                type="button"
+                onClick={() => onApplyKeyword(keyword, "sub")}
+                className="rounded-full border border-[#E8EBED] px-2.5 py-1 text-[11px] hover:border-[#03C75A]"
+              >
+                {keyword}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div>
         <p className="mb-1.5 text-[11px] font-semibold text-[#4E5968]">롱테일</p>

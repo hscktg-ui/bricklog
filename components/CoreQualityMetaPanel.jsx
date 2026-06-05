@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { USER_QUALITY_GOAL } from "@/lib/quality/qualityTargets";
+import { V3_SEARCH_AXIS_LABEL } from "@/lib/product/missionUi";
 import {
   CUSTOMER_DRAFT_READY,
   CUSTOMER_DRAFT_REVIEW,
@@ -16,14 +17,14 @@ const BREAKDOWN_LABELS = {
   toneConsistency: "말투 일관",
   emotionTone: "감정 온도",
   repetition: "반복 억제",
-  aiCliche: "관용구 억제",
+  aiCliche: "뻔한 표현 억제",
   placeholder: "완성도",
   length: "분량",
 };
 
 const FAIL_LABELS = {
   placeholder_detected: "미완성 표현",
-  ai_cliche_detected: "AI 관용구",
+  ai_cliche_detected: "뻔한 표현",
   repetition_detected: "문장 반복",
   topic_drift: "주제 이탈",
   input_mismatch: "입력 불일치",
@@ -56,7 +57,7 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between px-4 py-3 text-left text-[13px] font-semibold text-[#4E5968] hover:bg-white/80"
       >
-        <span>작성 검수 상세</span>
+        <span>세부 점검 (선택)</span>
         <span className="text-[#8B95A1]">{open ? "접기" : "펼치기"}</span>
       </button>
       {open && (
@@ -70,7 +71,7 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
                       ["지역", meta.qualityScore.v3.scores.region],
                       ["주제", meta.qualityScore.v3.scores.topic],
                       ["정보성", meta.qualityScore.v3.scores.informational],
-                      ["SEO", meta.qualityScore.v3.scores.seo],
+                      [V3_SEARCH_AXIS_LABEL, meta.qualityScore.v3.scores.seo],
                       ["신뢰", meta.qualityScore.v3.scores.trust],
                       ["기억", meta.qualityScore.v3.scores.readerMemory],
                     ]
@@ -78,9 +79,9 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
                       ["브랜드", v2Axis.scores.brand],
                       ["지역", v2Axis.scores.region],
                       ["주제", v2Axis.scores.product],
-                      ["SEO", v2Axis.scores.seo],
                       ["조사근거", v2Axis.scores.grounding],
                       ["정보량", v2Axis.scores.researchVolume],
+                      [V3_SEARCH_AXIS_LABEL, v2Axis.scores.seo],
                     ]
               ).map(([label, s]) => (
                 <span

@@ -39,6 +39,7 @@ export default function Home() {
     message: "",
     type: "info",
   });
+  const [forceLanding, setForceLanding] = useState(false);
 
   const showToast = useCallback((message, type = "info") => {
     setToast({ visible: true, message, type });
@@ -81,7 +82,12 @@ export default function Home() {
             setTimeout(() => reject(new Error("auth_timeout")), 4_000)
           ),
         ]);
-      } catch {
+      } catch (err) {
+        // 세션 읽기 타임아웃은 로그아웃이 아님 — 기존 로그인 UI 유지
+        if (err?.message === "auth_timeout") {
+          setLoading(false);
+          return;
+        }
         setUser(null);
         setProfile(null);
         return;
@@ -126,6 +132,12 @@ export default function Home() {
       showToast(decodeURIComponent(err), "error");
       const url = new URL(window.location.href);
       url.searchParams.delete("error");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+    if (params.get("landing") === "1") {
+      setForceLanding(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("landing");
       window.history.replaceState({}, "", url.pathname + url.search);
     }
   }, [showToast]);
@@ -264,9 +276,20 @@ export default function Home() {
     );
   }
 
-  if (!user) {
+  if (!user || forceLanding) {
     return (
       <LandingPreviewProvider>
+        {user && forceLanding ? (
+          <div className="fixed left-0 right-0 top-0 z-[110] flex justify-center p-3 pointer-events-none">
+            <button
+              type="button"
+              onClick={() => setForceLanding(false)}
+              className="pointer-events-auto rounded-full border border-[#E8EBED] bg-white px-4 py-2 text-[13px] font-semibold text-[#191F28] shadow-md hover:bg-[#F7F8FA]"
+            >
+              작업실로 돌아가기
+            </button>
+          </div>
+        ) : null}
         <LandingPage onAuthOpen={openAuth} onStart={openStart} />
         {authMode && (
           <div

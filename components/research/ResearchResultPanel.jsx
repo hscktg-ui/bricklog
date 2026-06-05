@@ -11,6 +11,9 @@ import { researchTypeLabels } from "@/lib/research/types";
  */
 export default function ResearchResultPanel({ result, query = "", types = [] }) {
   if (!result?.summary) return null;
+  const keywords = (result.keywords || [])
+    .map((v) => (typeof v === "string" ? v.trim() : ""))
+    .filter(Boolean);
 
   const typeLine = researchTypeLabels(types).join(" · ");
   const researchedAt = result.researchedAt
@@ -27,7 +30,7 @@ export default function ResearchResultPanel({ result, query = "", types = [] }) 
           id="research-result-heading"
           className="text-[14px] font-bold text-[#03A94D]"
         >
-          [조사결과]
+          오늘 글에 반영한 참고
         </h3>
         {researchedAt ? (
           <span className="text-[11px] text-[#8B95A1]">{researchedAt}</span>
@@ -53,13 +56,13 @@ export default function ResearchResultPanel({ result, query = "", types = [] }) 
           </p>
         </div>
 
-        {(result.keywords || []).length > 0 ? (
+        {keywords.length > 0 ? (
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8B95A1]">
               키워드
             </p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {result.keywords.map((kw) => (
+              {keywords.map((kw) => (
                 <span
                   key={kw}
                   className="rounded-full bg-white px-2.5 py-0.5 text-[12px] text-[#4E5968] ring-1 ring-[#E8EBED]"
@@ -149,7 +152,7 @@ export default function ResearchResultPanel({ result, query = "", types = [] }) 
       </div>
 
       <div className="mt-4 border-t border-[#03C75A]/15 pt-3">
-        <p className="text-[11px] font-semibold text-[#8B95A1]">↓ 최종 콘텐츠</p>
+        <p className="text-[11px] font-semibold text-[#8B95A1]">↓ 아래 편집본에 반영됩니다</p>
       </div>
     </section>
   );

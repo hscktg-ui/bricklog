@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://briclog.app/sitemap.xml
+Sitemap: https://briclog.ai/sitemap.xml

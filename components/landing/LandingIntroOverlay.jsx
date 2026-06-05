@@ -58,7 +58,6 @@ function IntroProgress({ total, current }) {
 
 /**
  * 메모 1~4줄(타자 소리) → 브랜드 → 「지금 시작하기」
- * Jobs식: 반복 제거 · 진행 표시 · 준비되면 화면 탭으로 시작
  */
 export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   const { isMobile } = useViewport();
@@ -90,6 +89,10 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   }, []);
 
   const handleMemoTypeTick = useCallback(() => {
+    if (!reduceMotion) playIntroTypeTick();
+  }, [reduceMotion]);
+
+  const handleBrandTypeTick = useCallback(() => {
     if (!reduceMotion) playIntroTypeTick();
   }, [reduceMotion]);
 
@@ -133,10 +136,15 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     lines: copy.brandLines,
     reduceMotion,
     startDelayMs: reduceMotion ? 0 : isMobile ? 180 : 260,
+    onTypeTick: handleBrandTypeTick,
   });
 
   const brandLineCount = copy.brandLines.length;
   const brandComplete = brandDone.length === brandLineCount && !brandActive;
+  const brandTyping =
+    brandActive &&
+    brandLineIndex < brandLineCount &&
+    Boolean(brandDisplay?.length);
 
   useEffect(() => {
     if (!open || !brandPhase || !brandComplete) return undefined;
@@ -177,7 +185,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     if (!open) return undefined;
     const id = window.setTimeout(() => {
       setCanStart(true);
-    }, 12_000);
+    }, 4_500);
     return () => window.clearTimeout(id);
   }, [open]);
 
@@ -190,7 +198,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   if (!open) return null;
 
   const lineNo = String(lineIndex + 1).padStart(2, "0");
-  const brandTyping = brandActive && brandLineIndex < brandLineCount;
   const showCta = brandPhase && (reduceMotion || brandComplete);
 
   return (
@@ -266,7 +273,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                     {line}
                   </p>
                 ))}
-                {brandTyping && (
+                {brandTyping ? (
                   <p
                     className={`${BRAND_LINE_CLASS[brandLineIndex] ?? ""} ${
                       brandLineIndex === 1 ? "mt-2" : ""
@@ -275,7 +282,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                     {brandDisplay}
                     <IntroCursor reduceMotion={reduceMotion} />
                   </p>
-                )}
+                ) : null}
               </div>
             )}
           </div>

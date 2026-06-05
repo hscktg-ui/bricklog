@@ -33,6 +33,7 @@ export default function GrowthStudio({
   onCopy,
   onToast,
   onUpgradeClick,
+  onOpenInWorkspace,
 }) {
   const [tab, setTab] = useState("history");
   const [channelFilter, setChannelFilter] = useState("");
@@ -394,6 +395,19 @@ export default function GrowthStudio({
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-[15px] font-bold">{detail.title}</h3>
                     <div className="flex gap-2">
+                      {onOpenInWorkspace && detail.channel !== "image" ? (
+                        <button
+                          type="button"
+                          className="rounded-lg border border-[#03C75A]/40 bg-[#F0FFF5] px-3 py-1 text-[12px] font-semibold text-[#03A94D]"
+                          onClick={() => {
+                            if (onOpenInWorkspace(detail)) {
+                              notify("작업실에 불러왔어요", "success");
+                            }
+                          }}
+                        >
+                          작업실에서 열기
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         className="rounded-lg border border-[#E8EBED] px-3 py-1 text-[12px]"

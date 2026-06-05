@@ -52,6 +52,7 @@ export default function Sidebar({
   userId = null,
   onToast,
   profile = null,
+  focusMode = false,
 }) {
   const { activeBrand, brands } = useBrandWorkspace();
   const { showBrandWarehouse } = useWorkspaceMaturity({
@@ -103,6 +104,10 @@ export default function Sidebar({
   const effectivePrimary = mounted
     ? primaryChannel
     : DEFAULT_USER_PREFERENCES.primaryChannel;
+
+  if (focusMode) {
+    return null;
+  }
 
   return (
     <>

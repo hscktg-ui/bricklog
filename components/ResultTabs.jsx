@@ -1,4 +1,5 @@
 import { EMPTY_STATE } from "@/lib/constants";
+import { EMPTY_STORY } from "@/lib/product/craft";
 import BlogResultView from "./BlogResultView";
 import ChannelTabs from "./ChannelTabs";
 import {
@@ -14,13 +15,13 @@ function EmptyState() {
   return (
     <div className="flex min-h-[280px] flex-col items-center justify-center px-4 text-center">
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F9EF]">
-        <Icon name="sparkles" className="h-7 w-7 text-[#03C75A]" />
+        <Icon name="document" className="h-7 w-7 text-[#03C75A]" />
       </div>
       <p className="text-[15px] font-semibold text-[#191F28]">
         {EMPTY_STATE.title}
       </p>
       <p className="mt-2 whitespace-pre-line text-[13px] leading-relaxed text-[#8B95A1]">
-        {EMPTY_STATE.description}
+        {EMPTY_STATE.description || EMPTY_STORY.body}
       </p>
     </div>
   );
@@ -62,6 +63,9 @@ export default function ResultTabs({
         onTabChange={onTabChange}
         disabled={isGenerating}
         charCount={hasGenerated ? blogChars : null}
+        blogLengthTier={
+          results.blog?._meta?.blogLengthTier || "medium"
+        }
       />
 
       <div className="flex-1 overflow-y-auto p-4">

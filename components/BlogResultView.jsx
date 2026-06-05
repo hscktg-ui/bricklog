@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolveBlogLengthTier } from "@/lib/constants";
 import EditableField from "./EditableField";
 import FullCopyButton from "./FullCopyButton";
@@ -45,12 +46,15 @@ export default function BlogResultView({
   onFeedbackReflected,
   onResultDisplayed,
   conciseView = false,
+  mobileView = false,
 }) {
   const [draft, setDraft] = useState(blog);
   const [savedFlash, setSavedFlash] = useState(false);
   const [sectionsOpen, setSectionsOpen] = useState(false);
   const [expertOpen, setExpertOpen] = useState(false);
+  const isStudio = billingPlanId === "studio";
   const { simpleMode } = useSimpleWorkspaceMode(userId);
+  const mobileSimple = mobileView || conciseView;
   const [showSubheadings, setShowSubheadings] = useState(
     blog?._meta?.includeSubheadings !== false
   );
@@ -62,26 +66,32 @@ export default function BlogResultView({
   const [contentRevealed, setContentRevealed] = useState(true);
 
   useEffect(() => {
-    setContentRevealed(false);
-    if (!blog) return undefined;
-    const t = window.setTimeout(() => {
-      setContentRevealed(true);
-      onResultDisplayed?.();
-    }, 120);
-    return () => window.clearTimeout(t);
+    if (!blog) {
+      setContentRevealed(false);
+      return undefined;
+    }
+    setContentRevealed(true);
+    onResultDisplayed?.();
+    return undefined;
   }, [blogRevealKey, blog, onResultDisplayed]);
 
   useEffect(() => {
     setDraft(blog);
     setSavedFlash(false);
     setSectionsOpen(false);
-    setExpertOpen(!simpleMode);
+    setExpertOpen(false);
     setShowSubheadings(blog?._meta?.includeSubheadings === true);
   }, [blog, simpleMode]);
 
-  const showExpertPanels = !simpleMode || expertOpen;
+  const showExpertPanels = isStudio && expertOpen;
 
   if (!draft) return null;
+
+  const copyText =
+    String(draft.fullCopyText || "").trim() ||
+    formatBlogFullCopy(draft, {
+      includeSubheadings: draft._meta?.includeSubheadings !== false,
+    });
 
   const simWarn = similarity?.warning || draft._meta?.similarity?.warning;
 
@@ -208,12 +218,12 @@ export default function BlogResultView({
               <p className={qualityHint ? "mt-1 text-[#8B95A1]" : ""}>
                 다듬으면 좋을 부분: {v4Suggestions.slice(0, 2).join(", ")}
                 {v4Suggestions.length > 2 ? " 등" : ""} — 마음에 들지 않으면
-                「다시 생성」 또는 직접 수정해 주세요.
+                「{RETRY.cta}」 또는 직접 수정해 주세요.
               </p>
             )}
             {!qualityHint && v4Suggestions.length === 0 && (
               <p>
-                아래 초안을 확인한 뒤, 필요하면 다시 생성하거나 직접 고쳐 주세요.
+                아래 편집본을 확인한 뒤, 필요하면 「{RETRY.cta}」를 누르거나 직접 고쳐 주세요.
               </p>
             )}
           </div>
@@ -226,7 +236,7 @@ export default function BlogResultView({
           </summary>
           <p className="border-t border-[#FFE0B2]/60 px-4 pb-3 pt-2">
             아래는 브랜드 정리·추천 제목·글 뼈대(구성안)입니다. 완성 이야기는 AI
-            연결 후 「이야기 쓰기」로 생성합니다. 플레이스·인스타는 해당 메뉴의
+            연결 후 「조사 후 글 받기」로 이어갑니다. 플레이스·인스타는 해당 메뉴의
             「바로 만들기」로 먼저 쓸 수 있습니다.
           </p>
         </details>
@@ -241,7 +251,17 @@ export default function BlogResultView({
             />
           ) : null}
         </>
-      ) : null}
+      ) : (
+        !isBriefOnly &&
+        (draft._meta?.improvementSuggestions?.[0] ||
+          draft._meta?.qualityHint) && (
+          <p className="rounded-xl border border-[#E8EBED] bg-white px-4 py-3 text-[12px] leading-relaxed text-[#4E5968]">
+            {RESULT_VIEW.readBeforePublish}{" "}
+            {draft._meta?.improvementSuggestions?.[0] ||
+              draft._meta?.qualityHint}
+          </p>
+        )
+      )}
 
       {simWarn && (simpleMode || !showExpertPanels) ? (
         <div
@@ -252,26 +272,39 @@ export default function BlogResultView({
         </div>
       ) : null}
 
-      <p className="text-[11px] font-bold uppercase tracking-wide text-[#03A94D]">
-        최종 콘텐츠
-      </p>
+      {!mobileSimple ? (
+        <p className="text-[11px] font-bold tracking-wide text-[#03A94D]">
+          {RESULT_VIEW.sectionLabel}
+        </p>
+      ) : null}
       <div className="rounded-xl border-2 border-[#03C75A]/25 bg-[#F6FDF9] p-4 md:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[13px] font-bold text-[#191F28]">발행 전 복사용 완성본</p>
+          <p className="text-[13px] font-bold text-[#191F28]">
+            {mobileSimple
+              ? RESULT_VIEW.copyBlockTitleMobile
+              : RESULT_VIEW.copyBlockTitle}
+          </p>
           <FullCopyButton
-            text={draft.fullCopyText}
-            onCopy={() => onCopy?.(draft.fullCopyText)}
+            text={copyText}
+            onCopy={() => onCopy?.(copyText)}
           />
         </div>
-        <p className="mt-1 text-[11px] text-[#8B95A1]">
-          제목·소제목·문단 사이 빈 줄 · 폼 항목 이름(말투·금지어 등)은 포함하지 않음
-        </p>
+        {!mobileSimple ? (
+          <p className="mt-1 text-[11px] text-[#8B95A1]">
+            제목·소제목·문단 사이 빈 줄 · 폼 항목 이름(말투·금지어 등)은
+            포함하지 않음
+          </p>
+        ) : null}
         <pre
-          className={`mt-3 overflow-y-auto whitespace-pre-wrap font-sans text-[13px] leading-relaxed text-[#4E5968] ${
-            conciseView ? "max-h-[min(60vh,480px)]" : "max-h-[280px]"
+          className={`mt-3 overflow-y-auto whitespace-pre-wrap font-sans text-[14px] leading-relaxed text-[#4E5968] ${
+            mobileSimple
+              ? "max-h-[min(58dvh,520px)] text-[14px] leading-[1.65]"
+              : conciseView
+                ? "max-h-[min(60vh,480px)]"
+                : "max-h-[280px]"
           }`}
         >
-          {draft.fullCopyText}
+          {copyText}
         </pre>
         <label className="mt-3 flex items-center gap-2 text-[12px] text-[#4E5968]">
           <input
@@ -297,7 +330,7 @@ export default function BlogResultView({
         </label>
       </div>
 
-      {simpleMode && (
+      {(simpleMode || mobileView) && (
         <button
           type="button"
           onClick={() => setExpertOpen((o) => !o)}
@@ -305,7 +338,9 @@ export default function BlogResultView({
         >
           {expertOpen
             ? "간단히 보기"
-            : "전문가 보기 — 점검·제목 수정·피드백"}
+            : mobileView
+              ? "제목·수정"
+              : "더 보기 — 제목·수정·피드백"}
         </button>
       )}
 
@@ -373,7 +408,7 @@ export default function BlogResultView({
             {!meetsMin &&
               ` · 권장 ${lengthTier.target.toLocaleString()}자 (${lengthTier.min.toLocaleString()}자+)`}
           </div>
-          {typeof qualityScore === "number" && (
+          {isStudio && typeof qualityScore === "number" && (
             <div
               className={`rounded-xl border px-3 py-2 text-[11px] font-semibold ${
                 qualityScore >= USER_QUALITY_GOAL && !draft._meta?.outputWithheld
@@ -398,7 +433,9 @@ export default function BlogResultView({
           )}
         </div>
 
-        <CoreQualityMetaPanel meta={draft._meta} />
+        {isStudio && expertOpen ? (
+          <CoreQualityMetaPanel meta={draft._meta} />
+        ) : null}
 
         <button
           type="button"

@@ -25,7 +25,7 @@ export default function DemoFlow({ sample, previewDevice = "desktop" }) {
           쓰는 순서
         </h2>
         <p className="mt-2 text-center text-[14px] leading-relaxed text-[#8B95A1]">
-          브랜드 · 지역 → 오늘의 주제 → 이야기 쓰기 → 플레이스 · 인스타 → 복사
+          브랜드 · 지역 → 오늘의 주제 → 조사 후 글 받기 → 플레이스 · 인스타 → 복사
         </p>
 
         <div className="mt-8 overflow-hidden rounded-2xl border border-[#E8EBED] bg-white shadow-[0_8px_40px_rgba(0,0,0,0.06)]">

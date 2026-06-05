@@ -176,10 +176,10 @@ export default function ContentFeedbackPanel({
             ? "저장 중…"
             : willReflect
               ? channel === "place"
-                ? "피드백 보내고 플레이스 재생성"
+                ? "반영해서 플레이스 다듬기"
                 : channel === "instagram"
-                  ? "피드백 보내고 인스타 재생성"
-                  : "피드백 보내고 글에 반영"
+                  ? "반영해서 인스타 다듬기"
+                  : "반영해서 다듬기"
               : "피드백 보내기"}
       </button>
     </div>

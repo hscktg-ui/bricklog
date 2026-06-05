@@ -39,4 +39,4 @@ Next.js 16 · Supabase · OpenAI · 토스페이먼츠
 
 ## 문의
 
-운영: `.env`의 `NEXT_PUBLIC_BRICLOG_CONTACT_EMAIL` (기본 `support@briclog.app`)
+운영: `.env`의 `NEXT_PUBLIC_BRICLOG_CONTACT_EMAIL` (기본 `support@briclog.ai`)

@@ -78,7 +78,7 @@ export default function BrandMemoryPanel({
         <div className="mt-2 space-y-2 rounded-lg border border-[#E8EBED] bg-[#F7F8FA] p-2">
           <p className="text-[10px] leading-snug text-[#8B95A1]">
             이 브랜드만의 화자·문체·금지어·문장 습관입니다. 검수·피드백이
-            쌓이면 다음 「이야기 쓰기」 초안에 자동 반영됩니다.
+            쌓이면 다음 「조사 후 글 받기」에 자동 반영됩니다.
           </p>
           <p className="text-[10px] font-medium text-[#4E5968]">
             이 브랜드에 쌓인 기록은 계속 이어집니다

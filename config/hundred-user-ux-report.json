@@ -1,0 +1,931 @@
+{
+  "base": "http://localhost:3005",
+  "at": "2026-05-27T07:58:34.827Z",
+  "personaCount": 100,
+  "loggedIn": false,
+  "runs": [
+    {
+      "id": "u001",
+      "label": "카페·F&B · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": false
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": false
+        }
+      ]
+    },
+    {
+      "id": "u002",
+      "label": "카페·F&B · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "tablet",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u003",
+      "label": "카페·F&B · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u004",
+      "label": "카페·F&B · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u005",
+      "label": "카페·F&B · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u006",
+      "label": "카페·F&B · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u007",
+      "label": "카페·F&B · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u008",
+      "label": "카페·F&B · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u009",
+      "label": "카페·F&B · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u010",
+      "label": "카페·F&B · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u011",
+      "label": "꽃집·선물 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u012",
+      "label": "꽃집·선물 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "desktop",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u013",
+      "label": "꽃집·선물 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u014",
+      "label": "꽃집·선물 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u015",
+      "label": "꽃집·선물 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u016",
+      "label": "꽃집·선물 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u017",
+      "label": "꽃집·선물 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u018",
+      "label": "꽃집·선물 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u019",
+      "label": "꽃집·선물 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u020",
+      "label": "꽃집·선물 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u021",
+      "label": "의료·클리닉 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u022",
+      "label": "의료·클리닉 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u023",
+      "label": "의료·클리닉 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u024",
+      "label": "의료·클리닉 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u025",
+      "label": "의료·클리닉 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u026",
+      "label": "의료·클리닉 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u027",
+      "label": "의료·클리닉 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u028",
+      "label": "의료·클리닉 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u029",
+      "label": "의료·클리닉 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u030",
+      "label": "의료·클리닉 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u031",
+      "label": "뷰티·피부 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u032",
+      "label": "뷰티·피부 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "tablet",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u033",
+      "label": "뷰티·피부 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u034",
+      "label": "뷰티·피부 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u035",
+      "label": "뷰티·피부 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u036",
+      "label": "뷰티·피부 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u037",
+      "label": "뷰티·피부 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u038",
+      "label": "뷰티·피부 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u039",
+      "label": "뷰티·피부 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u040",
+      "label": "뷰티·피부 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u041",
+      "label": "학원·교육 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u042",
+      "label": "학원·교육 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "desktop",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u043",
+      "label": "학원·교육 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u044",
+      "label": "학원·교육 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u045",
+      "label": "학원·교육 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u046",
+      "label": "학원·교육 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u047",
+      "label": "학원·교육 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u048",
+      "label": "학원·교육 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u049",
+      "label": "학원·교육 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u050",
+      "label": "학원·교육 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u051",
+      "label": "음식점 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u052",
+      "label": "음식점 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u053",
+      "label": "음식점 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u054",
+      "label": "음식점 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u055",
+      "label": "음식점 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u056",
+      "label": "음식점 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u057",
+      "label": "음식점 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u058",
+      "label": "음식점 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u059",
+      "label": "음식점 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u060",
+      "label": "음식점 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u061",
+      "label": "리테일·패션 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u062",
+      "label": "리테일·패션 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "tablet",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u063",
+      "label": "리테일·패션 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u064",
+      "label": "리테일·패션 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u065",
+      "label": "리테일·패션 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u066",
+      "label": "리테일·패션 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u067",
+      "label": "리테일·패션 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u068",
+      "label": "리테일·패션 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u069",
+      "label": "리테일·패션 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u070",
+      "label": "리테일·패션 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u071",
+      "label": "피트니스·운동 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u072",
+      "label": "피트니스·운동 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "desktop",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u073",
+      "label": "피트니스·운동 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u074",
+      "label": "피트니스·운동 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u075",
+      "label": "피트니스·운동 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u076",
+      "label": "피트니스·운동 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u077",
+      "label": "피트니스·운동 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u078",
+      "label": "피트니스·운동 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u079",
+      "label": "피트니스·운동 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u080",
+      "label": "피트니스·운동 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u081",
+      "label": "전문서비스 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u082",
+      "label": "전문서비스 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u083",
+      "label": "전문서비스 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u084",
+      "label": "전문서비스 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u085",
+      "label": "전문서비스 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u086",
+      "label": "전문서비스 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u087",
+      "label": "전문서비스 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u088",
+      "label": "전문서비스 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u089",
+      "label": "전문서비스 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u090",
+      "label": "전문서비스 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u091",
+      "label": "숙박·펜션 · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u092",
+      "label": "숙박·펜션 · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "tablet",
+      "status": "fail",
+      "steps": [],
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "id": "u093",
+      "label": "숙박·펜션 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u094",
+      "label": "숙박·펜션 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u095",
+      "label": "숙박·펜션 · 이메일 미인증",
+      "journeyType": "email_unverified",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u096",
+      "label": "숙박·펜션 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u097",
+      "label": "숙박·펜션 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u098",
+      "label": "숙박·펜션 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u099",
+      "label": "숙박·펜션 · 붙여넣기 검수",
+      "journeyType": "paste_review",
+      "device": "desktop",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    },
+    {
+      "id": "u100",
+      "label": "숙박·펜션 · 기록·브랜드 작업실",
+      "journeyType": "history_power",
+      "device": "tablet",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required_but_login_failed"
+    }
+  ]
+}

@@ -10,15 +10,18 @@ import {
   getUsageSummary,
 } from "@/lib/billing/usageLedger";
 import { logError } from "@/lib/api/logEvent";
-import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
+import { prepareBrandFirstInput } from "@/lib/memory/brandFirstPrewriteGate";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { buildDeliverableBlogFallback } from "@/lib/llm/blogDeliveryFallback";
 import { enrichMinimalBlogInput } from "@/lib/llm/blogDeliveryFallback";
 import {
   blockUnverifiedBlogApiResponse,
-  requiresV2ResearchGate,
-  researchGateBlockedResult,
 } from "@/lib/content/v2PipelineGate";
+import {
+  isBrandFirstEngineEnabled,
+  isOfficialSourceFirstEnabled,
+  isStrictBrandGuardEnabled,
+} from "@/lib/config/brandEngineFlags";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -72,30 +75,29 @@ export async function POST(request) {
     const input = await request.json();
     savedInput = input;
     input.billingPlan = entitlement.usage?.planId || "free";
-    let personalization = null;
-    if (input.brandId || input.brandMemory) {
-      personalization = await loadBrandMemoryBundle(
-        auth.supabase,
-        auth.user.id,
-        input.brandId,
-        { localBrandMemory: input.brandMemory }
+    const prepared = await prepareBrandFirstInput({
+      supabase: auth.supabase,
+      userId: auth.user.id,
+      input,
+    });
+    if (!prepared.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          mode: "brand_memory_gate",
+          userMessage: prepared.userMessage,
+        },
+        { status: 422 }
       );
-      input.accountBrief = personalization.accountBrief;
-      input.userWritingBrief = personalization.userBrief;
-      input.brandFeedbackBrief = personalization.feedbackBrief;
-      input.styleContinuityBrief = personalization.styleContinuityBrief;
-      input.brandKnowledgeBrief = personalization.brandKnowledgeBrief;
-      if (personalization.brandBrief) {
-        input.brandHabitsBrief = personalization.brandBrief;
-      }
-      input.personalizationAddon = personalization.combinedPromptAddon;
-      input.combinedPersonalizationAddon = personalization.combinedPromptAddon;
     }
-    input.v2AxisRequired = input.v2AxisRequired !== false;
-    input.v2PipelineEnforced = true;
-    input.v3EngineEnforced = true;
-    const rawResult = await generateBlogWithLLMFirst(input);
-    const result = blockUnverifiedBlogApiResponse(rawResult, input);
+    const personalization = prepared.personalization;
+    const requestInput = prepared.input;
+    requestInput.v2AxisRequired = requestInput.v2AxisRequired !== false;
+    requestInput.v2PipelineEnforced = true;
+    requestInput.v3EngineEnforced = true;
+    requestInput.betaTestGuardEnforced = true;
+    const rawResult = await generateBlogWithLLMFirst(requestInput);
+    const result = blockUnverifiedBlogApiResponse(rawResult, requestInput);
 
     if (
       result.blogContent &&
@@ -113,6 +115,14 @@ export async function POST(request) {
     );
     return NextResponse.json({
       ...result,
+      meta: {
+        ...(result.meta || {}),
+        rolloutFlags: {
+          brandFirstEngine: isBrandFirstEngineEnabled(),
+          strictBrandGuard: isStrictBrandGuardEnabled(),
+          officialSourceFirst: isOfficialSourceFirstEnabled(),
+        },
+      },
       personalization,
       usageWarning: usageAfter.usageWarning,
       usage: usageAfter,
@@ -125,40 +135,29 @@ export async function POST(request) {
       message: err.message,
       accessToken: auth.token,
     });
-    if (requiresV2ResearchGate({ ...savedInput, v2AxisRequired: true })) {
-      return NextResponse.json(
-        researchGateBlockedResult(
-          { ...savedInput, v2AxisRequired: true },
-          {
-            ok: false,
-            userMessage:
-              "조사·검증 없이 오류 대체 글을 출력할 수 없습니다. 잠시 후 다시 시도해 주세요.",
-            reasons: ["server_error_no_fallback"],
-          }
-        ),
-        { status: 422 }
-      );
-    }
     try {
-      const enriched = enrichMinimalBlogInput(savedInput);
+      const enriched = enrichMinimalBlogInput({
+        ...savedInput,
+        v2PipelineEnforced: true,
+        v3EngineEnforced: true,
+        betaTestGuardEnforced: true,
+      });
       const { pack } = buildDeliverableBlogFallback({
         input: enriched,
         prep: { ok: false, reason: "server_error" },
         failures: ["server_error"],
       });
-      return NextResponse.json({
-        ok: true,
-        mode: "draft_fallback",
-        llmAvailable: false,
-        blogContent: pack,
-        softPass: true,
-        withheld: false,
-        meta: {
-          generationMode: "server_error_fallback",
-          draftFallback: true,
-          blogCharCount: pack._meta?.charCount,
+      const blocked = blockUnverifiedBlogApiResponse(
+        {
+          ok: false,
+          mode: "server_error",
+          llmAvailable: false,
+          blogContent: pack,
         },
-        userMessage: null,
+        enriched
+      );
+      return NextResponse.json({
+        ...blocked,
         userDetail: mapServiceError("ai_generate"),
         baseContentLabel: null,
       });

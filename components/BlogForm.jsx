@@ -6,9 +6,9 @@ import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import {
   BLOG_PURPOSE_OPTIONS,
   BLOG_TONE_OPTIONS,
-  BLOG_LENGTH_TIER_OPTIONS,
   CONTENT_KPI_OPTIONS,
   CONTENT_OBJECTIVE_OPTIONS,
+  CONTENT_PERSPECTIVE_OPTIONS,
 } from "@/lib/constants";
 import { getKpiModifier } from "@/lib/kpi/contentGoals";
 import { EMOJI_DENSITY_OPTIONS } from "@/lib/emoji/emojiDensityEngine";
@@ -20,14 +20,25 @@ import {
   resolveContentPersona,
 } from "@/lib/persona/contentPersona";
 import { V4_SPEAKER_OPTIONS } from "@/lib/persona/v4Speakers";
-import { EMOTION_TEMPERATURE_OPTIONS } from "@/lib/emotion/emotionTemperature";
 import {
-  SPEECH_STYLE_OPTIONS,
-  PROFICIENCY_OPTIONS,
-} from "@/lib/constitution/writingConstitutionV2";
+  describeLinkedPersona,
+  getSpeakerPersonaFields,
+  isSpeakerPersonaLocked,
+} from "@/lib/persona/syncSpeakerPersona";
+import { EMOTION_TEMPERATURE_OPTIONS } from "@/lib/emotion/emotionTemperature";
+import { SPEECH_STYLE_OPTIONS } from "@/lib/constitution/writingConstitutionV2";
+import {
+  WRITING_SKILL_LEVEL_OPTIONS,
+  resolveWritingSkillLevel,
+} from "@/lib/content/writingSkillLevel";
+import { resolveContentPerspective } from "@/lib/content/perspectiveEngine";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import ResearchModePanel from "@/components/research/ResearchModePanel";
 import WriteFlowSteps from "@/components/product/WriteFlowSteps";
+import {
+  getBlogLengthFieldLabel,
+  getBlogLengthTierOptionsForUi,
+} from "@/lib/product/missionUi";
 import { isDeferFormUntilCommit } from "@/lib/config/productFlags";
 
 const fieldClass =
@@ -58,8 +69,10 @@ function BlogForm({
   onAdvancedToggle,
   compact = false,
   simpleMode = false,
+  mobileSimplified = false,
   deferParentSync = isDeferFormUntilCommit(),
 }) {
+  const effectiveSimple = simpleMode || mobileSimplified;
   const pauseFlushRef = useRef(false);
   const regionComposingRef = useRef(false);
   const regionInputRef = useRef(null);
@@ -96,6 +109,8 @@ function BlogForm({
   const set = (key, val) => patch({ [key]: val });
   const textBlur = flushPending;
   const topicRef = useRef(null);
+  const lengthTierOptions = useMemo(() => getBlogLengthTierOptionsForUi(), []);
+  const lengthFieldLabel = useMemo(() => getBlogLengthFieldLabel(), []);
 
   useEffect(() => {
     if (!formValues.region?.trim()) {
@@ -176,6 +191,27 @@ function BlogForm({
         })
       : null;
 
+  const speakerLocked = isSpeakerPersonaLocked(formValues.v4Speaker);
+  const linkedPersona = speakerLocked
+    ? describeLinkedPersona(formValues.v4Speaker)
+    : null;
+
+  const resolvedPerspective =
+    formValues.contentPerspective === "auto"
+      ? resolveContentPerspective({
+          contentPerspective: "auto",
+          topic: formValues.topic,
+          purpose: formValues.purpose,
+          includePhrases: formValues.includePhrases,
+          mainKeyword: formValues.mainKeyword,
+          contentObjective: formValues.contentObjective,
+          tone: formValues.tone,
+          competitors: formValues.competitors,
+          brandName: formValues.brandName,
+          region: formValues.region,
+        })
+      : null;
+
   const optionalFields = (
     <>
       <Field label="브랜드 유형">
@@ -215,9 +251,9 @@ function BlogForm({
         )}
       </Field>
 
-      <Field label="글 분량">
+      <Field label={lengthFieldLabel}>
         <div className="grid grid-cols-3 gap-2">
-          {BLOG_LENGTH_TIER_OPTIONS.map((o) => (
+          {lengthTierOptions.map((o) => (
             <button
               key={o.value}
               type="button"
@@ -239,6 +275,33 @@ function BlogForm({
             </button>
           ))}
         </div>
+      </Field>
+
+      <Field label="콘텐츠 관점">
+        <select
+          className={fieldClass}
+          value={formValues.contentPerspective || "auto"}
+          onChange={(e) => set("contentPerspective", e.target.value)}
+        >
+          {CONTENT_PERSPECTIVE_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+        {!compact && (
+          <p className="mt-1 text-[11px] text-[#8B95A1]">
+            {CONTENT_PERSPECTIVE_OPTIONS.find(
+              (o) => o.value === (formValues.contentPerspective || "auto")
+            )?.hint || "글의 시선·구조·톤을 정합니다"}
+            {resolvedPerspective?.source === "auto" && resolvedPerspective?.label && (
+              <span className="text-[#03A94D]">
+                {" "}
+                · 추천: {resolvedPerspective.label}
+              </span>
+            )}
+          </p>
+        )}
       </Field>
     </>
   );
@@ -306,39 +369,45 @@ function BlogForm({
         />
       </Field>
 
-      {!simpleMode && (
-        <ResearchModePanel
-          compact={compact}
-          enabled={Boolean(formValues.researchEnabled)}
-          types={formValues.researchTypes || []}
-          query={formValues.researchQuery || ""}
-          onEnabledChange={(v) => patchImmediate({ researchEnabled: v })}
-          onTypesChange={(ids) => patchImmediate({ researchTypes: ids })}
-          onQueryChange={(q) => set("researchQuery", q)}
-        />
-      )}
-
-      {!simpleMode && (
+      {!effectiveSimple && (
       <button
         type="button"
         onClick={onAdvancedToggle}
         className="text-[12px] font-medium text-[#8B95A1] hover:text-[#4E5968]"
       >
         {advancedOpen
-          ? "▾ 세부 설정 접기"
+          ? "▾ 더 맞추기 접기"
           : compact
-            ? "▸ 톤·키워드 등 (선택)"
-            : "▸ 세부 설정 (선택)"}
+            ? "▸ 더 맞추기 (톤·조사·키워드)"
+            : "▸ 더 맞추기 (톤·조사·키워드·분량)"}
       </button>
       )}
 
-      {!simpleMode && advancedOpen && (
+      {!effectiveSimple && advancedOpen && (
         <div className="rounded-xl border border-dashed border-[#E8EBED] bg-[#FAFBFC] p-4 space-y-3">
+          <ResearchModePanel
+            compact={compact}
+            enabled={Boolean(formValues.researchEnabled)}
+            types={formValues.researchTypes || []}
+            query={formValues.researchQuery || ""}
+            onEnabledChange={(v) => patchImmediate({ researchEnabled: v })}
+            onTypesChange={(ids) => patchImmediate({ researchTypes: ids })}
+            onQueryChange={(q) => set("researchQuery", q)}
+          />
           <Field label="화자">
             <select
               className={fieldClass}
               value={formValues.v4Speaker || "auto"}
-              onChange={(e) => patchImmediate({ v4Speaker: e.target.value })}
+              onChange={(e) => {
+                const v4Speaker = e.target.value;
+                const patch = { v4Speaker };
+                const linked = getSpeakerPersonaFields(v4Speaker);
+                if (linked) {
+                  patch.contentPersona = linked.contentPersona;
+                  patch.contentPersonaSubtype = linked.contentPersonaSubtype;
+                }
+                patchImmediate(patch);
+              }}
             >
               {V4_SPEAKER_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -346,11 +415,17 @@ function BlogForm({
                 </option>
               ))}
             </select>
-            {!compact && (
-              <p className="mt-1 text-[11px] text-[#8B95A1]">
-                선택하지 않으면 브랜드·주제에 맞게 자동 결정됩니다.
-              </p>
-            )}
+            {!compact && (() => {
+              const hint = V4_SPEAKER_OPTIONS.find(
+                (o) => o.value === (formValues.v4Speaker || "auto")
+              )?.engineHint;
+              return (
+                <p className="mt-1 text-[11px] text-[#8B95A1]">
+                  {hint ||
+                    "자동 추천 시 주제·브랜드에 맞는 Editor·Humanity·품질 프로필이 적용됩니다."}
+                </p>
+              );
+            })()}
           </Field>
           <Field label="감정">
             <select
@@ -385,69 +460,111 @@ function BlogForm({
               </p>
             )}
           </Field>
-          <Field label="숙련도 (기본: 전문 에디터)">
-            <select
-              className={fieldClass}
-              value={formValues.proficiency || "editor_pro"}
-              onChange={(e) => patchImmediate({ proficiency: e.target.value })}
-            >
-              {PROFICIENCY_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
+          <Field label="글쓰기 톤">
+            <div className="grid grid-cols-3 gap-2">
+              {WRITING_SKILL_LEVEL_OPTIONS.map((o) => {
+                const active =
+                  resolveWritingSkillLevel(formValues).value === o.value;
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() =>
+                      patchImmediate({
+                        writingSkillLevel: o.value,
+                        proficiency: o.proficiency,
+                      })
+                    }
+                    className={`briclog-pressable min-h-[44px] rounded-lg border px-2 py-2 text-left ${
+                      active
+                        ? "border-[#03C75A] bg-[#E8F9EF]"
+                        : "border-[#E8EBED] bg-white"
+                    }`}
+                  >
+                    <span className="block text-[13px] font-semibold text-[#191F28]">
+                      {o.label}
+                    </span>
+                    {!compact && (
+                      <span className="mt-0.5 block text-[10px] leading-snug text-[#8B95A1]">
+                        {o.hint.slice(0, 36)}
+                        {o.hint.length > 36 ? "…" : ""}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
             {!compact && (
               <p className="mt-1 text-[11px] text-[#8B95A1]">
-                기본값은 전문 에디터 기준으로 다듬습니다.
+                분량은 「글 분량」에서 고르는 약속입니다. 여기서는 말하는 사람
+                느낌만 맞춥니다.
               </p>
             )}
           </Field>
-          <Field label="세부 관점 (고급)">
-            <select
-              className={fieldClass}
-              value={formValues.contentPersona || "auto"}
-              onChange={(e) =>
-                patchImmediate({
-                  contentPersona: e.target.value,
-                  contentPersonaSubtype: "",
-                })
-              }
-            >
-              {CONTENT_PERSONA_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-            {!compact && (
-              <p className="mt-1 text-[11px] text-[#8B95A1]">
-                {personaDef?.desc}
-                {resolved?.source === "auto" && resolved?.label && (
-                  <span className="text-[#03A94D]">
-                    {" "}
-                    · 추천: {resolved.label}
-                  </span>
-                )}
+          {speakerLocked && linkedPersona ? (
+            <Field label="세부 관점">
+              <p className="rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-[13px] text-[#4E5968]">
+                화자 「{linkedPersona.speakerLabel}」와 연동 ·{" "}
+                {linkedPersona.personaLabel}
+                {linkedPersona.subtypeLabel
+                  ? ` · ${linkedPersona.subtypeLabel}`
+                  : ""}
               </p>
-            )}
-            {personaDef?.subtypes?.length > 0 &&
-              formValues.contentPersona &&
-              formValues.contentPersona !== "auto" && (
-                <select
-                  className={`${fieldClass} mt-2`}
-                  value={formValues.contentPersonaSubtype || ""}
-                  onChange={(e) => set("contentPersonaSubtype", e.target.value)}
-                >
-                  <option value="">세부 관점 (자동)</option>
-                  {personaDef.subtypes.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
+              {!compact && (
+                <p className="mt-1 text-[11px] text-[#8B95A1]">
+                  세부 관점을 바꾸려면 화자를 「자동추천」으로 두세요.
+                </p>
               )}
-          </Field>
+            </Field>
+          ) : (
+            <Field label="세부 관점">
+              <select
+                className={fieldClass}
+                value={formValues.contentPersona || "auto"}
+                onChange={(e) =>
+                  patchImmediate({
+                    contentPersona: e.target.value,
+                    contentPersonaSubtype: "",
+                  })
+                }
+              >
+                {CONTENT_PERSONA_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              {!compact && (
+                <p className="mt-1 text-[11px] text-[#8B95A1]">
+                  {personaDef?.desc}
+                  {resolved?.source === "auto" && resolved?.label && (
+                    <span className="text-[#03A94D]">
+                      {" "}
+                      · 추천: {resolved.label}
+                    </span>
+                  )}
+                </p>
+              )}
+              {personaDef?.subtypes?.length > 0 &&
+                formValues.contentPersona &&
+                formValues.contentPersona !== "auto" && (
+                  <select
+                    className={`${fieldClass} mt-2`}
+                    value={formValues.contentPersonaSubtype || ""}
+                    onChange={(e) =>
+                      set("contentPersonaSubtype", e.target.value)
+                    }
+                  >
+                    <option value="">세부 관점 (자동)</option>
+                    {personaDef.subtypes.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+            </Field>
+          )}
           <Field label="메인 키워드" error={errors.mainKeyword}>
             <input
               className={fieldClass}
@@ -506,7 +623,7 @@ function BlogForm({
           <Field label="이모지">
             <select
               className={fieldClass}
-              value={formValues.emojiDensity || "low"}
+              value={formValues.emojiDensity || "none"}
               onChange={(e) => set("emojiDensity", e.target.value)}
             >
               {EMOJI_DENSITY_OPTIONS.map((o) => (

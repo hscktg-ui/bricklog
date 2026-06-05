@@ -45,7 +45,7 @@ export default function HeaderPlanControl({
         className="inline-flex min-h-[32px] items-center gap-1 rounded-xl border border-[#03C75A]/45 bg-[#F8FDF9] px-2 py-1 text-[11px] font-semibold text-[#03A94D] shadow-sm transition hover:border-[#03C75A] hover:bg-[#E8F9EF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#03C75A] disabled:opacity-50 sm:min-h-[36px] sm:px-3 sm:text-[13px]"
         aria-label="플랜 변경 및 결제"
       >
-        <Icon name="sparkles" className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+        <Icon name="document" className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
         <span>플랜</span>
       </button>
     </div>

@@ -3,7 +3,7 @@
 import BlogForm from "@/components/BlogForm";
 import BlogResultView from "@/components/BlogResultView";
 import Icon from "@/components/Icon";
-import { BLOG_MIN_BODY_CHARS } from "@/lib/constants";
+import { EMPTY_STORY, WORKSPACE_BLOG } from "@/lib/product/craft";
 
 export default function BlogWorkspace({
   values,
@@ -21,10 +21,11 @@ export default function BlogWorkspace({
     <div className="flex min-h-0 flex-1 overflow-hidden">
       <div className="min-h-0 w-full shrink-0 overflow-y-auto border-r border-[#E8EBED] bg-white lg:w-[380px]">
         <div className="p-6">
-          <h2 className="text-[18px] font-bold text-[#191F28]">블로그 본문</h2>
+          <h2 className="text-[18px] font-bold text-[#191F28]">
+            {WORKSPACE_BLOG.title}
+          </h2>
           <p className="mt-1 text-[13px] leading-relaxed text-[#8B95A1]">
-            이야기를 만든 뒤 플레이스·인스타는 자동 연동됩니다. 프롬프트는
-            「프롬프트」 메뉴에서 따로 만듭니다.
+            {WORKSPACE_BLOG.tagline}
           </p>
           <div className="mt-6">
             <BlogForm
@@ -44,12 +45,12 @@ export default function BlogWorkspace({
             {isGenerating ? (
               <>
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                생성 중…
+                {WORKSPACE_BLOG.ctaBusy}
               </>
             ) : (
               <>
-                <Icon name="sparkles" className="h-5 w-5" />
-                블로그 본문 생성
+                <Icon name="document" className="h-5 w-5" />
+                {WORKSPACE_BLOG.cta}
               </>
             )}
           </button>
@@ -68,11 +69,10 @@ export default function BlogWorkspace({
               <Icon name="document" className="h-7 w-7 text-[#03C75A]" />
             </div>
             <p className="text-[15px] font-medium text-[#4E5968]">
-              블로그 본문이 여기에 표시됩니다
+              {EMPTY_STORY.title}
             </p>
             <p className="mt-2 max-w-sm text-[13px] leading-relaxed text-[#8B95A1]">
-              최소 {BLOG_MIN_BODY_CHARS.toLocaleString()}자(공백 제외) · 제목 5개 ·
-              섹션 · 마무리 · 해시태그
+              {EMPTY_STORY.body}
             </p>
           </div>
         ) : (

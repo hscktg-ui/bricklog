@@ -11,6 +11,16 @@ import {
 } from "@/lib/audio/briclogSounds";
 
 export const WELCOME_DISMISS_SESSION_KEY = "briclog-welcome-dismissed";
+const WELCOME_DISMISS_PERMANENT_KEY = "briclog-welcome-dismissed-permanent";
+
+export function isWelcomeDismissedPermanent() {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(WELCOME_DISMISS_PERMANENT_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 const AUTO_DISMISS_MS = 1800;
 
@@ -31,6 +41,7 @@ export default function WelcomeOverlay({
   const dismiss = useCallback(() => {
     try {
       sessionStorage.setItem(WELCOME_DISMISS_SESSION_KEY, "1");
+      localStorage.setItem(WELCOME_DISMISS_PERMANENT_KEY, "1");
     } catch {
       /* ignore */
     }
@@ -129,11 +140,16 @@ export default function WelcomeOverlay({
           <p className="mt-4 text-[14px] leading-relaxed text-[#191F28]">
             {lastPostLine}
           </p>
+          {visitCount <= 1 ? (
+            <p className="mt-2 text-[13px] leading-relaxed text-[#8B95A1]">
+              {WELCOME.situationHint}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-3 bg-white/70 px-6 py-4 md:px-8">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#E8F9EF]">
-            <Icon name="sparkles" className="h-5 w-5 text-[#03A94D]" />
+            <Icon name="document" className="h-5 w-5 text-[#03A94D]" />
           </div>
           <p className="min-w-0 flex-1 text-[12px] leading-snug text-[#8B95A1]">
             {WELCOME.footer}

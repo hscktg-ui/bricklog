@@ -2,11 +2,13 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import EmptyStoryPanel from "@/components/product/EmptyStoryPanel";
-import { EMPTY_STORY, WORKSPACE_BLOG } from "@/lib/product/craft";
+import { EMPTY_STORY, MOBILE_STORY, WORKSPACE_BLOG } from "@/lib/product/craft";
 import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import StickyCopyBar from "@/components/StickyCopyBar";
 import { useChannelLayoutMode } from "@/hooks/useChannelLayoutMode";
 import { useViewport } from "@/hooks/useViewport";
+import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
+import MobileStoryChrome from "@/components/workspace/MobileStoryChrome";
 import { useWorkspaceCompact } from "@/hooks/useWorkspaceCompact";
 import WorkspaceChannelIntro from "@/components/workspace/WorkspaceChannelIntro";
 import BlogForm from "@/components/BlogForm";
@@ -23,6 +25,7 @@ import {
 } from "@/context/ContentContext";
 import { isEmailVerified } from "@/lib/auth/emailVerification";
 import { EMAIL_VERIFY } from "@/lib/product/craft";
+import { resolveBlogHintPanelTitle } from "@/lib/product/customerOutput";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import {
   isFormValid as checkFormValid,
@@ -48,6 +51,8 @@ import {
 } from "@/lib/onboarding/resolveQuickDemoInput";
 import ChannelPackToggle from "@/components/blog/ChannelPackToggle";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
+import ChannelExpandCard from "@/components/product/ChannelExpandCard";
+import { RESULT_VIEW } from "@/lib/product/craft";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
@@ -69,9 +74,9 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   userId,
   brandId,
   activeBrand,
-  formOpen,
-  setFormOpen,
   hideFormPanel,
+  mobileIdleFull = false,
+  onStartGenerate,
   onPlanChange,
 }) {
   const goHistory =
@@ -87,17 +92,39 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     generateBlog,
     llmStatus,
     blogGenHint,
+    blogGenHintSoft,
     memoryContentIds,
     user,
     demoMode,
     billingPlanId,
     billingBypassQuotas,
-    blogResultRevealPending,
     loadingOverlay,
   } = useContentPipelineState();
 
   const storyBusy =
-    generating.blog || Boolean(loadingOverlay?.active);
+    generating.blog ||
+    Boolean(
+      loadingOverlay?.active &&
+        (loadingOverlay.channel === "blog" ||
+          loadingOverlay.channel === "pipeline")
+    );
+
+  /** 이전 생성 실패 후 진행 중 오버레이만 남으면 「이야기 쓰기」 복구 (완료 애니메이션은 유지) */
+  useEffect(() => {
+    if (generating.blog || loadingOverlay?.complete) return;
+    if (
+      loadingOverlay?.active &&
+      (loadingOverlay.channel === "blog" ||
+        loadingOverlay.channel === "pipeline")
+    ) {
+      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    }
+  }, [
+    generating.blog,
+    loadingOverlay?.active,
+    loadingOverlay?.complete,
+    loadingOverlay?.channel,
+  ]);
 
   const { usage: billingUsage, phase: billingPhase } = useBillingUsage();
   const { simpleMode } = useSimpleWorkspaceMode(userId);
@@ -107,7 +134,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     isContentQuotaExhausted(billingUsage);
 
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [blogOnly, setBlogOnly] = useState(true);
+  const [blogOnly, setBlogOnly] = useState(false);
   const {
     draft: draftForm,
     setDraft: setDraftForm,
@@ -116,6 +143,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   } = useDeferredWorkspaceForm(blogInput, setBlogInput);
   const debouncedDraftForSave = useDebouncedValue(draftForm, 900);
   const { isMobile } = useViewport();
+  const { formScrollPadClass } = useMobileWriteUx();
 
   useEffect(() => {
     setBlogOnly(loadBlogOnlyPref());
@@ -165,17 +193,10 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       formApiRef.current?.replaceAll?.(next);
       setDraftForm(next);
       setTouched(true);
-      if (isMobile) setFormOpen(false);
+      onStartGenerate?.();
       generateBlog(next, { blogOnly });
     },
-    [
-      generateBlog,
-      blogOnly,
-      setTouched,
-      setDraftForm,
-      isMobile,
-      setFormOpen,
-    ]
+    [generateBlog, blogOnly, setTouched, setDraftForm, onStartGenerate]
   );
 
   const runGenerate = useCallback(() => {
@@ -253,32 +274,45 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         "브랜드 · 지역 · 주제를 입력해 주세요"
       : null;
 
+  const generatingNote = isMobile
+    ? MOBILE_STORY.generatingNote
+    : WORKSPACE_BLOG.generatingNote;
+
   return (
     <>
-      {blogContent && isMobile && (
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[#E8EBED] bg-white px-4 py-2 lg:hidden">
-          <button
-            type="button"
-            onClick={() => setFormOpen((o) => !o)}
-            className="min-h-[40px] rounded-lg border border-[#E8EBED] px-3 py-2 text-[12px] font-semibold text-[#4E5968] hover:bg-[#F7F8FA]"
-          >
-            {formOpen ? "결과 보기" : "주제·설정"}
-          </button>
-          <ChannelLayoutToggle layoutMode={layoutMode} onChange={setLayoutMode} />
-        </div>
-      )}
-
       <div
-        className={`min-h-0 w-full shrink-0 overflow-y-auto border-[#E8EBED] bg-white max-lg:max-h-[52dvh] max-lg:border-b lg:block lg:w-[min(380px,38vw)] lg:max-w-[420px] lg:border-r ${
+        className={`flex min-h-0 w-full shrink-0 flex-col border-[#E8EBED] bg-white lg:block lg:w-[min(380px,38vw)] lg:max-w-[420px] lg:border-r ${
           hideFormPanel ? "max-lg:hidden" : ""
-        }`}
+        } ${mobileIdleFull ? "max-lg:min-h-0 max-lg:flex-1" : "max-lg:max-h-[min(46dvh,420px)] max-lg:border-b"}`}
       >
-        <div className={`${compact ? "p-3" : "p-4"} md:p-6`}>
+        <div
+          className={`min-h-0 flex-1 overflow-y-auto ${formScrollPadClass} ${compact ? "p-3" : "p-4"} md:p-6`}
+        >
+          {isMobile && blogGenHint ? (
+            <div
+              className={`mb-4 rounded-xl border px-4 py-3 text-[12px] leading-relaxed ${
+                blogGenHintSoft
+                  ? "border-[#03C75A]/25 bg-[#F0FFF5] text-[#4E5968]"
+                  : "border-[#FFE0B2] bg-[#FFF8E6] text-[#4E5968]"
+              }`}
+              role="status"
+            >
+              <p className="font-semibold text-[#191F28]">
+                {resolveBlogHintPanelTitle(blogGenHint, blogGenHintSoft)}
+              </p>
+              <p className="mt-1">{blogGenHint}</p>
+            </div>
+          ) : null}
+
           <WorkspaceChannelIntro
             compact={compact}
             title={WORKSPACE_BLOG.title}
             description={
-              compact ? WORKSPACE_BLOG.taglineCompact : WORKSPACE_BLOG.tagline
+              isMobile
+                ? MOBILE_STORY.tagline
+                : compact
+                  ? WORKSPACE_BLOG.taglineCompact
+                  : WORKSPACE_BLOG.tagline
             }
             warning={
               !activeBrand?.brandName && !draftForm.brandName?.trim()
@@ -298,6 +332,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
           {showQuickDemo &&
             !simpleMode &&
+            !isMobile &&
             !blogContent &&
             !generating.blog &&
             !needsEmailVerify && (
@@ -331,7 +366,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           >
             {generating.blog && !blogContent && (
               <p className="mb-3 rounded-lg border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 text-[12px] leading-relaxed text-[#8B95A1]">
-                {WORKSPACE_BLOG.generatingNote}
+                {generatingNote}
               </p>
             )}
             <BlogForm
@@ -344,6 +379,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               onAdvancedToggle={() => setAdvancedOpen((o) => !o)}
               compact={compact}
               simpleMode={simpleMode}
+              mobileSimplified={isMobile}
               deferParentSync
             />
           </div>
@@ -351,8 +387,8 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           {!generating.blog && (
             <ChannelPackToggle
               blogOnly={blogOnly}
-              compactCopy={shouldUseCompactChannelPackCopy(generationCount)}
-              disabled={generating.blog}
+              compactCopy={isMobile || shouldUseCompactChannelPackCopy(generationCount)}
+              disabled={storyBusy}
               onChange={(only) => {
                 setBlogOnly(only);
                 saveBlogOnlyPref(only);
@@ -378,49 +414,47 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             />
           )}
 
-          <button
-            type="button"
-            disabled={
-              !formValidNow ||
-              storyBusy ||
-              needsEmailVerify ||
-              quotaExhausted
-            }
-            onClick={runGenerate}
-            className="briclog-btn-primary mt-6 disabled:opacity-50"
-          >
-            {storyBusy ? (
-              <span className="inline-flex items-center justify-center gap-2">
-                <span
-                  className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
-                  aria-hidden
-                />
-                <span>
-                  {blogContent && blogResultRevealPending
-                    ? "표시 중…"
-                    : WORKSPACE_BLOG.ctaBusy}
+          {!isMobile ? (
+            <button
+              type="button"
+              disabled={
+                !formValidNow ||
+                storyBusy ||
+                needsEmailVerify ||
+                quotaExhausted
+              }
+              onClick={runGenerate}
+              className="briclog-btn-primary mt-6 disabled:opacity-50"
+            >
+              {storyBusy ? (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <span
+                    className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
+                    aria-hidden
+                  />
+                  <span>{WORKSPACE_BLOG.ctaBusy}</span>
                 </span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center justify-center gap-2">
-                <Icon name="sparkles" className="h-5 w-5" />
-                <span>
-                  {llmStatus.llmAvailable === false
-                    ? "구성안 만들기"
-                    : WORKSPACE_BLOG.cta}
+              ) : (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <Icon name="document" className="h-5 w-5" />
+                  <span>
+                    {llmStatus.llmAvailable === false
+                      ? "구성안 만들기"
+                      : WORKSPACE_BLOG.cta}
+                  </span>
                 </span>
-              </span>
-            )}
-          </button>
-          {!demoMode && !quotaExhausted && (
+              )}
+            </button>
+          ) : null}
+          {!isMobile && !demoMode && !quotaExhausted && (
             <GenerationQuotaHint usage={billingUsage} phase={billingPhase} />
           )}
-          {formValidNow && !generating.blog && !quotaExhausted && (
+          {formValidNow && !generating.blog && !quotaExhausted && !isMobile && (
             <p className="mt-2 text-center text-[11px] text-[#B0B8C1]">
               {WORKSPACE_BLOG.shortcutHint}
             </p>
           )}
-          {disabledReason && !generating.blog && (
+          {disabledReason && !generating.blog && !isMobile && (
             <p className="mt-2 text-center text-[12px] text-[#E67700]">
               {disabledReason}
             </p>
@@ -443,7 +477,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             <PipelineQuickActions onNavigate={onNavigate} simpleMode={simpleMode} />
           )}
 
-          {!simpleMode && (
+          {!simpleMode && !isMobile && (
           <MobileSecondaryAccordion
             title="TIP · 작성 맥락"
             collapsed={compact}
@@ -465,6 +499,49 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           </MobileSecondaryAccordion>
           )}
         </div>
+
+        {isMobile ? (
+          <div className="shrink-0 border-t border-[#E8EBED] bg-white/95 px-4 py-3 backdrop-blur-md">
+            {!demoMode && !quotaExhausted ? (
+              <GenerationQuotaHint usage={billingUsage} phase={billingPhase} />
+            ) : null}
+            {disabledReason && !generating.blog ? (
+              <p className="mb-2 text-center text-[12px] text-[#E67700]">
+                {disabledReason}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              disabled={
+                !formValidNow ||
+                storyBusy ||
+                needsEmailVerify ||
+                quotaExhausted
+              }
+              onClick={runGenerate}
+              className="briclog-btn-primary w-full disabled:opacity-50"
+            >
+              {storyBusy ? (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <span
+                    className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
+                    aria-hidden
+                  />
+                  <span>{WORKSPACE_BLOG.ctaBusy}</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center justify-center gap-2">
+                  <Icon name="document" className="h-5 w-5" />
+                  <span>
+                    {llmStatus.llmAvailable === false
+                      ? "구성안 만들기"
+                      : WORKSPACE_BLOG.cta}
+                  </span>
+                </span>
+              )}
+            </button>
+          </div>
+        ) : null}
       </div>
     </>
   );
@@ -477,6 +554,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
   brandId,
   activeBrand,
   hideFormPanel = false,
+  mobileHidden = false,
   billingPlanId = "free",
 }) {
   const {
@@ -490,7 +568,6 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogGenHintIsAuth,
     blogGenHintSoft,
     loadingOverlay,
-    blogResultRevealPending,
     acknowledgeBlogResultDisplayed,
     updateBlogContent,
     saveEditedBlog,
@@ -509,6 +586,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
   const [resultTab, setResultTab] = useState("blog");
   const resultScrollRef = useRef(null);
   const { isMobile, isTablet } = useViewport();
+  const { resultScrollPadClass } = useMobileWriteUx();
   const { compact } = useWorkspaceCompact();
   const { layoutMode, concise, setLayoutMode } = useChannelLayoutMode("blog");
   const { simpleMode } = useSimpleWorkspaceMode(userId);
@@ -530,59 +608,54 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogContent.fullCopyText &&
     (isMobile || (isTablet && concise));
 
-  const [revealReady, setRevealReady] = useState(true);
-  const blogRevealKey =
-    blogContent?.representativeTitle ||
-    blogContent?.title ||
-    blogContent?._meta?.generatedAt;
+  const hasDeliveredBlog =
+    Boolean(blogContent?.sections?.length) ||
+    Boolean(String(blogContent?.fullCopyText || "").trim());
 
-  useEffect(() => {
-    if (!blogResultRevealPending || !blogContent) {
-      setRevealReady(true);
-      return undefined;
-    }
-    setRevealReady(false);
-    const id = window.setTimeout(() => {
-      setRevealReady(true);
-      acknowledgeBlogResultDisplayed();
-    }, 1100);
-    return () => window.clearTimeout(id);
-  }, [
-    blogResultRevealPending,
-    blogRevealKey,
-    blogContent,
-    acknowledgeBlogResultDisplayed,
-  ]);
+  const pipelineBusy =
+    Boolean(loadingOverlay?.active) &&
+    loadingOverlay?.channel === "pipeline";
 
-  const storyInFlight =
-    generating.blog ||
-    Boolean(loadingOverlay?.active) ||
-    (blogResultRevealPending && !revealReady);
+  const showResultPlaceholder =
+    !hasDeliveredBlog &&
+    (generating.blog || pipelineBusy || Boolean(loadingOverlay?.active));
 
-  const showResultPlaceholder = storyInFlight;
-  const showFullResult = Boolean(blogContent) && revealReady && !storyInFlight;
+  const showFullResult = hasDeliveredBlog;
 
   useEffect(() => {
     if (!showFullResult || !blogContent) return;
+    if (
+      loadingOverlay?.active &&
+      (loadingOverlay?.channel === "pipeline" ||
+        loadingOverlay?.channel === "blog")
+    ) {
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
     resultScrollRef.current?.scrollIntoView?.({
       behavior: "smooth",
       block: "start",
     });
-  }, [showFullResult, blogContent]);
+  }, [
+    showFullResult,
+    blogContent,
+    loadingOverlay?.active,
+    loadingOverlay?.channel,
+  ]);
+
+  if (mobileHidden) return null;
 
   return (
       <div
         ref={resultScrollRef}
-        className={`workspace-result-scroll relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#F7F8FA] p-4 md:p-6 lg:p-8 ${
+        className={`workspace-result-scroll relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#F7F8FA] p-4 md:p-6 lg:p-8 ${resultScrollPadClass} ${
           showStickyCopy ? "has-sticky-copy" : ""
-        } ${hideFormPanel ? "" : ""}`}
+        } ${hideFormPanel ? "max-lg:min-h-0" : ""}`}
       >
         {showResultPlaceholder ? (
           <GeneratingResultPlaceholder
             compact={compact}
-            phase={
-              blogContent && blogResultRevealPending ? "revealing" : "writing"
-            }
+            phase="writing"
             previewTitle={
               blogContent?.representativeTitle ||
               blogContent?.title ||
@@ -593,6 +666,38 @@ const BlogEditorResults = memo(function BlogEditorResults({
           />
         ) : showFullResult ? (
           <>
+            {blogContent?._meta?.deliveryPreview &&
+            !blogContent?._meta?.displayReady &&
+            !blogContent?._meta?.completeDraft ? (
+              <div className="mb-4 rounded-xl border border-[#FFE0B2] bg-[#FFF8E6] px-4 py-3">
+                <p className="text-[13px] font-semibold text-[#191F28]">
+                  {RESULT_VIEW.draftBannerTitle}
+                </p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+                  {blogContent._meta?.deliveryPreviewMessage ||
+                    RESULT_VIEW.draftBannerBody}
+                </p>
+              </div>
+            ) : blogContent?._meta?.completeDraft ? (
+              <div className="mb-4 rounded-xl border border-[#03C75A]/25 bg-[#F6FDF9] px-4 py-3">
+                <p className="text-[13px] font-semibold text-[#191F28]">
+                  {RESULT_VIEW.completeBannerTitle}
+                </p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+                  {RESULT_VIEW.completeBannerBody}
+                </p>
+              </div>
+            ) : null}
+            {!placeContent &&
+            !instagramContent &&
+            blogContent?._meta?.completeDraft &&
+            typeof onNavigate === "function" ? (
+              <ChannelExpandCard
+                className="mb-4"
+                onGoPlace={() => onNavigate("place")}
+                onGoInsta={() => onNavigate("instagram")}
+              />
+            ) : null}
             {!simpleMode && !isMobile && (
               <div className="mb-4 flex items-center justify-end gap-3">
                 <ChannelLayoutToggle
@@ -660,7 +765,8 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   blog={blogContent}
                   billingPlanId={billingPlanId}
                   onResultDisplayed={acknowledgeBlogResultDisplayed}
-                  conciseView={concise && (isMobile || isTablet)}
+                  conciseView={concise || isMobile}
+                  mobileView={isMobile}
                   onCopy={(text) => {
                     onCopy?.(text);
                     trackContentEvent({
@@ -768,22 +874,21 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 }`}
               >
                 <p className="text-[14px] font-semibold text-[#191F28]">
-                  {blogGenHintSoft
-                    ? "조금 더 시간이 필요해요"
-                    : "입력을 확인해 주세요"}
+                  {resolveBlogHintPanelTitle(blogGenHint, blogGenHintSoft)}
                 </p>
                 <p className="mt-2 text-[13px] leading-relaxed text-[#4E5968]">
                   {blogGenHint}
                 </p>
                 {!blogGenHintIsAuth ? (
                   <p className="mt-3 text-[12px] text-[#8B95A1]">
-                    왼쪽 폼에서 「이야기 쓰기」로 이어갈 수 있어요.
+                    왼쪽 폼에서 「조사 후 글 받기」로 이어갈 수 있어요.
                   </p>
                 ) : null}
               </div>
             ) : (
               <EmptyStoryPanel
                 compact={compact}
+                mobile={isMobile}
                 hint={
                   isMatureBlogUser(generationCount) || simpleMode
                     ? EMPTY_STORY.hintMature
@@ -813,57 +918,84 @@ export default function BlogEditor({
   const { activeBrand } = useBrandWorkspace();
   const {
     blogContent,
+    placeContent,
+    instagramContent,
     billingPlanId,
     generating,
     loadingOverlay,
-    blogResultRevealPending,
   } = useContentPipelineState();
 
   const leaveGuardActive =
     generating.blog ||
-    blogResultRevealPending ||
     (loadingOverlay?.active &&
       (loadingOverlay.channel === "blog" ||
         loadingOverlay.channel === "pipeline"));
 
   useGenerationLeaveGuard(leaveGuardActive);
   const { isMobile } = useViewport();
-  const { compact } = useWorkspaceCompact();
-  const { concise } = useChannelLayoutMode("blog");
   const [formOpen, setFormOpen] = useState(true);
 
   useEffect(() => {
-    if (blogContent && isMobile && concise) {
+    if ((blogContent || placeContent || instagramContent) && isMobile) {
       setFormOpen(false);
     }
-  }, [blogContent, isMobile, concise]);
+  }, [blogContent, placeContent, instagramContent, isMobile]);
 
   useEffect(() => {
     if (
       isMobile &&
-      (generating.blog || loadingOverlay?.active || blogResultRevealPending)
+      (generating.blog || loadingOverlay?.active)
     ) {
       setFormOpen(false);
     }
-  }, [
-    isMobile,
-    generating.blog,
-    loadingOverlay?.active,
-    blogResultRevealPending,
-  ]);
+  }, [isMobile, generating.blog, loadingOverlay?.active]);
 
-  const hideFormPanel = isMobile && concise && blogContent && !formOpen;
+  const storyBusy =
+    generating.blog ||
+    Boolean(
+      loadingOverlay?.active &&
+        (loadingOverlay.channel === "blog" ||
+          loadingOverlay.channel === "pipeline")
+    );
+
+  const hasDeliveredBlog =
+    Boolean(blogContent?.sections?.length) ||
+    Boolean(String(blogContent?.fullCopyText || "").trim());
+
+  const hasAnyChannelResult =
+    hasDeliveredBlog || Boolean(placeContent) || Boolean(instagramContent);
+
+  const mobileIdleEmpty = isMobile && !hasAnyChannelResult && !storyBusy;
+  const showMobileChrome = isMobile && (hasAnyChannelResult || storyBusy);
+  const hideFormPanel =
+    isMobile && !formOpen && (hasAnyChannelResult || storyBusy);
+  const mobileHideResults =
+    isMobile && (mobileIdleEmpty || formOpen);
+  const mobilePane = formOpen ? "form" : "story";
+  const storyTitle =
+    blogContent?.representativeTitle || blogContent?.title || null;
 
   return (
-    <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+    <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden max-lg:flex-col md:flex-row">
+      {showMobileChrome ? (
+        <MobileStoryChrome
+          pane={mobilePane}
+          onPaneChange={(next) => setFormOpen(next === "form")}
+          storyReady={hasAnyChannelResult}
+          isGenerating={storyBusy && !hasAnyChannelResult}
+          storyTitle={storyTitle}
+        />
+      ) : null}
       <BlogEditorFormPane
         onNavigate={onNavigate}
         userId={userId}
         brandId={brandId}
         activeBrand={activeBrand}
-        formOpen={formOpen}
-        setFormOpen={setFormOpen}
         hideFormPanel={hideFormPanel}
+        mobileIdleFull={mobileIdleEmpty}
+        onStartGenerate={() => {
+          if (isMobile) setFormOpen(false);
+        }}
         onPlanChange={onPlanChange}
       />
       <BlogEditorResults
@@ -873,6 +1005,7 @@ export default function BlogEditor({
         brandId={brandId}
         activeBrand={activeBrand}
         hideFormPanel={hideFormPanel}
+        mobileHidden={mobileHideResults}
         billingPlanId={billingPlanId}
       />
     </div>

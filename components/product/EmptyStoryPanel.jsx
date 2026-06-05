@@ -1,25 +1,31 @@
 "use client";
 
 import Icon from "@/components/Icon";
-import { EMPTY_STORY } from "@/lib/product/craft";
+import { EMPTY_STORY, MOBILE_STORY } from "@/lib/product/craft";
 
 export default function EmptyStoryPanel({
   compact = false,
+  mobile = false,
   hint = null,
   onOpenHistory = null,
   historyLabel = null,
 }) {
+  const body = mobile ? MOBILE_STORY.emptyBody : EMPTY_STORY.body;
+  const footer = mobile ? MOBILE_STORY.emptyFooter : EMPTY_STORY.footer;
+
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-4 py-16 text-center">
+    <div
+      className={`mx-auto flex max-w-md flex-col items-center px-4 text-center ${
+        mobile ? "py-10" : "py-16"
+      }`}
+    >
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F9EF] ring-1 ring-[#03C75A]/15">
         <Icon name="document" className="h-7 w-7 text-[#03A94D]" />
       </div>
       <p className="mt-5 text-[17px] font-bold text-[#191F28]">
         {EMPTY_STORY.title}
       </p>
-      <p className="mt-2 text-[14px] leading-relaxed text-[#4E5968]">
-        {EMPTY_STORY.body}
-      </p>
+      <p className="mt-2 text-[14px] leading-relaxed text-[#4E5968]">{body}</p>
       {hint ? (
         <p className="mt-3 text-[12px] text-[#8B95A1]">{hint}</p>
       ) : null}
@@ -38,9 +44,7 @@ export default function EmptyStoryPanel({
         </button>
       ) : null}
       {!compact && (
-        <p className="mt-4 text-[11px] text-[#B0B8C1]">
-          완성되면 복사해 네이버·인스타에 바로 붙일 수 있어요.
-        </p>
+        <p className="mt-4 text-[11px] text-[#B0B8C1]">{footer}</p>
       )}
     </div>
   );

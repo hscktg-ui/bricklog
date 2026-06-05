@@ -535,7 +535,15 @@ button:enabled,
 }
 
 .briclog-landing-reveal {
+  opacity: 1;
   animation: briclog-landing-reveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .briclog-landing-reveal {
+    animation: none;
+    transform: none;
+  }
 }
 
 @keyframes briclog-landing-reveal {

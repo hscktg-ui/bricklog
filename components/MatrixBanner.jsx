@@ -1,25 +1,13 @@
-import { BRAND_TAGLINE } from "@/lib/constants";
-
-export default function MatrixBanner({ meta }) {
-  if (!meta) return null;
-
+/** @deprecated 레거시 CreateWorkspace — 고객용 한 줄만 */
+export default function MatrixBanner() {
   return (
-    <div className="mb-3 rounded-xl border border-[#03C75A]/15 bg-gradient-to-r from-[#E8F9EF]/80 to-white px-4 py-3">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-[#03A94D]">
-        Prompt Engine v4 · {BRAND_TAGLINE}
+    <div className="mb-3 rounded-xl border border-[#03C75A]/15 bg-[#F0FFF5] px-4 py-3">
+      <p className="text-[13px] font-semibold text-[#191F28]">
+        완성본이 준비되었습니다
       </p>
       <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
-        {meta.matrixSummary || meta.engine}
+        아래에서 복사한 뒤 네이버·플레이스·인스타에 붙여 넣으세요.
       </p>
-      {meta.blogCharCount != null && (
-        <p className="mt-1.5 text-[11px] text-[#8B95A1]">
-          블로그 {meta.blogCharCount.toLocaleString()}자 (공백 제외)
-          {meta.mainKeywordUses != null &&
-            ` · 메인키워드 ${meta.mainKeywordUses}회`}
-          {meta.placeDetailChars != null &&
-            ` · 플레이스 상세 ${meta.placeDetailChars}자`}
-        </p>
-      )}
     </div>
   );
 }

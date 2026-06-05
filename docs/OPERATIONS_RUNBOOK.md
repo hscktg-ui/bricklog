@@ -37,7 +37,7 @@
 ```powershell
 cd D:\briclog
 npm run build
-npm run test:quality
+npm run test:quality:bundle
 npm run test:director
 ```
 
@@ -86,7 +86,7 @@ npm run test:director
 ## 5. 결제·베타
 
 - 토스: [TOSS_PAYMENTS_SETUP.md](./TOSS_PAYMENTS_SETUP.md)  
-- 베타 전체 개방: `BETA_FULL_ACCESS_UNTIL=2026-06-01` (팀 합의 후)  
+- 베타 전체 개방: `BETA_FULL_ACCESS_UNTIL=2026-08-01` (베타 테스터 ~2026년 8월 1일 포함, 클라이언트 `NEXT_PUBLIC_BETA_FULL_ACCESS_UNTIL` 동일 값)  
 - 고객 문구: “구독은 **매월 결제일**에 갱신” — 앱 요금 모달·랜딩 요금 섹션  
 
 ---

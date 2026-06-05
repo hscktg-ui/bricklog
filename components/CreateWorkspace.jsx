@@ -1,11 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  BLOG_MIN_BODY_CHARS,
-  BRAND_TAGLINE,
-  EMPTY_STATE,
-} from "@/lib/constants";
+import { BRAND_TAGLINE, EMPTY_STATE } from "@/lib/constants";
+import { WORKSPACE_BLOG } from "@/lib/product/craft";
 import BlogResultView from "./BlogResultView";
 import ChannelTabs from "./ChannelTabs";
 import {
@@ -34,9 +31,9 @@ function EmptyState() {
         {EMPTY_STATE.description}
       </p>
       <ul className="mt-4 space-y-1 text-left text-[12px] text-[#8B95A1]">
-        <li>· 빠른 시작 프리셋 또는 Matrix 직접 설정</li>
-        <li>· 블로그·플레이스·인스타·해시태그·이미지 동시 생성</li>
-        <li>· 공백 제외 {BLOG_MIN_BODY_CHARS.toLocaleString()}자+ 블로그 목표</li>
+        <li>· {WORKSPACE_BLOG.tagline}</li>
+        <li>· 짧은·중간·긴 분량 — 고객과의 약속</li>
+        <li>· 이야기 · 플레이스 · 인스타 한번에</li>
       </ul>
     </div>
   );
@@ -98,6 +95,7 @@ export default function CreateWorkspace({
         onTabChange={onTabChange}
         disabled={isGenerating}
         charCount={hasGenerated ? blogChars : null}
+        blogLengthTier={formValues.blogLengthTier || "medium"}
         channelReady={channelReady}
       />
 
@@ -105,8 +103,12 @@ export default function CreateWorkspace({
         <div className="mx-auto max-w-3xl p-4 pb-6">
           {hasGenerated && !isGenerating && (
             <>
-              <MatrixBanner meta={engineMeta} />
-              <QualityPanel results={results} meta={engineMeta} />
+              <MatrixBanner />
+              <QualityPanel
+                results={results}
+                meta={engineMeta}
+                blogLengthTier={formValues.blogLengthTier || "medium"}
+              />
               <ResultToolbar
                 onCopyTab={onCopyTab}
                 onCopyAll={onCopyAll}

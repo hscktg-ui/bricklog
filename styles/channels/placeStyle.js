@@ -252,6 +252,27 @@ function buildStructuredDetail(ctx, single, ops, typeSpec, personaStyle) {
       );
 }
 
+function ensurePlaceInformationDensity(detailBody, ctx = {}, typeSpec = PLACE_TYPE_SPECS.general) {
+  const raw = String(detailBody || "").trim();
+  let next = raw;
+  const detailLen = raw.replace(/\s/g, "").length;
+  if (detailLen >= 150) return clampByChars(next, 20, typeSpec.detailMax);
+  const pads = [
+    (ctx.placeOffer || "").trim() ? `혜택: ${(ctx.placeOffer || "").trim()}` : "",
+    (ctx.placePeriod || "").trim() ? `기간: ${(ctx.placePeriod || "").trim()}` : "",
+    "방문 전 확인: 예약·대기·이용 가능 시간은 매장·시기마다 달라질 수 있어, 플레이스·전화로 문의해 주세요.",
+    "선택 팁: 예산·일정·이용 목적을 함께 정리하면 비교가 수월합니다.",
+  ]
+    .map((v) => cleanOutputText(v))
+    .filter(Boolean);
+  for (const line of pads) {
+    if (!line || next.includes(line)) continue;
+    next = `${next}\n${line}`.trim();
+    if (next.replace(/\s/g, "").length >= 150) break;
+  }
+  return clampByChars(next, 20, typeSpec.detailMax);
+}
+
 const PLACE_CTA_COPY = {
   visit: "플레이스에서 자세히 확인해 주세요",
   call: "전화로 문의해 주세요",
@@ -343,13 +364,14 @@ function buildPlacePackOnce({ ctx, flavor, purpose, tone, insights }) {
     20,
     PLACE_CHANNEL.shortMax
   );
-  const detailBody = buildStructuredDetail(
+  let detailBody = buildStructuredDetail(
     ctx,
     single,
     ops,
     typeSpec,
     placeStyle
   );
+  detailBody = ensurePlaceInformationDensity(detailBody, ctx, typeSpec);
   const cta = buildCta(ctx, purpose);
   const hashtags = buildHashtags(ctx, flavor, season);
 
@@ -451,6 +473,7 @@ export function buildPlaceFromBlog(ctx, insights, baseLabel) {
       sourceBlogTitle: insights?.title,
       baseLabel,
       channelVoice: "owner-notice",
+      blogInsights: insights,
     },
   };
 }

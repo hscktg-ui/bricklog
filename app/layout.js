@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://briclog.app";
+  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://briclog.ai";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),

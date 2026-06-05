@@ -1,0 +1,61 @@
+{
+  "startedAt": "2026-05-31T06:40:06.933Z",
+  "total": 3,
+  "pass": 3,
+  "passRate": 100,
+  "results": [
+    {
+      "id": "e2e-furniture",
+      "ok": true,
+      "mode": "draft_fallback",
+      "briclogScore": 89,
+      "briclogOk": true,
+      "belief": 84,
+      "beliefOk": true,
+      "sections": 3,
+      "ms": 17547,
+      "issues": [
+        "grounded_facts_low",
+        "concrete_detail_low"
+      ],
+      "withheld": false,
+      "v17": true
+    },
+    {
+      "id": "e2e-cafe",
+      "ok": true,
+      "mode": "draft_fallback",
+      "briclogScore": 89,
+      "briclogOk": true,
+      "belief": 84,
+      "beliefOk": true,
+      "sections": 4,
+      "ms": 15555,
+      "issues": [
+        "grounded_facts_low",
+        "concrete_detail_low"
+      ],
+      "withheld": false,
+      "v17": true
+    },
+    {
+      "id": "e2e-hospital",
+      "ok": true,
+      "mode": "draft_fallback",
+      "briclogScore": 89,
+      "briclogOk": true,
+      "belief": 84,
+      "beliefOk": true,
+      "sections": 4,
+      "ms": 14301,
+      "issues": [
+        "grounded_facts_low",
+        "concrete_detail_low"
+      ],
+      "withheld": false,
+      "v17": true
+    }
+  ],
+  "goldenPass": 4,
+  "goldenTotal": 4
+}

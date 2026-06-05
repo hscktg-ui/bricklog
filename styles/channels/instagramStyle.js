@@ -180,14 +180,37 @@ function pickHook(ctx, toneKey, usedPhrases, insights) {
 
 const INSTA_BODY_LENGTH = {
   short: { min: 60, max: 180, blogLines: 2 },
-  medium: { min: 120, max: 320, blogLines: 3 },
+  medium: { min: 220, max: 420, blogLines: 4 },
   long: { min: 200, max: 480, blogLines: 5 },
 };
 
+function ensureMediumBodyQuality(body, ctx, insights) {
+  const text = String(body || "").trim();
+  const lineCount = text
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean).length;
+  if (countChars(text) >= INSTA_BODY_LENGTH.medium.min && lineCount >= 3) {
+    return text;
+  }
+  const brand = String(ctx.brandName || "브랜드").trim();
+  const region = String(ctx.region || "지역").trim();
+  const topic = String(ctx.topic || ctx.mainKeyword || "주제").trim();
+  const additions = compact([
+    `${region}에서 ${topic}를 찾는 사람은 결론보다 기준을 먼저 봅니다.`,
+    `${brand}는 한 줄 홍보보다 실제 사용 장면이 보이도록 설명합니다.`,
+    insights?.emotionalLine || `${topic}를 고를 때 비교 포인트를 짧게라도 남겨 두세요.`,
+  ]);
+  const enriched = [text, ...additions].filter(Boolean).join("\n");
+  return clampByChars(enriched, INSTA_BODY_LENGTH.medium.min, INSTA_BODY_LENGTH.medium.max);
+}
+
 function instaEmojiDensity(ctx) {
-  const level = ctx.instaEmojiLevel || "balanced";
+  const level = ctx.instaEmojiLevel || ctx.emojiDensity || INSTA_EMOJI_LEVEL_DEFAULT;
   const opt = INSTA_EMOJI_LEVEL_OPTIONS.find((o) => o.value === level);
-  return opt?.density || "medium";
+  if (opt?.density) return opt.density;
+  const legacy = { minimal: "low", balanced: "medium", heavy: "high" };
+  return legacy[level] || "medium";
 }
 
 function resolveInstaHashtags(ctx, flavor, season, toneKey) {
@@ -262,6 +285,9 @@ function buildBodyLines(ctx, flavor, toneKey, insights, usedPhrases) {
       lenSpec.min,
       maxBody
     );
+  }
+  if ((ctx.instaBodyLength || "medium") === "medium") {
+    body = ensureMediumBodyQuality(body, ctx, insights);
   }
   return body;
 }
@@ -431,6 +457,7 @@ export function buildInstagramFromBlog(ctx, insights, toneKey, baseLabel) {
       sourceBlogTitle: insights?.title,
       baseLabel,
       channelVoice: "save-caption",
+      blogInsights: insights,
     },
   };
 }

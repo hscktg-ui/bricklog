@@ -4,13 +4,28 @@
  */
 
 import { CONSTITUTION_V2_TARGET_SCORE } from "../lib/constitution/constitutionThresholds.js";
+import {
+  CORE_TARGET_SCORE,
+  CORE_MAX_REWRITES,
+} from "../lib/quality/coreQualityEngine.js";
+import { DEFAULT_QUALITY_TARGET } from "../lib/quality/qualityDefaults.js";
+import { resolveBlogLengthTier } from "../lib/constants.js";
+import {
+  resolveWritingSkillLevel,
+  WRITING_SKILL_LEVEL_OPTIONS,
+} from "../lib/content/writingSkillLevel.js";
+import {
+  scoreLengthTierCompliance,
+  FILLER_PADDING_PATTERNS,
+} from "../lib/content/humanDeliveryRules.js";
 
-const CORE_TARGET_SCORE = 90;
-const CORE_MAX_REWRITES = 5;
-
-assert(CORE_TARGET_SCORE === 90, "CORE_TARGET_SCORE must be 90");
+assert(CORE_TARGET_SCORE === 95, "CORE_TARGET_SCORE must be 95");
+assert(DEFAULT_QUALITY_TARGET === 95, "DEFAULT_QUALITY_TARGET must be 95");
 assert(CONSTITUTION_V2_TARGET_SCORE === 95, "CONSTITUTION_V2_TARGET_SCORE must be 95");
-assert(CORE_MAX_REWRITES >= 5, "CORE_MAX_REWRITES should allow quality loop");
+assert(
+  CORE_MAX_REWRITES >= 1,
+  `CORE_MAX_REWRITES should allow quality loop (got ${CORE_MAX_REWRITES}; fast pipeline caps at 1–2)`
+);
 
 const PLACEHOLDER_RE =
   /\b(undefined|null|NaN|placeholder|TODO|FIXME|lorem)\b|좋은내용|브랜드명|지역명|제목|내용|입력값|예시|\{\{|\}\}|\[브랜드\]|\[지역\]|\[내용\]/i;
@@ -57,6 +72,39 @@ assert(
   "case5 canonical brief anchors real story"
 );
 
+// 6 length tier bands (V20)
+const short = resolveBlogLengthTier("short");
+const med = resolveBlogLengthTier("medium");
+const long = resolveBlogLengthTier("long");
+assert(short.min === 1800 && short.max === 2200, "short tier band");
+assert(med.min === 2800 && med.max === 3200, "medium tier band");
+assert(long.min === 3800 && long.max === 5000, "long tier band");
+
+// 7 writing skill → proficiency
+const civilian = resolveWritingSkillLevel({ writingSkillLevel: "civilian" });
+assert(civilian.proficiency === "general", "civilian maps general");
+const pro = resolveWritingSkillLevel({ writingSkillLevel: "pro" });
+assert(pro.proficiency === "writer_pro", "pro maps writer_pro");
+assert(WRITING_SKILL_LEVEL_OPTIONS.length === 3, "three skill tiers");
+
+// 8 filler padding detect
+const fillerText = "많은 분들이 참고하시기 바랍니다. 이러한 점에서 도움이 되시길.";
+assert(
+  FILLER_PADDING_PATTERNS.some((re) => re.test(fillerText)),
+  "filler regex"
+);
+
+// 9 tier under mock
+const underPack = {
+  sections: [{ heading: "a", body: "짧은 본문." }],
+  conclusion: "",
+};
+const under = scoreLengthTierCompliance(underPack, {
+  input: { blogLengthTier: "medium" },
+  blogLengthTier: "medium",
+});
+assert(under.reasons.includes("length_tier_under"), "tier under detected");
+
 console.log(
-  `OK — quality heuristics + targets (90, max rewrites ${CORE_MAX_REWRITES})`
+  `OK — quality heuristics + targets (95, max rewrites ${CORE_MAX_REWRITES})`
 );

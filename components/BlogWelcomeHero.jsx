@@ -34,7 +34,7 @@ export default function BlogWelcomeHero({ onTrySample, isGenerating }) {
                 </>
               ) : (
                 <>
-                  <Icon name="sparkles" className="h-5 w-5" />
+                  <Icon name="document" className="h-5 w-5" />
                   샘플로 30초 체험
                 </>
               )}

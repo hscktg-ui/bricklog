@@ -46,6 +46,7 @@ import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import WorkspaceIdleHint from "@/components/WorkspaceIdleHint";
 import WelcomeOverlay, {
   WELCOME_DISMISS_SESSION_KEY,
+  isWelcomeDismissedPermanent,
 } from "@/components/WelcomeOverlay";
 import GrowthStudio from "@/components/growth/GrowthStudio";
 import DraftReviewStudio from "@/components/DraftReviewStudio";
@@ -413,7 +414,7 @@ function DashboardLayout({
   useMobileSidebar(mobileOpen, setMobileOpen);
 
   const { preview, simulating, maxWidth } = useWorkspacePreview();
-  const { resetToHome, setBlogInput, loadingOverlay, blogContent } =
+  const { resetToHome, setBlogInput, loadingOverlay, blogContent, loadMemoryContentIntoWorkspace } =
     useContentPipeline();
   const {
     applyBrandToForm,
@@ -481,6 +482,12 @@ function DashboardLayout({
   }, [user.id, resetAllBrands, showToast]);
 
   const showChannelWelcome = !userPrefs.onboardingComplete;
+  const blogGenerationCount = activeBrand?.contentArchive?.blog?.length ?? 0;
+  const firstStoryFocus =
+    !demoMode &&
+    !showChannelWelcome &&
+    activeMenu === "blog" &&
+    blogGenerationCount === 0;
   const welcomeGreeting = buildWelcomeGreeting(profile, user);
 
   useEffect(() => {
@@ -501,6 +508,10 @@ function DashboardLayout({
 
   useEffect(() => {
     if (welcomeInitRef.current || demoMode || showChannelWelcome || brandsLoading) {
+      return undefined;
+    }
+    if (isWelcomeDismissedPermanent()) {
+      welcomeInitRef.current = true;
       return undefined;
     }
     try {
@@ -652,7 +663,6 @@ function DashboardLayout({
   useEffect(() => {
     if (typeof window === "undefined") return;
     setMobileOpen(false);
-    setWelcomeOpen(false);
     window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
   }, []);
 
@@ -681,6 +691,7 @@ function DashboardLayout({
         onMenuChange={handleMenuNavigate}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
+        focusMode={firstStoryFocus}
         menuNavigateBlocked={generationBusy}
         onMenuNavigateBlocked={() =>
           showToast(
@@ -713,8 +724,14 @@ function DashboardLayout({
           onHome={goHome}
           userName={userLabel}
           activeMenu={activeMenu}
-          headerTitle={showChannelWelcome ? "시작하기" : undefined}
-          onOpenSidebar={() => setMobileOpen(true)}
+          headerTitle={
+            showChannelWelcome
+              ? "시작하기"
+              : firstStoryFocus
+                ? "오늘의 편집본"
+                : undefined
+          }
+          onOpenSidebar={firstStoryFocus ? undefined : () => setMobileOpen(true)}
           demoMode={demoMode}
           billingPlanId={billingPlanId}
           billingBetaActive={billingBypassQuotas}
@@ -733,7 +750,13 @@ function DashboardLayout({
 
         <WorkspaceIdleHint active={idleHintActive} />
 
-        <main className="workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden overflow-x-hidden pb-[calc(var(--workspace-mobile-nav-h)+env(safe-area-inset-bottom,0px))] lg:pb-0">
+        <main
+          className={`workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden overflow-x-hidden lg:pb-0 ${
+            firstStoryFocus
+              ? "pb-0"
+              : "pb-[calc(var(--workspace-mobile-nav-h)+env(safe-area-inset-bottom,0px))]"
+          }`}
+        >
           {showChannelWelcome ? (
             <ChannelWelcomeScreen
               onSelectChannel={handleChannelSelect}
@@ -791,6 +814,18 @@ function DashboardLayout({
               onCopy={(t) => handleCopy(t, "클립보드에 복사되었습니다.")}
               onToast={showToast}
               onUpgradeClick={() => setPricingOpen(true)}
+              onOpenInWorkspace={(item) => {
+                const ok = loadMemoryContentIntoWorkspace(item);
+                if (!ok) return false;
+                const menu =
+                  item.channel === "blog"
+                    ? "blog"
+                    : item.channel === "place"
+                      ? "place"
+                      : "instagram";
+                handleMenuNavigate(menu);
+                return true;
+              }}
             />
           ) : activeMenu === "history" ? (
             <HistoryWorkspace
@@ -813,13 +848,15 @@ function DashboardLayout({
       </div>
 
       {!demoMode && !isLaunchBuild() ? <WorkspaceDevicePreviewToggle /> : null}
-      <MobileBottomNav
-        activeMenu={showChannelWelcome ? null : activeMenu}
-        drawerOpen={mobileOpen}
-        onSelect={handleMenuNavigate}
-        onOpenDrawer={() => setMobileOpen(true)}
-        navigateBlocked={generationBusy}
-      />
+      {!firstStoryFocus ? (
+        <MobileBottomNav
+          activeMenu={showChannelWelcome ? null : activeMenu}
+          drawerOpen={mobileOpen}
+          onSelect={handleMenuNavigate}
+          onOpenDrawer={() => setMobileOpen(true)}
+          navigateBlocked={generationBusy}
+        />
+      ) : null}
       <Toast toast={toast} />
       <ConfirmModal
         open={confirmChannelPicker}
@@ -852,7 +889,7 @@ function DashboardLayout({
         onToast={showToast}
         onPlanActivated={onBillingPlanRefresh}
       />
-      <BriclogAssistantHost suppress={showChannelWelcome} />
+      <BriclogAssistantHost suppress={showChannelWelcome || firstStoryFocus} />
       <DebugStatePublisher
         fragmentKey="dashboard"
         snapshot={{

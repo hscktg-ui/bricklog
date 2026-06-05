@@ -13,12 +13,10 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 import { estimateBlogGenerationMs } from "@/lib/loading/estimateGenerationMs";
-
 import {
   DEFAULT_BLOG_INPUT,
   GENERATION_DELAY_MS,
   GENERATION_MIN_OVERLAY_MS,
-  BLOG_MIN_BODY_CHARS,
 } from "@/lib/constants";
 import { unlockAudioFromUserGesture } from "@/lib/audio/briclogSounds";
 import {
@@ -58,14 +56,18 @@ import {
   toGenerationRecord,
   normalizePipelineInput,
 } from "@/lib/contentPipeline";
-import { LLM_USER_MESSAGES } from "@/lib/llm/messages";
+import { LLM_USER_MESSAGES, getGeminiFallbackDevHint } from "@/lib/llm/messages";
 import { EDITOR_IMPROVE } from "@/lib/product/craft";
+import {
+  CUSTOMER_PIPELINE_STEP_LABELS,
+  mapCustomerPipelineStepLabel,
+} from "@/lib/product/customerOutput";
 import {
   EMAIL_VERIFY_USER_MESSAGE,
   isEmailVerified,
 } from "@/lib/auth/emailVerification";
 import { serializeContent } from "@/lib/contentFormat";
-import { saveGeneration } from "@/lib/generations";
+import { saveGeneration, saveChannelGeneration } from "@/lib/generations";
 import { getPurposeModifier } from "@/lib/prompts/purposes";
 import { getToneModifier } from "@/lib/prompts/tones";
 import { recordGenerationSignal } from "@/lib/trends/trendIntelligence";
@@ -74,6 +76,7 @@ import {
   reapplyPlaceEdits,
   reapplyInstaEdits,
 } from "@/lib/content/reapplyPack";
+import { polishChannelPackAfterPipeline } from "@/lib/content/channelRewritePolish";
 import { createPromptContext } from "@/utils/promptBuilder";
 import {
   extractBlogPlainText,
@@ -86,6 +89,8 @@ import {
   persistPipelineToMemory,
   persistMemoryRewrite,
 } from "@/lib/memory/persistGeneration";
+import { hydrateWorkspaceFromMemory } from "@/lib/memory/hydrateWorkspaceFromMemory";
+import { pipelineContentFromMemoryItem } from "@/lib/memory/contentStore";
 import { trackContentEvent } from "@/lib/feedback/trackEvent";
 import { canUsePipelineChannel } from "@/lib/billing/checkEntitlement";
 import { getUsageWarningToast } from "@/lib/billing/planUx";
@@ -108,8 +113,23 @@ import {
   runDerivedSignatureChannel,
 } from "@/lib/content/runSignatureChannelGeneration";
 import { assertPostWriteDeliverable } from "@/lib/content/v2PipelineGate";
+import {
+  formatPostVerifyUserMessage,
+  resolveDeliveryFailureMessage,
+} from "@/lib/product/customerOutput";
+import {
+  resolveBlogUiDelivery,
+  salvageBlogPackForDelivery,
+} from "@/lib/generation/postVerifySalvage";
+import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
+import { hasFilledBlogAxes, SOFT_PREVIEW_HINT } from "@/lib/product/deliverySoftPass";
+import {
+  GENERATION_CHANNEL_PACK_DEADLINE_MS,
+  GENERATION_TIME_BUDGET_MS,
+} from "@/lib/constants";
 import { AUTO_RUN_PROMPT_ON_BLOG } from "@/lib/channels/channelProducts";
 import { isAutoPipelineAfterBlog } from "@/lib/config/productFlags";
+import { isChannelPackDeferred } from "@/lib/config/briclogFastPipeline";
 import { setGenerationSessionActive } from "@/lib/generation/generationSession";
 import {
   stashPendingBlogResult,
@@ -118,8 +138,24 @@ import {
 } from "@/lib/generation/pendingBlogRecovery";
 import { emitBrandFormSync } from "@/lib/workspace/brandFormSync";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
-import { ensureBlogDelivery } from "@/lib/generation/ensureBlogDelivery";
+import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
 import { normalizeBlogGenerationFailure } from "@/lib/generation/normalizeGenerationError";
+import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
+import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
+import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
+
+function missionProseFallbackForUi(pipelineInput) {
+  if (!hasFilledBlogAxes(pipelineInput)) return null;
+  try {
+    let pack = buildMissionProseFallbackPack(pipelineInput);
+    pack = applyV17PostWritePack(pack, { input: pipelineInput }, "blog");
+    pack = applyHumanityFinishPass(pack, { input: pipelineInput }, "blog");
+    pack = ensureBlogDisplayPack(pack, pipelineInput);
+    return pack?.sections?.length ? pack : null;
+  } catch {
+    return null;
+  }
+}
 
 const ContentContext = createContext(null);
 const ContentFormContext = createContext(null);
@@ -134,6 +170,23 @@ const INITIAL_GENERATING = {
   instagram: false,
   image: false,
 };
+
+const SHARED_CHANNEL_OPTION_KEYS = [
+  "brandName",
+  "brandType",
+  "industry",
+  "region",
+  "topic",
+  "mainKeyword",
+  "subKeyword",
+  "purpose",
+  "tone",
+  "contentObjective",
+  "speechStyle",
+  "contentPersona",
+  "contentPersonaSubtype",
+  "blogLengthTier",
+];
 
 /** 플레이스·인스타 피드백 재생성 — LLM 이야기 없이도 타 채널 초안으로 연계 */
 function resolveBlogLikeForRewrite(targetChannel, state) {
@@ -198,8 +251,10 @@ export function ContentProvider({
     provider: "auto",
   });
   const [generating, setGenerating] = useState(INITIAL_GENERATING);
+  const [channelOptionLockStatus, setChannelOptionLockStatus] = useState(null);
   const blogGenLock = useRef(false);
   const channelUpgradeHintShown = useRef(false);
+  const hydratedBrandRef = useRef(null);
 
   const allowPipelineChannel = useCallback(
     (channel) =>
@@ -319,7 +374,7 @@ export function ContentProvider({
 
   useEffect(() => {
     if (!loadingOverlay.active) return undefined;
-    const est = loadingOverlay.estimatedMs || 120_000;
+    const est = loadingOverlay.estimatedMs || GENERATION_TIME_BUDGET_MS;
     const warnAt = est + 45_000;
     const warnId = window.setTimeout(() => {
       setLoadingOverlay((prev) =>
@@ -547,6 +602,48 @@ export function ContentProvider({
     brandHooks?.activeBrand?.region,
   ]);
 
+  useEffect(() => {
+    const brandId = brandHooks?.activeBrandId;
+    if (demoMode || !user?.id || !brandId) return undefined;
+    if (hydratedBrandRef.current === brandId) return undefined;
+    hydratedBrandRef.current = brandId;
+
+    let cancelled = false;
+    const pending = restorePendingBlogResult(user.id);
+
+    if (pending?.blog) {
+      setBlogContent(pending.blog);
+      if (pending.baseContentLabel) setBaseContentLabel(pending.baseContentLabel);
+      if (pending.sourceChannel) setSourceChannel(pending.sourceChannel);
+    } else {
+      setBlogContent(null);
+    }
+    setPlaceContent(null);
+    setInstagramContent(null);
+    setMemoryContentIds({ blog: null, place: null, instagram: null });
+
+    void (async () => {
+      try {
+        const hydrated = await hydrateWorkspaceFromMemory(brandId);
+        if (cancelled) return;
+        setMemoryContentIds((prev) => ({ ...prev, ...hydrated.memoryContentIds }));
+        if (!pending?.blog && hydrated.contents.blog) {
+          setBlogContent(hydrated.contents.blog);
+        }
+        if (hydrated.contents.place) setPlaceContent(hydrated.contents.place);
+        if (hydrated.contents.instagram) {
+          setInstagramContent(hydrated.contents.instagram);
+        }
+      } catch {
+        /* memory tables optional until schema applied */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [demoMode, user?.id, brandHooks?.activeBrandId]);
+
   const hasBlog = !!blogContent;
   const hasChannelPack =
     !!blogContent || !!placeContent || !!instagramContent;
@@ -616,6 +713,7 @@ export function ContentProvider({
     setPlaceContent(null);
     setInstagramContent(null);
     setImagePrompts(null);
+    setChannelOptionLockStatus(null);
   }, []);
 
   const resetToHome = useCallback(() => {
@@ -759,7 +857,7 @@ export function ContentProvider({
       return;
     }
     if (!requireEmailVerified({ setHint: true })) return;
-    const input = inputOverride
+    let input = inputOverride
       ? { ...DEFAULT_BLOG_INPUT, ...blogInput, ...inputOverride }
       : blogInput;
     const errors = validateForm(input);
@@ -768,8 +866,21 @@ export function ContentProvider({
       return;
     }
     if (input.researchEnabled && !String(input.researchQuery || "").trim()) {
-      onToast?.("자료조사를 켠 경우 연구 주제를 입력해 주세요.", "error");
-      return;
+      const fallbackResearchQuery = [
+        input.brandName,
+        input.topic || input.mainKeyword,
+      ]
+        .map((v) => String(v || "").trim())
+        .filter(Boolean)
+        .join(" ");
+      if (!fallbackResearchQuery) {
+        onToast?.("자료조사를 켠 경우 연구 주제를 입력해 주세요.", "error");
+        return;
+      }
+      input = {
+        ...input,
+        researchQuery: fallbackResearchQuery,
+      };
     }
 
     const runChannelPack =
@@ -787,15 +898,19 @@ export function ContentProvider({
       blogOnly: !runChannelPack,
       withDefaultResearch: true,
     });
+    const blogOnScreenRef = { current: false };
     const setPipelineStep = (stepLabel) =>
       setLoadingOverlay((prev) => ({
         ...prev,
         active: true,
         channel: overlayChannel,
         complete: false,
-        stepLabel,
+        stepLabel: mapCustomerPipelineStepLabel(stepLabel),
         startedAt: prev.startedAt ?? startedAt,
         estimatedMs: prev.estimatedMs ?? estimatedMs,
+        sensitiveIndustry: prev.sensitiveIndustry ?? false,
+        peekResults: blogOnScreenRef.current,
+        quietSuccess: false,
       }));
 
     flushSync(() => {
@@ -805,7 +920,7 @@ export function ContentProvider({
         active: true,
         channel: overlayChannel,
         complete: false,
-        stepLabel: "브랜드 분석 중…",
+        stepLabel: CUSTOMER_PIPELINE_STEP_LABELS.research,
         startedAt,
         estimatedMs,
         sensitiveIndustry: false,
@@ -897,6 +1012,13 @@ export function ContentProvider({
           researchStorage = axis.storage;
           pipelineInput.v2AxisVerified = true;
           pipelineInput.v2ResearchReady = true;
+          const geminiHint = getGeminiFallbackDevHint(
+            pipelineInput.geminiResearchFallback
+          );
+          if (geminiHint) {
+            console.info("[BRICLOG]", geminiHint);
+            onToast?.(geminiHint, "info");
+          }
         }
 
         setPipelineStep("콘텐츠 작성 중…");
@@ -911,7 +1033,7 @@ export function ContentProvider({
           sensitiveIndustry: true,
         }));
         }
-        const [result, ensuredBrand] = await Promise.all([
+        let [result, ensuredBrand] = await Promise.all([
           ensureBlogDelivery(pipelineInput, {
             setPipelineStep,
             onRetry: () => setPipelineStep("다시 이어서 쓰는 중…"),
@@ -932,32 +1054,64 @@ export function ContentProvider({
           setPipelineStep(SENSITIVE_VERIFY_STEP.text);
         }
         if (result.ok === false && !result.blogContent) {
-          const failMsg =
-            result.userMessage ||
-            "조사·검증·작성 단계를 완료하지 못했습니다. 브랜드·지역·주제를 구체적으로 입력해 주세요.";
-          setBlogGenHint(failMsg);
-          setBlogGenHintSoft(true);
-          finishLoadingOverlay("blog", startedAt, {
-            success: false,
-            message: failMsg,
-            toastType: "info",
-          });
-          return;
+          const rescued =
+            forceLocalBlogPreviewDelivery(pipelineInput, result) ||
+            (() => {
+              const pack = missionProseFallbackForUi(pipelineInput);
+              return pack
+                ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+                : null;
+            })();
+          if (rescued?.blogContent?.sections?.length) {
+            result = rescued;
+          } else {
+            const failMsg =
+              result.userMessage ||
+              "브랜드 · 지역 · 주제 세 가지를 모두 입력해 주세요.";
+            setBlogGenHint(failMsg);
+            setBlogGenHintSoft(!result.userMessage?.includes("세 가지"));
+            finishLoadingOverlay("blog", startedAt, {
+              success: false,
+              message: failMsg,
+              toastType: "info",
+            });
+            return;
+          }
         }
 
         let blog = result.blogContent;
         if (!blog?.sections?.length) {
-          const failMsg =
-            result.userMessage ||
-            "글을 화면에 올리지 못했습니다. 브랜드·지역·주제를 확인한 뒤 「이야기 쓰기」를 이용해 주세요.";
-          setBlogGenHint(failMsg);
-          setBlogGenHintSoft(true);
-          finishLoadingOverlay("blog", startedAt, {
-            success: false,
-            message: failMsg,
-            toastType: "info",
+          const retry = await ensureBlogDelivery(pipelineInput, {
+            setPipelineStep,
+            onRetry: () => setPipelineStep("글을 화면에 준비하는 중…"),
           });
-          return;
+          blog = retry.blogContent;
+        }
+        if (!blog?.sections?.length) {
+          const rescued =
+            forceLocalBlogPreviewDelivery(pipelineInput, result) ||
+            (() => {
+              const pack = missionProseFallbackForUi(pipelineInput);
+              return pack
+                ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+                : null;
+            })();
+          if (rescued?.blogContent?.sections?.length) {
+            result = rescued;
+            blog = rescued.blogContent;
+          } else {
+            const failMsg =
+              result.userMessage ||
+              "브랜드 · 지역 · 주제를 입력해 주세요.";
+            setBlogGenHint(failMsg);
+            setBlogGenHintSoft(true);
+            finishLoadingOverlay("blog", startedAt, {
+              success: false,
+              message: failMsg,
+              toastType: "info",
+            });
+            return;
+          }
         }
 
         const archive =
@@ -1001,46 +1155,128 @@ export function ContentProvider({
           !blog._meta?.draftFallback;
 
         const deliverBlogResult = () => {
-          const outputGate = assertPostWriteDeliverable(pipelineInput, blog);
-          if (!outputGate.ok) {
-            const failMsg =
-              outputGate.userMessage ||
-              "작성 후 검수 기준에 맞지 않아 화면에 올리지 않았습니다.";
-            setBlogGenHint(failMsg);
-            setBlogGenHintSoft(true);
-            finishLoadingOverlay(overlayChannel, startedAt, {
-              success: false,
-              message: failMsg,
-              toastType: "info",
+          let delivery = resolveBlogUiDelivery(blog, pipelineInput, result);
+          if (!delivery.ok && blog?.sections?.length) {
+            const salvaged = salvageBlogPackForDelivery(blog, pipelineInput);
+            delivery = resolveBlogUiDelivery(salvaged, pipelineInput, {
+              ...result,
+              withheld: false,
+              softPass: true,
             });
-            return;
           }
-          const verifiedBlog = outputGate.pack;
+          if (!delivery.ok) {
+            if (blog?.sections?.length && hasFilledBlogAxes(pipelineInput)) {
+              const forced = ensureBlogDisplayPack(
+                salvageBlogPackForDelivery(blog, pipelineInput),
+                pipelineInput
+              );
+              if (forced?.sections?.length) {
+                delivery = {
+                  ok: true,
+                  pack: {
+                    ...forced,
+                    _meta: {
+                      ...(forced._meta || {}),
+                      deliveryPreview: true,
+                      deliveryPreviewMessage: SOFT_PREVIEW_HINT,
+                      passOutput: false,
+                      softPass: true,
+                    },
+                  },
+                  preview: true,
+                  userMessage: SOFT_PREVIEW_HINT,
+                };
+              }
+            }
+          }
+          if (!delivery.ok) {
+            const fallbackPack = missionProseFallbackForUi(pipelineInput);
+            if (fallbackPack) {
+              delivery = {
+                ok: true,
+                pack: {
+                  ...fallbackPack,
+                  _meta: {
+                    ...(fallbackPack._meta || {}),
+                    deliveryPreview: true,
+                    deliveryPreviewMessage: SOFT_PREVIEW_HINT,
+                    passOutput: false,
+                    softPass: true,
+                    missionFallbackUi: true,
+                  },
+                },
+                preview: true,
+                userMessage: null,
+              };
+            } else {
+              const failMsg = delivery.userMessage;
+              setBlogGenHint(failMsg);
+              setBlogGenHintSoft(true);
+              setGenerating((g) => ({ ...g, blog: false }));
+              finishLoadingOverlay(overlayChannel, startedAt, {
+                success: false,
+                message: failMsg,
+                toastType: "info",
+              });
+              return false;
+            }
+          }
+          const packForUi = delivery.pack;
           const nextSource =
             blogDerive?.sourceChannel && blogDerive.sourceChannel !== "blog"
               ? blogDerive.sourceChannel
               : "blog";
           stashPendingBlogResult(user?.id, {
-            blog: verifiedBlog,
+            blog: packForUi,
             baseContentLabel: result.baseContentLabel,
             sourceChannel: nextSource,
           });
           flushSync(() => {
-            setBlogContent(verifiedBlog);
+            setBlogContent(packForUi);
             setBaseContentLabel(result.baseContentLabel);
             setSourceChannel(nextSource);
             clearDerived();
-            setBlogResultRevealPending(true);
+            setBlogGenHint(null);
+            setBlogGenHintSoft(false);
+            setBlogGenHintIsAuth(false);
+            setBlogResultRevealPending(false);
+            setGenerating((g) => ({ ...g, blog: false }));
           });
+          blogOnScreenRef.current = true;
           overlaySuccess = true;
-          finishLoadingOverlay(overlayChannel, startedAt, {
-            success: true,
-            immediate: true,
-            quietSuccess: true,
-          });
+          if (runChannelPack) {
+            finishLoadingOverlay(overlayChannel, startedAt, {
+              success: true,
+              revealSuccess: true,
+              peekResults: true,
+              quietSuccess: true,
+              revealMs: 420,
+              completeMessage:
+                isChannelPackDeferred()
+                  ? "블로그 편집본이 준비됐어요. 플레이스·인스타는 백그라운드에서 맞추는 중…"
+                  : "블로그 편집본이 준비됐어요. 플레이스·인스타를 맞추는 중…",
+            });
+          } else {
+            finishLoadingOverlay(overlayChannel, startedAt, {
+              success: true,
+              immediate: true,
+              quietSuccess: true,
+            });
+          }
+          if (delivery.preview && delivery.userMessage) {
+            onToast?.(delivery.userMessage, "info");
+          }
+          return true;
         };
 
-        deliverBlogResult();
+        const blogDelivered = deliverBlogResult();
+        if (!blogDelivered) {
+          blogGenLock.current = false;
+          setGenerationSessionActive(false);
+          setGenerating((g) => ({ ...g, blog: false }));
+          dismissLoadingOverlay();
+          return;
+        }
 
         if (result.usageWarning) {
           const warnMsg = getUsageWarningToast(
@@ -1058,7 +1294,7 @@ export function ContentProvider({
         ) {
           markChannelPackHintSeen();
           onToast?.(
-            "플레이스·인스타도 같은 글 기준으로 만들 수 있어요. 왼쪽 「플레이스·인스타도 함께」를 켜 보세요.",
+            "같은 조사 결과로 플레이스·인스타 편집본도 받을 수 있어요. 왼쪽 「플레이스·인스타도 함께」를 켜 보세요.",
             "info"
           );
         }
@@ -1071,6 +1307,16 @@ export function ContentProvider({
         }
 
         const runPostBlogTail = async () => {
+          if (
+            runChannelPack &&
+            !isChannelPackDeferred() &&
+            Date.now() - startedAt >= GENERATION_CHANNEL_PACK_DEADLINE_MS
+          ) {
+            onToast?.(
+              "블로그 편집본을 먼저 표시했어요. 플레이스·인스타는 각 메뉴에서 이어 받을 수 있어요.",
+              "info"
+            );
+          }
           try {
             brandHooks?.onFormPersist?.(input);
           } catch (persistErr) {
@@ -1085,116 +1331,129 @@ export function ContentProvider({
           let savedImagePrompt = null;
 
           const p = personalizationRef.current;
+          const sharedOptionLock = SHARED_CHANNEL_OPTION_KEYS.reduce((acc, key) => {
+            const value = pipelineInput[key] ?? input[key];
+            if (value !== undefined && value !== null && value !== "") {
+              acc[key] = value;
+            }
+            return acc;
+          }, {});
+          const sharedOptionKeys = Object.keys(sharedOptionLock);
+          setChannelOptionLockStatus({
+            active: sharedOptionKeys.length > 0,
+            source: "blog",
+            channels: ["instagram", "place"],
+            keys: sharedOptionKeys,
+            appliedAt: new Date().toISOString(),
+          });
           const derivedInput = {
             ...input,
+            ...sharedOptionLock,
             userWritingBrief: p?.userBrief,
             brandFeedbackBrief: p?.feedbackBrief,
             styleContinuityBrief: p?.styleContinuityBrief,
             brandKnowledgeBrief: p?.brandKnowledgeBrief,
             personalizationAddon: p?.combinedPromptAddon,
             combinedPersonalizationAddon: p?.combinedPromptAddon,
+            _uiSharedOptionLock: sharedOptionLock,
           };
 
           if (
             runChannelPack &&
-            isFullBlog &&
-            llmStatus.llmAvailable !== false
+            blogOnScreenRef.current &&
+            llmStatus.llmAvailable !== false &&
+            (isChannelPackDeferred() ||
+              Date.now() - startedAt < GENERATION_CHANNEL_PACK_DEADLINE_MS)
           ) {
-            try {
-              if (!allowPipelineChannel("instagram")) throw new Error("SKIP_CHANNEL");
-              setGenerating((g) => ({ ...g, instagram: true }));
-              const instaSig = await runDerivedSignatureChannel({
-                channel: "instagram",
-                formValues: derivedInput,
-                pipelineInput,
-                sourceBlog: blog,
-                sourceLabel: result.baseContentLabel,
-                generateResearchAsync,
-                setResearchResult,
-                instaTone,
-              });
-              if (!instaSig.ok) throw new Error(instaSig.userMessage);
-              const insta = instaSig.content;
-              setInstagramContent(insta);
-              savedInsta = insta;
-              brandHooks?.onChannelSaved?.("insta", insta);
-            } catch (err) {
-              if (err?.message !== "SKIP_CHANNEL") {
-                onToast?.(
-                  err?.message ||
-                    BACKGROUND_OPS.channelFailed("인스타그램"),
-                  "info"
-                );
-              }
-            } finally {
-              setGenerating((g) => ({ ...g, instagram: false }));
-            }
-
             if (!allowPipelineChannel("place")) {
               maybeChannelUpgradeHint();
             }
-            try {
-              if (!allowPipelineChannel("place")) throw new Error("SKIP_CHANNEL");
-              setGenerating((g) => ({ ...g, place: true }));
-              const placeSig = await runDerivedSignatureChannel({
-                channel: "place",
-                formValues: derivedInput,
-                pipelineInput,
-                sourceBlog: blog,
-                sourceLabel: result.baseContentLabel,
-                generateResearchAsync,
-                setResearchResult,
-              });
-              if (!placeSig.ok) throw new Error(placeSig.userMessage);
-              const place = placeSig.content;
-              setPlaceContent(place);
-              savedPlace = place;
-              brandHooks?.onChannelSaved?.("place", place);
-            } catch (err) {
-              if (err?.message !== "SKIP_CHANNEL") {
+            const runDerivedChannelTask = async (channel, task) => {
+              if (!allowPipelineChannel(channel)) return;
+              setGenerating((g) => ({ ...g, [channel]: true }));
+              try {
+                await task();
+              } catch (err) {
                 onToast?.(
-                  err?.message ||
-                    BACKGROUND_OPS.channelFailed("스마트플레이스"),
+                  err?.message || BACKGROUND_OPS.channelFailed(
+                    channel === "instagram" ? "인스타그램" : "스마트플레이스"
+                  ),
                   "info"
                 );
+              } finally {
+                setGenerating((g) => ({ ...g, [channel]: false }));
               }
-            } finally {
-              setGenerating((g) => ({ ...g, place: false }));
-            }
+            };
 
-            if (AUTO_RUN_PROMPT_ON_BLOG) {
-              try {
-                if (!allowPipelineChannel("image")) throw new Error("SKIP_CHANNEL");
-                setGenerating((g) => ({ ...g, image: true }));
-                const { options: imgOpts } = buildImageGenerationContext(
-                  { sourceChannel: "blog", standalone: false },
-                  { imageOptions, blogContent: blog, blogInput: input }
-                );
-                const imgSig = await runDerivedSignatureChannel({
-                  channel: "image",
-                  formValues: input,
+            setPipelineStep(CUSTOMER_PIPELINE_STEP_LABELS.channelDerive);
+            await Promise.allSettled([
+              runDerivedChannelTask("instagram", async () => {
+                const instaSig = await runDerivedSignatureChannel({
+                  channel: "instagram",
+                  formValues: derivedInput,
                   pipelineInput,
                   sourceBlog: blog,
                   sourceLabel: result.baseContentLabel,
                   generateResearchAsync,
                   setResearchResult,
-                  imageOptions: imgOpts,
+                  instaTone,
                 });
-                if (!imgSig.ok) throw new Error(imgSig.userMessage);
-                const imageState = imgSig.content;
-                setImagePrompts(imageState);
-                savedImagePrompt = imageState.activePrompt || "";
-              } catch (err) {
-                if (err?.message !== "SKIP_CHANNEL") {
+                if (!instaSig.ok) throw new Error(instaSig.userMessage);
+                const insta = instaSig.content;
+                setInstagramContent(insta);
+                savedInsta = insta;
+                brandHooks?.onChannelSaved?.("insta", insta);
+              }),
+              runDerivedChannelTask("place", async () => {
+                const placeSig = await runDerivedSignatureChannel({
+                  channel: "place",
+                  formValues: derivedInput,
+                  pipelineInput,
+                  sourceBlog: blog,
+                  sourceLabel: result.baseContentLabel,
+                  generateResearchAsync,
+                  setResearchResult,
+                });
+                if (!placeSig.ok) throw new Error(placeSig.userMessage);
+                const place = placeSig.content;
+                setPlaceContent(place);
+                savedPlace = place;
+                brandHooks?.onChannelSaved?.("place", place);
+              }),
+            ]);
+
+            if (AUTO_RUN_PROMPT_ON_BLOG && allowPipelineChannel("image")) {
+              // 이미지 프롬프트는 비동기로 분리해 3채널 본문 완료 체감을 우선한다.
+              void (async () => {
+                try {
+                  setGenerating((g) => ({ ...g, image: true }));
+                  const { options: imgOpts } = buildImageGenerationContext(
+                    { sourceChannel: "blog", standalone: false },
+                    { imageOptions, blogContent: blog, blogInput: input }
+                  );
+                  const imgSig = await runDerivedSignatureChannel({
+                    channel: "image",
+                    formValues: input,
+                    pipelineInput,
+                    sourceBlog: blog,
+                    sourceLabel: result.baseContentLabel,
+                    generateResearchAsync,
+                    setResearchResult,
+                    imageOptions: imgOpts,
+                  });
+                  if (!imgSig.ok) throw new Error(imgSig.userMessage);
+                  const imageState = imgSig.content;
+                  setImagePrompts(imageState);
+                  savedImagePrompt = imageState.activePrompt || "";
+                } catch (err) {
                   onToast?.(
-                    err?.message ||
-                      BACKGROUND_OPS.channelFailed("비주얼 프롬프트"),
+                    err?.message || BACKGROUND_OPS.channelFailed("비주얼 프롬프트"),
                     "info"
                   );
+                } finally {
+                  setGenerating((g) => ({ ...g, image: false }));
                 }
-              } finally {
-                setGenerating((g) => ({ ...g, image: false }));
-              }
+              })();
             }
           }
 
@@ -1253,7 +1512,7 @@ export function ContentProvider({
                   research: researchStorage || pipelineInput.researchPayload,
                 },
               };
-              const memSaved = await persistPipelineToMemory({
+              const memResult = await persistPipelineToMemory({
                 brandId: pipelineInput.brandId,
                 blog,
                 place: savedPlace,
@@ -1262,11 +1521,14 @@ export function ContentProvider({
               });
               setMemoryContentIds((prev) => {
                 const next = { ...prev };
-                for (const item of memSaved || []) {
+                for (const item of memResult?.saved || []) {
                   if (item?.channel && item?.id) next[item.channel] = item.id;
                 }
                 return next;
               });
+              if (memResult?.warnings?.length) {
+                onToast?.(memResult.warnings[0].message, "info");
+              }
             } catch (err) {
               onToast?.(
                 err?.message
@@ -1276,6 +1538,15 @@ export function ContentProvider({
               );
             }
           }
+          setChannelOptionLockStatus((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  active: false,
+                  completedAt: new Date().toISOString(),
+                }
+              : prev
+          );
         };
 
         void runPostBlogTail();
@@ -1373,7 +1644,7 @@ export function ContentProvider({
           });
           return;
         }
-        const saved = await persistPipelineToMemory({
+        const { saved, warnings } = await persistPipelineToMemory({
           brandId,
           blog: channel === "blog" ? content : null,
           place: channel === "place" ? content : null,
@@ -1384,11 +1655,51 @@ export function ContentProvider({
         if (item?.id) {
           setMemoryContentIds((prev) => ({ ...prev, [channel]: item.id }));
         }
-      } catch {
-        /* memory schema optional */
+        if (warnings?.length) {
+          onToast?.(warnings[0].message, "info");
+        }
+      } catch (err) {
+        onToast?.(err?.message || BACKGROUND_OPS.saveFailed, "info");
       }
     },
-    [demoMode, brandHooks?.activeBrandId, memoryContentIds, buildMemMeta]
+    [demoMode, brandHooks?.activeBrandId, memoryContentIds, buildMemMeta, onToast]
+  );
+
+  const loadMemoryContentIntoWorkspace = useCallback(
+    (item) => {
+      const channel = item?.channel;
+      if (!channel) return false;
+      const content = pipelineContentFromMemoryItem(channel, item);
+      if (!content) {
+        onToast?.("구조 복원이 어려워요. 복사본을 참고해 주세요.", "info");
+        return false;
+      }
+      if (channel === "blog") setBlogContent(content);
+      else if (channel === "place") setPlaceContent(content);
+      else if (channel === "instagram") setInstagramContent(content);
+      if (item.id) {
+        setMemoryContentIds((prev) => ({ ...prev, [channel]: item.id }));
+      }
+      return true;
+    },
+    [onToast]
+  );
+
+  const persistChannelHistory = useCallback(
+    async (channel, formValues, content) => {
+      if (demoMode || !user?.id || !content) return;
+      try {
+        await saveChannelGeneration(user.id, {
+          channel,
+          formValues,
+          content,
+          brandId: brandHooks?.activeBrandId,
+        });
+      } catch {
+        /* history optional */
+      }
+    },
+    [demoMode, user?.id, brandHooks?.activeBrandId]
   );
 
   const buildRewriteCtx = useCallback(
@@ -1422,7 +1733,7 @@ export function ContentProvider({
           active: true,
           channel: "feedback",
           complete: false,
-          stepLabel,
+          stepLabel: mapCustomerPipelineStepLabel(stepLabel),
         });
 
       if (isFeedbackFlow) {
@@ -1489,7 +1800,7 @@ export function ContentProvider({
           active: true,
           channel: isFeedbackFlow ? "feedback" : "pipeline",
           complete: false,
-          stepLabel,
+          stepLabel: mapCustomerPipelineStepLabel(stepLabel),
         });
 
       try {
@@ -1678,6 +1989,13 @@ export function ContentProvider({
         } else {
           next = { ...next, _edited: true };
         }
+
+        next = polishChannelPackAfterPipeline(
+          "place",
+          next,
+          normalizePipelineInput(patchedInput),
+          buildRewriteCtx()
+        );
 
         if (isFeedbackFlow) {
           setStep(PLACE_FEEDBACK_REWRITE_STEPS[2].text);
@@ -1878,6 +2196,13 @@ export function ContentProvider({
           next = { ...next, _edited: true };
         }
 
+        next = polishChannelPackAfterPipeline(
+          "instagram",
+          next,
+          normalizePipelineInput(patchedInput),
+          buildRewriteCtx()
+        );
+
         if (isFeedbackFlow) {
           setStep(INSTA_FEEDBACK_REWRITE_STEPS[2].text);
         }
@@ -1941,11 +2266,27 @@ export function ContentProvider({
   const prepareChannelForm = useCallback(
     (inputOverride) => {
       const base = inputOverride ?? blogInput;
+      const topicMain =
+        base.topic?.trim()?.split(/[,，]/)[0]?.trim() ||
+        base.mainKeyword?.trim() ||
+        "";
+      const normalizedBase = {
+        ...base,
+        topic: base.topic?.trim() || topicMain,
+        mainKeyword: topicMain || base.mainKeyword,
+      };
       const ensured = ensureChannelGenerateInput(
-        base,
+        normalizedBase,
         brandHooks?.activeBrand
       );
-      if (!inputOverride && ensured.changed) setBlogInput(ensured.values);
+      if (!inputOverride && ensured.changed) {
+        setBlogInput((prev) => ({
+          ...prev,
+          ...ensured.values,
+          topic: ensured.values.topic?.trim() || prev.topic,
+          mainKeyword: ensured.values.mainKeyword?.trim() || prev.mainKeyword,
+        }));
+      }
       if (!ensured.ok) {
         onToast?.(
           "브랜드명을 확인하고, 주제를 입력하거나 아래 영감에서 골라 주세요.",
@@ -1969,6 +2310,33 @@ export function ContentProvider({
     },
     []
   );
+
+  const isDerivationSourceAligned = useCallback((formValues, source) => {
+    if (!source || source.standalone) return true;
+    if (source.sourceChannel === "blog") return true;
+    const anchor = [
+      formValues.brandName,
+      formValues.topic,
+      formValues.mainKeyword,
+      formValues.region,
+    ]
+      .filter(Boolean)
+      .map((v) => String(v).trim())
+      .filter((v) => v.length >= 2);
+    if (!anchor.length) return true;
+    const blogLike = source.blogLike || {};
+    const blob = [
+      blogLike.title,
+      blogLike.representativeTitle,
+      ...(blogLike.sections || []).map((s) => s?.heading),
+      ...(blogLike.sections || []).map((s) => s?.body),
+      blogLike.conclusion,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const hits = anchor.filter((k) => blob.includes(k)).length;
+    return hits >= Math.max(1, Math.ceil(anchor.length * 0.5));
+  }, []);
 
   const generatePlace = useCallback((opts = {}) => {
     if (!requireEmailVerified()) return;
@@ -1994,6 +2362,14 @@ export function ContentProvider({
           baseContentLabel,
           sourceChannel,
         });
+    if (!isDerivationSourceAligned(formValues, source)) {
+      source = {
+        sourceChannel: "form",
+        blogLike: null,
+        baseLabel: buildSourceLabel("place", formValues),
+        standalone: true,
+      };
+    }
     if (!source) {
       onToast?.("주제·브랜드명을 입력한 뒤 생성해 주세요.", "error");
       return;
@@ -2017,7 +2393,7 @@ export function ContentProvider({
         active: true,
         channel: "place",
         complete: false,
-        stepLabel,
+        stepLabel: mapCustomerPipelineStepLabel(stepLabel),
         startedAt: prev.startedAt ?? startedAt,
       }));
     void unlockAudioFromUserGesture().then(() => {
@@ -2025,7 +2401,7 @@ export function ContentProvider({
         active: true,
         channel: "place",
         complete: false,
-        stepLabel: "브랜드·지역·주제 분석 중…",
+        stepLabel: CUSTOMER_PIPELINE_STEP_LABELS.research,
         startedAt,
       });
     });
@@ -2044,12 +2420,27 @@ export function ContentProvider({
           sourceLabel: source.baseLabel,
         });
         if (!sig.ok) {
-          onToast?.(sig.userMessage, sig.soft ? "info" : "error");
-          finishLoadingOverlay("place", startedAt, {
-            success: false,
-            message: sig.userMessage,
-            toastType: "info",
-          });
+          const fallbackPlace = runPlacePipeline(
+            formValues,
+            source.blogLike || blogContent,
+            source.baseLabel
+          );
+          fallbackPlace._meta = {
+            ...(fallbackPlace._meta || {}),
+            generationMode: "place_local_fallback",
+            fallbackReason: sig.userMessage || "signature_failed",
+          };
+          setPlaceContent(fallbackPlace);
+          setBaseContentLabel(source.baseLabel);
+          setSourceChannel(source.standalone ? "place" : source.sourceChannel);
+          brandHooks?.onChannelSaved?.("place", fallbackPlace);
+          persistChannelMemory("place", fallbackPlace);
+          void persistChannelHistory("place", formValues, fallbackPlace);
+          onToast?.(
+            "플레이스 시그니처 생성이 지연되어 로컬 안전 생성본으로 표시했습니다.",
+            "info"
+          );
+          finishLoadingOverlay("place", startedAt, { success: true });
           return;
         }
         setPlaceContent(sig.content);
@@ -2057,6 +2448,7 @@ export function ContentProvider({
         setSourceChannel(source.standalone ? "place" : source.sourceChannel);
         brandHooks?.onChannelSaved?.("place", sig.content);
         persistChannelMemory("place", sig.content);
+        void persistChannelHistory("place", formValues, sig.content);
         recordGenerationSignal(brandHooks?.activeBrandId, "place", {
           title: sig.content?.title,
         });
@@ -2087,9 +2479,11 @@ export function ContentProvider({
     llmStatus.llmAvailable,
     generateResearchAsync,
     persistChannelMemory,
+    persistChannelHistory,
     allowPipelineChannel,
     prepareChannelForm,
     commitChannelFormFromOpts,
+    isDerivationSourceAligned,
     requireEmailVerified,
   ]);
 
@@ -2118,6 +2512,14 @@ export function ContentProvider({
           baseContentLabel,
           sourceChannel,
         });
+    if (!isDerivationSourceAligned(formValues, source)) {
+      source = {
+        sourceChannel: "form",
+        blogLike: null,
+        baseLabel: buildSourceLabel("instagram", formValues),
+        standalone: true,
+      };
+    }
     if (!source) {
       onToast?.("주제·브랜드명을 입력한 뒤 만들어 주세요.", "error");
       return;
@@ -2141,7 +2543,7 @@ export function ContentProvider({
         active: true,
         channel: "instagram",
         complete: false,
-        stepLabel,
+        stepLabel: mapCustomerPipelineStepLabel(stepLabel),
         startedAt: prev.startedAt ?? startedAt,
       }));
     void unlockAudioFromUserGesture().then(() => {
@@ -2149,7 +2551,7 @@ export function ContentProvider({
         active: true,
         channel: "instagram",
         complete: false,
-        stepLabel: "브랜드·지역·주제 분석 중…",
+        stepLabel: CUSTOMER_PIPELINE_STEP_LABELS.research,
         startedAt,
       });
     });
@@ -2169,12 +2571,30 @@ export function ContentProvider({
           instaTone: tone,
         });
         if (!sig.ok) {
-          onToast?.(sig.userMessage, sig.soft ? "info" : "error");
-          finishLoadingOverlay("instagram", startedAt, {
-            success: false,
-            message: sig.userMessage,
-            toastType: "info",
-          });
+          const fallbackInsta = runInstagramPipeline(
+            formValues,
+            source.blogLike || blogContent,
+            tone,
+            source.baseLabel
+          );
+          fallbackInsta._meta = {
+            ...(fallbackInsta._meta || {}),
+            generationMode: "instagram_local_fallback",
+            fallbackReason: sig.userMessage || "signature_failed",
+          };
+          setInstagramContent(fallbackInsta);
+          setBaseContentLabel(source.baseLabel);
+          setSourceChannel(
+            source.standalone ? "instagram" : source.sourceChannel
+          );
+          brandHooks?.onChannelSaved?.("insta", fallbackInsta);
+          persistChannelMemory("instagram", fallbackInsta);
+          void persistChannelHistory("instagram", formValues, fallbackInsta);
+          onToast?.(
+            "인스타 시그니처 생성이 지연되어 로컬 안전 생성본으로 표시했습니다.",
+            "info"
+          );
+          finishLoadingOverlay("instagram", startedAt, { success: true });
           return;
         }
         setInstagramContent(sig.content);
@@ -2184,6 +2604,7 @@ export function ContentProvider({
         );
         brandHooks?.onChannelSaved?.("insta", sig.content);
         persistChannelMemory("instagram", sig.content);
+        void persistChannelHistory("instagram", formValues, sig.content);
         recordGenerationSignal(brandHooks?.activeBrandId, "instagram", {
           hook: sig.content?.hook,
         });
@@ -2215,6 +2636,7 @@ export function ContentProvider({
     llmStatus.llmAvailable,
     generateResearchAsync,
     persistChannelMemory,
+    persistChannelHistory,
     allowPipelineChannel,
     prepareChannelForm,
     commitChannelFormFromOpts,
@@ -2266,7 +2688,7 @@ export function ContentProvider({
         active: true,
         channel: "image",
         complete: false,
-        stepLabel,
+        stepLabel: mapCustomerPipelineStepLabel(stepLabel),
         startedAt: prev.startedAt ?? startedAt,
       }));
     const runGeneration = async () => {
@@ -2330,6 +2752,7 @@ export function ContentProvider({
     allowPipelineChannel,
     prepareChannelForm,
     commitChannelFormFromOpts,
+    isDerivationSourceAligned,
     requireEmailVerified,
   ]);
 
@@ -2395,6 +2818,7 @@ export function ContentProvider({
       blogGenHint,
       blogGenHintIsAuth,
       blogGenHintSoft,
+      channelOptionLockStatus,
       pipelineReady,
       isBusy,
       channelStartReady,
@@ -2427,6 +2851,7 @@ export function ContentProvider({
       memoryContentIds,
       billingPlanId,
       billingBypassQuotas,
+      loadMemoryContentIntoWorkspace,
     }),
     [
       blogContent,
@@ -2447,6 +2872,7 @@ export function ContentProvider({
       blogGenHint,
       blogGenHintIsAuth,
       blogGenHintSoft,
+      channelOptionLockStatus,
       researchResult,
       pipelineReady,
       isBusy,
@@ -2477,6 +2903,7 @@ export function ContentProvider({
       memoryContentIds,
       billingPlanId,
       billingBypassQuotas,
+      loadMemoryContentIntoWorkspace,
     ]
   );
 

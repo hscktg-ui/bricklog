@@ -185,7 +185,7 @@ export default function ContentForm({
             onClick={() => setAdvancedOpen(!advancedOpen)}
             className="flex w-full items-center justify-between rounded-xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2 text-[12px] font-semibold text-[#4E5968]"
           >
-            고급 옵션 (선택)
+            더 맞추기 (선택)
             <span className="text-[#8B95A1]">{advancedOpen ? "▲" : "▼"}</span>
           </button>
 

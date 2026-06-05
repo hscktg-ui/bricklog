@@ -1,0 +1,391 @@
+{
+  "learnedAt": "2026-05-31T06:04:51.263Z",
+  "phraseCorpus": [
+    {
+      "phrase": "솔직후기",
+      "count": 512
+    },
+    {
+      "phrase": "솔직 후기",
+      "count": 409
+    },
+    {
+      "phrase": "카페 추천",
+      "count": 135
+    },
+    {
+      "phrase": "다녀왔어요",
+      "count": 118
+    },
+    {
+      "phrase": "다녀왔습니다",
+      "count": 47
+    },
+    {
+      "phrase": "미용실 추천",
+      "count": 42
+    },
+    {
+      "phrase": "맛집 추천",
+      "count": 40
+    },
+    {
+      "phrase": "방문했어요",
+      "count": 38
+    },
+    {
+      "phrase": "방문해서",
+      "count": 37
+    },
+    {
+      "phrase": "솔직하게",
+      "count": 36
+    },
+    {
+      "phrase": "병원 추천",
+      "count": 31
+    },
+    {
+      "phrase": "방문해보세요",
+      "count": 29
+    },
+    {
+      "phrase": "헬스장 추천",
+      "count": 26
+    },
+    {
+      "phrase": "것을 추천",
+      "count": 26
+    },
+    {
+      "phrase": "꽃집 추천",
+      "count": 25
+    },
+    {
+      "phrase": "솔직 리뷰",
+      "count": 25
+    },
+    {
+      "phrase": "강력 추천",
+      "count": 24
+    },
+    {
+      "phrase": "적극 추천",
+      "count": 23
+    },
+    {
+      "phrase": "직접 다녀온",
+      "count": 22
+    },
+    {
+      "phrase": "예약하고",
+      "count": 22
+    },
+    {
+      "phrase": "분들께 추천",
+      "count": 22
+    },
+    {
+      "phrase": "동물병원 추천",
+      "count": 17
+    },
+    {
+      "phrase": "대형카페 추천",
+      "count": 16
+    },
+    {
+      "phrase": "펜션 추천",
+      "count": 15
+    },
+    {
+      "phrase": "시작했어요",
+      "count": 15
+    },
+    {
+      "phrase": "평택약국추천",
+      "count": 15
+    },
+    {
+      "phrase": "업체 추천",
+      "count": 14
+    },
+    {
+      "phrase": "완전 추천",
+      "count": 14
+    },
+    {
+      "phrase": "약국 추천",
+      "count": 14
+    },
+    {
+      "phrase": "다녀왔는데요",
+      "count": 13
+    },
+    {
+      "phrase": "솔직 후기를",
+      "count": 13
+    },
+    {
+      "phrase": "가구점 추천",
+      "count": 13
+    },
+    {
+      "phrase": "숙소 추천",
+      "count": 13
+    },
+    {
+      "phrase": "분들에게 추천",
+      "count": 13
+    },
+    {
+      "phrase": "부동산 추천",
+      "count": 13
+    },
+    {
+      "phrase": "카페추천",
+      "count": 12
+    },
+    {
+      "phrase": "다녀왔다",
+      "count": 12
+    },
+    {
+      "phrase": "솔직후기입니다",
+      "count": 11
+    },
+    {
+      "phrase": "직접 방문해",
+      "count": 11
+    },
+    {
+      "phrase": "선물 추천",
+      "count": 11
+    },
+    {
+      "phrase": "꽃다발 추천",
+      "count": 11
+    },
+    {
+      "phrase": "직접 가보니",
+      "count": 11
+    },
+    {
+      "phrase": "파주카페추천",
+      "count": 11
+    },
+    {
+      "phrase": "꽃집추천",
+      "count": 10
+    },
+    {
+      "phrase": "강력추천",
+      "count": 10
+    },
+    {
+      "phrase": "직접 보고",
+      "count": 10
+    },
+    {
+      "phrase": "직접 체험한",
+      "count": 10
+    },
+    {
+      "phrase": "정말 추천",
+      "count": 10
+    },
+    {
+      "phrase": "데이트 추천",
+      "count": 10
+    },
+    {
+      "phrase": "원데이클래스 추천",
+      "count": 10
+    }
+  ],
+  "voicePhrases": [
+    {
+      "phrase": "솔직후기",
+      "count": 512
+    },
+    {
+      "phrase": "솔직 후기",
+      "count": 409
+    },
+    {
+      "phrase": "다녀왔어요",
+      "count": 118
+    },
+    {
+      "phrase": "방문했어요",
+      "count": 38
+    },
+    {
+      "phrase": "솔직하게",
+      "count": 36
+    },
+    {
+      "phrase": "솔직 리뷰",
+      "count": 25
+    },
+    {
+      "phrase": "직접 다녀온",
+      "count": 22
+    },
+    {
+      "phrase": "시작했어요",
+      "count": 15
+    },
+    {
+      "phrase": "솔직 후기를",
+      "count": 13
+    },
+    {
+      "phrase": "솔직후기입니다",
+      "count": 11
+    },
+    {
+      "phrase": "직접 방문해",
+      "count": 11
+    },
+    {
+      "phrase": "직접 가보니",
+      "count": 11
+    },
+    {
+      "phrase": "직접 보고",
+      "count": 10
+    },
+    {
+      "phrase": "직접 체험한",
+      "count": 10
+    }
+  ],
+  "categoryBreakdown": {
+    "카페": {
+      "count": 734,
+      "fieldRate": 28.2,
+      "voiceRate": 73.8,
+      "checklistRate": 2.9
+    },
+    "꽃집": {
+      "count": 548,
+      "fieldRate": 11.9,
+      "voiceRate": 45.8,
+      "checklistRate": 2.9
+    },
+    "음식점": {
+      "count": 432,
+      "fieldRate": 15.5,
+      "voiceRate": 50.7,
+      "checklistRate": 2.3
+    },
+    "미용실": {
+      "count": 435,
+      "fieldRate": 18.9,
+      "voiceRate": 60.7,
+      "checklistRate": 1.4
+    },
+    "학원": {
+      "count": 589,
+      "fieldRate": 28.7,
+      "voiceRate": 50.3,
+      "checklistRate": 2.2
+    },
+    "가구점": {
+      "count": 536,
+      "fieldRate": 27.4,
+      "voiceRate": 59,
+      "checklistRate": 0.7
+    },
+    "인테리어": {
+      "count": 430,
+      "fieldRate": 5.1,
+      "voiceRate": 23.5,
+      "checklistRate": 10.5
+    },
+    "헬스장": {
+      "count": 431,
+      "fieldRate": 16.7,
+      "voiceRate": 52.9,
+      "checklistRate": 2.1
+    },
+    "광고대행사": {
+      "count": 438,
+      "fieldRate": 18.5,
+      "voiceRate": 34.7,
+      "checklistRate": 2.3
+    },
+    "온라인 쇼핑몰": {
+      "count": 595,
+      "fieldRate": 16.5,
+      "voiceRate": 41.2,
+      "checklistRate": 2.4
+    },
+    "펜션": {
+      "count": 380,
+      "fieldRate": 10.5,
+      "voiceRate": 47.4,
+      "checklistRate": 2.1
+    },
+    "공방": {
+      "count": 407,
+      "fieldRate": 9.6,
+      "voiceRate": 46.2,
+      "checklistRate": 0.5
+    },
+    "병원": {
+      "count": 500,
+      "fieldRate": 19.8,
+      "voiceRate": 43.6,
+      "checklistRate": 2.2
+    },
+    "약국": {
+      "count": 625,
+      "fieldRate": 25.9,
+      "voiceRate": 42.4,
+      "checklistRate": 2.9
+    },
+    "법률": {
+      "count": 381,
+      "fieldRate": 2.1,
+      "voiceRate": 17.6,
+      "checklistRate": 5.2
+    },
+    "세무": {
+      "count": 389,
+      "fieldRate": 6.2,
+      "voiceRate": 27,
+      "checklistRate": 1
+    },
+    "노무": {
+      "count": 391,
+      "fieldRate": 13,
+      "voiceRate": 30.2,
+      "checklistRate": 1.5
+    },
+    "부동산": {
+      "count": 637,
+      "fieldRate": 17.4,
+      "voiceRate": 35.6,
+      "checklistRate": 4.2
+    },
+    "금융": {
+      "count": 425,
+      "fieldRate": 2.4,
+      "voiceRate": 12.5,
+      "checklistRate": 2.8
+    },
+    "보험": {
+      "count": 384,
+      "fieldRate": 4.7,
+      "voiceRate": 22.1,
+      "checklistRate": 1.6
+    },
+    "건강기능식품": {
+      "count": 313,
+      "fieldRate": 16.6,
+      "voiceRate": 46.3,
+      "checklistRate": 1
+    }
+  }
+}

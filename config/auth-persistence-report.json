@@ -1,0 +1,12 @@
+{
+  "at": "2026-05-30T10:59:12.865Z",
+  "baseUrl": "http://localhost:3005",
+  "steps": [
+    {
+      "step": "env",
+      "ok": false,
+      "detail": "NEXT_PUBLIC_SUPABASE_* + BRICLOG_TEST_EMAIL/PASSWORD required"
+    }
+  ],
+  "ok": false
+}

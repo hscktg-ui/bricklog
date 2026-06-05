@@ -24,7 +24,7 @@ export default function GenerateButton({
           </span>
         ) : (
           <span className="inline-flex items-center justify-center gap-2">
-            <Icon name="sparkles" className="h-5 w-5" />
+            <Icon name="document" className="h-5 w-5" />
             <span>채널별 초안 생성</span>
           </span>
         )}

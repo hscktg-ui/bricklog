@@ -1,0 +1,14 @@
+{
+  "at": "2026-05-28T10:59:53.510Z",
+  "base": "http://127.0.0.1:3005",
+  "slaMs": 120000,
+  "login": {
+    "ok": false,
+    "reason": "no_credentials"
+  },
+  "runs": [],
+  "summary": {
+    "skipped": true,
+    "reason": "no_credentials"
+  }
+}

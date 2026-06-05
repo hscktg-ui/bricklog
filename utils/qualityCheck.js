@@ -36,14 +36,20 @@ const GPT_TONE_MARKERS = [
 
 export function getBlogFullText(blog) {
   if (!blog) return "";
+  const primary = String(blog.representativeTitle || blog.title || "").trim();
+  const primaryKey = primary.replace(/\s/g, "");
+  const altTitles = (blog.titles || []).filter((t) => {
+    const next = String(t || "").trim();
+    return next && next.replace(/\s/g, "") !== primaryKey;
+  });
   const parts = [
-    ...(blog.titles || []),
-    blog.representativeTitle || blog.title,
+    ...altTitles,
+    primary,
     ...(blog.sections || []).map((s) => `${s.heading} ${s.body}`),
     blog.conclusion,
     (blog.hashtags || []).join(" "),
   ];
-  return parts.join("\n");
+  return parts.filter(Boolean).join("\n");
 }
 
 function hasDuplicateSentences(text) {

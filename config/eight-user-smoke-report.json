@@ -1,5 +1,5 @@
 {
-  "base": "http://127.0.0.1:3005",
+  "base": "http://localhost:3000",
   "personas": [
     {
       "id": "p1_first_visit",
@@ -46,21 +46,21 @@
     {
       "id": "p1_first_visit",
       "label": "첫 방문자 — 랜딩·인트로·가입 CTA",
-      "status": "pass",
+      "status": "fail",
       "steps": [
         {
           "step": "intro_dismiss",
           "ok": true,
-          "detail": "dismissed"
+          "detail": "absent"
         },
         {
           "step": "no_fullscreen_blockers",
           "ok": true,
-          "blockingCount": 0
+          "blockingCount": 1
         },
         {
           "step": "landing_cta",
-          "ok": true
+          "ok": false
         }
       ]
     },

@@ -36,16 +36,20 @@ export default function ChannelPackToggle({
               {WORKSPACE_BLOG.packChannelsLabel}
             </span>
             {!packEnabled ? (
+              <span className="rounded-md bg-[#E8EBED] px-1.5 py-0.5 text-[10px] font-semibold text-[#8B95A1]">
+                블로그만
+              </span>
+            ) : (
               <span className="rounded-md bg-[#03C75A]/12 px-1.5 py-0.5 text-[10px] font-semibold text-[#03A94D]">
                 추천
               </span>
-            ) : null}
+            )}
           </span>
           {compactCopy ? (
             <p id="channel-pack-hint" className="mt-1 text-[11px] text-[#8B95A1]">
               {packEnabled
-                ? "플레이스·인스타 함께 (이야기 먼저 표시)"
-                : "이야기만 먼저"}
+                ? "플레이스·인스타 함께 (블로그 먼저 표시)"
+                : "블로그 편집본만"}
             </p>
           ) : (
             <>

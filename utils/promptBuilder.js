@@ -24,13 +24,22 @@ import {
   keywordBriefForPrompt,
 } from "@/lib/keywords/keywordIntelligence";
 import { buildTopicSeoBrief } from "@/lib/seo/topicSeoBrief";
+import { formatEmojiEngineBrief } from "@/lib/emoji/emojiEngine";
 import { getBrandLearningBrief } from "@/lib/learning/brandLearning";
 import { getExposureBrief } from "@/lib/platforms/exposureHints";
 import { getTrendHintsForChannel } from "@/lib/trends/trendIntelligence";
 import { getIndustryDNABrief } from "@/lib/prompts/industryDNA";
 import { assemblePromptLayers, layersToBrief } from "@/lib/prompts/promptLayers";
 import { resolveContentPersona } from "@/lib/persona/contentPersona";
+import {
+  resolvePersonaEngineProfile,
+  buildPersonaEnginePromptBlock,
+} from "@/lib/persona/personaEngineProfile";
 import { getPersonaBlogModifiers } from "@/lib/persona/personaChannelStyle";
+import {
+  resolveContentPerspective,
+  buildPerspectivePromptBlock,
+} from "@/lib/content/perspectiveEngine";
 
 /**
  * Prompt Matrix → 통합 컨텍스트
@@ -123,7 +132,8 @@ export function createPromptContext(input) {
       input.emojiDensity ||
       input.brandMemory?.emojiDensity ||
       input.brandMemory?.emojiLevel ||
-      "low",
+      undefined,
+    emojiBrief: formatEmojiEngineBrief(input, "blog"),
     blogLengthTier: input.blogLengthTier || "medium",
     placePostType: input.placePostType || "general",
     placeGoal: input.placeGoal || "visit",
@@ -267,6 +277,34 @@ export function createPromptContext(input) {
     ctx.matrixSummary += ` · ${ctx.keywordBrief}`;
   }
 
+  if (input.knowledgeExpansionBrief) {
+    ctx.knowledgeExpansionBrief = input.knowledgeExpansionBrief;
+  }
+  if (input.editorColumnBrief) {
+    ctx.editorColumnBrief = input.editorColumnBrief;
+  }
+  if (input.informationUnitBrief) {
+    ctx.informationUnitBrief = input.informationUnitBrief;
+  }
+  if (input.coverageMapBrief) {
+    ctx.coverageMapBrief = input.coverageMapBrief;
+  }
+  if (input.customerQuestionBrief) {
+    ctx.customerQuestionBrief = input.customerQuestionBrief;
+  }
+  if (input.customerQuestionMap) {
+    ctx.customerQuestionMap = input.customerQuestionMap;
+  }
+  if (input.geminiWriterBrief) {
+    ctx.geminiWriterBrief = input.geminiWriterBrief;
+  }
+  if (input.informationUnits) {
+    ctx.informationUnits = input.informationUnits;
+  }
+  if (input.knowledgeExpansion) {
+    ctx.knowledgeExpansion = input.knowledgeExpansion;
+  }
+
   ctx.promptLayers = assemblePromptLayers(ctx, "blog");
   ctx.promptBrief = layersToBrief(ctx.promptLayers);
 
@@ -293,6 +331,34 @@ export function createPromptContext(input) {
     personaResolved.subtype,
     ctx
   );
+  ctx.personaEngineProfile = resolvePersonaEngineProfile({
+    ...input,
+    contentPersona: personaResolved.persona,
+    contentPersonaSubtype: personaResolved.subtype,
+  });
+  ctx.personaEngineBrief = buildPersonaEnginePromptBlock({
+    ...input,
+    contentPersona: personaResolved.persona,
+    contentPersonaSubtype: personaResolved.subtype,
+  });
+
+  const perspectiveResolved = resolveContentPerspective({
+    contentPerspective: input.contentPerspective,
+    purposeType: ctx.purposeType,
+    purpose: input.purpose,
+    contentObjective: ctx.contentObjective,
+    tone: input.tone || ctx.toneKey,
+    topic: input.topic,
+    mainKeyword: ctx.main,
+    includePhrases: ctx.includePhrases,
+    competitors: ctx.competitors?.join(", ") || input.competitors,
+    brandName: ctx.brandName,
+    region: ctx.region,
+  });
+  ctx.contentPerspective = perspectiveResolved.perspective;
+  ctx.contentPerspectiveLabel = perspectiveResolved.label;
+  ctx.contentPerspectiveSource = perspectiveResolved.source;
+  ctx.perspectiveBrief = buildPerspectivePromptBlock(ctx, input);
 
   ctx.speechStyle = input.speechStyle || "friendly_blog";
   ctx.proficiency = input.proficiency || "editor_pro";
@@ -302,6 +368,7 @@ export function createPromptContext(input) {
     emotionTemperature: input.emotionTemperature,
     speechStyle: ctx.speechStyle,
     proficiency: ctx.proficiency,
+    contentPerspective: ctx.contentPerspective,
   };
 
   if (input.canonicalBrief || input._canonicalBrief) {

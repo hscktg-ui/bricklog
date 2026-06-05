@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { isBriclogMissionEnforced } from "@/lib/product/briclogMission";
 
 export default function VerificationStatus({ verification, factCheck }) {
   const [open, setOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function VerificationStatus({ verification, factCheck }) {
       warn: v.needsSearchVerification,
     },
     { label: "금지어 없음", ok: v.noForbidden !== false },
-    { label: "글자수", ok: v.charCountOk !== false },
+    { label: isBriclogMissionEnforced() ? "참고 분량" : "글자수", ok: v.charCountOk !== false },
     {
       label: risky ? `표현 확인 ${risky}건` : "표현 검토 통과",
       ok: factCheck?.pass !== false,

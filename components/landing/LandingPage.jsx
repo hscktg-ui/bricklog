@@ -1,15 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Logo from "@/components/Logo";
-import LandingIntroOverlay from "@/components/landing/LandingIntroOverlay";
-import { useLandingVisit } from "@/lib/landing/useLandingVisit";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import {
   hasPlayedLandingSignature,
   markLandingIntroDone,
   markLandingSignaturePlayed,
   shouldShowLandingIntro,
 } from "@/lib/landing/landingSession";
+import Logo from "@/components/Logo";
+import LandingIntroOverlay from "@/components/landing/LandingIntroOverlay";
+import { useLandingVisit } from "@/lib/landing/useLandingVisit";
 import BgmToggle from "@/components/audio/BgmToggle";
 import {
   unlockAudioFromUserGesture,
@@ -35,11 +35,19 @@ import {
 export default function LandingPage({ onAuthOpen, onStart }) {
   const { greeting, sample, contentIdea, seasonCopy, theme } =
     useLandingVisit();
-  /** 세션당 1회만 인트로 (landingSession) */
-  const [introOpen, setIntroOpen] = useState(true);
+  /** 세션당 1회 인트로 — localStorage 영구 숨김 제거 */
+  const [introOpen, setIntroOpen] = useState(false);
 
-  useEffect(() => {
-    if (!shouldShowLandingIntro()) setIntroOpen(false);
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("intro") === "reset") {
+      sessionStorage.removeItem("briclog-intro-session-done");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("intro");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+    setIntroOpen(shouldShowLandingIntro());
   }, []);
 
   const withLandingCta = useCallback(
@@ -87,7 +95,9 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
       <header
         className={`sticky top-0 z-30 border-b border-[#E8EBED]/80 bg-[#F7F8FA]/95 backdrop-blur-md transition-opacity duration-500 ${
-          introOpen ? "pointer-events-none" : "briclog-landing-reveal opacity-100"
+          introOpen
+            ? "pointer-events-none opacity-100"
+            : "opacity-100 briclog-landing-reveal"
         }`}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5 md:px-8 md:py-3">
@@ -117,7 +127,9 @@ export default function LandingPage({ onAuthOpen, onStart }) {
       <main
         id="landing-main"
         className={`pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 ${
-          introOpen ? "pointer-events-none" : "briclog-landing-reveal"
+          introOpen
+            ? "pointer-events-none opacity-100"
+            : "opacity-100 briclog-landing-reveal"
         }`}
       >
         <HeroSection
@@ -129,11 +141,19 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           onSample={withLandingCta(scrollToSample)}
         />
         <LiveStatsBanner introOpen={introOpen} />
-        <DemoFlow sample={sample} />
         <DemoPreviewSection sample={sample} />
-        <ChannelPreview sample={sample} />
-        <WorkflowSection />
-        <WhyBriclog />
+        <details className="group border-t border-[#E8EBED] bg-white">
+          <summary className="mx-auto flex max-w-6xl cursor-pointer list-none items-center justify-between gap-2 px-4 py-5 text-[14px] font-semibold text-[#4E5968] marker:content-none md:px-8 [&::-webkit-details-marker]:hidden">
+            <span>브릭로그가 어떻게 돌아가는지 더 보기</span>
+            <span className="text-[#8B95A1] transition group-open:rotate-180">▾</span>
+          </summary>
+          <div className="border-t border-[#E8EBED] bg-[#FAFBFC]">
+            <DemoFlow sample={sample} />
+            <ChannelPreview sample={sample} />
+            <WorkflowSection />
+            <WhyBriclog />
+          </div>
+        </details>
         <PricingSection onStart={handleStart} />
 
         <section className="border-t border-[#E8EBED] bg-[#191F28] px-4 py-14 text-center md:px-8 md:py-16">

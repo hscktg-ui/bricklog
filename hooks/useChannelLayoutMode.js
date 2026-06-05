@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useNarrowWorkspace } from "@/hooks/useNarrowWorkspace";
+import { useViewport } from "@/hooks/useViewport";
 
 const storageKey = (channel) => `briclog-layout-${channel}`;
 
@@ -11,6 +12,7 @@ const storageKey = (channel) => `briclog-layout-${channel}`;
  */
 export function useChannelLayoutMode(channel) {
   const { narrow } = useNarrowWorkspace();
+  const { isMobile } = useViewport();
   const [layoutMode, setLayoutModeState] = useState("full");
   const [hydrated, setHydrated] = useState(false);
 
@@ -40,7 +42,7 @@ export function useChannelLayoutMode(channel) {
     [channel]
   );
 
-  const concise = layoutMode === "concise";
+  const concise = isMobile || layoutMode === "concise";
 
   return {
     layoutMode,

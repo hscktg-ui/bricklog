@@ -1,5 +1,5 @@
 const BASE =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://briclog.app";
+  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://briclog.ai";
 
 export default function sitemap() {
   const lastModified = new Date();

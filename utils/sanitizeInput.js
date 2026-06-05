@@ -12,6 +12,8 @@ const JUNK_VALUES = new Set([
   "핵심 키워드",
 ]);
 
+const HANGUL_JAMO_ONLY_RE = /^[\u3131-\u318E\u1100-\u11FF\uA960-\uA97F\uD7B0-\uD7FF]+$/;
+
 export function isJunkValue(value) {
   if (value === undefined || value === null) return true;
   if (typeof value === "number" && Number.isNaN(value)) return true;
@@ -25,6 +27,7 @@ export function sanitizeText(value) {
   if (value === undefined || value === null) return null;
   const v = String(value).trim();
   if (!v || JUNK_VALUES.has(v.toLowerCase())) return null;
+  if (HANGUL_JAMO_ONLY_RE.test(v)) return null;
   return v;
 }
 

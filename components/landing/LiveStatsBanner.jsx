@@ -98,7 +98,7 @@ export default function LiveStatsBanner({ introOpen = false }) {
   const sectionRef = useRef(null);
   const [metrics, setMetrics] = useState(null);
   const [statsDateKst, setStatsDateKst] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [inView, setInView] = useState(false);
   const [animationActive, setAnimationActive] = useState(false);
@@ -166,7 +166,8 @@ export default function LiveStatsBanner({ introOpen = false }) {
   }, [applyPayload, applyClientSeed]);
 
   useEffect(() => {
-    load();
+    applyClientSeed();
+    void load();
     const id = setInterval(load, REFETCH_MS);
     const onVis = () => {
       if (document.visibilityState === "visible") load();

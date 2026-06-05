@@ -7,6 +7,7 @@ import {
   seedInitialVersion,
 } from "@/lib/rewrite/rewriteVersions";
 import { saveRewriteFeedback } from "@/lib/learning/feedbackStore";
+import { REFINE_COPY } from "@/lib/product/craft";
 
 const PLACEHOLDERS = {
   blog: "수정 방향을 입력하세요. 예: 더 담백하게, 광고티 줄이기",
@@ -89,7 +90,7 @@ export default function RewriteFeedbackPanel({
 
   return (
     <div className="rounded-xl border border-[#E8EBED] bg-[#FAFBFC] p-3 space-y-3">
-      <p className="text-[12px] font-semibold text-[#4E5968]">피드백 반영 수정</p>
+      <p className="text-[12px] font-semibold text-[#4E5968]">마음에 안 드는 부분</p>
       <div className="flex flex-wrap gap-1.5">
         {(SCOPE_OPTIONS[channel] || SCOPE_OPTIONS.blog).map((o) => (
           <button
@@ -120,15 +121,15 @@ export default function RewriteFeedbackPanel({
       >
         {loading
           ? channel === "place"
-            ? "스마트플레이스 반영 중…"
+            ? REFINE_COPY.placeBusy
             : channel === "instagram"
-              ? "인스타 반영 중…"
-              : "반영 중…"
+              ? REFINE_COPY.instaBusy
+              : REFINE_COPY.busy
           : channel === "place"
-            ? "스마트플레이스 재생성"
+            ? REFINE_COPY.place
             : channel === "instagram"
-              ? "인스타 재생성"
-              : "피드백 반영"}
+              ? REFINE_COPY.instagram
+              : REFINE_COPY.blog}
       </button>
 
       {versions.length > 1 && (
