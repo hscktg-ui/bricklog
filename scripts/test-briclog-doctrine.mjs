@@ -2,6 +2,7 @@
  * BRICLOG Doctrine — Human Writer · Brand Memory · Anti SEO · Editor Principle
  */
 import { buildBriclogMissionPromptBlock } from "../lib/product/briclogMission.js";
+import { buildMasterSystemV6Brief } from "../lib/product/briclogMasterSystemV6.js";
 import { applyAntiSeoSpamGate, scoreAntiSeoSpam } from "../lib/content/antiSeoSpamGate.js";
 import { countTokenMentions } from "../lib/product/antiSeoSpamEngine.js";
 
@@ -23,6 +24,12 @@ const required = [
   "이유",
   "비교 기준",
 ];
+
+const v6 = buildMasterSystemV6Brief();
+if (!v6.includes("MASTER SYSTEM v6.2") || !v6.includes("기록이 쌓이면")) {
+  console.error("FAIL: master system v6 brief missing");
+  process.exit(1);
+}
 
 for (const needle of required) {
   if (!mission.includes(needle)) {
