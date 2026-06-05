@@ -19,9 +19,9 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
-const { CHANNEL_PRODUCTS, buildSidebarMenuSections, MAIN_CHANNEL_IDS } = load(
+const { CHANNEL_PRODUCTS, buildSidebarMenuSections, MAIN_CHANNEL_IDS, normalizeWorkspaceMenuId } = load(
   "lib/channels/channelProducts.js",
-  ["CHANNEL_PRODUCTS", "buildSidebarMenuSections", "MAIN_CHANNEL_IDS"]
+  ["CHANNEL_PRODUCTS", "buildSidebarMenuSections", "MAIN_CHANNEL_IDS", "normalizeWorkspaceMenuId"]
 );
 
 const channels = ["blog", "place", "insta", "image"];
@@ -46,5 +46,8 @@ const canGenerate =
   Boolean(minimal.region?.trim()?.length >= 2) &&
   Boolean(minimal.topic?.trim() || minimal.mainKeyword?.trim());
 assert(canGenerate, "minimal form should allow generate");
+
+assert(normalizeWorkspaceMenuId("instagram") === "insta", "instagram alias → insta");
+assert(normalizeWorkspaceMenuId("insta") === "insta", "insta unchanged");
 
 console.log("test-channel-modules: OK", channels.join(", "));

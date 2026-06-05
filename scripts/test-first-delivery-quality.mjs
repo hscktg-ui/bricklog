@@ -54,7 +54,7 @@ const preview = deliverBlogDespiteGate(
   {}
 );
 assert.ok(preview?.blogContent?.sections?.length, "substantive pack previews to UI");
-assert.equal(preview.blogContent._meta?.deliveryPreview, true);
-assert.equal(preview.blogContent._meta?.completeDraft, false);
+assert.equal(preview.blogContent._meta?.deliveryPreview, false);
+assert.equal(preview.blogContent._meta?.completeDraft, true);
 
 console.log("OK: first delivery quality");

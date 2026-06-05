@@ -41,7 +41,7 @@ export default function HistoryList({
         <p className="mt-2 text-[13px] leading-relaxed text-[#8B95A1]">
           {demoMode
             ? "로그인 후 생성한 글이 여기에 쌓입니다. 지금은 브랜드 창고와 브라우저에만 남아요."
-            : "블로그를 쓰면 자동으로 저장됩니다."}
+            : "이야기·플레이스·인스타를 만들면 자동으로 저장됩니다."}
         </p>
       </div>
     );

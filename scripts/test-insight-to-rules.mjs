@@ -30,7 +30,7 @@ const patch = buildEvolutionPatchFromInsight({
 });
 assert.ok(patch?.["prompt_rules.json"]?.forbiddenPhrases?.length);
 
-const applied = applyInsightToEvolutionRules({
+const applied = await applyInsightToEvolutionRules({
   insight_type: "ad_tone_guard",
   payload: { message: "ad tone test" },
 });

@@ -6,6 +6,7 @@ import AuthForm from "@/components/AuthForm";
 import LandingPage from "@/components/landing/LandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
 import LandingDevicePreviewToggle from "@/components/landing/LandingDevicePreviewToggle";
+import LandingFloatingDeviceBar from "@/components/landing/LandingFloatingDeviceBar";
 import Toast from "@/components/Toast";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import TermsConsentModal from "@/components/auth/TermsConsentModal";
@@ -20,7 +21,6 @@ import {
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { isEmailVerified } from "@/lib/auth/emailVerification";
-import EmailVerifyBanner from "@/components/auth/EmailVerifyBanner";
 import LoggedInDebugTools from "@/components/dev/LoggedInDebugTools";
 import PageLoadingState from "@/components/ui/PageLoadingState";
 import { LOADING } from "@/lib/product/craft";
@@ -321,7 +321,8 @@ export default function Home() {
         />
         {!authMode && (
           <>
-            <LandingDevicePreviewToggle />
+            <LandingFloatingDeviceBar className="sm:hidden" />
+            <LandingDevicePreviewToggle className="hidden sm:flex" />
             <BriclogAssistant layout="landing" />
           </>
         )}
@@ -396,9 +397,6 @@ export default function Home() {
   return (
     <LoggedInDebugTools pageSnapshot={pageDebugSnapshot}>
       <div className="flex min-h-dvh flex-1 flex-col">
-        {user && user.emailVerified === false ? (
-          <EmailVerifyBanner email={user.email} onToast={showToast} />
-        ) : null}
         <div className="min-h-0 flex-1 pointer-events-auto">
           <Dashboard
             user={user}

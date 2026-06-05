@@ -7,6 +7,11 @@ import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { HUNDRED_USER_PERSONAS } from "../lib/qa/hundredUserPersonas.js";
+import {
+  ensureE2eTestUser,
+  buildSupabasePlaywrightStorage,
+  applySupabaseSessionToContext,
+} from "./ensure-e2e-test-user.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -76,38 +81,153 @@ async function dismissWelcome(page) {
   }
 }
 
+async function findStartCta(page) {
+  const byData = page.locator('[data-briclog-cta="start"]');
+  if (await byData.count()) return byData.first();
+  return page.getByRole("button", { name: /무료(로)? 시작/i }).first();
+}
+
+async function authUiVisible(page) {
+  return page.evaluate(() => {
+    if (document.querySelector('input[type="email"]')) return true;
+    const dialog = document.querySelector('[role="dialog"][aria-modal="true"]');
+    return Boolean(dialog?.querySelector("input, textarea"));
+  });
+}
+
 async function ensureLoggedIn(page) {
   const email = process.env.BRICLOG_TEST_EMAIL;
   const password = process.env.BRICLOG_TEST_PASSWORD;
   if (!email || !password) return { ok: false, reason: "no_credentials" };
 
   const inApp = await page
-    .getByPlaceholder(/매장·브랜드|브랜드/i)
+    .getByPlaceholder(/매장·브랜드|브랜드|팀 이름/i)
     .first()
     .count()
     .catch(() => 0);
   if (inApp) return { ok: true, reason: "already_in_app" };
 
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+  await page
+    .waitForSelector('[data-briclog-cta="start"], button', { timeout: 20_000 })
+    .catch(() => null);
   await dismissIntro(page);
-  const start = page.locator('[data-briclog-cta="start"]').first();
-  if (await start.count()) {
-    await start.click({ timeout: 10_000 }).catch(() => null);
+
+  const cta = await findStartCta(page);
+  if (await cta.count()) {
+    await cta.scrollIntoViewIfNeeded().catch(() => null);
+    await cta.click({ timeout: 12_000 }).catch(() => null);
+    await page
+      .waitForSelector('input[type="email"]', { timeout: 8000 })
+      .catch(() => null);
+  }
+
+  if (!(await authUiVisible(page))) {
+    return { ok: false, reason: "no_auth_form" };
+  }
+
+  const loginTab = page.getByRole("button", { name: /^로그인$/i }).first();
+  if (await loginTab.count()) {
+    await loginTab.click({ timeout: 5000 }).catch(() => null);
     await page.waitForTimeout(400);
   }
-  const emailInput = page.locator('input[type="email"]').first();
-  if (!(await emailInput.count())) return { ok: false, reason: "no_auth_form" };
-  await emailInput.fill(email);
-  await page.locator('input[type="password"]').first().fill(password);
+
+  await page.getByLabel(/이메일|email/i).first().fill(email);
+  await page.getByLabel(/비밀번호|password/i).first().fill(password);
   await page.getByRole("button", { name: /^로그인$/i }).last().click();
-  await page.waitForTimeout(4500);
+  await page.waitForTimeout(6000);
   await dismissWelcome(page);
-  const ok = await page
-    .getByPlaceholder(/매장·브랜드|브랜드/i)
+
+  const brandField = await page
+    .getByPlaceholder(/매장·브랜드|브랜드|팀 이름/i)
     .first()
     .count()
     .catch(() => 0);
-  return { ok: ok > 0, reason: ok ? "logged_in" : "login_failed" };
+  if (brandField > 0) return { ok: true, reason: "logged_in" };
+
+  const authErr = await page
+    .locator("text=/이메일|비밀번호|인증|로그인/")
+    .first()
+    .textContent()
+    .catch(() => "");
+  return { ok: false, reason: "login_failed", detail: authErr?.slice(0, 120) || null };
+}
+
+function isMobileViewport(persona) {
+  return persona.device === "mobile" || persona.device === "tablet";
+}
+
+async function waitForWorkspaceShell(page) {
+  await page
+    .waitForSelector(
+      'nav[aria-label="작업 메뉴"], nav[aria-label="채널 바로가기"], .briclog-workspace-header',
+      { timeout: 15_000 }
+    )
+    .catch(() => null);
+}
+
+async function isWorkspaceLoaded(page) {
+  return page.evaluate(() =>
+    Boolean(
+      document.querySelector(".briclog-workspace-header") ||
+        document.querySelector('nav[aria-label="작업 메뉴"]') ||
+        document.querySelector('nav[aria-label="채널 바로가기"]')
+    )
+  );
+}
+
+async function closeMobileDrawerIfOpen(page) {
+  const drawer = page.locator('aside[aria-modal="true"]');
+  if (!(await drawer.count())) return;
+  const close = page.getByRole("button", { name: /메뉴 닫기|^닫기$/i }).first();
+  if (await close.count()) {
+    await close.click({ timeout: 5000 }).catch(() => null);
+    await page.waitForTimeout(400);
+  }
+}
+
+async function openMobileDrawer(page, persona) {
+  if (!isMobileViewport(persona)) return;
+  if (await page.locator('aside[aria-modal="true"]').count()) return;
+  const openers = [
+    page.getByRole("button", { name: /전체 메뉴/i }),
+    page.getByRole("button", { name: /메뉴 열기/i }),
+  ];
+  for (const opener of openers) {
+    if (await opener.count()) {
+      await opener.first().click({ timeout: 8000 }).catch(() => null);
+      await page.waitForTimeout(600);
+      break;
+    }
+  }
+}
+
+async function ensureMobileFormPane(page) {
+  const formTab = page.getByRole("tab", { name: /^주제$/ }).first();
+  if (await formTab.count()) {
+    const selected = await formTab.getAttribute("aria-selected");
+    if (selected !== "true") {
+      await formTab.click({ timeout: 5000 }).catch(() => null);
+      await page.waitForTimeout(400);
+    }
+  }
+}
+
+async function hasGenerateCta(page) {
+  const primary = page.locator("button.briclog-btn-primary").filter({
+    hasText: /조사 후 글 받기|구성안 만들기|이야기 쓰기/i,
+  });
+  if (await primary.count()) return true;
+  return (await page.locator('[data-briclog-generate="blog"]').count()) > 0;
+}
+
+async function hasBrandField(page) {
+  if (await page.getByLabel(/^브랜드명$/).count()) return true;
+  return (await page.getByPlaceholder(/매장·브랜드|팀 이름/i).count()) > 0;
+}
+
+async function sidebarNav(page) {
+  return page.locator('nav[aria-label="작업 메뉴"]').first();
 }
 
 async function checkFocus(page, persona) {
@@ -128,8 +248,8 @@ async function checkFocus(page, persona) {
       const el = page.locator(sel).first();
       steps.push({ focus: f, ok: (await el.count()) > 0 });
     } else if (f === "generate" || f === "first_write") {
-      const btn = page.getByRole("button", { name: /이야기 쓰기|구성안 만들기/i }).first();
-      steps.push({ focus: f, ok: (await btn.count()) > 0 });
+      if (isMobileViewport(persona)) await ensureMobileFormPane(page);
+      steps.push({ focus: f, ok: await hasGenerateCta(page) });
     } else if (f === "result_view" || f === "overlay") {
       const placeholder = page.locator('[aria-busy="true"], [aria-label*="만드는"]');
       const result = page.getByText(/완성본|발행 전 복사|여기에 표시/i).first();
@@ -140,15 +260,40 @@ async function checkFocus(page, persona) {
         hasResult: (await result.count()) > 0,
         hasPlaceholder: (await placeholder.count()) > 0,
       });
-    } else if (f === "sidebar" || f === "brand_form") {
-      const brand = page.getByPlaceholder(/매장·브랜드|브랜드/i).first();
-      steps.push({ focus: f, ok: (await brand.count()) > 0 });
-    } else if (f === "history" || f === "growth") {
-      const nav = page.getByRole("button", { name: /기록|성장/i }).first();
+    } else if (f === "sidebar") {
+      if (isMobileViewport(persona)) await openMobileDrawer(page, persona);
+      const nav = await sidebarNav(page);
       steps.push({ focus: f, ok: (await nav.count()) > 0 });
+    } else if (f === "brand_form") {
+      if (isMobileViewport(persona)) await ensureMobileFormPane(page);
+      steps.push({ focus: f, ok: await hasBrandField(page) });
+    } else if (f === "history") {
+      const heading = page.getByRole("heading", { name: /초안 기록/i });
+      if (await heading.count()) {
+        steps.push({ focus: f, ok: true });
+      } else {
+        if (isMobileViewport(persona)) await openMobileDrawer(page, persona);
+        const nav = (await sidebarNav(page)).getByRole("button", {
+          name: /초안 기록|^기록$/i,
+        });
+        steps.push({ focus: f, ok: (await nav.count()) > 0 });
+      }
+    } else if (f === "growth") {
+      const heading = page.getByRole("heading", { name: /브랜드 작업실/i });
+      if (await heading.count()) {
+        steps.push({ focus: f, ok: true });
+      } else {
+        if (isMobileViewport(persona)) await openMobileDrawer(page, persona);
+        const nav = (await sidebarNav(page)).getByRole("button", {
+          name: /브랜드 작업실|작업실/i,
+        });
+        steps.push({ focus: f, ok: (await nav.count()) > 0 });
+      }
     } else if (f === "draft_review" || f === "review") {
-      const tab = page.getByRole("button", { name: /검수|붙여/i }).first();
-      steps.push({ focus: f, ok: (await tab.count()) > 0 });
+      const panel =
+        (await page.getByRole("heading", { name: /붙여넣기 검수/i }).count()) > 0 ||
+        (await page.getByPlaceholder(/본문을 붙여 넣으세요/i).count()) > 0;
+      steps.push({ focus: f, ok: panel });
     } else {
       steps.push({ focus: f, ok: true, detail: "skipped_check" });
     }
@@ -156,22 +301,47 @@ async function checkFocus(page, persona) {
   return steps;
 }
 
-async function navigateMenu(page, menu) {
+async function navigateMenu(page, menu, persona) {
   if (!menu) return true;
+  const mobile = isMobileViewport(persona);
+
+  if (mobile && ["blog", "place", "insta"].includes(menu)) {
+    const labels = { blog: "이야기", place: "플레이스", insta: "인스타" };
+    await closeMobileDrawerIfOpen(page);
+    const bottom = page
+      .locator('nav[aria-label="채널 바로가기"] button')
+      .filter({ hasText: labels[menu] });
+    if (await bottom.count()) {
+      await bottom.first().click({ timeout: 8000 }).catch(() => null);
+      await page.waitForTimeout(700);
+      if (menu === "blog") await ensureMobileFormPane(page);
+      return true;
+    }
+  }
+
+  if (mobile) await openMobileDrawer(page, persona);
+
   const map = {
-    blog: /블로그|이야기/i,
-    place: /플레이스|스마트플레이스/i,
-    insta: /인스타/i,
-    history: /기록/i,
-    review: /검수|붙여/i,
-    growth: /성장/i,
+    blog: /이야기/,
+    place: /플레이스/,
+    insta: /인스타/,
+    history: /초안 기록|^기록$/,
+    review: /붙여넣기 검수|^검수$/,
+    growth: /브랜드 작업실/,
   };
   const pattern = map[menu];
   if (!pattern) return true;
-  const btn = page.getByRole("button", { name: pattern }).first();
+
+  const nav = await sidebarNav(page);
+  let btn = nav.getByRole("button", { name: pattern }).first();
+  if (!(await btn.count())) {
+    btn = page.getByRole("button", { name: pattern }).first();
+  }
   if (!(await btn.count())) return false;
   await btn.click({ timeout: 8000 }).catch(() => null);
   await page.waitForTimeout(800);
+  if (mobile) await closeMobileDrawerIfOpen(page);
+  if (menu === "blog" && mobile) await ensureMobileFormPane(page);
   return true;
 }
 
@@ -213,7 +383,11 @@ async function runPersona(page, persona, { loggedIn }) {
         result.skipReason = "not_logged_in";
         return result;
       }
-      await navigateMenu(page, persona.primaryMenu);
+      await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+      await dismissIntro(page);
+      await dismissWelcome(page);
+      await waitForWorkspaceShell(page);
+      await navigateMenu(page, persona.primaryMenu, persona);
       const blockers = await countBlockingOverlays(page);
       result.steps.push({
         step: "blockers",
@@ -222,7 +396,7 @@ async function runPersona(page, persona, { loggedIn }) {
       });
       result.steps.push(...(await checkFocus(page, persona)));
       if (persona.brand?.brandName) {
-        const brandInput = page.getByPlaceholder(/매장·브랜드|브랜드/i).first();
+        const brandInput = page.getByPlaceholder(/매장·브랜드|브랜드|팀 이름/i).first();
         if (await brandInput.count()) {
           const val = await brandInput.inputValue().catch(() => "");
           result.steps.push({
@@ -292,16 +466,70 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   let loggedIn = false;
   let authStorage = null;
+  let authSession = null;
   const authPersonas = HUNDRED_USER_PERSONAS.filter((p) => p.needsAuth);
+  let e2eUserMeta = null;
+  if (authPersonas.length && !process.env.BRICLOG_TEST_EMAIL) {
+    const auto = await ensureE2eTestUser();
+    if (auto.ok) {
+      process.env.BRICLOG_TEST_EMAIL = auto.email;
+      process.env.BRICLOG_TEST_PASSWORD = auto.password;
+      e2eUserMeta = { email: auto.email, reused: auto.reused, auto: true };
+    } else {
+      e2eUserMeta = { auto: false, reason: auto.reason };
+    }
+  }
   if (authPersonas.length) {
-    const loginCtx = await browser.newContext({
-      viewport: { width: 1440, height: 900 },
-    });
-    const loginPage = await loginCtx.newPage();
-    const loginRes = await ensureLoggedIn(loginPage);
-    loggedIn = loginRes.ok;
-    if (loggedIn) authStorage = await loginCtx.storageState();
-    await loginCtx.close();
+    const session = await buildSupabasePlaywrightStorage(BASE);
+    if (session.ok) {
+      authSession = session;
+      const verifyCtx = await browser.newContext({
+        viewport: { width: 1440, height: 900 },
+      });
+      await applySupabaseSessionToContext(verifyCtx, session);
+      verifyCtx.setDefaultTimeout(12_000);
+      const verifyPage = await verifyCtx.newPage();
+      await verifyPage.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+      await verifyPage.waitForTimeout(4000);
+      const inWorkspace = await isWorkspaceLoaded(verifyPage);
+      await verifyCtx.close();
+
+      if (inWorkspace) {
+        loggedIn = true;
+        authStorage = session.storageState;
+        e2eUserMeta = {
+          ...(e2eUserMeta || {}),
+          login: { ok: true, reason: "supabase_session", email: session.email },
+        };
+      } else {
+        e2eUserMeta = {
+          ...(e2eUserMeta || {}),
+          sessionInjected: false,
+          sessionVerify: "landing_not_workspace",
+        };
+      }
+    }
+    if (!loggedIn) {
+      if (session?.ok) {
+        e2eUserMeta = {
+          ...(e2eUserMeta || {}),
+          sessionFallback: "inject_failed_verify",
+        };
+      }
+      const loginCtx = await browser.newContext({
+        viewport: { width: 1440, height: 900 },
+      });
+      const loginPage = await loginCtx.newPage();
+      const loginRes = await ensureLoggedIn(loginPage);
+      loggedIn = loginRes.ok;
+      e2eUserMeta = {
+        ...(e2eUserMeta || {}),
+        login: loginRes,
+        sessionFallback: session?.ok ? "inject_failed_verify" : session?.reason || "ui_login",
+      };
+      if (loggedIn) authStorage = await loginCtx.storageState();
+      await loginCtx.close();
+    }
   }
 
   const report = {
@@ -309,14 +537,21 @@ async function main() {
     at: new Date().toISOString(),
     personaCount: HUNDRED_USER_PERSONAS.length,
     loggedIn,
+    e2eUser: e2eUserMeta,
     runs: [],
   };
 
+  let done = 0;
   for (const persona of HUNDRED_USER_PERSONAS) {
     const context = await browser.newContext({
       viewport: persona.viewport || { width: 1280, height: 800 },
-      storageState: persona.needsAuth && authStorage ? authStorage : undefined,
+      storageState:
+        persona.needsAuth && authStorage && !authSession ? authStorage : undefined,
     });
+    if (persona.needsAuth && authSession) {
+      await applySupabaseSessionToContext(context, authSession);
+    }
+    context.setDefaultTimeout(12_000);
     await context.addInitScript(() => {
       try {
         sessionStorage.setItem("briclog-intro-session-done", "1");
@@ -327,11 +562,31 @@ async function main() {
     });
     const page = await context.newPage();
     try {
-      report.runs.push(await runPersona(page, persona, { loggedIn }));
+      report.runs.push(
+        await Promise.race([
+          runPersona(page, persona, { loggedIn }),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("persona_timeout_45s")), 45_000)
+          ),
+        ]).catch((err) => ({
+          id: persona.id,
+          label: persona.label,
+          journeyType: persona.journeyType,
+          device: persona.device,
+          status: "fail",
+          error: err.message,
+          steps: [],
+        }))
+      );
     } finally {
       await context.close();
     }
+    done += 1;
+    if (done % 10 === 0 || done === 100) {
+      process.stdout.write(`\rUX personas: ${done}/100`);
+    }
   }
+  console.log("");
 
   await browser.close();
 

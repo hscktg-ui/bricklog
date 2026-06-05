@@ -28,11 +28,18 @@ export async function POST(request) {
   }
 
   try {
-    const result = await verifyPhoneOtp(body?.phone ?? "", body?.code ?? "");
+    const purpose = String(body?.purpose || "signup").toLowerCase();
+    const excludeUserId = body?.excludeUserId?.trim() || null;
+    const result = await verifyPhoneOtp(body?.phone ?? "", body?.code ?? "", {
+      excludeUserId,
+      signupStrict: purpose === "signup",
+    });
     if (!result.ok) {
       return NextResponse.json(
-        { ok: false, userMessage: result.message },
-        { status: 400 }
+        { ok: false, userMessage: result.message, code: result.code },
+        {
+          status: result.code === "PHONE_TAKEN" ? 409 : 400,
+        }
       );
     }
     return NextResponse.json({

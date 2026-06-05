@@ -42,7 +42,7 @@ export async function POST(request) {
       userMessage: "휴대폰 인증이 계정에 연결되었습니다.",
     });
   } catch (err) {
-    if (err.code === "PHONE_NOT_VERIFIED") {
+    if (err.code === "PHONE_NOT_VERIFIED" || err.code === "PHONE_TAKEN") {
       return NextResponse.json(
         { ok: false, userMessage: err.message },
         { status: 400 }

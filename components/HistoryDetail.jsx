@@ -10,6 +10,7 @@ import {
 import ImageWorkspace from "./workspaces/ImageWorkspace";
 import Icon from "./Icon";
 import HistoryFeedbackRefinePanel from "@/components/history/HistoryFeedbackRefinePanel";
+import HistoryContentFeedback from "@/components/history/HistoryContentFeedback";
 
 const HISTORY_TABS = [
   { id: "blog", label: "블로그" },
@@ -110,7 +111,9 @@ export default function HistoryDetail({
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          {activeTab === "blog" && <BlogResultView blog={results.blog} />}
+          {activeTab === "blog" && (
+            <BlogResultView blog={results.blog} mobileView={narrow} />
+          )}
           {activeTab === "smartplace" && (
             <PlaceResultView place={results.smartplace} />
           )}
@@ -123,6 +126,13 @@ export default function HistoryDetail({
           )}
         </div>
       </div>
+
+      <HistoryContentFeedback
+        activeTab={activeTab}
+        record={record}
+        userId={userId}
+        demoMode={demoMode}
+      />
 
       <HistoryFeedbackRefinePanel
         activeTab={activeTab}

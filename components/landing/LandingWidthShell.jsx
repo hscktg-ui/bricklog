@@ -1,28 +1,23 @@
 "use client";
 
-import { DEVICE_PREVIEW_WIDTHS } from "./DevicePreviewToggle";
+import DevicePreviewViewport from "@/components/workspace/DevicePreviewViewport";
+import { useLandingPreview } from "./LandingPreviewContext";
 
 /**
- * 선택한 기기 너비로 랜딩 본문을 감싸 실제 레이아웃이 바뀌게 함
+ * 로그인 폼 — 선택한 기기 너비로 감싸 레이아웃 미리보기
  */
-export default function LandingWidthShell({
-  device,
-  simulating = false,
-  children,
-  className = "",
-}) {
-  const maxWidth =
-    simulating && device !== "desktop"
-      ? DEVICE_PREVIEW_WIDTHS[device]
-      : undefined;
+export default function LandingWidthShell({ children, className = "" }) {
+  const { preview, native, simulating } = useLandingPreview();
 
   return (
-    <div
-      className={`mx-auto w-full transition-[max-width] duration-300 ease-out ${className}`}
-      style={maxWidth ? { maxWidth } : undefined}
-      data-landing-preview={device}
+    <DevicePreviewViewport
+      preview={preview}
+      native={native}
+      simulating={simulating}
+      dataAttribute="data-landing-preview"
+      className={className}
     >
       {children}
-    </div>
+    </DevicePreviewViewport>
   );
 }

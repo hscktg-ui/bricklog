@@ -2,12 +2,11 @@
 
 import { useCallback, useState } from "react";
 import Icon from "@/components/Icon";
-
-const inputClass =
-  "w-full rounded-xl border border-[#E8EBED] bg-[#FAFBFC] py-2.5 pl-3.5 pr-12 text-[14px] outline-none focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/15";
+import { AUTH_FIELD_CLASS } from "@/lib/ui/authFieldStyles";
 
 /**
  * @param {{
+ *   id?: string,
  *   value: string,
  *   onChange: (v: string) => void,
  *   placeholder?: string,
@@ -19,6 +18,7 @@ const inputClass =
  * }} props
  */
 export default function PasswordField({
+  id,
   value,
   onChange,
   placeholder = "비밀번호",
@@ -41,6 +41,7 @@ export default function PasswordField({
     <div>
       <div className="relative">
         <input
+          id={id}
           type={visible ? "text" : "password"}
           required={required}
           minLength={minLength}
@@ -53,14 +54,14 @@ export default function PasswordField({
           onKeyUp={syncCaps}
           onBlur={() => setCapsOn(false)}
           placeholder={placeholder}
-          className={inputClass}
+          className={`${AUTH_FIELD_CLASS} pr-12`}
         />
         <button
           type="button"
           tabIndex={0}
           disabled={disabled}
           onClick={() => setVisible((v) => !v)}
-          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-[#8B95A1] hover:bg-[#F7F8FA] hover:text-[#191F28] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#03C75A]/25 disabled:opacity-50"
+          className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-[#6B7684] hover:bg-[#F7F8FA] hover:text-[#191F28] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#03C75A]/25 disabled:opacity-50"
           aria-label={visible ? "비밀번호 숨기기" : "비밀번호 보기"}
           aria-pressed={visible}
         >
@@ -69,7 +70,7 @@ export default function PasswordField({
       </div>
       {capsOn ? (
         <p
-          className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-[#E67700]"
+          className="mt-1.5 flex items-center gap-1.5 text-[12px] font-medium text-[#E67700] sm:text-[11px]"
           role="status"
         >
           <span

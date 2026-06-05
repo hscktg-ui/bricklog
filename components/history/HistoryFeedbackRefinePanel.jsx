@@ -4,6 +4,7 @@ import { useState } from "react";
 import { runRewrite } from "@/lib/rewrite/rewriteEngine";
 import { serializeContent } from "@/lib/contentFormat";
 import { saveGeneration } from "@/lib/generations";
+import { fetchWithAuth } from "@/lib/api/clientAuth";
 import {
   baseTitleFromHistoryContent,
   buildRefinedDraftLabel,
@@ -94,6 +95,30 @@ export default function HistoryFeedbackRefinePanel({
       };
 
       await saveGeneration(userId, row);
+
+      try {
+        const params = new URLSearchParams({ channel });
+        if (record.brand_id) params.set("brandId", record.brand_id);
+        const link = await fetchWithAuth(
+          `/api/feedback/content-item?${params}`
+        );
+        if (link?.contentItemId) {
+          await fetchWithAuth("/api/feedback/submit", {
+            method: "POST",
+            body: JSON.stringify({
+              contentItemId: link.contentItemId,
+              brandId: record.brand_id || null,
+              channel,
+              reaction: "neutral",
+              tags: [],
+              memo: text,
+            }),
+          });
+        }
+      } catch {
+        /* 보완 기록은 성공 — 서버 피드백은 선택 */
+      }
+
       onSaved?.();
       onToast?.(`「${refinedLabel}」로 초안 기록에 저장했습니다.`, "success");
       setFeedback("");

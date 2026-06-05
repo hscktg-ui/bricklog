@@ -6,7 +6,7 @@ import { EMPTY_STORY, MOBILE_STORY, WORKSPACE_BLOG } from "@/lib/product/craft";
 import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import StickyCopyBar from "@/components/StickyCopyBar";
 import { useChannelLayoutMode } from "@/hooks/useChannelLayoutMode";
-import { useViewport } from "@/hooks/useViewport";
+import { useEffectiveViewport } from "@/hooks/useEffectiveViewport";
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import MobileStoryChrome from "@/components/workspace/MobileStoryChrome";
 import { useWorkspaceCompact } from "@/hooks/useWorkspaceCompact";
@@ -23,8 +23,6 @@ import {
   useContentForm,
   useContentPipelineState,
 } from "@/context/ContentContext";
-import { isEmailVerified } from "@/lib/auth/emailVerification";
-import { EMAIL_VERIFY } from "@/lib/product/craft";
 import { resolveBlogHintPanelTitle } from "@/lib/product/customerOutput";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import {
@@ -52,7 +50,7 @@ import {
 import ChannelPackToggle from "@/components/blog/ChannelPackToggle";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import ChannelExpandCard from "@/components/product/ChannelExpandCard";
-import { RESULT_VIEW } from "@/lib/product/craft";
+import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
@@ -142,7 +140,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     patchDraft: patchDraftImmediate,
   } = useDeferredWorkspaceForm(blogInput, setBlogInput);
   const debouncedDraftForSave = useDebouncedValue(draftForm, 900);
-  const { isMobile } = useViewport();
+  const { isMobile } = useEffectiveViewport();
   const { formScrollPadClass } = useMobileWriteUx();
 
   useEffect(() => {
@@ -262,12 +260,8 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     [touched, draftForm, getLiveFormValues]
   );
 
-  const needsEmailVerify =
-    Boolean(user) && !demoMode && !isEmailVerified(user);
-
-  const disabledReason = needsEmailVerify
-    ? EMAIL_VERIFY.body
-    : !generating.blog && !formValidNow
+  const disabledReason =
+    !generating.blog && !formValidNow
       ? draftErrors.region ||
         draftErrors.topic ||
         draftErrors.brandName ||
@@ -334,8 +328,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             !simpleMode &&
             !isMobile &&
             !blogContent &&
-            !generating.blog &&
-            !needsEmailVerify && (
+            !generating.blog && (
             <>
               <button
                 type="button"
@@ -397,16 +390,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             />
           )}
 
-          {needsEmailVerify && (
-            <div
-              className="mt-4 rounded-xl border border-[#03C75A]/30 bg-[#F0FFF5] px-4 py-3 text-[12px] leading-relaxed text-[#4E5968]"
-              role="status"
-            >
-              <p className="font-semibold text-[#191F28]">{EMAIL_VERIFY.title}</p>
-              <p className="mt-1">{EMAIL_VERIFY.body}</p>
-            </div>
-          )}
-
           {quotaExhausted && (
             <QuotaExhaustedCallout
               planId={billingPlanId}
@@ -420,7 +403,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               disabled={
                 !formValidNow ||
                 storyBusy ||
-                needsEmailVerify ||
                 quotaExhausted
               }
               onClick={runGenerate}
@@ -515,7 +497,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               disabled={
                 !formValidNow ||
                 storyBusy ||
-                needsEmailVerify ||
                 quotaExhausted
               }
               onClick={runGenerate}
@@ -564,6 +545,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
     imagePrompts,
     baseContentLabel,
     generating,
+    generateBlog,
     blogGenHint,
     blogGenHintIsAuth,
     blogGenHintSoft,
@@ -585,7 +567,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
 
   const [resultTab, setResultTab] = useState("blog");
   const resultScrollRef = useRef(null);
-  const { isMobile, isTablet } = useViewport();
+  const { isMobile, isTablet } = useEffectiveViewport();
   const { resultScrollPadClass } = useMobileWriteUx();
   const { compact } = useWorkspaceCompact();
   const { layoutMode, concise, setLayoutMode } = useChannelLayoutMode("blog");
@@ -607,6 +589,18 @@ const BlogEditorResults = memo(function BlogEditorResults({
     resultTab === "blog" &&
     blogContent.fullCopyText &&
     (isMobile || (isTablet && concise));
+
+  const handleRegenerate = useCallback(() => {
+    generateBlog(blogInput, { blogOnly: loadBlogOnlyPref() });
+  }, [generateBlog, blogInput]);
+
+  const regenerateBusy =
+    generating.blog ||
+    Boolean(
+      loadingOverlay?.active &&
+        (loadingOverlay.channel === "blog" ||
+          loadingOverlay.channel === "pipeline")
+    );
 
   const hasDeliveredBlog =
     Boolean(blogContent?.sections?.length) ||
@@ -666,25 +660,23 @@ const BlogEditorResults = memo(function BlogEditorResults({
           />
         ) : showFullResult ? (
           <>
-            {blogContent?._meta?.deliveryPreview &&
-            !blogContent?._meta?.displayReady &&
-            !blogContent?._meta?.completeDraft ? (
-              <div className="mb-4 rounded-xl border border-[#FFE0B2] bg-[#FFF8E6] px-4 py-3">
-                <p className="text-[13px] font-semibold text-[#191F28]">
-                  {RESULT_VIEW.draftBannerTitle}
-                </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
-                  {blogContent._meta?.deliveryPreviewMessage ||
-                    RESULT_VIEW.draftBannerBody}
-                </p>
-              </div>
-            ) : blogContent?._meta?.completeDraft ? (
+            {blogContent?._meta?.completeDraft ? (
               <div className="mb-4 rounded-xl border border-[#03C75A]/25 bg-[#F6FDF9] px-4 py-3">
                 <p className="text-[13px] font-semibold text-[#191F28]">
                   {RESULT_VIEW.completeBannerTitle}
                 </p>
                 <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
                   {RESULT_VIEW.completeBannerBody}
+                </p>
+              </div>
+            ) : blogContent?._meta?.deliveryPreview ? (
+              <div className="mb-4 rounded-xl border border-[#E8EBED] bg-white px-4 py-3">
+                <p className="text-[13px] font-semibold text-[#191F28]">
+                  {RESULT_VIEW.draftBannerTitle}
+                </p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+                  {blogContent._meta?.deliveryPreviewMessage ||
+                    RESULT_VIEW.draftBannerBody}
                 </p>
               </div>
             ) : null}
@@ -695,7 +687,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
               <ChannelExpandCard
                 className="mb-4"
                 onGoPlace={() => onNavigate("place")}
-                onGoInsta={() => onNavigate("instagram")}
+                onGoInsta={() => onNavigate("insta")}
               />
             ) : null}
             {!simpleMode && !isMobile && (
@@ -767,6 +759,8 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   onResultDisplayed={acknowledgeBlogResultDisplayed}
                   conciseView={concise || isMobile}
                   mobileView={isMobile}
+                  onRegenerate={handleRegenerate}
+                  regenerateBusy={regenerateBusy}
                   onCopy={(text) => {
                     onCopy?.(text);
                     trackContentEvent({
@@ -932,7 +926,7 @@ export default function BlogEditor({
         loadingOverlay.channel === "pipeline"));
 
   useGenerationLeaveGuard(leaveGuardActive);
-  const { isMobile } = useViewport();
+  const { isMobile } = useEffectiveViewport();
   const [formOpen, setFormOpen] = useState(true);
 
   useEffect(() => {

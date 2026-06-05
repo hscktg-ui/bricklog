@@ -105,9 +105,13 @@ export default function Sidebar({
     ? primaryChannel
     : DEFAULT_USER_PREFERENCES.primaryChannel;
 
-  if (focusMode) {
-    return null;
-  }
+  const asideMotionClass = focusMode
+    ? mobileOpen
+      ? "translate-x-0 pointer-events-auto lg:static lg:translate-x-0"
+      : "-translate-x-full pointer-events-none lg:flex lg:static lg:translate-x-0 lg:pointer-events-auto"
+    : mobileOpen
+      ? "translate-x-0 pointer-events-auto"
+      : "-translate-x-full pointer-events-none lg:pointer-events-auto lg:translate-x-0";
 
   return (
     <>
@@ -124,11 +128,7 @@ export default function Sidebar({
         role={mobileOpen ? "dialog" : undefined}
         aria-modal={mobileOpen ? true : undefined}
         aria-label={mobileOpen ? "작업 메뉴" : undefined}
-        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(240px,92vw)] max-w-[260px] flex-col border-r border-[#E8EBED] bg-white shadow-[4px_0_24px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-out lg:static lg:h-auto lg:w-[200px] lg:max-w-none lg:translate-x-0 lg:shadow-none ${
-          mobileOpen
-            ? "translate-x-0 pointer-events-auto"
-            : "-translate-x-full pointer-events-none lg:pointer-events-auto lg:translate-x-0"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(240px,92vw)] max-w-[260px] flex-col border-r border-[#E8EBED] bg-white shadow-[4px_0_24px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-out lg:static lg:h-auto lg:w-[200px] lg:max-w-none lg:translate-x-0 lg:shadow-none ${asideMotionClass}`}
       >
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between px-3 pt-3 pb-1">

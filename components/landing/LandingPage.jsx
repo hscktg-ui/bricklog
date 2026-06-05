@@ -31,6 +31,7 @@ import {
   LANDING_CTA_PHILOSOPHY,
   LANDING_CTA_SUB,
 } from "@/lib/landing/ctaCopy";
+import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
 
 export default function LandingPage({ onAuthOpen, onStart }) {
   const { greeting, sample, contentIdea, seasonCopy, theme } =
@@ -86,7 +87,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:4.75rem]">
+    <div className="min-h-[100dvh] bg-[#F7F8FA] text-[#191F28] [--landing-cta-h:3.75rem]">
       <LandingIntroOverlay
         open={introOpen}
         onDismiss={handleIntroDismiss}
@@ -107,7 +108,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               onClick={() => onAuthOpen("login")}
-              className="hidden rounded-lg px-2 py-2 text-[12px] font-medium text-[#4E5968] hover:bg-white sm:inline-block sm:px-3 sm:text-[13px]"
+              className="rounded-lg px-2.5 py-2 text-[13px] font-semibold text-[#4E5968] hover:bg-white sm:px-3"
             >
               로그인
             </button>
@@ -115,7 +116,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               type="button"
               data-briclog-cta="start"
               onClick={handleStart}
-              className="briclog-btn-primary !min-h-[40px] !w-auto !py-2 !text-[12px] sm:!px-4 sm:!text-[13px]"
+              className="briclog-btn-primary hidden !min-h-[40px] !w-auto !py-2 !text-[12px] sm:inline-flex sm:!px-4 sm:!text-[13px]"
             >
               <span>무료 시작</span>
             </button>
@@ -126,7 +127,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
       <LandingPreviewShell>
       <main
         id="landing-main"
-        className={`pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0 ${
+        className={`pt-[3.25rem] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] sm:pt-0 sm:pb-0 ${
           introOpen
             ? "pointer-events-none opacity-100"
             : "opacity-100 briclog-landing-reveal"
@@ -172,29 +173,23 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             type="button"
             data-briclog-cta="start"
             onClick={handleStart}
-            className="briclog-btn-primary mt-8 !w-auto px-10"
+            className="briclog-btn-primary mt-8 hidden !w-auto px-10 sm:inline-flex"
           >
             <span>무료로 시작하기</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleStart}
+            className="mt-6 text-[14px] font-semibold text-[#03C75A] underline-offset-2 hover:underline sm:hidden"
+          >
+            무료로 시작하기
           </button>
           <p className="mt-6 text-[12px] text-[#6B7684]">{LANDING_CTA_FOOTNOTE}</p>
         </section>
       </main>
       </LandingPreviewShell>
 
-      <div
-        className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#E8EBED]/90 bg-[#F7F8FA]/95 px-4 py-3 backdrop-blur-md transition-opacity duration-500 sm:hidden pb-[max(0.75rem,env(safe-area-inset-bottom))] ${
-          introOpen ? "pointer-events-none opacity-60" : "opacity-100"
-        }`}
-      >
-        <button
-          type="button"
-          data-briclog-cta="start"
-          onClick={handleStart}
-          className="briclog-btn-primary"
-        >
-          <span>무료로 시작하기</span>
-        </button>
-      </div>
+      <LandingMobileStickyCta onStart={handleStart} introOpen={introOpen} />
     </div>
   );
 }

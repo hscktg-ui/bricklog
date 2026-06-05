@@ -58,13 +58,27 @@ const cases = [
     forbidden: /파주|두피\s*진단/,
     lead: /브런치|카공|검색/,
   },
+  {
+    id: "marketing",
+    input: {
+      brandName: "해신기획",
+      region: "파주",
+      industry: "마케팅",
+      topic: "블로그 마케팅",
+      blogLengthTier: "short",
+    },
+    forbidden: /쇼룸|누워보|프레임·침실|응대을|이용를|쇼룸를/,
+    lead: /블로그|마케팅|막히/,
+    maxVisitGuidePads: 1,
+  },
 ];
 
 assert.ok(isMissionChecklistPad("비교할 때 가격·조건·이용 절차를 표로 정리"));
 assert.ok(!isMissionChecklistPad("매장에서 브런치 메뉴 안내를 직접 들었어요."));
 
 for (const c of cases) {
-  assert.equal(resolveBriclogIndustryKey(c.input), c.id === "cafe" ? "cafe" : c.id);
+  const expectedKey = c.id;
+  assert.equal(resolveBriclogIndustryKey(c.input), expectedKey);
   const p = deriveTopicWritingContext(c.input);
   const catalog = buildMissionExperienceCatalog(p, c.input, []);
   assert.ok(catalog.length >= 5, c.id);
@@ -81,6 +95,10 @@ for (const c of cases) {
   assert.ok(!c.forbidden.test(full), `${c.id} cross leak`);
   assert.ok(!/이용\s*절차·대기·상담\s*흐름을\s*먼저\s*파악/.test(full), `${c.id} checklist pad`);
   assert.ok(c.lead.test(full.slice(0, 400)), `${c.id} opening in pack`);
+  if (c.maxVisitGuidePads != null) {
+    const visitPads = (full.match(/에\s*직접\s*가서\s+.+?\s+관련\s+안내를\s+들었어요/g) || []).length;
+    assert.ok(visitPads <= c.maxVisitGuidePads, `${c.id} visit guide spam: ${visitPads}`);
+  }
 }
 
 const polished = polishMissionProsePack(

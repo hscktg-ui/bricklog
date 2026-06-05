@@ -13,7 +13,7 @@ const envPath = join(root, ".env.local");
 const BETA_LINES = [
   "NEXT_PUBLIC_APP_URL=http://localhost:3005",
   "NEXT_PUBLIC_BRICLOG_FAST_ONBOARDING=true",
-  "NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL=true",
+  "NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL=false",
   "NEXT_PUBLIC_BRICLOG_SMS_DEV_MODE=true",
 ];
 

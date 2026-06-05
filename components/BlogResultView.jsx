@@ -40,6 +40,8 @@ export default function BlogResultView({
   brandId,
   contentItemId = null,
   onRewrite,
+  onRegenerate,
+  regenerateBusy = false,
   onEditorImprove,
   editorImproving = false,
   blogInput = null,
@@ -133,6 +135,11 @@ export default function BlogResultView({
   const editorCompare = draft._meta?.editorCompare;
   const v4Suggestions = draft._meta?.v4Background?.suggestions || [];
   const qualityHint = draft._meta?.qualityHint;
+  const feedbackSuggestionHints = [
+    ...(draft._meta?.improvementSuggestions || []),
+    ...v4Suggestions,
+    qualityHint,
+  ].filter(Boolean);
   const showV4Hint =
     draft._meta?.softPass ||
     qualityHint ||
@@ -284,10 +291,22 @@ export default function BlogResultView({
               ? RESULT_VIEW.copyBlockTitleMobile
               : RESULT_VIEW.copyBlockTitle}
           </p>
-          <FullCopyButton
-            text={copyText}
-            onCopy={() => onCopy?.(copyText)}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            {onRegenerate ? (
+              <button
+                type="button"
+                onClick={onRegenerate}
+                disabled={regenerateBusy}
+                className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-[#03C75A]/35 bg-white px-3 py-2 text-[12px] font-semibold text-[#03A94D] hover:bg-[#F0FFF5] disabled:opacity-50"
+              >
+                {regenerateBusy ? RETRY.ctaBusy : RETRY.cta}
+              </button>
+            ) : null}
+            <FullCopyButton
+              text={copyText}
+              onCopy={() => onCopy?.(copyText)}
+            />
+          </div>
         </div>
         {!mobileSimple ? (
           <p className="mt-1 text-[11px] text-[#8B95A1]">
@@ -330,6 +349,18 @@ export default function BlogResultView({
         </label>
       </div>
 
+      {userId && (
+        <ContentFeedbackPanel
+          contentItemId={contentItemId}
+          brandId={brandId}
+          channel="blog"
+          blogInput={blogInput}
+          suggestionHints={feedbackSuggestionHints}
+          compact={mobileSimple}
+          onReflect={onRewrite ? handleFeedbackReflect : undefined}
+        />
+      )}
+
       {(simpleMode || mobileView) && (
         <button
           type="button"
@@ -340,7 +371,7 @@ export default function BlogResultView({
             ? "간단히 보기"
             : mobileView
               ? "제목·수정"
-              : "더 보기 — 제목·수정·피드백"}
+              : "더 보기 — 제목·수정"}
         </button>
       )}
 
@@ -498,19 +529,8 @@ export default function BlogResultView({
           />
         )}
 
-        {userId && (
-          <div className="space-y-3">
-            <ContentFeedbackPanel
-              contentItemId={contentItemId}
-              brandId={brandId}
-              channel="blog"
-              blogInput={blogInput}
-              onReflect={onRewrite ? handleFeedbackReflect : undefined}
-            />
-            {contentItemId && (
-              <PerformanceInputPanel contentItemId={contentItemId} />
-            )}
-          </div>
+        {contentItemId && isStudio && (
+          <PerformanceInputPanel contentItemId={contentItemId} />
         )}
 
         {onRewrite && (

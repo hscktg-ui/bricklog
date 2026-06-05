@@ -130,6 +130,31 @@ button:enabled,
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 로그인·가입 — prefers-color-scheme: dark 에서도 입력·플레이스홀더 대비 유지 */
+.briclog-auth-surface {
+  color-scheme: light;
+  color: #191f28;
+}
+
+.briclog-auth-field {
+  color: #191f28 !important;
+  background-color: #ffffff !important;
+  caret-color: #191f28;
+}
+
+.briclog-auth-field::placeholder {
+  color: #8b95a1;
+  opacity: 1;
+}
+
+.briclog-auth-field:-webkit-autofill,
+.briclog-auth-field:-webkit-autofill:hover,
+.briclog-auth-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #191f28 !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
 @keyframes briclog-spin {
   to {
     transform: rotate(360deg);

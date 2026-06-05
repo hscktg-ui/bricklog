@@ -1,10 +1,12 @@
 import LegalPageShell from "@/components/layout/LegalPageShell";
 import LegalMarkdownBody from "@/components/legal/LegalMarkdownBody";
+import { buildLegalPageMetadata } from "@/lib/brand/seo";
 
-export const metadata = {
-  title: "환불정책 — BRICLOG",
-  description: "BRICLOG 유료 구독 환불정책",
-};
+export const metadata = buildLegalPageMetadata({
+  title: "환불정책",
+  description: "BRICLOG(브릭로그) 유료 구독 환불정책",
+  path: "/refund",
+});
 
 export default function RefundPage() {
   return (

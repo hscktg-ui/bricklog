@@ -1,5 +1,6 @@
-const BASE =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://briclog.ai";
+import { resolvePublicSiteUrl } from "@/lib/brand/seo";
+
+const BASE = resolvePublicSiteUrl();
 
 export default function sitemap() {
   const lastModified = new Date();

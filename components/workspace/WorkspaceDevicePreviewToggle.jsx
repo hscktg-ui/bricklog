@@ -18,7 +18,7 @@ import {
 /**
  * 도움말 FAB 위 — 아이콘만 탭하여 모바일·태블릿·PC 미리보기 전환
  */
-export default function WorkspaceDevicePreviewToggle() {
+export default function WorkspaceDevicePreviewToggle({ className = "" }) {
   const { preview, native, simulating, cycle } = useWorkspacePreview();
   const next = nextPreviewDevice(preview);
   const bottom = assistFabBottom("workspace");
@@ -31,7 +31,7 @@ export default function WorkspaceDevicePreviewToggle() {
       aria-label={`화면 크기 ${DEVICE_LABELS[preview]}. 누르면 ${DEVICE_LABELS[next]}로 바뀝니다`}
       className={`fixed z-[90] cursor-pointer ${ASSIST_FAB_SIZE} ${ASSIST_FAB_SHELL} ${ASSIST_FAB_SIDE} ${
         simulating ? ASSIST_FAB_ACTIVE : ASSIST_FAB_IDLE
-      } ${bottom.device}`}
+      } ${bottom.device} ${className}`}
     >
       <SketchDeviceIcon
         device={preview}

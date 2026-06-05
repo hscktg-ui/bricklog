@@ -18,7 +18,7 @@ import {
 /**
  * 비로그인 랜딩 — 도움말 FAB 위 (로그인 워크스페이스와 동일 크기·색)
  */
-export default function LandingDevicePreviewToggle() {
+export default function LandingDevicePreviewToggle({ className = "" }) {
   const { preview, native, simulating, cyclePreview } = useLandingPreview();
   const next = nextPreviewDevice(preview);
   const bottom = assistFabBottom("landing");
@@ -31,7 +31,7 @@ export default function LandingDevicePreviewToggle() {
       aria-label={`화면 크기 ${DEVICE_LABELS[preview]}. 누르면 ${DEVICE_LABELS[next]}로 바뀝니다`}
       className={`fixed z-[90] ${ASSIST_FAB_SIZE} ${ASSIST_FAB_SHELL} ${ASSIST_FAB_SIDE} ${
         simulating ? ASSIST_FAB_ACTIVE : ASSIST_FAB_IDLE
-      } ${bottom.device}`}
+      } ${bottom.device} ${className}`}
     >
       <SketchDeviceIcon
         device={preview}

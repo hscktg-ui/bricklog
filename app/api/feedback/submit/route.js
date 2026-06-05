@@ -7,6 +7,7 @@ import {
 import { recomputeBrandLearningProfile } from "@/lib/feedback/brandLearningProfile";
 import { refreshPersonalizationAfterContent } from "@/lib/memory/personalizationBrief";
 import { recordFeedbackAsset } from "@/lib/dataAsset/recordFeedbackAsset";
+import { runFeedbackEngineLoop } from "@/lib/feedback/feedbackEngineLoop";
 
 export const runtime = "nodejs";
 
@@ -55,7 +56,14 @@ export async function POST(request) {
       ).catch(() => null);
     }
 
-    return NextResponse.json({ ok: true, feedback, profile });
+    let engineLoop = null;
+    try {
+      engineLoop = await runFeedbackEngineLoop(feedback);
+    } catch {
+      /* 전역 엔진 반영 실패해도 피드백 저장은 유지 */
+    }
+
+    return NextResponse.json({ ok: true, feedback, profile, engineLoop });
   } catch (err) {
     if (isMissingFeedbackTable(err)) {
       return NextResponse.json({

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { BRAND_META_TITLE, BRAND_META_DESCRIPTION } from "@/lib/brand/slogan";
+import JsonLdScript from "@/components/seo/JsonLdScript";
+import { buildRootMetadata } from "@/lib/brand/siteMetadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,33 +14,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://briclog.ai";
-
-export const metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: BRAND_META_TITLE,
-    template: `%s · ${BRAND_META_TITLE}`,
-  },
-  description: BRAND_META_DESCRIPTION,
-  openGraph: {
-    type: "website",
-    locale: "ko_KR",
-    url: siteUrl,
-    siteName: BRAND_META_TITLE,
-    title: BRAND_META_TITLE,
-    description: BRAND_META_DESCRIPTION,
-  },
-  twitter: {
-    card: "summary",
-    title: BRAND_META_TITLE,
-    description: BRAND_META_DESCRIPTION,
-  },
-  icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-  },
-};
+export async function generateMetadata() {
+  return buildRootMetadata();
+}
 
 export default function RootLayout({ children }) {
   return (
@@ -48,6 +25,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-dvh flex-col font-sans antialiased">
+        <JsonLdScript />
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         <SiteFooter />
       </body>

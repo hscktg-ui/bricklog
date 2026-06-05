@@ -76,7 +76,7 @@ export default function HeroSection({
           <p className="mt-2 text-[12px] text-[#8B95A1]">{seasonBadge}</p>
         ) : null}
 
-        <div className="mx-auto mt-4 hidden flex-wrap justify-center gap-1.5 sm:flex">
+        <div className="mx-auto mt-4 flex flex-wrap justify-center gap-1.5">
           {CHANNEL_PILLS.map((label) => (
             <span
               key={label}
@@ -99,7 +99,9 @@ export default function HeroSection({
 
         <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
           <button
+            id="landing-hero-cta"
             type="button"
+            data-briclog-cta="start"
             onClick={onStart}
             className={`w-full sm:w-auto sm:min-w-[240px] ${GREEN_CTA_SOLID} min-h-[48px]! text-[16px]!`}
           >

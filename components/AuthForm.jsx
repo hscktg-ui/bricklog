@@ -15,12 +15,21 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import PasswordField from "@/components/auth/PasswordField";
 import PhoneSmsVerifyFields from "@/components/auth/PhoneSmsVerifyFields";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
+import {
+  AUTH_FIELD_CLASS,
+  AUTH_FIELD_ERROR_CLASS,
+  AUTH_MOBILE_PAGE_CLASS,
+  AUTH_MOBILE_SHELL_CLASS,
+  AUTH_PRIMARY_BTN_CLASS,
+  AUTH_SURFACE_CLASS,
+} from "@/lib/ui/authFieldStyles";
 import Logo from "./Logo";
 import { BRICLOG_SLOGAN_SHORT } from "@/lib/brand/slogan";
 import LandingDeviceBar from "@/components/landing/LandingDeviceBar";
 import LandingWidthShell from "@/components/landing/LandingWidthShell";
 import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewContext";
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
+import { isObfuscatedDuplicateSignup } from "@/lib/auth/signupResponse";
 
 
 const MODES = {
@@ -28,6 +37,39 @@ const MODES = {
   signup: "signup",
   reset: "reset",
 };
+
+async function ensureEmailActive(email, password) {
+  const res = await fetch("/api/auth/ensure-email-active", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim(), password }),
+  });
+  if (!res.ok) return false;
+  const data = await res.json().catch(() => ({}));
+  return Boolean(data.ok);
+}
+
+async function signInAfterSignup(email, password) {
+  let { data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password,
+  });
+  if (data?.session) return data;
+
+  const needsActivate =
+    /email not confirmed/i.test(String(error?.message || "")) || Boolean(data?.user);
+  if (!needsActivate && error) throw error;
+
+  const activated = await ensureEmailActive(email, password);
+  if (!activated) throw new Error("계정 활성화에 실패했습니다.");
+
+  ({ data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password,
+  }));
+  if (error) throw error;
+  return data;
+}
 
 export default function AuthForm({
   onToast,
@@ -48,6 +90,9 @@ export default function AuthForm({
   const [signupPhone, setSignupPhone] = useState("");
   const [phoneVerificationId, setPhoneVerificationId] = useState(null);
   const [phoneSmsVerified, setPhoneSmsVerified] = useState(false);
+  const [phoneRegistered, setPhoneRegistered] = useState(false);
+  const [phoneCheckMsg, setPhoneCheckMsg] = useState("");
+  const [phoneChecking, setPhoneChecking] = useState(false);
   const [emailRegistered, setEmailRegistered] = useState(false);
   const [emailCheckMsg, setEmailCheckMsg] = useState("");
   const [emailChecking, setEmailChecking] = useState(false);
@@ -70,6 +115,8 @@ export default function AuthForm({
     setSignupPhone("");
     setPhoneVerificationId(null);
     setPhoneSmsVerified(false);
+    setPhoneRegistered(false);
+    setPhoneCheckMsg("");
     setEmailRegistered(false);
     setEmailCheckMsg("");
   }, [initialMode]);
@@ -154,9 +201,8 @@ export default function AuthForm({
           return;
         }
 
-        const phoneOptional = isSignupPhoneOptional();
         if (
-          !phoneOptional &&
+          !isSignupPhoneOptional() &&
           (!phoneSmsVerified || !phoneVerificationId)
         ) {
           onToast?.("휴대폰 문자 인증을 완료해 주세요.", "error");
@@ -181,7 +227,7 @@ export default function AuthForm({
         });
         if (error) throw error;
 
-        if (!data?.user?.identities?.length) {
+        if (isObfuscatedDuplicateSignup(data?.user)) {
           onToast?.(
             "이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해 주세요.",
             "error"
@@ -190,16 +236,54 @@ export default function AuthForm({
           return;
         }
 
-        if (!data.session) {
-          onToast?.(
-            "가입 메일을 보냈습니다. 인증 링크를 누른 뒤 로그인해 주세요. (인증 전에는 글 생성이 제한됩니다)",
-            "info"
-          );
-          setMode(MODES.login);
-          return;
+        if (
+          !isSignupPhoneOptional() &&
+          phoneVerificationId &&
+          signupPhone.trim() &&
+          data?.user?.id
+        ) {
+          const holdRes = await fetch("/api/auth/signup/phone-hold", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: data.user.id,
+              phoneVerificationId,
+              phone: signupPhone.trim(),
+            }),
+          });
+          const holdData = await holdRes.json().catch(() => ({}));
+          if (!holdRes.ok || !holdData.ok) {
+            onToast?.(
+              holdData.userMessage ||
+                "이미 가입에 사용된 휴대폰 번호입니다. 기존 계정으로 로그인해 주세요.",
+              "error"
+            );
+            setMode(MODES.login);
+            return;
+          }
         }
 
-        if (data.session) {
+        if (!data.session && data?.user?.id) {
+          if (isSignupPhoneOptional()) {
+            const actRes = await fetch("/api/auth/signup/activate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId: data.user.id }),
+            });
+            const actData = await actRes.json().catch(() => ({}));
+            if (!actRes.ok || !actData.ok) {
+              onToast?.(
+                actData.userMessage || "가입 활성화에 실패했습니다. 로그인을 시도해 주세요.",
+                "error"
+              );
+              setMode(MODES.login);
+              return;
+            }
+          }
+        }
+
+        const signedIn = await signInAfterSignup(email, password);
+        if (signedIn?.session) {
           try {
             await fetchWithAuth("/api/auth/terms", {
               method: "POST",
@@ -210,15 +294,6 @@ export default function AuthForm({
               }),
             });
             await fetchWithAuth("/api/auth/profile", { method: "POST" });
-            if (phoneVerificationId && signupPhone.trim()) {
-              await fetchWithAuth("/api/auth/profile/phone", {
-                method: "POST",
-                body: JSON.stringify({
-                  phoneVerificationId,
-                  phone: signupPhone.trim(),
-                }),
-              });
-            }
           } catch {
             /* 프로필 테이블 미적용 시에도 가입은 유지 */
           }
@@ -232,13 +307,9 @@ export default function AuthForm({
         return;
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-      if (error) throw error;
-      if (!data.session) {
-        throw new Error("Email not confirmed");
+      const signedIn = await signInAfterSignup(email, password);
+      if (!signedIn?.session) {
+        throw new Error("로그인에 실패했습니다.");
       }
       persistSavedEmail(email, saveEmail);
       try {
@@ -248,27 +319,6 @@ export default function AuthForm({
       }
       onToast?.("로그인되었습니다.", "success");
       onAuthSuccess?.();
-    } catch (err) {
-      onToast?.(mapAuthError(err.message), "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resendConfirm = async () => {
-    if (!email.trim()) {
-      onToast?.("이메일을 입력해 주세요.", "error");
-      return;
-    }
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: email.trim(),
-        options: { emailRedirectTo: getAuthCallbackUrl() },
-      });
-      if (error) throw error;
-      onToast?.("인증 메일을 다시 보냈습니다.", "success");
     } catch (err) {
       onToast?.(mapAuthError(err.message), "error");
     } finally {
@@ -289,8 +339,8 @@ export default function AuthForm({
 
   const shell = (
     <div
-      className={`w-full rounded-2xl border border-[#E8EBED] bg-white p-5 shadow-[0_8px_32px_rgba(0,0,0,0.06)] sm:p-6 ${
-        embedded ? "relative" : "max-w-md"
+      className={`${AUTH_SURFACE_CLASS} ${AUTH_MOBILE_SHELL_CLASS} ${
+        embedded ? "relative" : ""
       }`}
     >
       {onClose && (
@@ -355,20 +405,24 @@ export default function AuthForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 sm:space-y-3">
         <div>
+          <label htmlFor="auth-email" className="mb-1.5 block text-[13px] font-semibold text-[#191F28] sm:text-[12px]">
+            이메일
+          </label>
           <input
+            id="auth-email"
             type="email"
             required
             autoComplete="email"
             aria-label="이메일"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="이메일"
-            className={`w-full rounded-xl border bg-[#FAFBFC] px-3.5 py-2.5 text-[14px] outline-none focus:border-[#03C75A] ${
+            placeholder="you@example.com"
+            className={`${AUTH_FIELD_CLASS} ${
               mode === MODES.signup && emailRegistered
-                ? "border-[#E42939]"
-                : "border-[#E8EBED]"
+                ? AUTH_FIELD_ERROR_CLASS
+                : ""
             }`}
           />
           {mode === MODES.signup && emailCheckMsg ? (
@@ -384,17 +438,23 @@ export default function AuthForm({
         </div>
 
         {mode !== MODES.reset && (
-          <PasswordField
-            value={password}
-            onChange={setPassword}
-            minLength={6}
-            autoComplete={
-              mode === MODES.signup ? "new-password" : "current-password"
-            }
-            placeholder={
-              mode === MODES.signup ? "비밀번호 (6자 이상)" : "비밀번호"
-            }
-          />
+          <div>
+            <label htmlFor="auth-password" className="mb-1.5 block text-[13px] font-semibold text-[#191F28] sm:text-[12px]">
+              비밀번호
+            </label>
+            <PasswordField
+              id="auth-password"
+              value={password}
+              onChange={setPassword}
+              minLength={6}
+              autoComplete={
+                mode === MODES.signup ? "new-password" : "current-password"
+              }
+              placeholder={
+                mode === MODES.signup ? "6자 이상 입력" : "비밀번호"
+              }
+            />
+          </div>
         )}
 
         {mode === MODES.signup && (
@@ -402,18 +462,27 @@ export default function AuthForm({
             <PhoneSmsVerifyFields
               purpose="signup"
               phone={signupPhone}
-              onPhoneChange={setSignupPhone}
+              onPhoneChange={(value) => {
+                setSignupPhone(value);
+                setPhoneVerificationId(null);
+                setPhoneSmsVerified(false);
+              }}
               disabled={loading}
               onToast={onToast}
+              onAvailabilityChange={({ registered, message, checking }) => {
+                setPhoneRegistered(registered);
+                setPhoneCheckMsg(message);
+                setPhoneChecking(checking);
+              }}
               onVerified={({ verificationId }) => {
                 setPhoneVerificationId(verificationId);
                 setPhoneSmsVerified(true);
               }}
             />
-            <p className="text-[11px] leading-relaxed text-[#8B95A1]">
+            <p className="text-[12px] leading-relaxed text-[#4E5968] sm:text-[11px]">
               {isSignupPhoneOptional()
-                ? "휴대폰 인증은 선택입니다. 이메일 인증을 마치면 글 생성·브랜드 추가를 할 수 있어요."
-                : "휴대폰·이메일 인증을 모두 마쳐야 글 생성·브랜드 추가를 할 수 있습니다."}{" "}
+                ? "개발 모드: 휴대폰 인증 없이 가입할 수 있습니다."
+                : "휴대폰 번호는 한 계정에 하나만 등록됩니다. 문자 인증만 완료하면 바로 이용할 수 있어요."}{" "}
               닉네임·호칭은 로그인 뒤 안내에서 입력할 수 있어요.
             </p>
           </>
@@ -496,10 +565,12 @@ export default function AuthForm({
               (!termsAgreed ||
                 emailRegistered ||
                 emailChecking ||
+                phoneRegistered ||
+                phoneChecking ||
                 (!isSignupPhoneOptional() &&
                   (!phoneSmsVerified || !phoneVerificationId))))
           }
-          className="w-full rounded-xl bg-[#03C75A] py-3 text-[14px] font-bold text-white disabled:opacity-60"
+          className={AUTH_PRIMARY_BTN_CLASS}
         >
           {loading
             ? "처리 중…"
@@ -510,16 +581,6 @@ export default function AuthForm({
                 : "로그인"}
         </button>
 
-        {mode === MODES.login && isSupabaseConfigured && (
-          <button
-            type="button"
-            disabled={loading}
-            onClick={resendConfirm}
-            className="w-full text-center text-[11px] text-[#8B95A1] hover:text-[#03A94D] disabled:opacity-50"
-          >
-            인증 메일이 안 왔나요? 다시 보내기
-          </button>
-        )}
       </form>
 
       <div className="mt-3 flex justify-center gap-2 text-[12px]">
@@ -553,9 +614,7 @@ export default function AuthForm({
   );
 
   const wrapped = showDevicePreview && landingPreview ? (
-    <LandingWidthShell device={previewDevice} simulating={simulating}>
-      {shell}
-    </LandingWidthShell>
+    <LandingWidthShell>{shell}</LandingWidthShell>
   ) : (
     shell
   );
@@ -563,7 +622,7 @@ export default function AuthForm({
   if (embedded) return wrapped;
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-[#F7F8FA] p-4">
+    <div className={AUTH_MOBILE_PAGE_CLASS}>
       {wrapped}
     </div>
   );

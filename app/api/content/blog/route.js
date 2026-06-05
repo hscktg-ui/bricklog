@@ -22,6 +22,7 @@ import {
   isOfficialSourceFirstEnabled,
   isStrictBrandGuardEnabled,
 } from "@/lib/config/brandEngineFlags";
+import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -30,6 +31,8 @@ const MAX_PER_MIN =
   Number(process.env.BRICLOG_BLOG_RATE_LIMIT_PER_MIN) || 8;
 
 export async function POST(request) {
+  await hydrateGlobalEngineForGeneration();
+
   const ip = getClientIp(request);
   const limit = checkRateLimit(`blog:${ip}`, {
     max: MAX_PER_MIN,

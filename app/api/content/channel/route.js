@@ -12,12 +12,18 @@ import {
 } from "@/lib/billing/usageLedger";
 import { logError } from "@/lib/api/logEvent";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
-import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
+import { prepareBrandFirstInput } from "@/lib/memory/brandFirstPrewriteGate";
 import {
   requiresV2ResearchGate,
   researchGateBlockedResult,
 } from "@/lib/content/v2PipelineGate";
+import {
+  isBrandFirstEngineEnabled,
+  isOfficialSourceFirstEnabled,
+  isStrictBrandGuardEnabled,
+} from "@/lib/config/brandEngineFlags";
 import { withSignatureEnforcement } from "@/lib/content/channelPack";
+import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -28,6 +34,8 @@ const MAX_PER_MIN =
   Number(process.env.BRICLOG_CHANNEL_RATE_LIMIT_PER_MIN) || 10;
 
 export async function POST(request) {
+  await hydrateGlobalEngineForGeneration();
+
   const ip = getClientIp(request);
   const limit = checkRateLimit(`channel:${ip}`, {
     max: MAX_PER_MIN,
@@ -79,22 +87,23 @@ export async function POST(request) {
     savedInput = withSignatureEnforcement(body, channel);
     savedInput.billingPlan = entitlement.usage?.planId || "free";
 
-    if (body.brandId || body.brandMemory) {
-      const personalization = await loadBrandMemoryBundle(
-        auth.supabase,
-        auth.user.id,
-        body.brandId,
-        { localBrandMemory: body.brandMemory }
+    const prepared = await prepareBrandFirstInput({
+      supabase: auth.supabase,
+      userId: auth.user.id,
+      input: savedInput,
+    });
+    if (!prepared.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          mode: "brand_memory_gate",
+          userMessage: prepared.userMessage,
+        },
+        { status: 422 }
       );
-      savedInput.accountBrief = personalization.accountBrief;
-      savedInput.userWritingBrief = personalization.userBrief;
-      savedInput.brandFeedbackBrief = personalization.feedbackBrief;
-      savedInput.styleContinuityBrief = personalization.styleContinuityBrief;
-      savedInput.brandKnowledgeBrief = personalization.brandKnowledgeBrief;
-      savedInput.personalizationAddon = personalization.combinedPromptAddon;
-      savedInput.combinedPersonalizationAddon =
-        personalization.combinedPromptAddon;
     }
+    savedInput = prepared.input;
+    const personalization = prepared.personalization;
 
     const rawResult = await generateChannelWithLLMFirst(channel, savedInput);
     const result = blockUnverifiedChannelApiResponse(channel, rawResult, savedInput);
@@ -124,6 +133,15 @@ export async function POST(request) {
     return NextResponse.json({
       ...result,
       channel,
+      meta: {
+        ...(result.meta || {}),
+        rolloutFlags: {
+          brandFirstEngine: isBrandFirstEngineEnabled(),
+          strictBrandGuard: isStrictBrandGuardEnabled(),
+          officialSourceFirst: isOfficialSourceFirstEnabled(),
+        },
+      },
+      personalization,
       usageWarning: usageAfter.usageWarning,
       usage: usageAfter,
     });

@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useViewport } from "@/hooks/useViewport";
 import {
   DEVICE_LABELS,
@@ -15,26 +22,35 @@ const LandingPreviewContext = createContext(null);
 export function LandingPreviewProvider({ children }) {
   const vp = useViewport();
   const native = useMemo(() => nativeDeviceFromViewport(vp), [vp]);
-  const [preview, setPreview] = useState("desktop");
+  const [preview, setPreviewState] = useState("desktop");
+  const [userPicked, setUserPicked] = useState(false);
 
   useEffect(() => {
-    setPreview(native);
-  }, [native]);
+    if (!userPicked) setPreviewState(native);
+  }, [native, userPicked]);
+
+  const setPreview = useCallback((id) => {
+    setUserPicked(true);
+    setPreviewState(id);
+  }, []);
+
+  const cyclePreview = useCallback(() => {
+    setUserPicked(true);
+    setPreviewState((prev) => nextPreviewDevice(prev));
+  }, []);
 
   const simulating = isSimulatedPreview(preview, native);
-  const maxWidth = simulating ? DEVICE_WIDTHS[preview] : null;
 
   const value = useMemo(
     () => ({
       preview,
       native,
       simulating,
-      maxWidth,
       setPreview,
-      cyclePreview: () => setPreview((prev) => nextPreviewDevice(prev)),
+      cyclePreview,
       label: DEVICE_LABELS[preview],
     }),
-    [preview, native, simulating, maxWidth]
+    [preview, native, simulating, setPreview, cyclePreview]
   );
 
   return (

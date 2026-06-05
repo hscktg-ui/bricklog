@@ -40,6 +40,7 @@ import {
   getBlogLengthTierOptionsForUi,
 } from "@/lib/product/missionUi";
 import { isDeferFormUntilCommit } from "@/lib/config/productFlags";
+import { detectBrandIndustryMismatch } from "@/lib/product/brandIndustryMismatch";
 
 const fieldClass =
   "w-full rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-[14px] text-[#191F28] placeholder:text-[#B0B8C1] focus:border-[#03C75A] focus:outline-none focus:ring-2 focus:ring-[#03C75A]/15";
@@ -196,6 +197,22 @@ function BlogForm({
     ? describeLinkedPersona(formValues.v4Speaker)
     : null;
 
+  const brandIndustryMismatch = useMemo(
+    () =>
+      detectBrandIndustryMismatch({
+        brandName: formValues.brandName,
+        topic: debouncedTopic,
+        mainKeyword: debouncedMainKeyword,
+        industry: debouncedIndustry,
+      }),
+    [
+      formValues.brandName,
+      debouncedTopic,
+      debouncedMainKeyword,
+      debouncedIndustry,
+    ]
+  );
+
   const resolvedPerspective =
     formValues.contentPerspective === "auto"
       ? resolveContentPerspective({
@@ -247,6 +264,15 @@ function BlogForm({
         {sensitive.isSensitive && (
           <p className="mt-2 inline-flex items-center gap-1 rounded-md border border-[#FFE0B2] bg-[#FFF8E6] px-2 py-1 text-[11px] font-semibold text-[#E67700]">
             ⚖️ {sensitive.userBadge}
+          </p>
+        )}
+        {brandIndustryMismatch.mismatch && (
+          <p
+            className="mt-2 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[12px] leading-relaxed text-[#4E5968]"
+            role="status"
+          >
+            <span className="font-semibold text-[#E67700]">업종 확인</span>
+            <span className="mt-1 block">{brandIndustryMismatch.message}</span>
           </p>
         )}
       </Field>

@@ -23,7 +23,7 @@ import {
 import { formatTabForCopy } from "@/lib/contentFormat";
 import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
 import { useChannelLayoutMode } from "@/hooks/useChannelLayoutMode";
-import { useViewport } from "@/hooks/useViewport";
+import { useEffectiveViewport } from "@/hooks/useEffectiveViewport";
 import { useWorkspaceCompact } from "@/hooks/useWorkspaceCompact";
 import WorkspaceChannelIntro from "@/components/workspace/WorkspaceChannelIntro";
 import ChannelGenPrefToggle, {
@@ -89,7 +89,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
   const generationCount = activeBrand?.contentArchive?.blog?.length ?? 0;
 
   const [formOpen, setFormOpen] = useState(true);
-  const { isMobile, isTablet } = useViewport();
+  const { isMobile, isTablet } = useEffectiveViewport();
   const { compact } = useWorkspaceCompact();
   const { layoutMode, concise, setLayoutMode } = useChannelLayoutMode("insta");
 

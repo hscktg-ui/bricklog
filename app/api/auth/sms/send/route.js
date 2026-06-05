@@ -29,7 +29,12 @@ export async function POST(request) {
   }
 
   try {
-    const result = await sendPhoneOtp(body?.phone ?? "");
+    const purpose = String(body?.purpose || "signup").toLowerCase();
+    const excludeUserId = body?.excludeUserId?.trim() || null;
+    const result = await sendPhoneOtp(body?.phone ?? "", {
+      excludeUserId,
+      signupStrict: purpose === "signup",
+    });
     if (!result.ok) {
       return NextResponse.json(
         {
@@ -39,11 +44,14 @@ export async function POST(request) {
         },
         {
           status:
-            result.code === "SMS_CONFIG" ||
-            result.code === "SMS_SERVICE" ||
-            result.code === "SMS_DB"
-              ? 503
-              : 400,
+            result.code === "PHONE_TAKEN"
+              ? 409
+              : result.code === "SMS_CONFIG" ||
+                  result.code === "SMS_SERVICE" ||
+                  result.code === "SMS_DB" ||
+                  result.code === "PHONE_CHECK"
+                ? 503
+                : 400,
         }
       );
     }

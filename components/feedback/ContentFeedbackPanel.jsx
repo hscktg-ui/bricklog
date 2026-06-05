@@ -13,6 +13,8 @@ export default function ContentFeedbackPanel({
   brandId = null,
   channel = "blog",
   blogInput = null,
+  suggestionHints = [],
+  compact = false,
   onSubmitted,
   onReflect,
 }) {
@@ -93,8 +95,8 @@ export default function ContentFeedbackPanel({
     return (
       <p className="text-[12px] text-[#03A94D]">
         {reflected
-          ? `피드백이 글에 반영되었습니다 (${label}) · 브랜드 학습에도 저장됩니다`
-          : `피드백이 저장되었습니다 (${label}) · 브랜드 학습에 반영됩니다`}
+          ? `피드백이 글에 반영되었습니다 (${label}) · 서버·브랜드 학습에 저장됩니다`
+          : `피드백이 서버에 저장되었습니다 (${label}) · 전체 품질 개선에 반영됩니다`}
         {!contentItemId && " · 콘텐츠 저장 후 다음부터 기록에 남습니다"}
       </p>
     );
@@ -107,16 +109,39 @@ export default function ContentFeedbackPanel({
     reaction !== "good" &&
     (tags.length > 0 || memo.trim() || reaction === "bad");
 
+  const hints = (suggestionHints || []).filter(Boolean).slice(0, 3);
+
   return (
-    <div className="rounded-xl border border-[#E8EBED] bg-[#FAFBFC] p-3">
+    <div
+      className={`rounded-xl border border-[#E8EBED] bg-[#FAFBFC] ${
+        compact ? "p-2.5" : "p-3"
+      }`}
+    >
       <p className="text-[12px] font-semibold text-[#4E5968]">
-        이 결과가 어땠나요?
+        이 결과 피드백 · 보완·개선점
       </p>
-      {!contentItemId && (
-        <p className="mt-1 text-[11px] text-[#8B95A1]">
-          저장 전에도 피드백을 보낼 수 있으며, 수정이 필요하면 글에 바로
-          반영합니다.
-        </p>
+      <p className="mt-1 text-[11px] leading-relaxed text-[#8B95A1]">
+        솔직한 의견이 브랜드 맞춤과 전체 엔진 품질 개선에 반영됩니다.
+        {!contentItemId &&
+          " 저장 전에도 보낼 수 있으며, 수정이 필요하면 글에 바로 반영합니다."}
+      </p>
+      {hints.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {hints.map((hint) => (
+            <button
+              key={hint}
+              type="button"
+              onClick={() =>
+                setMemo((prev) =>
+                  prev.trim() ? `${prev.trim()} · ${hint}` : hint
+                )
+              }
+              className="rounded-full border border-[#E8EBED] bg-white px-2.5 py-1 text-[10px] text-[#4E5968] hover:border-[#03C75A]"
+            >
+              + {hint}
+            </button>
+          ))}
+        </div>
       )}
       <div className="mt-2 flex flex-wrap gap-2">
         {FEEDBACK_REACTIONS.map((r) => (
@@ -155,7 +180,7 @@ export default function ContentFeedbackPanel({
       <textarea
         className="mt-3 w-full rounded-lg border border-[#E8EBED] bg-white px-3 py-2 text-[12px]"
         rows={2}
-        placeholder="추가 메모 (선택) — 예: 주제: 봄 시즌 꽃다발, 더 담백하게"
+        placeholder="보완·개선점을 적어 주세요 (예: 광고 같음, 정보 부족, 말투가 딱딱함, 지역명 틀림)"
         value={memo}
         onChange={(e) => setMemo(e.target.value)}
       />
@@ -180,7 +205,7 @@ export default function ContentFeedbackPanel({
                 : channel === "instagram"
                   ? "반영해서 인스타 다듬기"
                   : "반영해서 다듬기"
-              : "피드백 보내기"}
+              : "서버에 피드백 보내기"}
       </button>
     </div>
   );

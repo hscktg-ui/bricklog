@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import Icon from "@/components/Icon";
 import { useChannelLayoutMode } from "@/hooks/useChannelLayoutMode";
-import { useViewport } from "@/hooks/useViewport";
+import { useEffectiveViewport } from "@/hooks/useEffectiveViewport";
 import CopyCard from "@/components/CopyCard";
 import BlogSourcePanel from "@/components/BlogSourcePanel";
 import { IMAGE_TYPES } from "@/lib/images/imageTypes";
@@ -44,7 +44,7 @@ export default function MarketingImageStudio({
   const [generatingImage, setGeneratingImage] = useState(false);
   const [gallery, setGallery] = useState([]);
   const [controlsOpen, setControlsOpen] = useState(true);
-  const { isMobile } = useViewport();
+  const { isMobile } = useEffectiveViewport();
   const { layoutMode, concise, setLayoutMode } = useChannelLayoutMode("image");
 
   useEffect(() => {

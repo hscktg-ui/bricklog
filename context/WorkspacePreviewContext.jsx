@@ -28,14 +28,21 @@ export function WorkspacePreviewProvider({ children }) {
     [viewport.isMobile, viewport.isTablet, viewport.isDesktop]
   );
 
-  const [preview, setPreview] = useState("desktop");
+  const [preview, setPreviewState] = useState("desktop");
+  const [userPicked, setUserPicked] = useState(false);
 
   useEffect(() => {
-    setPreview(native);
-  }, [native]);
+    if (!userPicked) setPreviewState(native);
+  }, [native, userPicked]);
+
+  const setPreview = useCallback((id) => {
+    setUserPicked(true);
+    setPreviewState(id);
+  }, []);
 
   const cycle = useCallback(() => {
-    setPreview((prev) => nextPreviewDevice(prev));
+    setUserPicked(true);
+    setPreviewState((prev) => nextPreviewDevice(prev));
   }, []);
 
   const simulating = isSimulatedPreview(preview, native);
@@ -47,9 +54,10 @@ export function WorkspacePreviewProvider({ children }) {
       simulating,
       maxWidth: simulating ? DEVICE_WIDTHS[preview] : null,
       label: DEVICE_LABELS[preview],
+      setPreview,
       cycle,
     }),
-    [preview, native, simulating, cycle]
+    [preview, native, simulating, setPreview, cycle]
   );
 
   return (
@@ -65,4 +73,8 @@ export function useWorkspacePreview() {
     throw new Error("useWorkspacePreview must be used within WorkspacePreviewProvider");
   }
   return ctx;
+}
+
+export function useWorkspacePreviewOptional() {
+  return useContext(WorkspacePreviewContext);
 }

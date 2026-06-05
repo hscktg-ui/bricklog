@@ -1,15 +1,25 @@
 {
-  "base": "http://localhost:3005",
-  "at": "2026-05-27T07:58:34.827Z",
+  "base": "https://briclog.ai",
+  "at": "2026-06-05T14:21:43.050Z",
   "personaCount": 100,
-  "loggedIn": false,
+  "loggedIn": true,
+  "e2eUser": {
+    "email": "hundred-ux-smoke@briclog.ai",
+    "reused": true,
+    "auto": true,
+    "login": {
+      "ok": true,
+      "reason": "supabase_session",
+      "email": "hundred-ux-smoke@briclog.ai"
+    }
+  },
   "runs": [
     {
       "id": "u001",
       "label": "카페·F&B · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
+      "status": "pass",
       "steps": [
         {
           "step": "intro",
@@ -23,7 +33,7 @@
         },
         {
           "focus": "landing",
-          "ok": false
+          "ok": true
         },
         {
           "focus": "intro",
@@ -32,7 +42,7 @@
         },
         {
           "focus": "cta",
-          "ok": false
+          "ok": true
         }
       ]
     },
@@ -40,892 +50,3039 @@
       "id": "u002",
       "label": "카페·F&B · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "tablet",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u003",
       "label": "카페·F&B · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u004",
       "label": "카페·F&B · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u005",
       "label": "카페·F&B · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u006",
       "label": "카페·F&B · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u007",
       "label": "카페·F&B · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u008",
       "label": "카페·F&B · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u009",
       "label": "카페·F&B · 붙여넣기 검수",
       "journeyType": "paste_review",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u010",
       "label": "카페·F&B · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u011",
       "label": "꽃집·선물 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u012",
       "label": "꽃집·선물 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
       "device": "desktop",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u013",
       "label": "꽃집·선물 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u014",
       "label": "꽃집·선물 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u015",
       "label": "꽃집·선물 · 이메일 미인증",
       "journeyType": "email_unverified",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u016",
       "label": "꽃집·선물 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u017",
       "label": "꽃집·선물 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u018",
       "label": "꽃집·선물 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u019",
       "label": "꽃집·선물 · 붙여넣기 검수",
       "journeyType": "paste_review",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u020",
       "label": "꽃집·선물 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u021",
       "label": "의료·클리닉 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u022",
       "label": "의료·클리닉 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u023",
       "label": "의료·클리닉 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u024",
       "label": "의료·클리닉 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u025",
       "label": "의료·클리닉 · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u026",
       "label": "의료·클리닉 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u027",
       "label": "의료·클리닉 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u028",
       "label": "의료·클리닉 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u029",
       "label": "의료·클리닉 · 붙여넣기 검수",
       "journeyType": "paste_review",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u030",
       "label": "의료·클리닉 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u031",
       "label": "뷰티·피부 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u032",
       "label": "뷰티·피부 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "tablet",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u033",
       "label": "뷰티·피부 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u034",
       "label": "뷰티·피부 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u035",
       "label": "뷰티·피부 · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u036",
       "label": "뷰티·피부 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u037",
       "label": "뷰티·피부 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u038",
       "label": "뷰티·피부 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u039",
       "label": "뷰티·피부 · 붙여넣기 검수",
       "journeyType": "paste_review",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u040",
       "label": "뷰티·피부 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u041",
       "label": "학원·교육 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u042",
       "label": "학원·교육 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
       "device": "desktop",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u043",
       "label": "학원·교육 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u044",
       "label": "학원·교육 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u045",
       "label": "학원·교육 · 이메일 미인증",
       "journeyType": "email_unverified",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u046",
       "label": "학원·교육 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u047",
       "label": "학원·교육 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u048",
       "label": "학원·교육 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u049",
       "label": "학원·교육 · 붙여넣기 검수",
       "journeyType": "paste_review",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u050",
       "label": "학원·교육 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u051",
       "label": "음식점 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u052",
       "label": "음식점 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u053",
       "label": "음식점 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u054",
       "label": "음식점 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u055",
       "label": "음식점 · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u056",
       "label": "음식점 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u057",
       "label": "음식점 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u058",
       "label": "음식점 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u059",
       "label": "음식점 · 붙여넣기 검수",
       "journeyType": "paste_review",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u060",
       "label": "음식점 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u061",
       "label": "리테일·패션 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u062",
       "label": "리테일·패션 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "tablet",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u063",
       "label": "리테일·패션 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u064",
       "label": "리테일·패션 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u065",
       "label": "리테일·패션 · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u066",
       "label": "리테일·패션 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u067",
       "label": "리테일·패션 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u068",
       "label": "리테일·패션 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u069",
       "label": "리테일·패션 · 붙여넣기 검수",
       "journeyType": "paste_review",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u070",
       "label": "리테일·패션 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u071",
       "label": "피트니스·운동 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u072",
       "label": "피트니스·운동 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
       "device": "desktop",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u073",
       "label": "피트니스·운동 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u074",
       "label": "피트니스·운동 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u075",
       "label": "피트니스·운동 · 이메일 미인증",
       "journeyType": "email_unverified",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u076",
       "label": "피트니스·운동 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u077",
       "label": "피트니스·운동 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u078",
       "label": "피트니스·운동 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u079",
       "label": "피트니스·운동 · 붙여넣기 검수",
       "journeyType": "paste_review",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u080",
       "label": "피트니스·운동 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u081",
       "label": "전문서비스 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u082",
       "label": "전문서비스 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u083",
       "label": "전문서비스 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u084",
       "label": "전문서비스 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u085",
       "label": "전문서비스 · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u086",
       "label": "전문서비스 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u087",
       "label": "전문서비스 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u088",
       "label": "전문서비스 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u089",
       "label": "전문서비스 · 붙여넣기 검수",
       "journeyType": "paste_review",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u090",
       "label": "전문서비스 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u091",
       "label": "숙박·펜션 · 첫 방문 게스트(모바일)",
       "journeyType": "guest_mobile",
       "device": "mobile",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "focus": "cta",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u092",
       "label": "숙박·펜션 · 첫 방문 게스트(PC)",
       "journeyType": "guest_desktop",
-      "device": "tablet",
-      "status": "fail",
-      "steps": [],
-      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n  - navigating to \"http://localhost:3005/\", waiting until \"domcontentloaded\"\n"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro",
+          "ok": true,
+          "detail": "absent"
+        },
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "landing",
+          "ok": true
+        },
+        {
+          "focus": "sample",
+          "ok": true
+        },
+        {
+          "focus": "pricing",
+          "ok": true
+        }
+      ]
     },
     {
       "id": "u093",
       "label": "숙박·펜션 · 신규 가입(모바일)",
       "journeyType": "signup_mobile",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "fast_onboarding",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "first_write",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u094",
       "label": "숙박·펜션 · 신규 가입(PC)",
       "journeyType": "signup_desktop",
-      "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "auth",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "brand_form",
+          "ok": true
+        },
+        {
+          "focus": "sidebar",
+          "ok": true
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u095",
       "label": "숙박·펜션 · 이메일 미인증",
       "journeyType": "email_unverified",
-      "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "device": "desktop",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "email_verify",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "generate_block",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u096",
       "label": "숙박·펜션 · 이야기 집중 작성",
       "journeyType": "blog_writer",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "generate",
+          "ok": true
+        },
+        {
+          "focus": "overlay",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "focus": "result_view",
+          "ok": true,
+          "detail": "static_ui_only",
+          "hasResult": false,
+          "hasPlaceholder": false
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u097",
       "label": "숙박·펜션 · 채널팩(이야기+연쇄)",
       "journeyType": "channel_pack",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "blog_only_toggle",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "pipeline",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "post_tail",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "step": "brand_field",
+          "ok": true,
+          "hasValue": false
+        }
+      ]
     },
     {
       "id": "u098",
       "label": "숙박·펜션 · 단독 채널(플레이스/인스타)",
       "journeyType": "channel_standalone",
       "device": "mobile",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "derive_vs_standalone",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "channel_start",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u099",
       "label": "숙박·펜션 · 붙여넣기 검수",
       "journeyType": "paste_review",
       "device": "desktop",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "draft_review",
+          "ok": true
+        },
+        {
+          "focus": "compliance",
+          "ok": true,
+          "detail": "skipped_check"
+        },
+        {
+          "focus": "audit",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     },
     {
       "id": "u100",
       "label": "숙박·펜션 · 기록·브랜드 작업실",
       "journeyType": "history_power",
       "device": "tablet",
-      "status": "skip",
-      "steps": [],
-      "skipReason": "auth_required_but_login_failed"
+      "status": "pass",
+      "steps": [
+        {
+          "step": "blockers",
+          "ok": true,
+          "blockingCount": 0
+        },
+        {
+          "focus": "history",
+          "ok": true
+        },
+        {
+          "focus": "growth",
+          "ok": true
+        },
+        {
+          "focus": "research",
+          "ok": true,
+          "detail": "skipped_check"
+        }
+      ]
     }
   ]
 }

@@ -63,11 +63,13 @@ import {
 import ProfileSetupBanner from "@/components/ProfileSetupBanner";
 import { WorkspacePreviewProvider, useWorkspacePreview } from "@/context/WorkspacePreviewContext";
 import WorkspaceDevicePreviewToggle from "@/components/workspace/WorkspaceDevicePreviewToggle";
+import DevicePreviewViewport from "@/components/workspace/DevicePreviewViewport";
+import WorkspaceDevicePreviewTabs from "@/components/workspace/WorkspaceDevicePreviewTabs";
 import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
 import ChannelStartScreen from "@/components/channels/ChannelStartScreen";
 import { resolveDerivationSource } from "@/lib/content/channelSource";
-import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
+import { CHANNEL_PRODUCTS, normalizeWorkspaceMenuId } from "@/lib/channels/channelProducts";
 import {
   fetchGenerationById,
   fetchGenerations,
@@ -277,6 +279,7 @@ export default function Dashboard({
           setSelectedHistoryId={setSelectedHistoryId}
           selectedRecord={selectedRecord}
           historyResults={historyResults}
+          onHistoryResultsChange={setHistoryResults}
           handleCopy={handleCopy}
           handleLogout={handleLogout}
           userLabel={userLabel}
@@ -309,6 +312,7 @@ function DashboardWithBrands({
   setSelectedHistoryId,
   selectedRecord,
   historyResults,
+  onHistoryResultsChange,
   handleCopy,
   handleLogout,
   userLabel,
@@ -367,6 +371,7 @@ function DashboardWithBrands({
         setSelectedHistoryId={setSelectedHistoryId}
         selectedRecord={selectedRecord}
         historyResults={historyResults}
+        onHistoryResultsChange={onHistoryResultsChange}
         handleCopy={handleCopy}
         handleLogout={handleLogout}
         userLabel={userLabel}
@@ -398,6 +403,7 @@ function DashboardLayout({
   setSelectedHistoryId,
   selectedRecord,
   historyResults,
+  onHistoryResultsChange,
   handleCopy,
   handleLogout,
   userLabel,
@@ -413,7 +419,7 @@ function DashboardLayout({
 }) {
   useMobileSidebar(mobileOpen, setMobileOpen);
 
-  const { preview, simulating, maxWidth } = useWorkspacePreview();
+  const { preview, native, simulating } = useWorkspacePreview();
   const { resetToHome, setBlogInput, loadingOverlay, blogContent, loadMemoryContentIntoWorkspace } =
     useContentPipeline();
   const {
@@ -588,6 +594,7 @@ function DashboardLayout({
 
   const handleMenuNavigate = useCallback(
     (menuId) => {
+      const target = normalizeWorkspaceMenuId(menuId);
       if (generationBusy) {
         showToast?.(
           "이야기를 만드는 중이에요. 완료된 뒤 다른 메뉴로 이동할 수 있어요.",
@@ -597,8 +604,8 @@ function DashboardLayout({
       }
       startTransition(() => {
         if (showChannelWelcome) {
-          if (["blog", "place", "insta", "image"].includes(menuId)) {
-            handleChannelSelect(menuId);
+          if (["blog", "place", "insta", "image"].includes(target)) {
+            handleChannelSelect(target);
             return;
           }
           const next = completeChannelOnboarding(
@@ -607,8 +614,8 @@ function DashboardLayout({
           );
           setUserPrefs(next);
         }
-        setActiveMenu(menuId);
-        if (menuId === "history") setSelectedHistoryId(null);
+        setActiveMenu(target);
+        if (target === "history") setSelectedHistoryId(null);
         setMobileOpen(false);
       });
     },
@@ -652,7 +659,7 @@ function DashboardLayout({
   ]);
 
   const goBlog = () => setActiveMenu("blog");
-  const navigate = (menu) => setActiveMenu(menu);
+  const navigate = (menu) => setActiveMenu(normalizeWorkspaceMenuId(menu));
 
   const workspaceMenus = new Set(["blog", "place", "insta", "image", "growth"]);
   const idleHintActive =
@@ -713,12 +720,11 @@ function DashboardLayout({
         profile={profile}
       />
 
-      <div
-        className={`flex min-h-0 min-w-0 flex-1 flex-col transition-[max-width] duration-300 ease-out ${
-          simulating ? "mx-auto w-full shadow-[0_0_0_1px_rgba(0,0,0,0.06)]" : ""
-        }`}
-        style={maxWidth ? { maxWidth } : undefined}
-        data-workspace-preview={preview}
+      <DevicePreviewViewport
+        preview={preview}
+        native={native}
+        simulating={simulating}
+        className="flex min-h-0 min-w-0 flex-1 flex-col"
       >
         <Header
           onHome={goHome}
@@ -731,7 +737,7 @@ function DashboardLayout({
                 ? "오늘의 편집본"
                 : undefined
           }
-          onOpenSidebar={firstStoryFocus ? undefined : () => setMobileOpen(true)}
+          onOpenSidebar={() => setMobileOpen(true)}
           demoMode={demoMode}
           billingPlanId={billingPlanId}
           billingBetaActive={billingBypassQuotas}
@@ -751,11 +757,7 @@ function DashboardLayout({
         <WorkspaceIdleHint active={idleHintActive} />
 
         <main
-          className={`workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden overflow-x-hidden lg:pb-0 ${
-            firstStoryFocus
-              ? "pb-0"
-              : "pb-[calc(var(--workspace-mobile-nav-h)+env(safe-area-inset-bottom,0px))]"
-          }`}
+          className="workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden overflow-x-hidden pb-[calc(var(--workspace-mobile-nav-h)+env(safe-area-inset-bottom,0px))] lg:pb-0"
         >
           {showChannelWelcome ? (
             <ChannelWelcomeScreen
@@ -822,7 +824,7 @@ function DashboardLayout({
                     ? "blog"
                     : item.channel === "place"
                       ? "place"
-                      : "instagram";
+                      : "insta";
                 handleMenuNavigate(menu);
                 return true;
               }}
@@ -838,25 +840,28 @@ function DashboardLayout({
               onCopy={handleCopy}
               userId={user.id}
               demoMode={demoMode}
-              onResultsChange={setHistoryResults}
+              onResultsChange={onHistoryResultsChange}
               onHistoryRefresh={loadHistory}
               onToast={showToast}
             />
           ) : null}
         </main>
-      </div>
+      </DevicePreviewViewport>
       </div>
 
-      {!demoMode && !isLaunchBuild() ? <WorkspaceDevicePreviewToggle /> : null}
-      {!firstStoryFocus ? (
-        <MobileBottomNav
+      {!demoMode && !isLaunchBuild() ? (
+        <>
+          <WorkspaceDevicePreviewTabs className="sm:hidden" />
+          <WorkspaceDevicePreviewToggle className="hidden sm:flex" />
+        </>
+      ) : null}
+      <MobileBottomNav
           activeMenu={showChannelWelcome ? null : activeMenu}
           drawerOpen={mobileOpen}
           onSelect={handleMenuNavigate}
           onOpenDrawer={() => setMobileOpen(true)}
           navigateBlocked={generationBusy}
         />
-      ) : null}
       <Toast toast={toast} />
       <ConfirmModal
         open={confirmChannelPicker}

@@ -62,10 +62,6 @@ import {
   CUSTOMER_PIPELINE_STEP_LABELS,
   mapCustomerPipelineStepLabel,
 } from "@/lib/product/customerOutput";
-import {
-  EMAIL_VERIFY_USER_MESSAGE,
-  isEmailVerified,
-} from "@/lib/auth/emailVerification";
 import { serializeContent } from "@/lib/contentFormat";
 import { saveGeneration, saveChannelGeneration } from "@/lib/generations";
 import { getPurposeModifier } from "@/lib/prompts/purposes";
@@ -838,18 +834,7 @@ export function ContentProvider({
     onToast?.("인스타 검수본 저장", "success");
   }, [instagramContent, brandHooks, onToast]);
 
-  const requireEmailVerified = useCallback(
-    ({ setHint = false } = {}) => {
-      if (!user || isEmailVerified(user)) return true;
-      if (setHint) {
-        setBlogGenHint(EMAIL_VERIFY_USER_MESSAGE);
-        setBlogGenHintIsAuth(true);
-      }
-      onToast?.(EMAIL_VERIFY_USER_MESSAGE, "info");
-      return false;
-    },
-    [user, onToast]
-  );
+  const requireEmailVerified = useCallback(() => Boolean(user), [user]);
 
   const generateBlog = useCallback((inputOverride, genOpts = {}) => {
     if (blogGenLock.current || generating.blog) {

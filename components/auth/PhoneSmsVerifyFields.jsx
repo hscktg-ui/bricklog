@@ -7,8 +7,9 @@ import { LEGAL_LINKS } from "@/lib/auth/legalVersions";
 import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import { resolveSmsSenderLabel } from "@/lib/sms/smsDisplay";
 
-const fieldClass =
-  "w-full min-w-0 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] px-3.5 py-2.5 text-[14px] outline-none focus:border-[#03C75A]";
+import { AUTH_FIELD_CLASS } from "@/lib/ui/authFieldStyles";
+
+const fieldClass = AUTH_FIELD_CLASS;
 
 const RESEND_COOLDOWN_SEC = 60;
 
@@ -31,6 +32,8 @@ function maskPhone(display) {
  *   purpose?: 'signup' | 'verify',
  *   onVerified?: (payload: { verificationId: string, phone: string }) => void,
  *   onToast?: (msg: string, type?: string) => void,
+ *   onAvailabilityChange?: (payload: { registered: boolean, message: string, checking: boolean }) => void,
+ *   excludeUserId?: string | null,
  * }} props
  */
 export default function PhoneSmsVerifyFields({
@@ -38,8 +41,10 @@ export default function PhoneSmsVerifyFields({
   onPhoneChange,
   disabled = false,
   purpose = "signup",
+  excludeUserId = null,
   onVerified,
   onToast,
+  onAvailabilityChange,
 }) {
   const [code, setCode] = useState("");
   const [sending, setSending] = useState(false);
@@ -53,6 +58,10 @@ export default function PhoneSmsVerifyFields({
   const [lastError, setLastError] = useState(null);
   const phoneKeyRef = useRef("");
   const timerRef = useRef(null);
+  const phoneCheckTimer = useRef(null);
+  const [phoneTaken, setPhoneTaken] = useState(false);
+  const [phoneCheckMsg, setPhoneCheckMsg] = useState("");
+  const [phoneChecking, setPhoneChecking] = useState(false);
 
   useEffect(() => {
     const key = phoneDigitsKey(phone);
@@ -65,7 +74,62 @@ export default function PhoneSmsVerifyFields({
     setDevHint(null);
     setLastError(null);
     setResendCooldown(0);
+    setPhoneTaken(false);
+    setPhoneCheckMsg("");
   }, [phone]);
+
+  const runPhoneAvailabilityCheck = useCallback(
+    async (value) => {
+      const norm = normalizeKoreanMobile(value);
+      if (!norm.ok) {
+        setPhoneTaken(false);
+        setPhoneCheckMsg("");
+        onAvailabilityChange?.({ registered: false, message: "", checking: false });
+        return;
+      }
+      setPhoneChecking(true);
+      onAvailabilityChange?.({ registered: false, message: "", checking: true });
+      try {
+        const res = await fetch(
+          `/api/auth/check-phone?phone=${encodeURIComponent(value.trim())}`
+        );
+        const data = await res.json().catch(() => ({}));
+        if (!data.ok) {
+          const msg =
+            data.userMessage ||
+            "휴대폰 번호를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+          setPhoneTaken(false);
+          setPhoneCheckMsg(msg);
+          onAvailabilityChange?.({ registered: false, message: msg, checking: false });
+          return;
+        }
+        const taken = Boolean(data.registered);
+        setPhoneTaken(taken);
+        setPhoneCheckMsg(data.userMessage || "");
+        onAvailabilityChange?.({
+          registered: taken,
+          message: data.userMessage || "",
+          checking: false,
+        });
+      } catch {
+        setPhoneTaken(false);
+        setPhoneCheckMsg("");
+        onAvailabilityChange?.({ registered: false, message: "", checking: false });
+      } finally {
+        setPhoneChecking(false);
+      }
+    },
+    [onAvailabilityChange]
+  );
+
+  useEffect(() => {
+    if (purpose !== "signup") return undefined;
+    clearTimeout(phoneCheckTimer.current);
+    phoneCheckTimer.current = setTimeout(() => {
+      runPhoneAvailabilityCheck(phone);
+    }, 450);
+    return () => clearTimeout(phoneCheckTimer.current);
+  }, [phone, purpose, runPhoneAvailabilityCheck]);
 
   useEffect(() => {
     if (resendCooldown <= 0) return undefined;
@@ -86,6 +150,14 @@ export default function PhoneSmsVerifyFields({
       onToast?.("휴대폰 번호를 입력해 주세요.", "error");
       return;
     }
+    if (purpose === "signup" && phoneTaken) {
+      onToast?.(
+        phoneCheckMsg ||
+          "이미 가입에 사용된 휴대폰 번호입니다. 기존 계정으로 로그인해 주세요.",
+        "error"
+      );
+      return;
+    }
     setSending(true);
     setLastError(null);
     setDevHint(null);
@@ -93,11 +165,25 @@ export default function PhoneSmsVerifyFields({
       const res = await fetch("/api/auth/sms/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone.trim() }),
+        body: JSON.stringify({
+          phone: phone.trim(),
+          purpose,
+          excludeUserId: excludeUserId || undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
         const msg = data.userMessage || "인증번호를 보내지 못했습니다.";
+        const taken = data.code === "PHONE_TAKEN" || res.status === 409;
+        if (taken) {
+          setPhoneTaken(true);
+          setPhoneCheckMsg(msg);
+          onAvailabilityChange?.({
+            registered: true,
+            message: msg,
+            checking: false,
+          });
+        }
         setLastError(msg);
         onToast?.(msg, "error");
         return;
@@ -122,7 +208,16 @@ export default function PhoneSmsVerifyFields({
     } finally {
       setSending(false);
     }
-  }, [phone, onToast, senderLabel]);
+  }, [
+    phone,
+    onToast,
+    senderLabel,
+    purpose,
+    phoneTaken,
+    phoneCheckMsg,
+    excludeUserId,
+    onAvailabilityChange,
+  ]);
 
   const verifyOtp = useCallback(async () => {
     if (!otpSent && !devHint) {
@@ -135,11 +230,25 @@ export default function PhoneSmsVerifyFields({
       const res = await fetch("/api/auth/sms/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone.trim(), code }),
+        body: JSON.stringify({
+          phone: phone.trim(),
+          code,
+          purpose,
+          excludeUserId: excludeUserId || undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
         const msg = data.userMessage || "인증번호가 맞지 않습니다.";
+        if (data.code === "PHONE_TAKEN" || res.status === 409) {
+          setPhoneTaken(true);
+          setPhoneCheckMsg(msg);
+          onAvailabilityChange?.({
+            registered: true,
+            message: msg,
+            checking: false,
+          });
+        }
         setLastError(msg);
         onToast?.(msg, "error");
         return;
@@ -158,20 +267,32 @@ export default function PhoneSmsVerifyFields({
     } finally {
       setVerifying(false);
     }
-  }, [phone, code, otpSent, devHint, onVerified, onToast]);
+  }, [
+    phone,
+    code,
+    otpSent,
+    devHint,
+    onVerified,
+    onToast,
+    purpose,
+    excludeUserId,
+    onAvailabilityChange,
+  ]);
 
   const phoneBorder = verified
     ? "border-[#03C75A]"
-    : "border-[#E8EBED]";
+    : purpose === "signup" && phoneTaken
+      ? "border-[#E42939]"
+      : "";
 
   const canResend = !verified && !sending && resendCooldown <= 0;
 
   return (
     <div className="space-y-2">
-      <label className="block text-[11px] font-medium text-[#4E5968]">
+      <label className="block text-[13px] font-semibold text-[#191F28] sm:text-[11px]">
         휴대폰 번호 {purpose === "signup" ? "*" : ""}
       </label>
-      <p className="text-[11px] leading-relaxed text-[#8B95A1]">
+      <p className="text-[12px] leading-relaxed text-[#4E5968] sm:text-[11px]">
         인증 문자는 <strong className="text-[#4E5968]">브릭로그 회사 발신번호</strong>
         ({senderLabel})에서 보냅니다. <strong className="text-[#4E5968]">본인 휴대폰</strong>
         으로 수신되는 것은 가입 본인 확인용이며, 다른 회원에게 공개되지 않습니다.
@@ -191,9 +312,15 @@ export default function PhoneSmsVerifyFields({
         />
         <button
           type="button"
-          disabled={disabled || verified || sending || !canResend}
+          disabled={
+            disabled ||
+            verified ||
+            sending ||
+            !canResend ||
+            (purpose === "signup" && (phoneTaken || phoneChecking))
+          }
           onClick={sendOtp}
-          className={`shrink-0 sm:min-w-[8.5rem] ${GREEN_CTA_OUTLINE} py-2.5! text-[12px]!`}
+          className={`min-h-[48px] shrink-0 sm:min-h-0 sm:min-w-[8.5rem] ${GREEN_CTA_OUTLINE} py-3! text-[13px]! sm:py-2.5! sm:text-[12px]!`}
         >
           {sending
             ? "발송 중…"
@@ -234,7 +361,7 @@ export default function PhoneSmsVerifyFields({
             type="button"
             disabled={disabled || verifying || code.length !== 6}
             onClick={verifyOtp}
-            className="shrink-0 rounded-xl bg-[#03C75A] px-4 py-2.5 text-[12px] font-semibold text-white hover:bg-[#02B350] disabled:opacity-50 sm:min-w-[7.5rem]"
+            className="min-h-[48px] shrink-0 rounded-xl bg-[#03C75A] px-4 py-3 text-[13px] font-semibold text-white hover:bg-[#02B350] disabled:opacity-50 sm:min-h-0 sm:min-w-[7.5rem] sm:py-2.5 sm:text-[12px]"
           >
             {verifying ? "확인 중…" : "인증 확인"}
           </button>
@@ -252,6 +379,17 @@ export default function PhoneSmsVerifyFields({
           <span className="mt-1 block font-mono text-[12px] text-[#191F28]">
             {devHint.replace(/^개발 모드 인증번호:\s*/i, "")}
           </span>
+        </p>
+      ) : null}
+
+      {purpose === "signup" && phoneCheckMsg ? (
+        <p
+          className={`text-[11px] ${
+            phoneTaken ? "text-[#E42939]" : "text-[#03A94D]"
+          }`}
+          role="status"
+        >
+          {phoneChecking ? "휴대폰 번호 확인 중…" : phoneCheckMsg}
         </p>
       ) : null}
 

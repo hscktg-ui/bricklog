@@ -1,5 +1,5 @@
 {
-  "base": "http://localhost:3000",
+  "base": "http://localhost:3005",
   "runs": [
     {
       "label": "desktop",
