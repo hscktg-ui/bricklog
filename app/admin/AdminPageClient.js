@@ -8,6 +8,7 @@ import Toast from "@/components/Toast";
 import AuthForm from "@/components/AuthForm";
 import EvolutionLabPanel from "@/components/admin/EvolutionLabPanel";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminAdvisoryPanel from "@/components/admin/AdminAdvisoryPanel";
 import AdminOpsHub from "@/components/admin/AdminOpsHub";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
@@ -45,6 +46,9 @@ export default function AdminPageClient() {
   const [qtReport, setQtReport] = useState(null);
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
+  const [advisory, setAdvisory] = useState(null);
+  const [advisoryLoading, setAdvisoryLoading] = useState(false);
+  const [showDetailMetrics, setShowDetailMetrics] = useState(false);
   const [qtOptions, setQtOptions] = useState({
     maxHours: 10,
     maxCount: 300,
@@ -172,6 +176,18 @@ export default function AdminPageClient() {
     }
   }, [showToast]);
 
+  const loadAdvisory = useCallback(async () => {
+    setAdvisoryLoading(true);
+    try {
+      const data = await fetchWithAuth("/api/admin/advisory");
+      setAdvisory(data.advisory || null);
+    } catch (err) {
+      showToast(err.message, "error");
+    } finally {
+      setAdvisoryLoading(false);
+    }
+  }, [showToast]);
+
   const loadInsights = useCallback(async (refresh = false) => {
     setInsightsLoading(true);
     try {
@@ -211,6 +227,7 @@ export default function AdminPageClient() {
         );
       }
       loadInsights();
+      loadAdvisory();
     } catch (err) {
       showToast(err.message, "error");
     }
@@ -236,9 +253,18 @@ export default function AdminPageClient() {
   useEffect(() => {
     if (!user || !hasAdminAccess || accessChecking) return;
     loadStats();
+    loadAdvisory();
     loadInsights();
     pollQtStatus();
-  }, [user, hasAdminAccess, accessChecking, loadStats, loadInsights, pollQtStatus]);
+  }, [
+    user,
+    hasAdminAccess,
+    accessChecking,
+    loadStats,
+    loadAdvisory,
+    loadInsights,
+    pollQtStatus,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -359,9 +385,9 @@ export default function AdminPageClient() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-[22px] font-bold">BRICLOG 관리자</h1>
+            <h1 className="text-[22px] font-bold">BRICLOG 운영 조언</h1>
             <p className="mt-1 text-[12px] text-[#8B95A1]">
-              운영·품질·사용 추이 — 앱 내에서 확인
+              무엇을 먼저 볼지 · 샘플·가입·품질 신호 — 랜딩·가입 설정은 그대로
             </p>
           </div>
           <Link href="/" className="text-[13px] text-[#03A94D] hover:underline">
@@ -377,16 +403,37 @@ export default function AdminPageClient() {
           </ul>
         )}
 
+        <AdminAdvisoryPanel
+          advisory={advisory}
+          loading={advisoryLoading}
+          insights={insights}
+          insightsLoading={insightsLoading}
+          onRefreshInsights={loadInsights}
+          onApproveInsight={approveInsight}
+        />
+
         <AdminOpsHub onToast={showToast} />
 
         {!stats ? (
           <p className="text-[14px] text-[#8B95A1]">통계를 불러오는 중...</p>
         ) : (
           <>
-            <AdminDashboard
-              dashboard={stats.dashboard}
-              billing={stats.billing}
-            />
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-[15px] font-bold text-[#191F28]">상세 지표</h2>
+              <button
+                type="button"
+                onClick={() => setShowDetailMetrics((v) => !v)}
+                className="rounded-lg border border-[#E8EBED] px-3 py-1.5 text-[12px] text-[#4E5968]"
+              >
+                {showDetailMetrics ? "접기" : "펼치기"}
+              </button>
+            </div>
+            {showDetailMetrics && (
+              <>
+              <AdminDashboard
+                dashboard={stats.dashboard}
+                billing={stats.billing}
+              />
 
             <section className="mt-8">
               <h2 className="text-[15px] font-bold">레거시 요약</h2>
@@ -495,6 +542,8 @@ export default function AdminPageClient() {
                   {mem.channelUsage?.instagram ?? 0}
                 </p>
               </section>
+            )}
+              </>
             )}
           </>
         )}
@@ -629,50 +678,6 @@ export default function AdminPageClient() {
               )}
             </div>
           )}
-        </section>
-
-        <section className="mt-8 rounded-xl border border-[#E8EBED] bg-white p-5">
-          <h2 className="text-[16px] font-bold">전역 품질 인사이트</h2>
-          <p className="mt-1 text-[12px] text-[#8B95A1]">
-            승인 시 global_engine_rules·프롬프트에 반영됩니다. 피드백 태그는
-            승인 없이도 즉시 패치될 수 있습니다. 후보는 최근 14일 피드백·이벤트
-            집계로 생성됩니다.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={() => loadInsights(true)}
-              disabled={insightsLoading}
-              className="rounded-lg border border-[#E8EBED] px-3 py-1.5 text-[12px] disabled:opacity-50"
-            >
-              후보 갱신·불러오기
-            </button>
-          </div>
-          <ul className="mt-4 space-y-2">
-            {insights.length === 0 && (
-              <li className="text-[12px] text-[#8B95A1]">대기 중인 인사이트 없음</li>
-            )}
-            {insights.map((ins) => (
-              <li
-                key={ins.id}
-                className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-[#E8EBED] p-3 text-[12px]"
-              >
-                <div>
-                  <p className="font-semibold text-[#191F28]">{ins.insight_type}</p>
-                  <p className="mt-1 text-[#4E5968]">
-                    {ins.payload?.message || JSON.stringify(ins.payload)}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => approveInsight(ins.id)}
-                  className="shrink-0 rounded-lg bg-[#03C75A] px-3 py-1 text-[12px] font-medium text-white"
-                >
-                  승인
-                </button>
-              </li>
-            ))}
-          </ul>
         </section>
 
         <EvolutionLabPanel onToast={showToast} />

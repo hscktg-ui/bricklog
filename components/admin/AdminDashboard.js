@@ -87,6 +87,15 @@ export default function AdminDashboard({ dashboard, billing }) {
                   labelKey="label"
                 />
               </div>
+              {(publicBrandTest.topTopics?.length ?? 0) > 0 && (
+                <div className="mt-4">
+                  <HorizontalBars
+                    title="인기 테스트 주제 (30일)"
+                    items={publicBrandTest.topTopics}
+                    labelKey="label"
+                  />
+                </div>
+              )}
             </>
           ) : null}
         </section>
