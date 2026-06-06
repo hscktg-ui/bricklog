@@ -30,6 +30,7 @@
     "lint": "eslint",
     "trends:collect": "node scripts/run-trend-collect.mjs",
     "daily:develop": "node scripts/run-daily-develop.mjs",
+    "probe:admin-ops": "node scripts/probe-admin-ops.mjs",
     "test:quality": "node --import ./scripts/register-alias.mjs scripts/test-quality-cases.mjs",
     "test:length-tiers": "node --import ./scripts/register-alias.mjs scripts/test-length-tiers.mjs",
     "test:quality:bundle": "npm run test:quality && npm run test:v20 && npm run test:human-belief && npm run test:humanity-common-sense && npm run test:content-quality && npm run test:editor-v95 && npm run test:persona-engine && npm run test:sync-speaker && npm run test:first-delivery && npm run test:supplemental-research && npm run test:research-readiness && npm run test:channel-quality-stack && npm run test:briclog-doctrine && npm run test:v6-priority && npm run test:beta-test-guard && npm run test:length-tiers",
