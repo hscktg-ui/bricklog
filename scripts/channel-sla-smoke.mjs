@@ -121,10 +121,13 @@ async function fillCommonFields(page, form) {
   await page.waitForTimeout(600);
 }
 
-async function waitForGenerateEnabled(page, timeoutMs = 15_000) {
+async function waitForGenerateEnabled(page, timeoutMs = 15_000, pattern) {
+  const re =
+    pattern ||
+    /조사 후 글 받기|구성안 만들기|이야기 쓰기|플레이스 소개글|인스타 초안|이미지 프롬프트/i;
   const btn = page
     .locator("button.briclog-btn-primary:not([disabled])")
-    .filter({ hasText: /조사 후 글 받기|구성안 만들기|이야기 쓰기/i })
+    .filter({ hasText: re })
     .first();
   await btn.waitFor({ state: "visible", timeout: timeoutMs });
   return btn;
@@ -141,7 +144,11 @@ async function ensureStandalone(page, channel) {
 }
 
 async function waitForBlogResult(page, timeoutMs) {
-  const genBtn = await waitForGenerateEnabled(page, 15_000);
+  const genBtn = await waitForGenerateEnabled(
+    page,
+    15_000,
+    /조사 후 글 받기|구성안 만들기|이야기 쓰기/i
+  );
   const t0 = Date.now();
 
   const apiPromise = page
@@ -245,7 +252,7 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
     run.phases.fillMs = Date.now() - fillStart;
 
     try {
-      await waitForGenerateEnabled(page, 12_000);
+      await waitForGenerateEnabled(page, 12_000, persona.generatePattern);
     } catch {
       run.errors.push("generate_button_disabled");
       throw new Error("generate_button_disabled");

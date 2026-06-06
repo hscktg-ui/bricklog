@@ -23,6 +23,8 @@
     "apply:schema-v19-public-test": "node scripts/apply-schema-v19-public-test.mjs",
     "test:public-brand-test": "node scripts/public-brand-test-smoke.mjs",
     "test:public-brand-test:prod": "node scripts/public-brand-test-smoke.mjs",
+    "test:product-score": "node scripts/product-readiness-score.mjs",
+    "test:product-score:prod": "node scripts/product-readiness-score.mjs",
     "deploy:vercel": "npx vercel --prod",
     "generate:og-image": "node scripts/generate-og-image.mjs",
     "lint": "eslint",

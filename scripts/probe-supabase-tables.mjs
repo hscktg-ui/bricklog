@@ -54,6 +54,7 @@ const checks = [
   { id: "daily_usage_snapshots", table: "daily_usage_snapshots", select: "id" },
   { id: "data_asset_registry", table: "data_asset_registry", select: "id" },
   { id: "error_logs", table: "error_logs", select: "id" },
+  { id: "public_test_runs", table: "public_test_runs", select: "id" },
   { id: "subscriptions", table: "subscriptions", select: "id" },
 ];
 

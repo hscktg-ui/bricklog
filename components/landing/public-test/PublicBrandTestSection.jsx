@@ -6,6 +6,8 @@ import {
   PUBLIC_TEST_PLACEHOLDERS,
   PUBLIC_TEST_QUOTA_EXCEEDED,
   PUBLIC_TEST_BLUR_HINT,
+  PUBLIC_TEST_GATE_RETRY_HINT,
+  PUBLIC_TEST_TIME_HINT,
 } from "@/lib/publicTest/publicTestConfig";
 import { pickPublicTestStep } from "@/lib/publicTest/publicTestSteps";
 import {
@@ -100,7 +102,12 @@ export default function PublicBrandTestSection({ onSignup }) {
         if (data.quotaExceeded) {
           setError(PUBLIC_TEST_QUOTA_EXCEEDED);
         } else {
-          setError(data.userMessage || "다시 시도해 주세요.");
+          const msg = data.userMessage || "다시 시도해 주세요.";
+          setError(
+            data.withheld && !data.quotaExceeded
+              ? `${msg}\n${PUBLIC_TEST_GATE_RETRY_HINT}`
+              : msg
+          ); // split in render
         }
         return;
       }
@@ -194,14 +201,21 @@ export default function PublicBrandTestSection({ onSignup }) {
             </label>
 
             {error ? (
-              <p className="mt-4 text-[13px] font-medium text-[#4E5968]">
-                {error}
-              </p>
+              <div className="mt-4 space-y-1.5 text-[13px] font-medium text-[#4E5968]">
+                {error.split("\n").map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
             ) : null}
 
             {loading ? (
-              <p className="mt-4 text-[13px] text-[#4E5968]">{stepLabel}</p>
-            ) : null}
+              <div className="mt-4 space-y-1">
+                <p className="text-[13px] text-[#4E5968]">{stepLabel}</p>
+                <p className="text-[12px] text-[#8B95A1]">{PUBLIC_TEST_TIME_HINT}</p>
+              </div>
+            ) : (
+              <p className="mt-4 text-[12px] text-[#8B95A1]">{PUBLIC_TEST_TIME_HINT}</p>
+            )}
 
             {quota.remaining <= 0 ? (
               <button

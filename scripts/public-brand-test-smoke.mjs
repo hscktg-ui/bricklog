@@ -19,9 +19,9 @@ const SLA_MS = Number(process.env.PUBLIC_TEST_SMOKE_SLA_MS) || 90_000;
 const API_ONLY = process.env.API_ONLY === "1";
 
 const SAMPLE = {
-  brandName: process.env.PUBLIC_TEST_BRAND || "스모크브루잉",
-  region: process.env.PUBLIC_TEST_REGION || "서울 마포",
-  topic: process.env.PUBLIC_TEST_TOPIC || "봄 시즌 시그니처 라떼",
+  brandName: process.env.PUBLIC_TEST_BRAND || PUBLIC_TEST_PLACEHOLDERS.brandName,
+  region: process.env.PUBLIC_TEST_REGION || PUBLIC_TEST_PLACEHOLDERS.region,
+  topic: process.env.PUBLIC_TEST_TOPIC || PUBLIC_TEST_PLACEHOLDERS.topic,
 };
 
 function loadEnvLocal() {
