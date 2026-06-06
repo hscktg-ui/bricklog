@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { PUBLIC_TEST_PLACEHOLDERS } from "../lib/publicTest/publicTestConfig.js";
+import { getDefaultPublicTestSample } from "../lib/publicTest/publicTestSamples.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -18,10 +18,11 @@ const OUT = join(root, "config", "public-brand-test-report.json");
 const SLA_MS = Number(process.env.PUBLIC_TEST_SMOKE_SLA_MS) || 90_000;
 const API_ONLY = process.env.API_ONLY === "1";
 
+const DEFAULT_SAMPLE = getDefaultPublicTestSample();
 const SAMPLE = {
-  brandName: process.env.PUBLIC_TEST_BRAND || PUBLIC_TEST_PLACEHOLDERS.brandName,
-  region: process.env.PUBLIC_TEST_REGION || PUBLIC_TEST_PLACEHOLDERS.region,
-  topic: process.env.PUBLIC_TEST_TOPIC || PUBLIC_TEST_PLACEHOLDERS.topic,
+  brandName: process.env.PUBLIC_TEST_BRAND || DEFAULT_SAMPLE.brandName,
+  region: process.env.PUBLIC_TEST_REGION || DEFAULT_SAMPLE.region,
+  topic: process.env.PUBLIC_TEST_TOPIC || DEFAULT_SAMPLE.topic,
 };
 
 function loadEnvLocal() {
@@ -160,11 +161,10 @@ async function runUiSmoke() {
     await page.waitForSelector("#public-brand-test", { timeout: 30_000 });
 
     const form = page.locator("#public-brand-test form");
-    await form
-      .getByPlaceholder(PUBLIC_TEST_PLACEHOLDERS.brandName)
-      .fill(SAMPLE.brandName);
-    await form.getByPlaceholder(PUBLIC_TEST_PLACEHOLDERS.region).fill(SAMPLE.region);
-    await form.getByPlaceholder(PUBLIC_TEST_PLACEHOLDERS.topic).fill(SAMPLE.topic);
+    const inputs = form.locator("input").filter({ hasNot: form.locator("[type=hidden]") });
+    await inputs.nth(0).fill(SAMPLE.brandName);
+    await inputs.nth(1).fill(SAMPLE.region);
+    await inputs.nth(2).fill(SAMPLE.topic);
 
     const submit = form.getByRole("button", { name: /무료|테스트/i }).first();
     await submit.click();

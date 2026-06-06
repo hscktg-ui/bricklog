@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
 import { computeProductReadinessScore } from "../lib/qa/productReadinessRubric.js";
 import { CHANNEL_SLA_PERSONAS } from "../lib/qa/channelSlaPersonas.js";
-import { PUBLIC_TEST_PLACEHOLDERS } from "../lib/publicTest/publicTestConfig.js";
+import { getDefaultPublicTestSample } from "../lib/publicTest/publicTestSamples.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -77,7 +77,7 @@ async function probePublicTest() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...PUBLIC_TEST_PLACEHOLDERS,
+        ...getDefaultPublicTestSample(),
         sessionId: sid,
       }),
       signal: AbortSignal.timeout(120_000),

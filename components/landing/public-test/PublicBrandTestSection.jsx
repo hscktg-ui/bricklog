@@ -1,14 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { PUBLIC_TEST_HERO } from "@/lib/brand/copy";
 import {
-  PUBLIC_TEST_PLACEHOLDERS,
   PUBLIC_TEST_QUOTA_EXCEEDED,
   PUBLIC_TEST_BLUR_HINT,
   PUBLIC_TEST_GATE_RETRY_HINT,
   PUBLIC_TEST_TIME_HINT,
+  PUBLIC_TEST_SAMPLE_BADGE,
 } from "@/lib/publicTest/publicTestConfig";
+import {
+  getNextPublicTestSampleIndex,
+  pickPublicTestSampleForSession,
+} from "@/lib/publicTest/pickPublicTestSample";
+import { getPublicTestSampleByIndex } from "@/lib/publicTest/publicTestSamples";
 import { pickPublicTestStep } from "@/lib/publicTest/publicTestSteps";
 import {
   bumpLocalPublicTestQuota,
@@ -27,8 +32,24 @@ export default function PublicBrandTestSection({ onSignup }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [quota, setQuota] = useState({ remaining: 3, used: 0 });
+  const [sampleIdx, setSampleIdx] = useState(0);
+  const [sampleReady, setSampleReady] = useState(false);
   const startedAt = useRef(0);
   const timerRef = useRef(null);
+
+  const activeSample = getPublicTestSampleByIndex(sampleIdx);
+
+  useLayoutEffect(() => {
+    const picked = pickPublicTestSampleForSession();
+    setSampleIdx(picked.index ?? 0);
+    setSampleReady(true);
+  }, []);
+
+  const cycleSample = () => {
+    setSampleIdx((idx) => getNextPublicTestSampleIndex(idx));
+    setError(null);
+    setResult(null);
+  };
 
   const refreshQuota = useCallback(async () => {
     const local = getLocalPublicTestQuota();
@@ -159,6 +180,37 @@ export default function PublicBrandTestSection({ onSignup }) {
         </div>
 
         <div className="w-full max-w-xl justify-self-center lg:justify-self-end">
+          {sampleReady ? (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <p className="flex-1 rounded-xl bg-[#F7F8FA] px-3 py-2.5 text-[13px] text-[#4E5968]">
+                <span className="font-semibold text-[#191F28]">
+                  {activeSample.brandName}
+                </span>
+                <span className="text-[#8B95A1]"> · </span>
+                {activeSample.region}
+                <span className="text-[#8B95A1]"> · </span>
+                {activeSample.topic}
+              </p>
+              <span className="shrink-0 rounded-full bg-[#E8F9EF] px-3 py-1.5 text-[11px] font-bold text-[#03A94D]">
+                {PUBLIC_TEST_SAMPLE_BADGE}
+              </span>
+            </div>
+          ) : null}
+          {sampleReady ? (
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <p className="text-[11px] text-[#8B95A1]">
+                접속할 때마다 다른 가상 브랜드 예시가 보입니다
+              </p>
+              <button
+                type="button"
+                onClick={cycleSample}
+                disabled={loading}
+                className="shrink-0 text-[12px] font-semibold text-[#03A94D] hover:underline disabled:opacity-50"
+              >
+                다른 예시 보기
+              </button>
+            </div>
+          ) : null}
           <form
             onSubmit={handleSubmit}
             className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] p-5 md:p-6"
@@ -171,7 +223,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 required
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
-                placeholder={PUBLIC_TEST_PLACEHOLDERS.brandName}
+                placeholder={activeSample.brandName}
                 className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
               />
             </label>
@@ -183,7 +235,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 required
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
-                placeholder={PUBLIC_TEST_PLACEHOLDERS.region}
+                placeholder={activeSample.region}
                 className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
               />
             </label>
@@ -195,7 +247,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 required
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder={PUBLIC_TEST_PLACEHOLDERS.topic}
+                placeholder={activeSample.topic}
                 className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
               />
             </label>
