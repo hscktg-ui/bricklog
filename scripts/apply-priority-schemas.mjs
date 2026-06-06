@@ -2,8 +2,9 @@
  * Supabase 우선 스키마 순차 적용
  * 1. schema-v17-admin-ops.sql
  * 2. schema-v18-feedback-loop.sql
- * 3. schema-v5-billing.sql → v5b → v5c → v5d
- * 4. schema-v12-data-assets.sql
+ * 3. schema-v19-public-test.sql
+ * 4. schema-v5-billing.sql → v5b → v5c → v5d
+ * 5. schema-v12-data-assets.sql
  *
  * SUPABASE_ACCESS_TOKEN 또는 SUPABASE_DB_URL 필요 (.env.local)
  */
@@ -17,6 +18,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SCHEMA_ORDER = [
   "supabase/schema-v17-admin-ops.sql",
   "supabase/schema-v18-feedback-loop.sql",
+  "supabase/schema-v19-public-test.sql",
   "supabase/schema-v5-billing.sql",
   "supabase/schema-v5b-plans-brand-studio.sql",
   "supabase/schema-v5c-toss-billing.sql",
@@ -84,7 +86,7 @@ async function probe(db) {
     { id: "last_seen_at", table: "profiles", select: "last_seen_at" },
     { id: "site_visits", table: "site_visits", select: "id" },
     { id: "feedback_intents", table: "content_feedback", select: "intents,rewrite_round" },
-    { id: "feedback_intents", table: "content_feedback", select: "intents,rewrite_round" },
+    { id: "public_test_runs", table: "public_test_runs", select: "id" },
     { id: "user_subscriptions", table: "user_subscriptions", select: "user_id" },
     { id: "usage_monthly", table: "usage_monthly", select: "id" },
     { id: "billing_checkouts", table: "billing_checkouts", select: "id" },
@@ -124,6 +126,7 @@ async function main() {
   const skipIfApplied = {
     "supabase/schema-v17-admin-ops.sql": before.last_seen_at && before.site_visits,
     "supabase/schema-v18-feedback-loop.sql": before.feedback_intents,
+    "supabase/schema-v19-public-test.sql": before.public_test_runs,
     "supabase/schema-v5-billing.sql":
       before.user_subscriptions && before.usage_monthly,
     "supabase/schema-v5b-plans-brand-studio.sql":

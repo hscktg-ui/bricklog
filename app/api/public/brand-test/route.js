@@ -12,7 +12,7 @@ export const maxDuration = 60;
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const sessionId = String(searchParams.get("sessionId") || "").slice(0, 64);
-  const quota = assessPublicTestQuota(request, sessionId);
+  const quota = await assessPublicTestQuota(request, sessionId);
   return NextResponse.json({
     ok: true,
     remaining: quota.remaining ?? 0,
@@ -34,7 +34,7 @@ export async function POST(request) {
   }
 
   const sessionId = String(body.sessionId || "").slice(0, 64);
-  const quota = assessPublicTestQuota(request, sessionId);
+  const quota = await assessPublicTestQuota(request, sessionId);
   if (!quota.ok) {
     return NextResponse.json({
       ok: false,
@@ -51,7 +51,11 @@ export async function POST(request) {
 
   const result = await runPublicBrandTest(body);
   const nextQuota = result.ok
-    ? recordPublicTestRun(request, sessionId)
+    ? await recordPublicTestRun(request, sessionId, {
+        brandName: body.brandName,
+        region: body.region,
+        topic: body.topic,
+      })
     : {
         remaining: quota.remaining,
         used: quota.used,

@@ -44,6 +44,7 @@ import {
   loadFormDraft,
   saveFormDraft,
 } from "@/lib/formDraft";
+import { consumePublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import { brandMemoryToFormInput } from "@/lib/brands/brandMemory";
 import {
   validateForm,
@@ -548,13 +549,28 @@ export function ContentProvider({
 
   useEffect(() => {
     const draft = loadFormDraft(user?.id);
+    const publicDraft = consumePublicTestSignupDraft();
     const today = new Date().toISOString().slice(0, 10);
-    if (draft) {
+    if (draft || publicDraft) {
       const merged = {
         ...DEFAULT_BLOG_INPUT,
         ...draft,
-        contentDate: draft.contentDate || today,
+        contentDate: draft?.contentDate || today,
       };
+      if (publicDraft) {
+        if (!merged.brandName?.trim() && publicDraft.brandName) {
+          merged.brandName = publicDraft.brandName;
+        }
+        if (!merged.region?.trim() && publicDraft.region) {
+          merged.region = publicDraft.region;
+        }
+        if (!merged.topic?.trim() && publicDraft.topic) {
+          merged.topic = publicDraft.topic;
+        }
+        if (!merged.mainKeyword?.trim() && publicDraft.topic) {
+          merged.mainKeyword = publicDraft.topic;
+        }
+      }
       setBlogInput(merged);
       emitBrandFormSync(merged);
     } else {
