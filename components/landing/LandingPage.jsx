@@ -40,6 +40,12 @@ export default function LandingPage({ onAuthOpen, onStart }) {
   /** 세션당 1회 인트로 — localStorage 영구 숨김 제거 */
   const [introOpen, setIntroOpen] = useState(false);
 
+  const scrollToPublicTest = useCallback(() => {
+    document
+      .getElementById("public-brand-test")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -51,6 +57,18 @@ export default function LandingPage({ onAuthOpen, onStart }) {
     }
     setIntroOpen(shouldShowLandingIntro());
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const fromAds =
+      params.get("test") === "1" ||
+      params.get("utm_source") === "instagram" ||
+      params.get("utm_medium") === "paid_social";
+    if (!fromAds) return;
+    const t = window.setTimeout(() => scrollToPublicTest(), introOpen ? 800 : 120);
+    return () => window.clearTimeout(t);
+  }, [introOpen, scrollToPublicTest]);
 
   const withLandingCta = useCallback(
     (fn) => () => {
@@ -116,10 +134,10 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               data-briclog-cta="start"
-              onClick={handleStart}
+              onClick={withLandingCta(scrollToPublicTest)}
               className="briclog-btn-primary hidden !min-h-[40px] !w-auto !py-2 !text-[12px] sm:inline-flex sm:!px-4 sm:!text-[13px]"
             >
-              <span>무료 시작</span>
+              <span>무료 샘플</span>
             </button>
           </nav>
         </div>
@@ -141,11 +159,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           contentIdea={contentIdea}
           onStart={handleStart}
           onSample={withLandingCta(scrollToSample)}
-          onTest={withLandingCta(() => {
-            document
-              .getElementById("public-brand-test")
-              ?.scrollIntoView({ behavior: "smooth", block: "start" });
-          })}
+          onTest={withLandingCta(scrollToPublicTest)}
         />
         <PublicBrandTestSection onSignup={(mode) => onAuthOpen(mode || "signup")} />
         <LiveStatsBanner introOpen={introOpen} />
@@ -179,17 +193,24 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           <button
             type="button"
             data-briclog-cta="start"
-            onClick={handleStart}
+            onClick={withLandingCta(scrollToPublicTest)}
             className="briclog-btn-primary mt-8 hidden !w-auto px-10 sm:inline-flex"
           >
-            <span>무료로 시작하기</span>
+            <span>발행 샘플 먼저 보기</span>
+          </button>
+          <button
+            type="button"
+            onClick={withLandingCta(scrollToPublicTest)}
+            className="mt-6 text-[14px] font-semibold text-[#03C75A] underline-offset-2 hover:underline sm:hidden"
+          >
+            발행 샘플 먼저 보기
           </button>
           <button
             type="button"
             onClick={handleStart}
-            className="mt-6 text-[14px] font-semibold text-[#03C75A] underline-offset-2 hover:underline sm:hidden"
+            className="mt-4 text-[13px] font-medium text-[#8B95A1] underline-offset-2 hover:underline"
           >
-            무료로 시작하기
+            바로 가입하기
           </button>
           <p className="mt-6 text-[12px] text-[#6B7684]">{LANDING_CTA_FOOTNOTE}</p>
         </section>
@@ -197,11 +218,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
       </LandingPreviewShell>
 
       <LandingMobileStickyCta
-        onStart={withLandingCta(() => {
-          document
-            .getElementById("public-brand-test")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-        })}
+        onStart={withLandingCta(scrollToPublicTest)}
         introOpen={introOpen}
       />
     </div>

@@ -23,6 +23,7 @@ const SAMPLE = {
   brandName: process.env.PUBLIC_TEST_BRAND || DEFAULT_SAMPLE.brandName,
   region: process.env.PUBLIC_TEST_REGION || DEFAULT_SAMPLE.region,
   topic: process.env.PUBLIC_TEST_TOPIC || DEFAULT_SAMPLE.topic,
+  sampleId: process.env.PUBLIC_TEST_SAMPLE_ID || DEFAULT_SAMPLE.id,
 };
 
 function loadEnvLocal() {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { PUBLIC_TEST_HERO } from "@/lib/brand/copy";
 import {
   PUBLIC_TEST_QUOTA_EXCEEDED,
+  PUBLIC_TEST_GATE_FAIL_SIGNUP_HINT,
   PUBLIC_TEST_BLUR_HINT,
   PUBLIC_TEST_TOPIC_HINT,
   PUBLIC_TEST_TIME_HINT,
@@ -251,10 +252,32 @@ export default function PublicBrandTestSection({ onSignup }) {
             </label>
 
             {error ? (
-              <div className="mt-4 space-y-1.5 text-[13px] font-medium text-[#4E5968]">
-                {error.split("\n").map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
+              <div className="mt-4 space-y-3 rounded-xl border border-[#E8EBED] bg-white px-4 py-3">
+                <div className="space-y-1.5 text-[13px] font-medium text-[#4E5968]">
+                  {error.split("\n").map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
+                </div>
+                {error.includes("구체적") ||
+                error.includes("예시") ||
+                error === PUBLIC_TEST_QUOTA_EXCEEDED ? (
+                  <p className="text-[12px] text-[#8B95A1]">
+                    {error === PUBLIC_TEST_QUOTA_EXCEEDED
+                      ? PUBLIC_TEST_HERO.signupPhilosophy
+                      : PUBLIC_TEST_GATE_FAIL_SIGNUP_HINT}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={signup}
+                  className={`w-full min-h-[44px] ${GREEN_CTA_SOLID}`}
+                >
+                  <span>
+                    {error === PUBLIC_TEST_QUOTA_EXCEEDED
+                      ? "브랜드 작업실 만들기"
+                      : "가입 후 전체 생성 이어가기"}
+                  </span>
+                </button>
               </div>
             ) : null}
 

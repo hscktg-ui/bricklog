@@ -38,6 +38,15 @@ for (const sample of PUBLIC_TEST_SAMPLES) {
   assert.ok(pack._meta.charCount >= 400, sample.id);
 }
 
+const editedTopic = findMatchingPublicTestSample({
+  brandName: PUBLIC_TEST_SAMPLES[0].brandName,
+  region: PUBLIC_TEST_SAMPLES[0].region,
+  topic: "봄 시즌 브런치 예약 안내",
+  sampleId: PUBLIC_TEST_SAMPLES[0].id,
+});
+assert.equal(editedTopic?.id, PUBLIC_TEST_SAMPLES[0].id);
+assert.equal(editedTopic?.topic, "봄 시즌 브런치 예약 안내");
+
 const instant = await runPublicBrandTest({
   ...PUBLIC_TEST_SAMPLES[0],
   sampleId: PUBLIC_TEST_SAMPLES[0].id,
