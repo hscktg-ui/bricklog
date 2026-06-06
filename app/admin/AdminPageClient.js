@@ -187,11 +187,29 @@ export default function AdminPageClient() {
 
   const approveInsight = async (id) => {
     try {
-      await fetchWithAuth("/api/admin/insights/approve", {
+      const data = await fetchWithAuth("/api/admin/insights/approve", {
         method: "POST",
         body: JSON.stringify({ id }),
       });
-      showToast("인사이트를 승인했습니다. (규칙 자동 적용 없음)", "success");
+      const evolution =
+        data?.insight?.evolutionRules ||
+        data?.insight?.payload?.evolutionRulesApplied;
+      const files = evolution?.files?.join(", ") || "";
+      if (evolution?.applied) {
+        showToast(
+          files
+            ? `승인 완료 — 전역 규칙 반영 (${files})`
+            : "승인 완료 — 전역 엔진 규칙에 반영되었습니다.",
+          "success"
+        );
+      } else {
+        showToast(
+          evolution?.reason === "unsupported_insight_type"
+            ? "승인했으나 이 유형은 규칙 패치가 없습니다."
+            : "인사이트를 승인했습니다.",
+          "success"
+        );
+      }
       loadInsights();
     } catch (err) {
       showToast(err.message, "error");
@@ -616,7 +634,9 @@ export default function AdminPageClient() {
         <section className="mt-8 rounded-xl border border-[#E8EBED] bg-white p-5">
           <h2 className="text-[16px] font-bold">전역 품질 인사이트</h2>
           <p className="mt-1 text-[12px] text-[#8B95A1]">
-            승인해도 규칙은 자동 적용되지 않습니다. 운영자가 검토 후 반영하세요.
+            승인 시 global_engine_rules·프롬프트에 반영됩니다. 피드백 태그는
+            승인 없이도 즉시 패치될 수 있습니다. 후보는 최근 14일 피드백·이벤트
+            집계로 생성됩니다.
           </p>
           <div className="mt-3 flex gap-2">
             <button

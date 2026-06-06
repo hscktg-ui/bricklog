@@ -17,16 +17,86 @@ export default function AdminDashboard({ dashboard, billing }) {
     );
   }
 
-  const { cards, charts, dwell, usagePatterns, quality, dailyCron, dataAssetHealth } =
-    dashboard;
+  const {
+    cards,
+    charts,
+    dwell,
+    usagePatterns,
+    quality,
+    dailyCron,
+    dataAssetHealth,
+    publicBrandTest,
+  } = dashboard;
 
   return (
     <>
+      {publicBrandTest && (
+        <section className="mb-6 rounded-xl border border-[#03A94D]/25 bg-[#03C75A]/5 p-4">
+          <h2 className="text-[15px] font-bold text-[#191F28]">
+            가입 전 브랜드 테스트 (랜딩 샘플)
+          </h2>
+          <p className="mt-1 text-[12px] text-[#8B95A1]">
+            {publicBrandTest.tableReady
+              ? publicBrandTest.note
+              : "public_test_runs 테이블 없음 — npm run apply:schema-v19-public-test"}
+          </p>
+          {publicBrandTest.tableReady ? (
+            <>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <StatCard
+                  label="샘플 이용자 (누적)"
+                  value={publicBrandTest.totalSampleUsers ?? 0}
+                  hint="세션·IP 기준 중복 제거"
+                />
+                <StatCard
+                  label="성공 샘플 (누적)"
+                  value={publicBrandTest.totalRuns ?? 0}
+                />
+                <StatCard
+                  label="오늘 성공"
+                  value={publicBrandTest.runsToday ?? 0}
+                />
+                <StatCard
+                  label="최근 7일"
+                  value={publicBrandTest.runs7d ?? 0}
+                />
+                <StatCard
+                  label="최근 30일"
+                  value={publicBrandTest.runs30d ?? 0}
+                  hint={
+                    publicBrandTest.lastRunAt
+                      ? `마지막 ${new Date(publicBrandTest.lastRunAt).toLocaleString("ko-KR", {
+                          timeZone: "Asia/Seoul",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}`
+                      : "기록 없음"
+                  }
+                />
+              </div>
+              <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                <BarChart
+                  title="일별 샘플 성공 (7일)"
+                  points={publicBrandTest.runsPerDay7 || []}
+                />
+                <HorizontalBars
+                  title="인기 테스트 브랜드 (30일)"
+                  items={publicBrandTest.topBrands || []}
+                  labelKey="label"
+                />
+              </div>
+            </>
+          ) : null}
+        </section>
+      )}
+
       {dailyCron && (
         <section className="mb-6 rounded-xl border border-[#3182F6]/25 bg-[#3182F6]/5 p-4">
           <h2 className="text-[15px] font-bold text-[#191F28]">일일 개발 루프 (자정 크론)</h2>
           <p className="mt-1 text-[12px] text-[#8B95A1]">
-            KST 전일 집계 · 규칙 자동 적용 없음 ·{" "}
+            KST 전일 집계 · 인사이트 후보 생성 ·{" "}
             <code className="text-[11px]">docs/daily-run-latest.md</code>
           </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -225,8 +295,8 @@ export default function AdminDashboard({ dashboard, billing }) {
           </li>
           <li>
             승인 대기 인사이트:{" "}
-            <strong>{quality.pendingInsightsCount ?? 0}건</strong> (아래 목록에서
-            승인)
+            <strong>{quality.pendingInsightsCount ?? 0}건</strong> (아래에서
+            승인 시 전역 규칙 반영)
           </li>
           <li>자동 품질 테스트·진화 랩은 페이지 하단 패널에서 실행</li>
         </ul>
