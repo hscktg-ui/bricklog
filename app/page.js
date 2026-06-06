@@ -6,7 +6,6 @@ import AuthForm from "@/components/AuthForm";
 import LandingPage from "@/components/landing/LandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
 import LandingDevicePreviewToggle from "@/components/landing/LandingDevicePreviewToggle";
-import LandingFloatingDeviceBar from "@/components/landing/LandingFloatingDeviceBar";
 import Toast from "@/components/Toast";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import TermsConsentModal from "@/components/auth/TermsConsentModal";
@@ -24,6 +23,7 @@ import { isEmailVerified } from "@/lib/auth/emailVerification";
 import LoggedInDebugTools from "@/components/dev/LoggedInDebugTools";
 import PageLoadingState from "@/components/ui/PageLoadingState";
 import { LOADING } from "@/lib/product/craft";
+import { isFastOnboarding } from "@/lib/config/productFlags";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -34,6 +34,7 @@ export default function Home() {
   const [profileModalDeferred, setProfileModalDeferred] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const lastUserIdRef = useRef(null);
+  const fastOnboardingDeferRef = useRef(false);
   const [toast, setToast] = useState({
     visible: false,
     message: "",
@@ -154,6 +155,17 @@ export default function Home() {
       window.history.replaceState({}, "", url.pathname + url.search);
     }
   }, [showToast]);
+
+  useEffect(() => {
+    if (!user?.id || profileLoading) return;
+    if (!isFastOnboarding()) return;
+    if (!profileNeedsSetup(profile)) return;
+    if (isProfileModalDeferredForUser(user.id)) return;
+    if (fastOnboardingDeferRef.current) return;
+    fastOnboardingDeferRef.current = true;
+    deferProfileModalUntilNextSignIn(user.id);
+    setProfileModalDeferred(true);
+  }, [user?.id, profileLoading, profile]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -334,7 +346,6 @@ export default function Home() {
         />
         {!authMode && (
           <>
-            <LandingFloatingDeviceBar className="sm:hidden" />
             <LandingDevicePreviewToggle className="hidden sm:flex" />
             <BriclogAssistant layout="landing" />
           </>

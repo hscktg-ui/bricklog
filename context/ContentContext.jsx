@@ -84,6 +84,7 @@ import {
   checkRecentSimilarity,
 } from "@/lib/duplicate/contentSimilarity";
 import { learnFromEdit } from "@/lib/learning/brandLearning";
+import { analyzeHumanCorrection } from "@/lib/evolution/humanCorrectionEngine";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import {
   runRewrite,
@@ -128,6 +129,7 @@ import {
 } from "@/lib/generation/postVerifySalvage";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
 import { hasFilledBlogAxes, SOFT_PREVIEW_HINT } from "@/lib/product/deliverySoftPass";
+import { isHardOutputGate } from "@/lib/config/productFlags";
 import {
   GENERATION_CHANNEL_PACK_DEADLINE_MS,
   GENERATION_TIME_BUDGET_MS,
@@ -149,7 +151,12 @@ import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
 import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
 
+function allowBlogUiRescue() {
+  return !isHardOutputGate();
+}
+
 function missionProseFallbackForUi(pipelineInput) {
+  if (!allowBlogUiRescue()) return null;
   if (!hasFilledBlogAxes(pipelineInput)) return null;
   try {
     let pack = buildMissionProseFallbackPack(pipelineInput);
@@ -808,7 +815,16 @@ export function ContentProvider({
       channel: "blog",
       meta: edited ? { beforePlain: before, afterPlain: plain } : {},
     });
-    onToast?.("검수본이 저장되었습니다.", "success");
+    if (edited) {
+      const correction = analyzeHumanCorrection(before, plain);
+      if (correction.changed) {
+        onToast?.("수정 내용을 다음 글쓰기에 반영합니다.", "success");
+      } else {
+        onToast?.("검수본이 저장되었습니다.", "success");
+      }
+    } else {
+      onToast?.("검수본이 저장되었습니다.", "success");
+    }
   }, [blogContent, brandHooks, onToast, memoryContentIds.blog]);
 
   const saveEditedPlace = useCallback(() => {
@@ -1050,14 +1066,15 @@ export function ContentProvider({
           setPipelineStep(SENSITIVE_VERIFY_STEP.text);
         }
         if (result.ok === false && !result.blogContent) {
-          const rescued =
-            forceLocalBlogPreviewDelivery(pipelineInput, result) ||
-            (() => {
-              const pack = missionProseFallbackForUi(pipelineInput);
-              return pack
-                ? { ok: true, blogContent: pack, withheld: false, softPass: true }
-                : null;
-            })();
+          const rescued = allowBlogUiRescue()
+            ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
+              (() => {
+                const pack = missionProseFallbackForUi(pipelineInput);
+                return pack
+                  ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+                  : null;
+              })()
+            : null;
           if (rescued?.blogContent?.sections?.length) {
             result = rescued;
           } else {
@@ -1084,14 +1101,15 @@ export function ContentProvider({
           blog = retry.blogContent;
         }
         if (!blog?.sections?.length) {
-          const rescued =
-            forceLocalBlogPreviewDelivery(pipelineInput, result) ||
-            (() => {
-              const pack = missionProseFallbackForUi(pipelineInput);
-              return pack
-                ? { ok: true, blogContent: pack, withheld: false, softPass: true }
-                : null;
-            })();
+          const rescued = allowBlogUiRescue()
+            ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
+              (() => {
+                const pack = missionProseFallbackForUi(pipelineInput);
+                return pack
+                  ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+                  : null;
+              })()
+            : null;
           if (rescued?.blogContent?.sections?.length) {
             result = rescued;
             blog = rescued.blogContent;
@@ -1152,7 +1170,7 @@ export function ContentProvider({
 
         const deliverBlogResult = () => {
           let delivery = resolveBlogUiDelivery(blog, pipelineInput, result);
-          if (!delivery.ok && blog?.sections?.length) {
+          if (!delivery.ok && allowBlogUiRescue() && blog?.sections?.length) {
             const salvaged = salvageBlogPackForDelivery(blog, pipelineInput);
             delivery = resolveBlogUiDelivery(salvaged, pipelineInput, {
               ...result,
@@ -1160,7 +1178,7 @@ export function ContentProvider({
               softPass: true,
             });
           }
-          if (!delivery.ok) {
+          if (!delivery.ok && allowBlogUiRescue()) {
             if (blog?.sections?.length && hasFilledBlogAxes(pipelineInput)) {
               const forced = ensureBlogDisplayPack(
                 salvageBlogPackForDelivery(blog, pipelineInput),
@@ -1185,7 +1203,7 @@ export function ContentProvider({
               }
             }
           }
-          if (!delivery.ok) {
+          if (!delivery.ok && allowBlogUiRescue()) {
             const fallbackPack = missionProseFallbackForUi(pipelineInput);
             if (fallbackPack) {
               delivery = {
@@ -1804,14 +1822,15 @@ export function ContentProvider({
             blog = result.blogContent;
           }
           if (!blog?.sections?.length) {
-            const rescued =
-              forceLocalBlogPreviewDelivery(pipelineInput, result) ||
-              (() => {
-                const pack = missionProseFallbackForUi(pipelineInput);
-                return pack
-                  ? { ok: true, blogContent: pack, withheld: false, softPass: true }
-                  : null;
-              })();
+            const rescued = allowBlogUiRescue()
+              ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
+                (() => {
+                  const pack = missionProseFallbackForUi(pipelineInput);
+                  return pack
+                    ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+                    : null;
+                })()
+              : null;
             blog = rescued?.blogContent;
           }
 
@@ -2988,6 +3007,7 @@ export function ContentProvider({
       billingPlanId,
       billingBypassQuotas,
       loadMemoryContentIntoWorkspace,
+      onToast,
     }),
     [
       blogContent,
@@ -3040,6 +3060,7 @@ export function ContentProvider({
       billingPlanId,
       billingBypassQuotas,
       loadMemoryContentIntoWorkspace,
+      onToast,
     ]
   );
 

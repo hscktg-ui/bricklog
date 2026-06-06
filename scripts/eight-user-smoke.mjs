@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { EIGHT_USER_PERSONAS } from "../lib/qa/eightUserPersonas.js";
+import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
 import { resolveLiveBaseUrl } from "./resolve-base-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -33,6 +34,7 @@ function loadEnvLocal() {
   } catch {
     /* no .env.local */
   }
+  applyE2eTestCredentialsToEnv(process.env);
 }
 
 function countBlockingOverlays(page) {

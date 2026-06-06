@@ -550,6 +550,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogGenHintIsAuth,
     blogGenHintSoft,
     loadingOverlay,
+    onToast,
     acknowledgeBlogResultDisplayed,
     updateBlogContent,
     saveEditedBlog,
@@ -770,6 +771,15 @@ const BlogEditorResults = memo(function BlogEditorResults({
                       contentItemId: memoryContentIds?.blog,
                       channel: "blog",
                     });
+                    const ready =
+                      blogContent?._meta?.publishReady === true ||
+                      blogContent?._meta?.primaryDirective?.publishReady === true;
+                    onToast?.(
+                      ready
+                        ? "복사됐어요. 네이버 블로그에 붙여 넣고 발행하시면 됩니다."
+                        : "복사됐어요. 올리기 전에 한 번 더 읽어 보세요.",
+                      "success"
+                    );
                   }}
                   onChange={updateBlogContent}
                   onSave={saveEditedBlog}

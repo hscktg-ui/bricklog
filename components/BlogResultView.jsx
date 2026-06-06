@@ -28,6 +28,7 @@ import {
 import { USER_QUALITY_GOAL } from "@/lib/quality/qualityTargets";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
+import { isHardOutputGate } from "@/lib/config/productFlags";
 
 export default function BlogResultView({
   blog,
@@ -150,7 +151,24 @@ export default function BlogResultView({
 
   const versionContentId = `blog-${brandId || "x"}-${draft.representativeTitle || "draft"}`;
   const feedbackRound = draft._meta?.rewriteCount || 0;
+  const publishReady =
+    draft._meta?.publishReady === true ||
+    draft._meta?.primaryDirective?.publishReady === true ||
+    draft._meta?.aiEditorAudit?.publishReady === true;
   const dwellRef = useRef({ started: Date.now(), sent: 0 });
+  const [publishedMarked, setPublishedMarked] = useState(false);
+
+  const markPublished = () => {
+    if (!userId || !contentItemId || publishedMarked) return;
+    setPublishedMarked(true);
+    void trackContentEvent({
+      eventType: "save",
+      brandId,
+      contentItemId,
+      channel: "blog",
+      meta: { published_marked: true },
+    });
+  };
 
   useEffect(() => {
     dwellRef.current = { started: Date.now(), sent: 0 };
@@ -319,11 +337,24 @@ export default function BlogResultView({
       ) : null}
       <div className="rounded-xl border-2 border-[#03C75A]/25 bg-[#F6FDF9] p-4 md:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[13px] font-bold text-[#191F28]">
-            {mobileSimple
-              ? RESULT_VIEW.copyBlockTitleMobile
-              : RESULT_VIEW.copyBlockTitle}
-          </p>
+          <div className="min-w-0">
+            <p className="text-[13px] font-bold text-[#191F28]">
+              {mobileSimple
+                ? RESULT_VIEW.copyBlockTitleMobile
+                : RESULT_VIEW.copyBlockTitle}
+            </p>
+            {!isBriefOnly ? (
+              <p
+                className={`mt-1 text-[11px] font-semibold ${
+                  publishReady ? "text-[#03A94D]" : "text-[#E67700]"
+                }`}
+              >
+                {publishReady
+                  ? "수정 없이 복사·발행 가능한 편집본입니다"
+                  : "복사 전 한 번 더 읽어 보시는 것을 권장합니다"}
+              </p>
+            ) : null}
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             {onRegenerate ? (
               <button
@@ -337,8 +368,19 @@ export default function BlogResultView({
             ) : null}
             <FullCopyButton
               text={copyText}
+              disabled={isHardOutputGate() && !publishReady}
               onCopy={() => onCopy?.(copyText)}
             />
+            {!isBriefOnly && userId && contentItemId ? (
+              <button
+                type="button"
+                onClick={markPublished}
+                disabled={publishedMarked}
+                className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-[#E8EBED] bg-white px-3 py-2 text-[12px] font-semibold text-[#4E5968] hover:bg-[#F9FAFB] disabled:opacity-60"
+              >
+                {publishedMarked ? "발행 완료 기록됨" : "네이버에 올렸어요"}
+              </button>
+            ) : null}
           </div>
         </div>
         {!mobileSimple ? (

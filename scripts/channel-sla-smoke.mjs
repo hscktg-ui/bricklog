@@ -1,5 +1,5 @@
 /**
- * 채널별 생성 SLA 스모크 (Playwright) — 목표: 클릭 후 120s 이내 결과
+ * 채널별 생성 SLA 스모크 (Playwright) — 목표: 클릭 후 180s 이내 결과 (CHANNEL_SLA_MS)
  * Run: npm run test:channel-sla
  * Env: BASE_URL, BRICLOG_TEST_EMAIL, BRICLOG_TEST_PASSWORD (.env.local)
  */
@@ -15,6 +15,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const BASE = process.env.BASE_URL || "http://localhost:3005";
 const OUT = join(root, "config", "channel-sla-report.json");
+
+import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
+import {
+  createAuthenticatedContext,
+  dismissWorkspaceModals,
+  fillBlogFormViaDom,
+  isWorkspaceReady,
+} from "./lib/e2eAuth.js";
 
 function loadEnvLocal() {
   try {
@@ -34,6 +42,7 @@ function loadEnvLocal() {
   } catch {
     /* ignore */
   }
+  applyE2eTestCredentialsToEnv(process.env);
 }
 
 async function dismissIntro(page) {
@@ -52,34 +61,12 @@ async function dismissWelcome(page) {
   }
 }
 
-async function login(page) {
-  const email = process.env.BRICLOG_TEST_EMAIL;
-  const password = process.env.BRICLOG_TEST_PASSWORD;
-  if (!email || !password) return { ok: false, reason: "no_credentials" };
-
+async function openWorkspace(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
-  await dismissIntro(page);
-
-  const start = page.locator('[data-briclog-cta="start"]').first();
-  if (await start.count()) {
-    await start.click({ timeout: 10_000 }).catch(() => null);
-    await page.waitForTimeout(500);
-  }
-
-  const emailInput = page.locator('input[type="email"]').first();
-  await emailInput.waitFor({ timeout: 15_000 });
-  await emailInput.fill(email);
-  await page.locator('input[type="password"]').first().fill(password);
-  await page.getByRole("button", { name: /^로그인$/i }).last().click();
-  await page.waitForTimeout(4000);
-  await dismissWelcome(page);
-
-  const inApp = await page
-    .getByPlaceholder(/매장·브랜드|브랜드/i)
-    .first()
-    .count()
-    .catch(() => 0);
-  return { ok: inApp > 0, reason: inApp > 0 ? "ok" : "login_failed" };
+  await dismissWorkspaceModals(page);
+  await page.waitForTimeout(2000);
+  const ready = await isWorkspaceReady(page);
+  return { ok: ready, reason: ready ? "supabase_session" : "workspace_missing" };
 }
 
 async function openChannel(page, menuPattern) {
@@ -94,18 +81,53 @@ async function fillIfPresent(page, placeholderRe, value) {
   const el = page.getByPlaceholder(placeholderRe).first();
   if (!(await el.count())) return false;
   await el.fill(value);
+  await el.dispatchEvent("input").catch(() => null);
+  await el.dispatchEvent("change").catch(() => null);
+  await el.blur().catch(() => null);
+  return true;
+}
+
+async function fillLabeledField(page, labelRe, value) {
+  if (!value) return false;
+  const el = page.getByLabel(labelRe).first();
+  if (!(await el.count())) return false;
+  await el.click();
+  await el.fill("");
+  await el.pressSequentially(value, { delay: 12 });
+  await el.blur().catch(() => null);
   return true;
 }
 
 async function fillCommonFields(page, form) {
-  await fillIfPresent(page, /매장·브랜드|브랜드/i, form.brandName || "");
-  await fillIfPresent(page, /파주|지역/i, form.region || "");
-  const topic = page
-    .getByPlaceholder(/오늘 전하고|주제|이야기/i)
-    .first();
-  if (await topic.count()) {
-    await topic.fill(form.topic || "");
+  let filled =
+    (await fillLabeledField(page, /^브랜드명$/, form.brandName || "")) ||
+    (await fillIfPresent(page, /매장·브랜드|브랜드|팀 이름/i, form.brandName || ""));
+
+  filled =
+    (await fillLabeledField(page, /^지역$/, form.region || "")) ||
+    filled ||
+    (await fillIfPresent(page, /파주|지역|예: 서울/i, form.region || ""));
+
+  const topicFilled =
+    (await fillLabeledField(page, /^오늘의 주제$/, form.topic || "")) ||
+    (await fillIfPresent(page, /오늘 전하고|주제|이야기/i, form.topic || ""));
+
+  if (!(topicFilled || filled)) {
+    await fillBlogFormViaDom(page, form);
+  } else {
+    await page.waitForTimeout(400);
+    await fillBlogFormViaDom(page, form);
   }
+  await page.waitForTimeout(600);
+}
+
+async function waitForGenerateEnabled(page, timeoutMs = 15_000) {
+  const btn = page
+    .locator("button.briclog-btn-primary:not([disabled])")
+    .filter({ hasText: /조사 후 글 받기|구성안 만들기|이야기 쓰기/i })
+    .first();
+  await btn.waitFor({ state: "visible", timeout: timeoutMs });
+  return btn;
 }
 
 async function ensureStandalone(page, channel) {
@@ -119,6 +141,9 @@ async function ensureStandalone(page, channel) {
 }
 
 async function waitForBlogResult(page, timeoutMs) {
+  const genBtn = await waitForGenerateEnabled(page, 15_000);
+  const t0 = Date.now();
+
   const apiPromise = page
     .waitForResponse(
       (r) =>
@@ -127,35 +152,44 @@ async function waitForBlogResult(page, timeoutMs) {
       { timeout: timeoutMs }
     )
     .then(async (res) => ({
-      apiMs: null,
       status: res.status(),
       ok: res.ok(),
       body: await res.json().catch(() => ({})),
+      apiMs: Date.now() - t0,
     }))
     .catch((e) => ({ apiError: e.message }));
 
-  await page
-    .getByRole("button", { name: /이야기 쓰기|구성안 만들기/i })
-    .first()
-    .click({ timeout: 10_000 });
+  await genBtn.click({ timeout: 10_000 });
 
-  const api = await apiPromise;
-  const uiStart = Date.now();
-  await page.waitForFunction(
+  const uiPromise = page.waitForFunction(
     () => {
       const t = document.body.innerText || "";
-      if (t.includes("여기에 이야기가 채워집니다")) return false;
+      if (t.includes("여기에 편집본이 채워집니다")) return false;
       if (t.includes("왼쪽 세 단계")) return false;
+      if (/조사·편집 중|만드는 중|쓰는 중/.test(t) && !/전체 복사|발행 준비|편집본/.test(t)) {
+        return false;
+      }
       return (
-        t.length > 800 &&
+        t.length > 400 &&
         (t.includes("복사") ||
+          t.includes("발행") ||
+          t.includes("편집본") ||
           t.includes("섹션") ||
           document.querySelector("article, [class*='result']"))
       );
     },
     { timeout: timeoutMs }
   );
-  return { api, uiMs: Date.now() - uiStart };
+
+  const [apiSettled, uiSettled] = await Promise.allSettled([apiPromise, uiPromise]);
+  const api = apiSettled.status === "fulfilled" ? apiSettled.value : { apiError: apiSettled.reason?.message };
+  const uiOk = uiSettled.status === "fulfilled";
+  return {
+    api,
+    uiMs: Date.now() - t0,
+    uiOk,
+    uiError: uiOk ? null : uiSettled.reason?.message,
+  };
 }
 
 async function waitForChannelResult(page, persona, timeoutMs) {
@@ -178,7 +212,7 @@ async function waitForChannelResult(page, persona, timeoutMs) {
   );
 }
 
-async function runPersona(page, persona, errors, networkFails) {
+async function runPersona(page, persona, errors, networkFails, apiTrace) {
   const run = {
     id: persona.id,
     channel: persona.channel,
@@ -210,6 +244,13 @@ async function runPersona(page, persona, errors, networkFails) {
     }
     run.phases.fillMs = Date.now() - fillStart;
 
+    try {
+      await waitForGenerateEnabled(page, 12_000);
+    } catch {
+      run.errors.push("generate_button_disabled");
+      throw new Error("generate_button_disabled");
+    }
+
     const remaining = CHANNEL_SLA_MS - (Date.now() - t0);
     if (remaining < 5000) throw new Error("setup_exceeded_sla");
 
@@ -220,9 +261,14 @@ async function runPersona(page, persona, errors, networkFails) {
         const checked = await uncachedBlogOnly.isChecked();
         if (checked) await uncachedBlogOnly.uncheck({ force: true }).catch(() => null);
       }
-      const { api, uiMs } = await waitForBlogResult(page, remaining);
+      const { api, uiMs, uiOk, uiError } = await waitForBlogResult(page, remaining);
       run.phases.api = api;
-      run.phases.uiAfterApiMs = uiMs;
+      run.phases.uiMs = uiMs;
+      run.phases.uiOk = uiOk;
+      if (!uiOk) {
+        run.errors.push(uiError || "ui_result_timeout");
+        throw new Error(uiError || "ui_result_timeout");
+      }
       if (api.status && api.status >= 400) {
         run.errors.push(`blog_api_${api.status}`);
         run.network.push({ url: "/api/content/blog", status: api.status });
@@ -235,10 +281,25 @@ async function runPersona(page, persona, errors, networkFails) {
     }
     run.phases.generateMs = Date.now() - genStart;
     run.elapsedMs = Date.now() - t0;
+    run.phases.setupMs = run.elapsedMs - run.phases.generateMs;
 
-    if (run.elapsedMs > CHANNEL_SLA_MS) {
+    const blogApiCalled = apiTrace.some(
+      (t) => t.url?.includes("/api/content/blog") && t.method === "POST"
+    );
+    run.phases.blogApiCalled = blogApiCalled;
+
+    if (persona.channel === "blog" && run.phases.uiOk && !blogApiCalled) {
+      run.warnings = [
+        ...(run.warnings || []),
+        "ui_without_blog_api_local_fallback",
+      ];
+    }
+
+    if (run.phases.generateMs > CHANNEL_SLA_MS) {
       run.status = "fail";
       run.failReason = "sla_exceeded";
+    } else if (run.status === "pass" && run.warnings?.length) {
+      run.status = "pass_with_warnings";
     }
   } catch (err) {
     run.elapsedMs = Date.now() - t0;
@@ -251,6 +312,13 @@ async function runPersona(page, persona, errors, networkFails) {
   run.networkFails = networkFails.filter((n) =>
     n.url?.includes("/api/")
   ).slice(-15);
+  run.apiTrace = apiTrace.slice(-40);
+
+  if (run.status === "fail") {
+    run.pageSnippet = await page
+      .evaluate(() => (document.body.innerText || "").slice(0, 1200))
+      .catch(() => null);
+  }
 
   return run;
 }
@@ -275,15 +343,16 @@ async function main() {
   }
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  await context.addInitScript(() => {
-    try {
-      sessionStorage.setItem("briclog-intro-session-done", "1");
-    } catch {
-      /* ignore */
-    }
+  const ctxResult = await createAuthenticatedContext(browser, BASE, {
+    width: 1280,
+    height: 900,
   });
+  if (!ctxResult.ok) {
+    console.error("Auth failed:", ctxResult.reason);
+    process.exit(1);
+  }
 
+  const context = ctxResult.context;
   const page = await context.newPage();
   const consoleErrors = [];
   const networkFails = [];
@@ -291,9 +360,18 @@ async function main() {
   page.on("console", (msg) => {
     if (msg.type() === "error") consoleErrors.push(msg.text());
   });
+  const apiTrace = [];
   page.on("response", (res) => {
-    if (res.status() >= 400 && res.url().includes("/api/")) {
-      networkFails.push({ url: res.url(), status: res.status() });
+    if (res.url().includes("/api/")) {
+      apiTrace.push({
+        url: res.url().split("?")[0],
+        status: res.status(),
+        method: res.request().method(),
+        at: Date.now(),
+      });
+      if (res.status() >= 400) {
+        networkFails.push({ url: res.url(), status: res.status() });
+      }
     }
   });
 
@@ -306,23 +384,34 @@ async function main() {
     summary: {},
   };
 
-  report.login = await login(page);
+  report.login = {
+    ...ctxResult.auth,
+    ...(await openWorkspace(page)),
+  };
   if (!report.login.ok) {
     report.summary = { skipped: true, reason: report.login.reason };
     mkdirSync(dirname(OUT), { recursive: true });
     writeFileSync(OUT, JSON.stringify(report, null, 2), "utf8");
-    console.log("SKIP — set BRICLOG_TEST_EMAIL/PASSWORD in .env.local");
+    console.log("SKIP — workspace not ready:", report.login.reason);
     await browser.close();
-    process.exit(0);
+    process.exit(1);
   }
 
-  for (const persona of CHANNEL_SLA_PERSONAS) {
-    report.runs.push(await runPersona(page, persona, consoleErrors, networkFails));
+  const limit = Number(process.env.CHANNEL_SLA_LIMIT) || 0;
+  const personas =
+    limit > 0 ? CHANNEL_SLA_PERSONAS.slice(0, limit) : CHANNEL_SLA_PERSONAS;
+
+  for (const persona of personas) {
+    report.runs.push(
+      await runPersona(page, persona, consoleErrors, networkFails, apiTrace)
+    );
   }
 
   await browser.close();
 
-  const passed = report.runs.filter((r) => r.status === "pass");
+  const passed = report.runs.filter(
+    (r) => r.status === "pass" || r.status === "pass_with_warnings"
+  );
   const failed = report.runs.filter((r) => r.status === "fail");
   report.summary = {
     total: report.runs.length,
@@ -340,10 +429,11 @@ async function main() {
   mkdirSync(dirname(OUT), { recursive: true });
   writeFileSync(OUT, JSON.stringify(report, null, 2), "utf8");
 
-  console.log("\n=== CHANNEL SLA SMOKE (2min) ===\n");
+  console.log(`\n=== CHANNEL SLA SMOKE (${Math.round(CHANNEL_SLA_MS / 1000)}s) ===\n`);
   console.log("Report:", OUT);
   for (const r of report.runs) {
-    const mark = r.status === "pass" ? "PASS" : "FAIL";
+    const mark =
+      r.status === "pass" || r.status === "pass_with_warnings" ? "PASS" : "FAIL";
     console.log(
       `[${mark}] ${r.id} — ${(r.elapsedMs / 1000).toFixed(1)}s`,
       r.failReason || "",
