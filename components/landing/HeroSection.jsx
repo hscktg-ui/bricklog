@@ -19,6 +19,7 @@ export default function HeroSection({
   contentIdea,
   onStart,
   onSample,
+  onTest,
 }) {
   const heroTheme = theme ?? DEFAULT_SEASON_THEME;
   const headline = greeting?.headline ?? LANDING_HERO_DEFAULT.headline;
@@ -104,11 +105,11 @@ export default function HeroSection({
           <button
             id="landing-hero-cta"
             type="button"
-            data-briclog-cta="start"
-            onClick={onStart}
+            data-briclog-cta="test"
+            onClick={onTest || onStart}
             className={`w-full sm:w-auto sm:min-w-[240px] ${GREEN_CTA_SOLID} min-h-[48px]! text-[16px]!`}
           >
-            <span>무료로 시작하기</span>
+            <span>내 브랜드 테스트하기</span>
           </button>
           <button
             type="button"

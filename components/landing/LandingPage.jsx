@@ -32,6 +32,7 @@ import {
   LANDING_CTA_SUB,
 } from "@/lib/landing/ctaCopy";
 import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
+import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
 
 export default function LandingPage({ onAuthOpen, onStart }) {
   const { greeting, sample, contentIdea, seasonCopy, theme } =
@@ -140,7 +141,13 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           contentIdea={contentIdea}
           onStart={handleStart}
           onSample={withLandingCta(scrollToSample)}
+          onTest={withLandingCta(() => {
+            document
+              .getElementById("public-brand-test")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          })}
         />
+        <PublicBrandTestSection onSignup={(mode) => onAuthOpen(mode || "signup")} />
         <LiveStatsBanner introOpen={introOpen} />
         <DemoPreviewSection sample={sample} />
         <details className="group border-t border-[#E8EBED] bg-white">
@@ -189,7 +196,14 @@ export default function LandingPage({ onAuthOpen, onStart }) {
       </main>
       </LandingPreviewShell>
 
-      <LandingMobileStickyCta onStart={handleStart} introOpen={introOpen} />
+      <LandingMobileStickyCta
+        onStart={withLandingCta(() => {
+          document
+            .getElementById("public-brand-test")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        })}
+        introOpen={introOpen}
+      />
     </div>
   );
 }
