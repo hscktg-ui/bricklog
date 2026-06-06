@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { PUBLIC_TEST_HERO } from "@/lib/brand/copy";
 import {
   PUBLIC_TEST_QUOTA_EXCEEDED,
   PUBLIC_TEST_BLUR_HINT,
-  PUBLIC_TEST_GATE_RETRY_HINT,
+  PUBLIC_TEST_TOPIC_HINT,
   PUBLIC_TEST_TIME_HINT,
+  PUBLIC_TEST_LOADING_MESSAGE,
   PUBLIC_TEST_SAMPLE_BADGE,
 } from "@/lib/publicTest/publicTestConfig";
 import {
@@ -14,7 +15,6 @@ import {
   pickPublicTestSampleForSession,
 } from "@/lib/publicTest/pickPublicTestSample";
 import { getPublicTestSampleByIndex } from "@/lib/publicTest/publicTestSamples";
-import { pickPublicTestStep } from "@/lib/publicTest/publicTestSteps";
 import {
   bumpLocalPublicTestQuota,
   getLocalPublicTestQuota,
@@ -34,16 +34,26 @@ export default function PublicBrandTestSection({ onSignup }) {
   const [quota, setQuota] = useState({ remaining: 3, used: 0 });
   const [sampleIdx, setSampleIdx] = useState(0);
   const [sampleReady, setSampleReady] = useState(false);
-  const startedAt = useRef(0);
-  const timerRef = useRef(null);
-
   const activeSample = getPublicTestSampleByIndex(sampleIdx);
+
+  const applySampleToForm = useCallback((sample) => {
+    if (!sample?.brandName) return;
+    setBrandName(sample.brandName);
+    setRegion(sample.region);
+    setTopic(sample.topic);
+  }, []);
 
   useLayoutEffect(() => {
     const picked = pickPublicTestSampleForSession();
     setSampleIdx(picked.index ?? 0);
+    applySampleToForm(picked);
     setSampleReady(true);
-  }, []);
+  }, [applySampleToForm]);
+
+  useEffect(() => {
+    if (!sampleReady) return;
+    applySampleToForm(getPublicTestSampleByIndex(sampleIdx));
+  }, [sampleIdx, sampleReady, applySampleToForm]);
 
   const cycleSample = () => {
     setSampleIdx((idx) => getNextPublicTestSampleIndex(idx));
@@ -73,9 +83,6 @@ export default function PublicBrandTestSection({ onSignup }) {
 
   useEffect(() => {
     refreshQuota();
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
   }, [refreshQuota]);
 
   const handleSubmit = async (e) => {
@@ -89,14 +96,7 @@ export default function PublicBrandTestSection({ onSignup }) {
     setLoading(true);
     setError(null);
     setResult(null);
-    startedAt.current = Date.now();
-    setStepLabel(pickPublicTestStep(0));
-
-    timerRef.current = setInterval(() => {
-      setStepLabel(
-        pickPublicTestStep(Date.now() - startedAt.current)
-      );
-    }, 1200);
+    setStepLabel(PUBLIC_TEST_LOADING_MESSAGE);
 
     try {
       const sessionId = getPublicTestSessionId();
@@ -107,6 +107,7 @@ export default function PublicBrandTestSection({ onSignup }) {
           brandName: brandName.trim(),
           region: region.trim(),
           topic: topic.trim(),
+          sampleId: activeSample?.id,
           sessionId,
         }),
       });
@@ -123,12 +124,7 @@ export default function PublicBrandTestSection({ onSignup }) {
         if (data.quotaExceeded) {
           setError(PUBLIC_TEST_QUOTA_EXCEEDED);
         } else {
-          const msg = data.userMessage || "다시 시도해 주세요.";
-          setError(
-            data.withheld && !data.quotaExceeded
-              ? `${msg}\n${PUBLIC_TEST_GATE_RETRY_HINT}`
-              : msg
-          ); // split in render
+          setError(data.userMessage || "다시 시도해 주세요.");
         }
         return;
       }
@@ -139,7 +135,6 @@ export default function PublicBrandTestSection({ onSignup }) {
     } catch {
       setError("잠시 후 다시 시도해 주세요.");
     } finally {
-      if (timerRef.current) clearInterval(timerRef.current);
       setLoading(false);
       setStepLabel("");
       refreshQuota();
@@ -250,6 +245,9 @@ export default function PublicBrandTestSection({ onSignup }) {
                 placeholder={activeSample.topic}
                 className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
               />
+              <p className="mt-1.5 text-[11px] leading-relaxed text-[#8B95A1]">
+                {PUBLIC_TEST_TOPIC_HINT}
+              </p>
             </label>
 
             {error ? (
