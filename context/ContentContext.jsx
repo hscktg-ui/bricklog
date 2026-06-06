@@ -30,6 +30,11 @@ import {
   applyChannelFeedbackPatch,
   feedbackRegenSeed,
 } from "@/lib/content/blogDerive";
+import {
+  buildFeedbackRegenDirective,
+  formatFeedbackIntentBrief,
+  mergeFeedbackHints,
+} from "@/lib/feedback/feedbackIntentEngine";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import { autoImproveContent } from "@/lib/editorAI/autoImprove";
 import { runEditorAI, compareEditorScores } from "@/lib/editorAI";
@@ -80,7 +85,11 @@ import {
 } from "@/lib/duplicate/contentSimilarity";
 import { learnFromEdit } from "@/lib/learning/brandLearning";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
-import { runRewrite, recordRewriteLearning } from "@/lib/rewrite/rewriteEngine";
+import {
+  runRewrite,
+  recordRewriteLearning,
+  parseFeedbackIntent,
+} from "@/lib/rewrite/rewriteEngine";
 import {
   persistPipelineToMemory,
   persistMemoryRewrite,
@@ -791,11 +800,13 @@ export function ContentProvider({
       if (learned) brandHooks?.updateActiveBrand?.(learned);
     }
     brandHooks?.onChannelSaved?.("blog", blogContent, plain);
+    const edited = before !== plain;
     trackContentEvent({
-      eventType: "save",
+      eventType: edited ? "human_edit" : "save",
       brandId: brandHooks?.activeBrandId,
       contentItemId: memoryContentIds.blog,
       channel: "blog",
+      meta: edited ? { beforePlain: before, afterPlain: plain } : {},
     });
     onToast?.("검수본이 저장되었습니다.", "success");
   }, [blogContent, brandHooks, onToast, memoryContentIds.blog]);
@@ -1700,14 +1711,18 @@ export function ContentProvider({
   const rewriteBlogContent = useCallback(
     async (feedbackText, scope = "all", options = {}) => {
       if (!blogContent) return null;
-      if (blogContent._meta?.isBriefOnly || llmStatus.llmAvailable === false) {
-        onToast?.(LLM_USER_MESSAGES.rewriteBlocked, "info");
-        return null;
-      }
       const isFeedbackFlow = options.source === "feedback";
       const tagIds = options.tagIds || [];
       const inputPatch = options.inputPatch || {};
-      const effectiveInput = { ...blogInput, ...inputPatch };
+
+      if (
+        !isFeedbackFlow &&
+        (blogContent._meta?.isBriefOnly || llmStatus.llmAvailable === false)
+      ) {
+        onToast?.(LLM_USER_MESSAGES.rewriteBlocked, "info");
+        return null;
+      }
+
       if (Object.keys(inputPatch).length > 0) {
         setBlogInput((prev) => ({ ...prev, ...inputPatch }));
       }
@@ -1725,8 +1740,155 @@ export function ContentProvider({
         void unlockAudioFromUserGesture().then(() => {
           setFeedbackStep(FEEDBACK_REWRITE_STEPS[0].text);
         });
+        setGenerating((g) => ({ ...g, blog: true }));
+
+        try {
+          const topicMain =
+            blogInput.topic?.trim()?.split(/[,，]/)[0]?.trim() ||
+            blogInput.mainKeyword?.trim() ||
+            "";
+          const intentHints = inputPatch.feedbackHints || [];
+          const patchedInput = applyChannelFeedbackPatch(
+            { ...blogInput, ...inputPatch },
+            feedbackText,
+            "blog"
+          );
+          const intentBrief = formatFeedbackIntentBrief(intentHints, feedbackText);
+          const regenDirective = buildFeedbackRegenDirective(intentHints, feedbackText);
+          const feedbackBrief = [
+            patchedInput.brandFeedbackBrief,
+            intentBrief,
+            regenDirective,
+          ]
+            .filter(Boolean)
+            .join(" · ");
+          const includeWithFeedback = [patchedInput.includePhrases, intentBrief]
+            .filter(Boolean)
+            .join(", ");
+          const pipelineInput = normalizePipelineInput({
+            ...patchedInput,
+            includePhrases: includeWithFeedback,
+            topic: patchedInput.topic?.trim() || topicMain,
+            mainKeyword: topicMain || patchedInput.mainKeyword,
+            feedbackHints: mergeFeedbackHints(
+              blogInput.feedbackHints,
+              intentHints,
+              feedbackText
+            ),
+            feedbackIntentBrief: intentBrief,
+            feedbackRegenDirective: regenDirective,
+            feedbackSeed: feedbackRegenSeed(
+              [feedbackText, ...intentHints].join("|")
+            ),
+            brandFeedbackBrief: feedbackBrief,
+            brandMemory: brandHooks?.activeBrand || patchedInput.brandMemory,
+            brandId: brandHooks?.activeBrandId || patchedInput.brandId,
+            v2AxisRequired: true,
+            v2PipelineEnforced: true,
+            v3EngineEnforced: true,
+            rewriteCount: (blogContent._meta?.rewriteCount || 0) + 1,
+          });
+
+          setFeedbackStep(FEEDBACK_REWRITE_STEPS[1].text);
+          let result = await ensureBlogDelivery(pipelineInput, {
+            setPipelineStep: setFeedbackStep,
+            onRetry: () => setFeedbackStep("다시 이어서 쓰는 중…"),
+          });
+
+          let blog = result.blogContent;
+          if (!blog?.sections?.length) {
+            result = await ensureBlogDelivery(pipelineInput, {
+              setPipelineStep: setFeedbackStep,
+              onRetry: () => setFeedbackStep("글을 화면에 준비하는 중…"),
+            });
+            blog = result.blogContent;
+          }
+          if (!blog?.sections?.length) {
+            const rescued =
+              forceLocalBlogPreviewDelivery(pipelineInput, result) ||
+              (() => {
+                const pack = missionProseFallbackForUi(pipelineInput);
+                return pack
+                  ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+                  : null;
+              })();
+            blog = rescued?.blogContent;
+          }
+
+          if (!blog?.sections?.length) {
+            const failMsg =
+              result?.userMessage || "피드백 반영에 실패했습니다. 다시 시도해 주세요.";
+            finishLoadingOverlay("feedback", startedAt, {
+              success: false,
+              message: failMsg,
+            });
+            onToast?.(failMsg, "error");
+            return { ok: false };
+          }
+
+          let next = {
+            ...blog,
+            _edited: true,
+            _meta: {
+              ...blog._meta,
+              rewritten: true,
+              feedbackRewrite: true,
+              rewriteCount: pipelineInput.rewriteCount,
+            },
+          };
+
+          if (scope !== "all" || tagIds.length > 0) {
+            const ctx = buildRewriteCtx();
+            const scoped = runRewrite(
+              "blog",
+              next,
+              feedbackText,
+              {
+                ...ctx,
+                input: normalizePipelineInput(patchedInput),
+              },
+              scope,
+              tagIds
+            );
+            next = { ...scoped.pack, _edited: true, _meta: next._meta };
+          }
+
+          setFeedbackStep(FEEDBACK_REWRITE_STEPS[2].text);
+          setBlogContent(next);
+          clearDerived();
+          recordRewriteLearning(
+            brandHooks?.activeBrandId,
+            "blog",
+            feedbackText,
+            parseFeedbackIntent(feedbackText, tagIds)
+          );
+          persistChannelMemory("blog", next, buildMemMeta(next));
+          trackContentEvent({
+            eventType: "rewrite",
+            brandId: brandHooks?.activeBrandId,
+            contentItemId: memoryContentIds.blog,
+            channel: "blog",
+            meta: { scope, source: "feedback", regen: true },
+          });
+
+          finishLoadingOverlay("feedback", startedAt, {
+            success: true,
+            message: "피드백이 반영된 새 글을 받았습니다.",
+          });
+          return { ok: true, pack: next, intent: parseFeedbackIntent(feedbackText, tagIds) };
+        } catch (err) {
+          finishLoadingOverlay("feedback", startedAt, {
+            success: false,
+            message: err?.message || "피드백 반영에 실패했습니다.",
+          });
+          onToast?.(err?.message || "피드백 반영에 실패했습니다.", "error");
+          return { ok: false };
+        } finally {
+          setGenerating((g) => ({ ...g, blog: false }));
+        }
       }
 
+      const effectiveInput = { ...blogInput, ...inputPatch };
       const ctx = buildRewriteCtx();
       const result = runRewrite(
         "blog",
@@ -1740,9 +1902,6 @@ export function ContentProvider({
         tagIds
       );
       const next = { ...result.pack, _edited: true };
-      if (isFeedbackFlow) {
-        setFeedbackStep(FEEDBACK_REWRITE_STEPS[1].text);
-      }
       setBlogContent(next);
       clearDerived();
       recordRewriteLearning(
@@ -1762,22 +1921,14 @@ export function ContentProvider({
 
       const genMode = next._meta?.generationMode || "";
       const canDerive =
-        !isFeedbackFlow &&
         options.deriveChannels === true &&
         !next._meta?.isBriefOnly &&
         (genMode === "llm" || genMode.startsWith("llm_")) &&
         llmStatus.llmAvailable !== false;
 
       if (!canDerive) {
-        if (isFeedbackFlow) {
-          finishLoadingOverlay("feedback", startedAt, {
-            success: true,
-            message: "피드백이 반영되었습니다.",
-          });
-        } else {
-          onToast?.("피드백이 반영되었습니다.", "success");
-        }
-        return result;
+        onToast?.("피드백이 반영되었습니다.", "success");
+        return { ok: true, ...result };
       }
 
       const setPipelineStep = (stepLabel) =>

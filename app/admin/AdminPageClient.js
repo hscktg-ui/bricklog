@@ -2,20 +2,39 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import Toast from "@/components/Toast";
+import AuthForm from "@/components/AuthForm";
 import EvolutionLabPanel from "@/components/admin/EvolutionLabPanel";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminOpsHub from "@/components/admin/AdminOpsHub";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
 
+function AdminGateShell({ title, children }) {
+  return (
+    <div className="min-h-screen bg-[#F7F8FA] p-6 text-[#191F28]">
+      <div className="mx-auto max-w-lg rounded-2xl border border-[#E8EBED] bg-white p-8 shadow-sm">
+        <h1 className="text-[20px] font-bold">{title}</h1>
+        <div className="mt-4 space-y-3 text-[14px] leading-relaxed text-[#4E5968]">{children}</div>
+        <p className="mt-6">
+          <Link href="/" className="text-[13px] text-[#03A94D] hover:underline">
+            작업실(메인)으로 돌아가기
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPageClient() {
-  const router = useRouter();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [adminApiOk, setAdminApiOk] = useState(false);
+  const [accessChecking, setAccessChecking] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [stats, setStats] = useState(null);
   const [errors, setErrors] = useState([]);
   const [warnings, setWarnings] = useState([]);
@@ -38,43 +57,109 @@ export default function AdminPageClient() {
     setToast({ visible: true, message, type });
   }, []);
 
-  const syncUser = useCallback(async () => {
-    if (!isSupabaseConfigured) {
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
-    const { data } = await supabase.auth.getSession();
-    const u = data?.session?.user ?? null;
-    setUser(u);
-    if (!u) {
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
+  const verifyAdminByApi = useCallback(async () => {
     try {
-      const res = await fetchWithAuth("/api/auth/profile");
-      setProfile(res.profile ?? null);
+      await fetchWithAuth("/api/admin/stats", { timeoutMs: 10_000 });
+      return true;
     } catch {
-      setProfile(null);
+      return false;
     }
-    setLoading(false);
+  }, []);
+
+  const syncUser = useCallback(async () => {
+    try {
+      if (!isSupabaseConfigured) {
+        setUser(null);
+        setProfile(null);
+        return;
+      }
+
+      let sessionData = null;
+      try {
+        sessionData = await Promise.race([
+          supabase.auth.getSession().then((r) => r.data),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("auth_timeout")), 4_000)
+          ),
+        ]);
+      } catch {
+        setUser(null);
+        setProfile(null);
+        return;
+      }
+
+      const u = sessionData?.session?.user ?? null;
+      setUser(u);
+      if (!u) {
+        setProfile(null);
+        return;
+      }
+
+      try {
+        const res = await Promise.race([
+          fetchWithAuth("/api/auth/profile"),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("profile_timeout")), 8_000)
+          ),
+        ]);
+        setProfile(res.profile ?? null);
+      } catch {
+        setProfile(null);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     syncUser();
+    if (!isSupabaseConfigured) return undefined;
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => syncUser());
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (
+        event === "SIGNED_IN" ||
+        event === "SIGNED_OUT" ||
+        event === "TOKEN_REFRESHED"
+      ) {
+        setLoading(true);
+        syncUser();
+      }
+    });
     return () => subscription.unsubscribe();
   }, [syncUser]);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user || !isProfileAdmin(profile)) {
-      router.replace("/");
+    if (!loading) return undefined;
+    const t = window.setTimeout(() => setLoading(false), 3_000);
+    return () => window.clearTimeout(t);
+  }, [loading]);
+
+  const hasAdminAccess = isProfileAdmin(profile) || adminApiOk;
+
+  useEffect(() => {
+    if (loading || !user) {
+      setAdminApiOk(false);
+      setAccessChecking(false);
+      return undefined;
     }
-  }, [loading, user, profile, router]);
+    if (isProfileAdmin(profile)) {
+      setAdminApiOk(true);
+      setAccessChecking(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setAccessChecking(true);
+    verifyAdminByApi().then((ok) => {
+      if (cancelled) return;
+      setAdminApiOk(ok);
+      setAccessChecking(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, user, profile, verifyAdminByApi]);
 
   const loadStats = useCallback(async () => {
     try {
@@ -131,11 +216,11 @@ export default function AdminPageClient() {
   }, [showToast]);
 
   useEffect(() => {
-    if (!user || !isProfileAdmin(profile)) return;
+    if (!user || !hasAdminAccess || accessChecking) return;
     loadStats();
     loadInsights();
     pollQtStatus();
-  }, [user, profile, loadStats, loadInsights, pollQtStatus]);
+  }, [user, hasAdminAccess, accessChecking, loadStats, loadInsights, pollQtStatus]);
 
   useEffect(() => {
     return () => {
@@ -169,8 +254,84 @@ export default function AdminPageClient() {
     }
   };
 
-  if (loading || !user || !isProfileAdmin(profile)) {
-    return null;
+  if (loading) {
+    return (
+      <AdminGateShell title="BRICLOG 관리자">
+        <p className="text-[#8B95A1]">접근 권한을 확인하는 중입니다…</p>
+      </AdminGateShell>
+    );
+  }
+
+  if (!isSupabaseConfigured) {
+    return (
+      <AdminGateShell title="설정 필요">
+        <p>Supabase 연동이 되어 있지 않아 관리자 페이지를 열 수 없습니다.</p>
+      </AdminGateShell>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <AdminGateShell title="관리자 로그인">
+          <p>운영자 계정으로 로그인하면 이 페이지에서 바로 관리자 화면을 볼 수 있습니다.</p>
+          <p className="text-[13px] text-[#8B95A1]">
+            메인으로 돌아가지 않습니다. 여기서 로그인해 주세요.
+          </p>
+          {!showLogin ? (
+            <button
+              type="button"
+              onClick={() => setShowLogin(true)}
+              className="mt-2 w-full rounded-xl bg-[#03C75A] py-3 text-[14px] font-bold text-white"
+            >
+              로그인하기
+            </button>
+          ) : null}
+        </AdminGateShell>
+        {showLogin ? (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+            <div className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-xl">
+              <AuthForm
+                embedded
+                initialMode="login"
+                onClose={() => setShowLogin(false)}
+                onToast={(message, type) => showToast(message, type)}
+                onAuthSuccess={() => {
+                  setShowLogin(false);
+                  setLoading(true);
+                  syncUser();
+                }}
+              />
+            </div>
+          </div>
+        ) : null}
+        <Toast visible={toast.visible} message={toast.message} type={toast.type} />
+      </>
+    );
+  }
+
+  if (accessChecking) {
+    return (
+      <AdminGateShell title="BRICLOG 관리자">
+        <p className="text-[#8B95A1]">운영자 권한을 확인하는 중입니다…</p>
+      </AdminGateShell>
+    );
+  }
+
+  if (!hasAdminAccess) {
+    const email = user.email || profile?.email || "(이메일 없음)";
+    return (
+      <AdminGateShell title="운영자 전용 페이지">
+        <p>
+          현재 로그인: <strong className="text-[#191F28]">{email}</strong>
+        </p>
+        <p>
+          이 계정은 운영자 목록(
+          <code className="rounded bg-[#F2F4F6] px-1 text-[12px]">BRICLOG_ADMIN_EMAILS</code>
+          )에 없습니다. <strong>hscktg@gmail.com</strong>으로 로그인해야 합니다.
+        </p>
+      </AdminGateShell>
+    );
   }
 
   const mem = stats?.memory;
@@ -197,6 +358,8 @@ export default function AdminPageClient() {
             ))}
           </ul>
         )}
+
+        <AdminOpsHub onToast={showToast} />
 
         {!stats ? (
           <p className="text-[14px] text-[#8B95A1]">통계를 불러오는 중...</p>

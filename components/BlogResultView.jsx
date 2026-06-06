@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { trackContentEvent } from "@/lib/feedback/trackEvent";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolveBlogLengthTier } from "@/lib/constants";
 import EditableField from "./EditableField";
@@ -20,7 +21,6 @@ import CoreQualityMetaPanel from "./CoreQualityMetaPanel";
 import ContentQualityReviewPanel from "@/components/quality/ContentQualityReviewPanel";
 import StudioAdvancedAuditNote from "@/components/billing/StudioAdvancedAuditNote";
 import MobileSecondaryAccordion from "./MobileSecondaryAccordion";
-import { parseHashtagsInput } from "@/lib/content/reapplyPack";
 import {
   CUSTOMER_DRAFT_READY,
   CUSTOMER_DRAFT_REVIEW,
@@ -127,10 +127,6 @@ export default function BlogResultView({
     patch({ sections });
   };
 
-  const hashtagsStr = (draft.hashtags || [])
-    .map((t) => (t.startsWith("#") ? t.slice(1) : t))
-    .join(" ");
-
   const editorReport = draft.editorAI || draft._meta?.editorAI;
   const editorCompare = draft._meta?.editorCompare;
   const v4Suggestions = draft._meta?.v4Background?.suggestions || [];
@@ -153,6 +149,41 @@ export default function BlogResultView({
     (draft._meta?.sensitiveIndustry || complianceWarnings.length > 0);
 
   const versionContentId = `blog-${brandId || "x"}-${draft.representativeTitle || "draft"}`;
+  const feedbackRound = draft._meta?.rewriteCount || 0;
+  const dwellRef = useRef({ started: Date.now(), sent: 0 });
+
+  useEffect(() => {
+    dwellRef.current = { started: Date.now(), sent: 0 };
+    if (!userId || !contentItemId) return undefined;
+
+    const tick = () => {
+      const elapsed = Math.floor((Date.now() - dwellRef.current.started) / 1000);
+      if (elapsed - dwellRef.current.sent < 30) return;
+      dwellRef.current.sent = elapsed;
+      void trackContentEvent({
+        eventType: "dwell",
+        brandId,
+        contentItemId,
+        channel: "blog",
+        meta: { dwell_seconds: elapsed },
+      });
+    };
+
+    const id = setInterval(tick, 15_000);
+    return () => {
+      clearInterval(id);
+      const elapsed = Math.floor((Date.now() - dwellRef.current.started) / 1000);
+      if (elapsed > dwellRef.current.sent + 5) {
+        void trackContentEvent({
+          eventType: "dwell",
+          brandId,
+          contentItemId,
+          channel: "blog",
+          meta: { dwell_seconds: elapsed, final: true },
+        });
+      }
+    };
+  }, [blogRevealKey, userId, contentItemId, brandId]);
 
   const handleFeedbackReflect = async ({
     reaction,
@@ -177,18 +208,20 @@ export default function BlogResultView({
       tagIds: tags,
       inputPatch: built.inputPatch,
     });
-    if (result?.pack) {
-      seedInitialVersion(versionContentId, draft);
-      pushRewriteVersion(versionContentId, {
-        label: `피드백 ${tags?.[0] || reaction}`,
-        content: result.pack,
-        feedbackText: built.feedbackText,
-        feedbackCategory: result.intent?.categories,
-      });
-      setDraft(result.pack);
-      onChange?.(result.pack);
-      onFeedbackReflected?.();
+    if (!result?.pack) {
+      return { ok: false };
     }
+    seedInitialVersion(versionContentId, draft);
+    pushRewriteVersion(versionContentId, {
+      label: `피드백 ${tags?.[0] || reaction}`,
+      content: result.pack,
+      feedbackText: built.feedbackText,
+      feedbackCategory: result.intent?.categories,
+    });
+    setDraft(result.pack);
+    onChange?.(result.pack);
+    onFeedbackReflected?.();
+    return { ok: true, pack: result.pack };
   };
 
   return (
@@ -351,10 +384,12 @@ export default function BlogResultView({
 
       {userId && (
         <ContentFeedbackPanel
+          key={`fb-${blogRevealKey}-${feedbackRound}`}
           contentItemId={contentItemId}
           brandId={brandId}
           channel="blog"
           blogInput={blogInput}
+          feedbackRound={feedbackRound}
           suggestionHints={feedbackSuggestionHints}
           compact={mobileSimple}
           onReflect={onRewrite ? handleFeedbackReflect : undefined}
@@ -507,14 +542,6 @@ export default function BlogResultView({
               value={draft.conclusion}
               rows={4}
               onChange={(v) => patch({ conclusion: v })}
-            />
-
-            <EditableField
-              label="해시태그"
-              value={hashtagsStr}
-              rows={2}
-              hint="쉼표 또는 공백으로 구분"
-              onChange={(v) => patch({ hashtags: parseHashtagsInput(v) })}
             />
           </>
         )}

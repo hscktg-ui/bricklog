@@ -140,6 +140,19 @@ export default function Home() {
       url.searchParams.delete("landing");
       window.history.replaceState({}, "", url.pathname + url.search);
     }
+    if (params.get("reset") === "ok") {
+      showToast("비밀번호가 변경되었습니다. 작업실로 이동합니다.", "success");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("reset");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+    const authParam = params.get("auth");
+    if (authParam === "login" || authParam === "signup") {
+      setAuthMode(authParam === "signup" ? "signup" : "login");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("auth");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
   }, [showToast]);
 
   useEffect(() => {

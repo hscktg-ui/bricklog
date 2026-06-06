@@ -136,18 +136,10 @@ export async function GET(request) {
   let userCount = null;
   const service = createServiceSupabase();
   if (service) {
-    const { data: brandRows } = await service
-      .from("brands")
-      .select("user_id");
-    const ids = new Set((brandRows || []).map((r) => r.user_id));
-    userCount = ids.size;
-    const { data: authData } = await service.auth.admin.listUsers({
-      page: 1,
-      perPage: 200,
-    });
-    if (authData?.users?.length) {
-      userCount = Math.max(userCount, authData.users.length);
-    }
+    const { count, error } = await service
+      .from("profiles")
+      .select("id", { count: "exact", head: true });
+    if (!error) userCount = count ?? 0;
   }
 
   const billing = {

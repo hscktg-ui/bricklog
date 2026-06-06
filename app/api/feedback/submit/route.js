@@ -8,6 +8,7 @@ import { recomputeBrandLearningProfile } from "@/lib/feedback/brandLearningProfi
 import { refreshPersonalizationAfterContent } from "@/lib/memory/personalizationBrief";
 import { recordFeedbackAsset } from "@/lib/dataAsset/recordFeedbackAsset";
 import { runFeedbackEngineLoop } from "@/lib/feedback/feedbackEngineLoop";
+import { normalizeFeedbackIntents } from "@/lib/feedback/feedbackIntentEngine";
 
 export const runtime = "nodejs";
 
@@ -29,11 +30,25 @@ export async function POST(request) {
       );
     }
 
-    const feedback = await upsertContentFeedback(
-      auth.supabase,
-      auth.user.id,
-      body
-    );
+    const intents = normalizeFeedbackIntents(body.intents);
+    const feedback = await upsertContentFeedback(auth.supabase, auth.user.id, {
+      ...body,
+      intents,
+    });
+
+    let events = [];
+    try {
+      const { data: ev } = await auth.supabase
+        .from("content_events")
+        .select("event_type, meta, created_at")
+        .eq("content_item_id", body.contentItemId)
+        .eq("user_id", auth.user.id)
+        .order("created_at", { ascending: false })
+        .limit(24);
+      events = ev || [];
+    } catch {
+      events = [];
+    }
 
     let profile = null;
     if (feedback.brand_id) {
@@ -58,7 +73,7 @@ export async function POST(request) {
 
     let engineLoop = null;
     try {
-      engineLoop = await runFeedbackEngineLoop(feedback);
+      engineLoop = await runFeedbackEngineLoop(feedback, events);
     } catch {
       /* 전역 엔진 반영 실패해도 피드백 저장은 유지 */
     }

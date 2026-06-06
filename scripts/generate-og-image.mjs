@@ -11,7 +11,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const out = resolve(root, "public/og.png");
 const source =
   process.env.OG_IMAGE_SOURCE ||
-  "https://bricklog.vercel.app/opengraph-image";
+  "https://briclog.ai/opengraph-image";
 
 const res = await fetch(source);
 if (!res.ok) {

@@ -84,6 +84,7 @@
     "test:first-delivery": "node --import ./scripts/register-alias.mjs scripts/test-first-delivery-quality.mjs",
     "test:supplemental-research": "node --import ./scripts/register-alias.mjs scripts/test-supplemental-research.mjs",
     "test:research-readiness": "node --import ./scripts/register-alias.mjs scripts/test-research-readiness.mjs",
+    "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",
     "test:completion-standard": "node --import ./scripts/register-alias.mjs scripts/test-completion-standard.mjs",
     "test:checklist-voice": "node --import ./scripts/register-alias.mjs scripts/test-checklist-voice.mjs",

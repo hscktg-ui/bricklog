@@ -4,6 +4,7 @@ import {
   insertContentEvent,
   isMissingFeedbackTable,
 } from "@/lib/feedback/server/events";
+import { runSelfEvolutionOnContentEvent } from "@/lib/evolution/selfEvolutionCore";
 
 export const runtime = "nodejs";
 
@@ -19,7 +20,19 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const row = await insertContentEvent(auth.supabase, auth.user.id, body);
-    return NextResponse.json({ ok: true, event: row });
+
+    let evolution = null;
+    try {
+      evolution = await runSelfEvolutionOnContentEvent(row, {
+        beforePlain: body.meta?.beforePlain,
+        afterPlain: body.meta?.afterPlain,
+        input: body.meta?.input,
+      });
+    } catch {
+      /* 진화 루프 실패해도 이벤트 저장 유지 */
+    }
+
+    return NextResponse.json({ ok: true, event: row, evolution });
   } catch (err) {
     if (isMissingFeedbackTable(err)) {
       return NextResponse.json({ ok: true, skipped: true, memoryReady: false });

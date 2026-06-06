@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { mapAuthError } from "@/lib/auth/messages";
+import {
+  establishRecoverySessionFromUrl,
+  isRecoveryRedirectUrl,
+} from "@/lib/auth/recoveryFromUrl";
 
 function callbackErrorMessage(params) {
   const desc = params.get("error_description") || params.get("error");
@@ -27,6 +31,17 @@ export default function AuthCallbackPage() {
     (async () => {
       try {
         const params = new URLSearchParams(window.location.search);
+        const errorCode = params.get("error_code");
+        if (errorCode === "otp_expired" || params.get("type") === "recovery") {
+          if (!cancelled) {
+            const q = params.toString();
+            router.replace(
+              `/auth/reset-password${q ? `?${q}` : "?error=expired"}`
+            );
+          }
+          return;
+        }
+
         const oauthErr = callbackErrorMessage(params);
         if (oauthErr) throw new Error(oauthErr);
 
@@ -38,10 +53,30 @@ export default function AuthCallbackPage() {
         const hashErr = hashParams ? callbackErrorMessage(hashParams) : null;
         if (hashErr) throw new Error(hashErr);
 
+        if (isRecoveryRedirectUrl()) {
+          const recovery = await establishRecoverySessionFromUrl();
+          if (!recovery.ok) {
+            throw new Error(recovery.reason || "로그인 세션을 만들지 못했습니다.");
+          }
+          if (!cancelled) {
+            router.replace("/auth/reset-password");
+            router.refresh();
+          }
+          return;
+        }
+
         if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
         } else {
+          const recovery = await establishRecoverySessionFromUrl();
+          if (recovery.ok) {
+            if (!cancelled) {
+              router.replace("/auth/reset-password");
+              router.refresh();
+            }
+            return;
+          }
           const { data, error } = await supabase.auth.getSession();
           if (error) throw error;
           if (!data.session) {

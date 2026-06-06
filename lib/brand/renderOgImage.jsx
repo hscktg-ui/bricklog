@@ -2,11 +2,12 @@ import { ImageResponse } from "next/og";
 import {
   BRAND_META_DESCRIPTION,
   BRAND_META_TITLE,
+  BRAND_META_TITLE_KO,
   BRICLOG_SLOGAN,
 } from "@/lib/brand/copy";
 
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
-export const OG_IMAGE_ALT = `${BRAND_META_TITLE} — ${BRICLOG_SLOGAN}`;
+export const OG_IMAGE_ALT = `브릭로그 BRICLOG — ${BRICLOG_SLOGAN}`;
 
 const FONT_REGULAR =
   "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/public/static/Pretendard-Regular.otf";
@@ -75,15 +76,27 @@ export async function renderOgImage() {
           >
             B
           </div>
-          <div
-            style={{
-              fontSize: 64,
-              fontWeight: 700,
-              color: "#191f28",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {BRAND_META_TITLE}
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div
+              style={{
+                fontSize: 56,
+                fontWeight: 700,
+                color: "#191f28",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {BRAND_META_TITLE_KO}
+            </div>
+            <div
+              style={{
+                fontSize: 40,
+                fontWeight: 700,
+                color: "#03C75A",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {BRAND_META_TITLE}
+            </div>
           </div>
         </div>
         <div

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 /**
  * 사이드바 하단 — 계정·환경
  */
@@ -15,12 +17,9 @@ export default function SidebarAccountMenu({
     <div className="px-2.5 py-1.5">
       <div className="space-y-0">
         {showAdminLink && (
-          <a
-            href="/admin"
-            className={`${itemClass} text-[13px] text-[#8B95A1]`}
-          >
+          <Link href="/admin" className={`${itemClass} text-[13px] text-[#8B95A1]`}>
             관리자
-          </a>
+          </Link>
         )}
         <button type="button" onClick={onLogout} className={itemClass}>
           <span className="text-[13px] text-[#8B95A1]">로그아웃</span>

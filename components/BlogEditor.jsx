@@ -755,6 +755,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 )}
                 <BlogResultView
                   blog={blogContent}
+                  blogInput={blogInput}
                   billingPlanId={billingPlanId}
                   onResultDisplayed={acknowledgeBlogResultDisplayed}
                   conciseView={concise || isMobile}

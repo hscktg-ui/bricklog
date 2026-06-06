@@ -40,7 +40,10 @@ export default function HeroSection({
 
       <div className="relative mx-auto max-w-3xl text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#03A94D]">
-          BRICLOG
+          브릭로그 · BRICLOG
+        </p>
+        <p className="mt-1 text-[12px] text-[#8B95A1]">
+          AI 브랜드 글쓰기 · Naver blog · Smart Place · Instagram
         </p>
 
         <p className="mx-auto mt-3 max-w-xs text-[12px] font-medium text-[#03A94D] sm:hidden">

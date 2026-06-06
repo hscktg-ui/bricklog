@@ -9,7 +9,7 @@ import {
   persistSavedEmail,
 } from "@/lib/auth/preferences";
 import { TERMS_VERSION, PRIVACY_VERSION, LEGAL_LINKS } from "@/lib/auth/legalVersions";
-import { getAuthCallbackUrl } from "@/lib/auth/redirect";
+import { getAuthCallbackUrl, getResetPasswordUrl } from "@/lib/auth/redirect";
 import { getEnabledOAuthProviders } from "@/lib/auth/providers";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import PasswordField from "@/components/auth/PasswordField";
@@ -183,7 +183,7 @@ export default function AuthForm({
     try {
       if (mode === MODES.reset) {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: callbackUrl,
+          redirectTo: getResetPasswordUrl() || callbackUrl,
         });
         if (error) throw error;
         onToast?.("비밀번호 재설정 메일을 보냈습니다.", "success");
@@ -312,6 +312,11 @@ export default function AuthForm({
         throw new Error("로그인에 실패했습니다.");
       }
       persistSavedEmail(email, saveEmail);
+      for (let i = 0; i < 4; i += 1) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session) break;
+        await new Promise((r) => setTimeout(r, 120));
+      }
       try {
         await fetchWithAuth("/api/auth/profile", { method: "POST" });
       } catch {

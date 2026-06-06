@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import SiteFooter from "@/components/layout/SiteFooter";
+import SessionTelemetry from "@/components/analytics/SessionTelemetry";
 import JsonLdScript from "@/components/seo/JsonLdScript";
+import CrawlableBrandIntro from "@/components/seo/CrawlableBrandIntro";
 import { buildRootMetadata } from "@/lib/brand/siteMetadata";
 import "./globals.css";
 
@@ -26,6 +28,8 @@ export default function RootLayout({ children }) {
     >
       <body className="flex min-h-dvh flex-col font-sans antialiased">
         <JsonLdScript />
+        <CrawlableBrandIntro />
+        <SessionTelemetry />
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         <SiteFooter />
       </body>
