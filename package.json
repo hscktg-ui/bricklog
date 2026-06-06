@@ -87,6 +87,7 @@
     "compare:salon-story": "node --import ./scripts/register-alias.mjs scripts/compare-salon-human-story.mjs",
     "test:briclog-doctrine": "node --import ./scripts/register-alias.mjs scripts/test-briclog-doctrine.mjs",
     "test:v6-priority": "node --import ./scripts/register-alias.mjs scripts/test-v6-priority-improvements.mjs",
+    "test:topic-proof-gate": "node --import ./scripts/register-alias.mjs scripts/test-topic-proof-gate.mjs",
     "test:signature-writing": "node --import ./scripts/register-alias.mjs scripts/test-signature-writing.mjs",
     "test:human-belief": "node --import ./scripts/register-alias.mjs scripts/test-human-belief.mjs",
     "test:humanity-common-sense": "node --import ./scripts/register-alias.mjs scripts/test-humanity-common-sense.mjs",

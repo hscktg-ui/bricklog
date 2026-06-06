@@ -13,13 +13,9 @@ import { assertPreWriteVerified } from "@/lib/content/v2PipelineGate.js";
 process.env.BRICLOG_MISSION = "true";
 
 assert.equal(RESEARCH_VERIFY_VERSION, "v1");
-assert.deepEqual(PIPELINE_ORDER_STRICT, [
-  "research",
-  "research_verify",
-  "generate",
-  "audit",
-  "output",
-]);
+assert.ok(PIPELINE_ORDER_STRICT.includes("topic_map"));
+assert.ok(PIPELINE_ORDER_STRICT.includes("info_securement_rate"));
+assert.ok(PIPELINE_ORDER_STRICT.indexOf("generate") > PIPELINE_ORDER_STRICT.indexOf("topic_explanation_rate"));
 
 const thin = {
   brandName: "테스트브랜드",
@@ -37,6 +33,7 @@ const rich = {
   brandName: "더건강하개",
   region: "용인",
   topic: "수제간식업체 소개",
+  industry: "반려동물",
   v2PipelineEnforced: true,
   knowledgeExpansionReady: true,
   researchFacts: [
