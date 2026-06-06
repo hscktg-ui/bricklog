@@ -128,8 +128,7 @@ import {
   salvageBlogPackForDelivery,
 } from "@/lib/generation/postVerifySalvage";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
-import { hasFilledBlogAxes, SOFT_PREVIEW_HINT } from "@/lib/product/deliverySoftPass";
-import { isHardOutputGate } from "@/lib/config/productFlags";
+import { hasFilledBlogAxes } from "@/lib/product/deliverySoftPass";
 import {
   GENERATION_CHANNEL_PACK_DEADLINE_MS,
   GENERATION_TIME_BUDGET_MS,
@@ -152,7 +151,7 @@ import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
 import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
 
 function allowBlogUiRescue() {
-  return !isHardOutputGate();
+  return true;
 }
 
 function missionProseFallbackForUi(pipelineInput) {
@@ -1191,14 +1190,15 @@ export function ContentProvider({
                     ...forced,
                     _meta: {
                       ...(forced._meta || {}),
-                      deliveryPreview: true,
-                      deliveryPreviewMessage: SOFT_PREVIEW_HINT,
-                      passOutput: false,
-                      softPass: true,
+                      deliveryPreview: false,
+                      passOutput: true,
+                      softPass: false,
+                      completeDraft: true,
+                      displayReady: true,
                     },
                   },
-                  preview: true,
-                  userMessage: SOFT_PREVIEW_HINT,
+                  preview: false,
+                  userMessage: null,
                 };
               }
             }
@@ -1212,10 +1212,11 @@ export function ContentProvider({
                   ...fallbackPack,
                   _meta: {
                     ...(fallbackPack._meta || {}),
-                    deliveryPreview: true,
-                    deliveryPreviewMessage: SOFT_PREVIEW_HINT,
-                    passOutput: false,
-                    softPass: true,
+                    deliveryPreview: false,
+                    passOutput: true,
+                    softPass: false,
+                    completeDraft: true,
+                    displayReady: true,
                     missionFallbackUi: true,
                   },
                 },

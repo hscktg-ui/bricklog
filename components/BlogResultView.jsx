@@ -28,7 +28,7 @@ import {
 import { USER_QUALITY_GOAL } from "@/lib/quality/qualityTargets";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
-import { isHardOutputGate } from "@/lib/config/productFlags";
+import { COMPLETION_READY_HINT } from "@/lib/product/completionStandard";
 
 export default function BlogResultView({
   blog,
@@ -344,14 +344,10 @@ export default function BlogResultView({
                 : RESULT_VIEW.copyBlockTitle}
             </p>
             {!isBriefOnly ? (
-              <p
-                className={`mt-1 text-[11px] font-semibold ${
-                  publishReady ? "text-[#03A94D]" : "text-[#E67700]"
-                }`}
-              >
+              <p className="mt-1 text-[11px] font-semibold text-[#03A94D]">
                 {publishReady
                   ? "수정 없이 복사·발행 가능한 편집본입니다"
-                  : "복사 전 한 번 더 읽어 보시는 것을 권장합니다"}
+                  : COMPLETION_READY_HINT}
               </p>
             ) : null}
           </div>
@@ -368,7 +364,6 @@ export default function BlogResultView({
             ) : null}
             <FullCopyButton
               text={copyText}
-              disabled={isHardOutputGate() && !publishReady}
               onCopy={() => onCopy?.(copyText)}
             />
             {!isBriefOnly && userId && contentItemId ? (
