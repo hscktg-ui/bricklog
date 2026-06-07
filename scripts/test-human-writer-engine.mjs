@@ -11,6 +11,10 @@ import {
   applyHumanWriterHeadingGate,
   scoreHumanWriterHeadingCompliance,
 } from "../lib/content/humanWriterHeadingGate.js";
+import {
+  isSignatureWritingEnforced,
+  rewriteSignatureHeading,
+} from "../lib/product/signatureWritingEngine.js";
 
 const block = buildHumanWriterEnginePromptBlock();
 if (!block.includes("Reader First")) {
@@ -47,11 +51,12 @@ if (gated.sections[0].heading.includes("브랜드 이해")) {
   console.error("FAIL: heading should be rewritten", gated.sections[0].heading);
   process.exit(1);
 }
-if (gated.sections[0].heading !== rewriteHumanWriterHeading("브랜드 이해", {
-  brandName: "템퍼",
-  topic: "모션베드",
-})) {
-  console.error("FAIL: unexpected rewrite", gated.sections[0].heading);
+const ctx = { brandName: "템퍼", topic: "모션베드" };
+const expected = isSignatureWritingEnforced()
+  ? rewriteSignatureHeading("브랜드 이해", ctx)
+  : rewriteHumanWriterHeading("브랜드 이해", ctx);
+if (gated.sections[0].heading !== expected) {
+  console.error("FAIL: unexpected rewrite", gated.sections[0].heading, "expected", expected);
   process.exit(1);
 }
 
