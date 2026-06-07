@@ -54,11 +54,59 @@ export async function prepareE2eAuth(baseUrl) {
   };
 }
 
+/** 브라우저 storage와 Supabase 클라이언트(localStorage) 동기화 */
+export async function syncE2eSessionToPage(page, baseUrl) {
+  const auth = await prepareE2eAuth(baseUrl);
+  if (!auth.ok) return auth;
+  await page.evaluate(
+    ({ key, value }) => {
+      try {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem(key, value);
+      } catch {
+        /* ignore */
+      }
+    },
+    { key: auth.session.storageKey, value: auth.session.tokenValue }
+  );
+  return { ok: true, email: auth.email };
+}
+
+/**
+ * Playwright — fetchWithAuth 토큰 갱신 레이스 대비, API 요청에 fresh Bearer 주입
+ * @param {import('playwright').Page} page
+ * @param {string} [baseUrl]
+ */
+export async function installE2eAuthRequestBridge(page, baseUrl = "") {
+  const origin = String(baseUrl || "").replace(/\/$/, "");
+  const pattern = origin ? `${origin}/api/**` : "**/api/**";
+  await page.route(pattern, async (route) => {
+    const url = route.request().url();
+    if (/\/api\/public\//.test(url)) {
+      await route.continue();
+      return;
+    }
+    const tokenRes = await getE2eBearerToken();
+    if (!tokenRes.ok) {
+      await route.continue();
+      return;
+    }
+    const headers = {
+      ...route.request().headers(),
+      authorization: `Bearer ${tokenRes.token}`,
+    };
+    await route.continue({ headers });
+  });
+}
+
 export async function createAuthenticatedContext(browser, baseUrl, viewport = { width: 1280, height: 900 }) {
   const auth = await prepareE2eAuth(baseUrl);
   if (!auth.ok) return auth;
 
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({
+    viewport,
+    storageState: auth.session.storageState,
+  });
   await applySupabaseSessionToContext(context, auth.session);
   await context.addInitScript(() => {
     try {

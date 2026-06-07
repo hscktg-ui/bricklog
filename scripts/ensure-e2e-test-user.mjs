@@ -158,7 +158,7 @@ export async function buildSupabasePlaywrightStorage(baseUrl) {
       origins: [
         {
           origin,
-          localStorage: [],
+          localStorage: [{ name: storageKey, value: tokenValue }],
           sessionStorage: [{ name: storageKey, value: tokenValue }],
         },
       ],
@@ -177,6 +177,7 @@ export async function applySupabaseSessionToContext(context, session) {
   await context.addInitScript(
     ({ key, value }) => {
       try {
+        localStorage.setItem(key, value);
         sessionStorage.setItem(key, value);
       } catch {
         /* ignore */

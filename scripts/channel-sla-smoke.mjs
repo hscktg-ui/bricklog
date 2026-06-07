@@ -23,6 +23,8 @@ import {
   fillBlogFormViaDom,
   fillChannelFormViaDom,
   ensureSmokeBrand,
+  installE2eAuthRequestBridge,
+  syncE2eSessionToPage,
   waitForWorkspaceReady,
 } from "./lib/e2eAuth.js";
 
@@ -227,6 +229,7 @@ async function ensureStandalone(page, channel) {
 async function waitForBlogResult(page, timeoutMs) {
   const genBtn = page.locator('[data-briclog-generate="blog"]:not([disabled])').first();
   await genBtn.waitFor({ state: "visible", timeout: 15_000 });
+  await syncE2eSessionToPage(page, BASE);
   const t0 = Date.now();
 
   const blogApiPromise = page
@@ -527,6 +530,7 @@ async function main() {
 
   const context = ctxResult.context;
   const page = await context.newPage();
+  await installE2eAuthRequestBridge(page, BASE);
   const consoleErrors = [];
   const networkFails = [];
 
