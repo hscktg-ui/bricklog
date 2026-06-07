@@ -50,6 +50,7 @@ export default function BlogResultView({
   blogInput = null,
   onFeedbackReflected,
   onResultDisplayed,
+  onToast,
   conciseView = false,
   mobileView = false,
 }) {
@@ -445,6 +446,7 @@ export default function BlogResultView({
           suggestionHints={feedbackSuggestionHints}
           compact={mobileSimple}
           onReflect={onRewrite ? handleFeedbackReflect : undefined}
+          onToast={onToast}
         />
       )}
 
@@ -514,6 +516,11 @@ export default function BlogResultView({
           factCheck={draft.qualityReport?.factCheck}
         />
 
+        {mobileSimple ? (
+          <p className="text-[11px] leading-relaxed text-[#8B95A1]">
+            브릭로그는 「왜」부터 풀어 쓰고, 피드백·브랜드 습관이 다음 글에 이어집니다.
+          </p>
+        ) : null}
         <BriclogStrengthChips draft={draft} blogInput={blogInput} />
 
         <div className="flex flex-wrap gap-2">

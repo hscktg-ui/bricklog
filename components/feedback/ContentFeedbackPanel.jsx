@@ -5,8 +5,13 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import {
   FEEDBACK_REACTIONS,
   FEEDBACK_LOOP_HINTS,
+  BRICLOG_FEEDBACK_SAVED_EVENT,
   feedbackTagsForChannel,
 } from "@/lib/feedback/constants";
+import {
+  FEEDBACK_NEXT_DRAFT_TOAST,
+  FEEDBACK_REFLECTED_TOAST,
+} from "@/lib/product/briclogPerspectiveCopy";
 import { buildRewriteFromFeedback } from "@/lib/feedback/buildRewriteFromFeedback";
 import { formatFeedbackIntentBrief } from "@/lib/feedback/feedbackIntentEngine";
 
@@ -20,6 +25,7 @@ export default function ContentFeedbackPanel({
   compact = false,
   onSubmitted,
   onReflect,
+  onToast,
 }) {
   const [reaction, setReaction] = useState(null);
   const [tags, setTags] = useState([]);
@@ -124,6 +130,21 @@ export default function ContentFeedbackPanel({
         round: reflectResult?.pack?._meta?.rewriteCount ?? feedbackRound,
       });
       setDone(true);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent(BRICLOG_FEEDBACK_SAVED_EVENT, {
+            detail: {
+              brandId,
+              intents: built.inputPatch?.feedbackHints || [],
+              reflected: reflectedOk,
+            },
+          })
+        );
+      }
+      onToast?.(
+        reflectedOk ? FEEDBACK_REFLECTED_TOAST : FEEDBACK_NEXT_DRAFT_TOAST,
+        "success"
+      );
       onSubmitted?.({
         ...payload,
         reflected: reflectedOk,
@@ -150,10 +171,10 @@ export default function ContentFeedbackPanel({
       <div className="space-y-2">
         <p className="text-[12px] text-[#03A94D]">
           {satisfied
-            ? `만족 피드백이 저장되었습니다 (${label}) · 이 톤을 브랜드·계정 학습에 반영합니다`
+            ? `만족 피드백이 저장되었습니다 (${label}) · 다음 글에 이 톤이 반영됩니다`
             : reflected
-              ? `피드백이 반영된 새 글이 준비되었습니다 (${label}) · 위 본문을 확인해 주세요`
-              : `피드백이 서버에 저장되었습니다 (${label})`}
+              ? `피드백이 반영된 새 글이 준비되었습니다 (${label}) · 다음 글에도 같은 기준이 이어집니다`
+              : `피드백이 저장되었습니다 (${label}) · 다음 「조사 후 글 받기」에 반영됩니다`}
           {!contentItemId && " · 콘텐츠 저장 후 기록·엔진 학습에 남습니다"}
         </p>
         {lastSummary?.intentBrief && (
