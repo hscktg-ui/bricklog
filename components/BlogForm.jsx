@@ -420,21 +420,41 @@ function BlogForm({
         />
       </Field>
 
-      {!effectiveSimple && (
+      {speakerTopicGuide.kind !== "general" ? (
+        <p
+          className={`rounded-lg border px-3 py-2.5 text-[12px] leading-relaxed ${
+            speakerTopicGuide.alignmentOk
+              ? "border-[#E8EBED] bg-[#FAFBFC] text-[#4E5968]"
+              : "border-[#FFE0B2] bg-[#FFF8E6] text-[#4E5968]"
+          }`}
+          role="status"
+        >
+          <span
+            className={`font-semibold ${
+              speakerTopicGuide.alignmentOk ? "text-[#03A94D]" : "text-[#E67700]"
+            }`}
+          >
+            {speakerTopicGuide.kind === "visit" ? "방문 후기" : "정보·가이드"}
+          </span>
+          <span className="mt-1 block">{speakerTopicGuide.message}</span>
+        </p>
+      ) : null}
+
       <button
         type="button"
         onClick={onAdvancedToggle}
         className="text-[12px] font-medium text-[#8B95A1] hover:text-[#4E5968]"
       >
         {advancedOpen
-          ? "▾ 더 맞추기 접기"
-          : compact
-            ? "▸ 더 맞추기 (톤·조사·키워드)"
-            : "▸ 더 맞추기 (톤·조사·키워드·분량)"}
+          ? "▾ 조사·화자 맞추기 접기"
+          : effectiveSimple
+            ? "▸ 조사·화자 맞추기"
+            : compact
+              ? "▸ 더 맞추기 (톤·조사·키워드)"
+              : "▸ 더 맞추기 (톤·조사·키워드·분량)"}
       </button>
-      )}
 
-      {!effectiveSimple && advancedOpen && (
+      {advancedOpen && (
         <div className="rounded-xl border border-dashed border-[#E8EBED] bg-[#FAFBFC] p-4 space-y-3">
           <ResearchModePanel
             compact={compact}

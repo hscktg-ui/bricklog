@@ -18,6 +18,7 @@ import UploadGuidePanel from "@/components/UploadGuidePanel";
 import BlogResultView from "@/components/BlogResultView";
 import BaseContentCard from "@/components/BaseContentCard";
 import PipelineQuickActions from "@/components/PipelineQuickActions";
+import ResearchSummaryStrip from "@/components/research/ResearchSummaryStrip";
 import Icon from "@/components/Icon";
 import {
   useContentForm,
@@ -455,7 +456,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             </button>
           )}
 
-          {blogContent && !compact && !simpleMode && (
+          {blogContent && !compact && (
             <PipelineQuickActions onNavigate={onNavigate} simpleMode={simpleMode} />
           )}
 
@@ -721,9 +722,11 @@ const BlogEditorResults = memo(function BlogEditorResults({
             {resultTab === "blog" && (
               <>
                 {simpleMode && researchResult?.summary ? (
-                  <p className="mb-4 rounded-xl border border-[#03C75A]/20 bg-[#F0FFF5] px-4 py-3 text-[12px] leading-relaxed text-[#03A94D]">
-                    브랜드·주제에 맞춰 참고 자료를 반영해 작성했습니다.
-                  </p>
+                  <ResearchSummaryStrip
+                    result={researchResult}
+                    researchFacts={blogInput?.researchFacts}
+                    query={blogInput?.researchQuery || blogInput?.topic}
+                  />
                 ) : null}
                 {!simpleMode && (
                 <ResearchResultPanel
