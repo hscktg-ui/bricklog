@@ -439,6 +439,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           {!isMobile ? (
             <button
               type="button"
+              data-briclog-generate="blog"
               disabled={
                 !formValidNow ||
                 storyBusy ||
@@ -538,6 +539,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             ) : null}
             <button
               type="button"
+              data-briclog-generate="blog"
               disabled={
                 !formValidNow ||
                 storyBusy ||

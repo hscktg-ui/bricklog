@@ -276,6 +276,7 @@ export default function ChannelStartScreen({
 
           <button
             type="button"
+            data-briclog-generate={channel}
             disabled={generating}
             onClick={() => commitAndGenerate({ preferStandalone })}
             className="flex min-h-[48px] w-full items-center justify-center rounded-xl bg-[#03C75A] px-4 py-3 text-[14px] font-semibold text-white hover:bg-[#02B350] disabled:opacity-50"

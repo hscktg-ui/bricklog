@@ -21,7 +21,7 @@ import {
   createAuthenticatedContext,
   dismissWorkspaceModals,
   fillBlogFormViaDom,
-  isWorkspaceReady,
+  waitForWorkspaceReady,
 } from "./lib/e2eAuth.js";
 
 function loadEnvLocal() {
@@ -83,13 +83,16 @@ async function dismissWelcome(page) {
 async function openWorkspace(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissWorkspaceModals(page);
-  await page.waitForTimeout(2500);
-  let ready = await isWorkspaceReady(page);
-  if (!ready) {
-    await page.waitForTimeout(3000);
-    ready = await isWorkspaceReady(page);
+  let ready = await waitForWorkspaceReady(page, 45_000);
+  if (!ready.ok) {
+    await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
+    await dismissWorkspaceModals(page);
+    ready = await waitForWorkspaceReady(page, 30_000);
   }
-  return { ok: ready, reason: ready ? "supabase_session" : "workspace_missing" };
+  return {
+    ok: ready.ok,
+    reason: ready.ok ? "supabase_session" : ready.reason,
+  };
 }
 
 async function openChannel(page, menuPattern) {
@@ -562,10 +565,9 @@ async function main() {
 
   for (let i = 0; i < personas.length; i++) {
     const persona = personas[i];
-    const personaPage = i === 0 ? page : await context.newPage();
     if (i > 0) {
-      attachPageListeners(personaPage);
-      const login = await openWorkspace(personaPage);
+      await resetWorkspaceBetweenRuns(page);
+      const login = await openWorkspace(page);
       if (!login.ok) {
         report.runs.push({
           id: persona.id,
@@ -573,20 +575,12 @@ async function main() {
           failReason: "workspace_not_ready",
           errors: [login.reason],
         });
-        await personaPage.close();
         continue;
       }
     }
     report.runs.push(
-      await runPersona(
-        personaPage,
-        persona,
-        consoleErrors,
-        networkFails,
-        apiTrace
-      )
+      await runPersona(page, persona, consoleErrors, networkFails, apiTrace)
     );
-    if (i > 0) await personaPage.close();
   }
 
   await browser.close();

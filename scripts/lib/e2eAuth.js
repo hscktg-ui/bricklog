@@ -148,11 +148,30 @@ export async function fillBlogFormViaDom(page, form) {
 }
 
 export async function isWorkspaceReady(page) {
-  const brand = await page
+  const brandLabel = await page.getByLabel(/^브랜드명$/).count().catch(() => 0);
+  const brandPh = await page
     .getByPlaceholder(/매장·브랜드|브랜드|팀 이름/i)
     .first()
     .count()
     .catch(() => 0);
-  const generate = await page.locator('[data-briclog-generate="blog"]').count().catch(() => 0);
-  return brand > 0 || generate > 0;
+  const generate = await page
+    .locator(
+      '[data-briclog-generate="blog"], [data-briclog-generate="place"], [data-briclog-generate="insta"], [data-briclog-generate="image"]'
+    )
+    .count()
+    .catch(() => 0);
+  const storyNav = await page
+    .getByRole("button", { name: /이야기/ })
+    .count()
+    .catch(() => 0);
+  return brandLabel > 0 || brandPh > 0 || generate > 0 || storyNav > 0;
+}
+
+export async function waitForWorkspaceReady(page, timeoutMs = 45_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (await isWorkspaceReady(page)) return { ok: true, reason: "workspace_ready" };
+    await page.waitForTimeout(800);
+  }
+  return { ok: false, reason: "workspace_missing" };
 }

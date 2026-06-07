@@ -115,6 +115,7 @@
     "test:seo-discoverability": "node scripts/test-seo-discoverability.mjs",
     "test:seo-prod": "node scripts/probe-seo-prod.mjs",
     "test:quality-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-quality-pipeline-alignment.mjs",
+    "test:channel-sla-fast": "node --import ./scripts/register-alias.mjs scripts/test-channel-sla-fast.mjs",
     "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",
     "test:completion-standard": "node --import ./scripts/register-alias.mjs scripts/test-completion-standard.mjs",
