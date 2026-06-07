@@ -89,6 +89,7 @@
     "test:briclog-doctrine": "node --import ./scripts/register-alias.mjs scripts/test-briclog-doctrine.mjs",
     "test:pet-cafe-visit": "node --import ./scripts/register-alias.mjs scripts/test-pet-cafe-visit.mjs",
     "test:human-writing-gate": "node --import ./scripts/register-alias.mjs scripts/test-human-writing-gate.mjs",
+    "test:user-quality-audit": "node --import ./scripts/register-alias.mjs scripts/test-user-quality-audit.mjs",
     "test:research-human-pack": "node --import ./scripts/register-alias.mjs scripts/test-research-human-pack.mjs",
     "test:research-channel-pack": "node --import ./scripts/register-alias.mjs scripts/test-research-channel-pack.mjs",
     "test:assistant-topics": "node --import ./scripts/register-alias.mjs scripts/test-assistant-topics.mjs",

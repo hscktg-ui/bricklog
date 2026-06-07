@@ -107,6 +107,17 @@ export default function BlogResultView({
   const meetsMin =
     charCount >= lengthTier.min && charCount <= lengthTier.max + 200;
   const qualityScore = draft._meta?.qualityScore?.total;
+  const humanWritingReady = draft._meta?.humanWritingDelivery?.humanReady;
+  const completionReady =
+    draft._meta?.humanWritingDelivery?.displayReady ??
+    draft._meta?.completionReadiness?.displayReady ??
+    draft._meta?.displayReady;
+  const draftQualityReady =
+    typeof qualityScore === "number" &&
+    qualityScore >= USER_QUALITY_GOAL &&
+    humanWritingReady !== false &&
+    completionReady !== false &&
+    !draft._meta?.outputWithheld;
   const titleOptions = (draft.titles || []).filter(
     (t) => t && t !== draft.representativeTitle
   );
@@ -514,14 +525,21 @@ export default function BlogResultView({
           {isStudio && typeof qualityScore === "number" && (
             <div
               className={`rounded-xl border px-3 py-2 text-[11px] font-semibold ${
-                qualityScore >= USER_QUALITY_GOAL && !draft._meta?.outputWithheld
+                draftQualityReady
                   ? "border-[#03C75A]/20 bg-[#E8F9EF] text-[#03A94D]"
                   : "border-[#FFE0B2] bg-[#FFF8E6] text-[#E67700]"
               }`}
+              title={
+                humanWritingReady === false
+                  ? `사람글·화자 기준 미달: ${(draft._meta?.humanWritingDelivery?.reasons || []).join(", ")}`
+                  : completionReady === false
+                    ? COMPLETION_READY_HINT
+                    : undefined
+              }
             >
               {draft._meta?.outputWithheld
                 ? CUSTOMER_DRAFT_REVIEW
-                : qualityScore >= USER_QUALITY_GOAL
+                : draftQualityReady
                   ? CUSTOMER_DRAFT_READY
                   : CUSTOMER_DRAFT_REVIEW}
             </div>

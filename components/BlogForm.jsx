@@ -20,6 +20,7 @@ import {
   resolveContentPersona,
 } from "@/lib/persona/contentPersona";
 import { V4_SPEAKER_OPTIONS } from "@/lib/persona/v4Speakers";
+import { getSpeakerTopicGuidance } from "@/lib/persona/speakerTopicGuide";
 import {
   describeLinkedPersona,
   getSpeakerPersonaFields,
@@ -196,6 +197,30 @@ function BlogForm({
   const linkedPersona = speakerLocked
     ? describeLinkedPersona(formValues.v4Speaker)
     : null;
+
+  const speakerTopicGuide = useMemo(
+    () =>
+      getSpeakerTopicGuidance({
+        topic: formValues.topic,
+        mainKeyword: formValues.mainKeyword,
+        includePhrases: formValues.includePhrases,
+        purpose: formValues.purpose,
+        purposeType: formValues.purposeType,
+        brandName: formValues.brandName,
+        region: formValues.region,
+        v4Speaker: formValues.v4Speaker,
+      }),
+    [
+      formValues.topic,
+      formValues.mainKeyword,
+      formValues.includePhrases,
+      formValues.purpose,
+      formValues.purposeType,
+      formValues.brandName,
+      formValues.region,
+      formValues.v4Speaker,
+    ]
+  );
 
   const brandIndustryMismatch = useMemo(
     () =>
@@ -446,10 +471,35 @@ function BlogForm({
                 (o) => o.value === (formValues.v4Speaker || "auto")
               )?.engineHint;
               return (
-                <p className="mt-1 text-[11px] text-[#8B95A1]">
-                  {hint ||
-                    "자동 추천 시 주제·브랜드에 맞는 Editor·Humanity·품질 프로필이 적용됩니다."}
-                </p>
+                <>
+                  <p className="mt-1 text-[11px] text-[#8B95A1]">
+                    {hint ||
+                      "자동 추천 시 주제·브랜드에 맞는 Editor·Humanity·품질 프로필이 적용됩니다."}
+                  </p>
+                  {speakerTopicGuide.kind !== "general" ? (
+                    <p
+                      className={`mt-2 rounded-lg border px-3 py-2 text-[12px] leading-relaxed ${
+                        speakerTopicGuide.alignmentOk
+                          ? "border-[#E8EBED] bg-white text-[#4E5968]"
+                          : "border-[#FFE0B2] bg-[#FFF8E6] text-[#4E5968]"
+                      }`}
+                      role="status"
+                    >
+                      <span
+                        className={`font-semibold ${
+                          speakerTopicGuide.alignmentOk
+                            ? "text-[#03A94D]"
+                            : "text-[#E67700]"
+                        }`}
+                      >
+                        {speakerTopicGuide.kind === "visit"
+                          ? "방문 후기 주제"
+                          : "정보·가이드 주제"}
+                      </span>
+                      <span className="mt-1 block">{speakerTopicGuide.message}</span>
+                    </p>
+                  ) : null}
+                </>
               );
             })()}
           </Field>

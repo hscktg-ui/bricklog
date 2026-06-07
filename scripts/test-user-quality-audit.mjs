@@ -236,7 +236,39 @@ if (thinDeliver?.blogContent && !thinHuman.humanReady) {
   report("thin_research_delivered", "팩트 1건인데 배달됨");
 }
 
-// ── 10) 고객 본문·제목 유출 스캔 (_meta 내부 키는 제외) ──
+// ── 10) 정보형 주제 + 후기형 화자 차단 ──
+const infoBase = {
+  brandName: "모카하우스",
+  region: "서울 마포",
+  topic: "봄 시즌 브런치 메뉴 종류와 고르는 법",
+  purposeType: "info",
+  blogLengthTier: "short",
+};
+const infoWrongSpeaker = buildResearchGroundedHumanPack({
+  ...infoBase,
+  v4Speaker: "plain_review",
+  researchFacts: [
+    { axis: "topic", fact: "봄 한정 브런치 메뉴가 4종 운영" },
+    { axis: "brand", fact: "수제 소스와 시즌 과일 토핑 사용" },
+    { axis: "topic", fact: "주말 11시 오픈 런치 세트 별도" },
+  ],
+});
+const infoWrongHuman = assessHuman(infoWrongSpeaker, {
+  ...infoBase,
+  v4Speaker: "plain_review",
+  researchFacts: infoWrongSpeaker._meta?.researchFacts || [
+    { axis: "topic", fact: "봄 한정 브런치 메뉴가 4종 운영" },
+    { axis: "brand", fact: "수제 소스와 시즌 과일 토핑 사용" },
+  ],
+});
+if (infoWrongHuman.humanReady) {
+  report(
+    "info_plain_review_passes",
+    "정보형 주제에 담백 후기형이 humanReady=true"
+  );
+}
+
+// ── 11) 고객 본문·제목 유출 스캔 (_meta 내부 키는 제외) ──
 const INTERNAL_RE =
   /gemini|MIN_|insufficient_information|v2axis|beta_test_guard|personaEngineProfile/i;
 for (const [label, pack] of [
