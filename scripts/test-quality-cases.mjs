@@ -23,8 +23,8 @@ assert(CORE_TARGET_SCORE === 95, "CORE_TARGET_SCORE must be 95");
 assert(DEFAULT_QUALITY_TARGET === 95, "DEFAULT_QUALITY_TARGET must be 95");
 assert(CONSTITUTION_V2_TARGET_SCORE === 95, "CONSTITUTION_V2_TARGET_SCORE must be 95");
 assert(
-  CORE_MAX_REWRITES >= 1,
-  `CORE_MAX_REWRITES should allow quality loop (got ${CORE_MAX_REWRITES}; fast pipeline caps at 1–2)`
+  CORE_MAX_REWRITES >= 2,
+  `CORE_MAX_REWRITES should allow quality loop (got ${CORE_MAX_REWRITES}; fast pipeline default 2)`
 );
 
 const PLACEHOLDER_RE =
