@@ -151,6 +151,7 @@ const prodOpeningPack = {
       body: [
         "파주 에이스침대, 루체3 전시소식을 메모해 뒀어요.",
         "신혼침대-에이스침대 파주 매장: 템바보드 헤드보드가 헤드…",
+        "파주 에이스침대 쇼룸에서 루체3 전시소식 전시·체험 구성을 직접 확인했어요.",
         "루체3 전시 구성은 매장 안내 기준으로 확인하면 됩니다.",
       ].join(" "),
     },
@@ -159,7 +160,7 @@ const prodOpeningPack = {
 };
 const prodScrubbed = scrubSpeakerMismatchTitleOpening(prodOpeningPack, brandIntro);
 const prodOpen = prodScrubbed.sections?.[0]?.body || "";
-if (/메모(?:해|한)\s*뒀|템바보드|신혼침대-/.test(prodOpen)) {
+if (/메모(?:해|한)\s*뒀|템바보드|신혼침대-|직접\s*확인|쇼룸(?:에서|)\s*.{0,20}직접/.test(prodOpen)) {
   console.error("FAIL: prod-like opening still contaminated", prodOpen.slice(0, 200));
   process.exit(1);
 }
