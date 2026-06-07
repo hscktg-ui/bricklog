@@ -23,6 +23,7 @@ import {
   stashPublicTestDraftForSignup,
 } from "@/lib/publicTest/publicTestQuotaClient";
 import { GREEN_CTA_SOLID } from "@/lib/ui/actionButtonStyles";
+import PublicTestContextScore from "@/components/landing/public-test/PublicTestContextScore";
 
 export default function PublicBrandTestSection({ onSignup }) {
   const [brandName, setBrandName] = useState("");
@@ -346,33 +347,10 @@ export default function PublicBrandTestSection({ onSignup }) {
                 </p>
               </div>
 
-              {result.metrics ? (
-                <div className="grid gap-3 border-t border-[#E8EBED] bg-[#FAFBFC] px-5 py-4 sm:grid-cols-3">
-                  <div>
-                    <p className="text-[10px] font-semibold text-[#8B95A1]">
-                      브랜드 이해도
-                    </p>
-                    <p className="text-[20px] font-bold text-[#191F28]">
-                      {result.metrics.brandUnderstandingPct}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-semibold text-[#8B95A1]">
-                      발행 가능 점수
-                    </p>
-                    <p className="text-[20px] font-bold text-[#191F28]">
-                      {result.metrics.publishScore}점
-                    </p>
-                  </div>
-                  <div className="sm:col-span-1">
-                    <p className="text-[10px] font-semibold text-[#8B95A1]">
-                      개선 포인트
-                    </p>
-                    <p className="mt-0.5 text-[12px] leading-snug text-[#4E5968]">
-                      {result.metrics.improvementHint}
-                    </p>
-                  </div>
-                </div>
+              {result.metrics?.contextScore ? (
+                <PublicTestContextScore
+                  contextScore={result.metrics.contextScore}
+                />
               ) : null}
 
               <div className="flex flex-col gap-2 border-t border-[#E8EBED] px-5 py-4 sm:flex-row">

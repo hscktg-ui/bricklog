@@ -54,6 +54,8 @@ export default function BlogResultView({
   onNavigate,
   conciseView = false,
   mobileView = false,
+  hasPlace = false,
+  hasInsta = false,
 }) {
   const [draft, setDraft] = useState(blog);
   const [savedFlash, setSavedFlash] = useState(false);
@@ -338,7 +340,12 @@ export default function BlogResultView({
       )}
 
       {!isBriefOnly ? (
-        <BriclogStrengthChips draft={draft} blogInput={blogInput} />
+        <BriclogStrengthChips
+          draft={draft}
+          blogInput={blogInput}
+          hasPlace={hasPlace}
+          hasInsta={hasInsta}
+        />
       ) : null}
 
       {simWarn && (simpleMode || !showExpertPanels) ? (

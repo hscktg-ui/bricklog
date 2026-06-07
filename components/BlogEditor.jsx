@@ -805,6 +805,8 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 <BlogResultView
                   blog={blogContent}
                   blogInput={blogInput}
+                  hasPlace={!!placeContent}
+                  hasInsta={!!instagramContent}
                   billingPlanId={billingPlanId}
                   onToast={onToast}
                   onNavigate={onNavigate}
