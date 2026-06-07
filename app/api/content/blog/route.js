@@ -136,6 +136,7 @@ export async function POST(request) {
       userId: auth.user.id,
       route: "/api/content/blog",
       message: err.message,
+      err,
       accessToken: auth.token,
     });
     try {

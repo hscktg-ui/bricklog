@@ -151,6 +151,7 @@ export async function POST(request) {
       userId: auth.user.id,
       route: "/api/content/channel",
       message: err.message,
+      err,
       accessToken: auth.token,
     });
     if (requiresV2ResearchGate({ ...savedInput, v2AxisRequired: true })) {
