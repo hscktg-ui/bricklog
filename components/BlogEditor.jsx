@@ -19,6 +19,8 @@ import BlogResultView from "@/components/BlogResultView";
 import BaseContentCard from "@/components/BaseContentCard";
 import PipelineQuickActions from "@/components/PipelineQuickActions";
 import ResearchSummaryStrip from "@/components/research/ResearchSummaryStrip";
+import BriclogPerspectiveNote from "@/components/BriclogPerspectiveNote";
+import BrandHabitStrip from "@/components/BrandHabitStrip";
 import Icon from "@/components/Icon";
 import {
   useContentForm,
@@ -316,6 +318,13 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             }
           />
 
+          {!compact && (
+            <div className="mt-4 space-y-3">
+              <BriclogPerspectiveNote compact={simpleMode} />
+              <BrandHabitStrip />
+            </div>
+          )}
+
           {!compact && !simpleMode && (
             <AiServiceStatus
               llmAvailable={llmStatus.llmAvailable}
@@ -457,7 +466,12 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           )}
 
           {blogContent && !compact && (
-            <PipelineQuickActions onNavigate={onNavigate} simpleMode={simpleMode} />
+            <PipelineQuickActions
+              onNavigate={onNavigate}
+              simpleMode={simpleMode}
+              billingPlanId={billingPlanId}
+              onUpgradeClick={onPlanChange}
+            />
           )}
 
           {!simpleMode && !isMobile && (
@@ -761,6 +775,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   blog={blogContent}
                   blogInput={blogInput}
                   billingPlanId={billingPlanId}
+                  onToast={onToast}
                   onResultDisplayed={acknowledgeBlogResultDisplayed}
                   conciseView={concise || isMobile}
                   mobileView={isMobile}
