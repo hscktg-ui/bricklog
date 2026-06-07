@@ -303,6 +303,7 @@ export function ContentProvider({
   });
   const [editorImproving, setEditorImproving] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [signupDraftRestored, setSignupDraftRestored] = useState(false);
   const deferredBlogInput = useDeferredValue(blogInput);
   const [llmStatus, setLlmStatus] = useState({
     llmAvailable: null,
@@ -559,6 +560,7 @@ export function ContentProvider({
         contentDate: draft?.contentDate || today,
       };
       if (publicDraft) {
+        setSignupDraftRestored(true);
         if (!merged.brandName?.trim() && publicDraft.brandName) {
           merged.brandName = publicDraft.brandName;
         }
@@ -2959,6 +2961,10 @@ export function ContentProvider({
     ]
   );
 
+  const acknowledgeSignupDraft = useCallback(() => {
+    setSignupDraftRestored(false);
+  }, []);
+
   const formValue = useMemo(
     () => ({
       blogInput,
@@ -2967,6 +2973,8 @@ export function ContentProvider({
       touched,
       setTouched,
       isFormValid: formReady,
+      signupDraftRestored,
+      acknowledgeSignupDraft,
     }),
     [
       blogInput,
@@ -2974,6 +2982,8 @@ export function ContentProvider({
       formErrors,
       touched,
       formReady,
+      signupDraftRestored,
+      acknowledgeSignupDraft,
     ]
   );
 

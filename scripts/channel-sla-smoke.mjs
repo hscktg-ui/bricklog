@@ -149,10 +149,50 @@ async function waitForGenerateEnabled(page, timeoutMs = 15_000, pattern) {
   return btn;
 }
 
+async function waitForWorkspaceIdle(page, timeoutMs = 180_000) {
+  await page
+    .evaluate(() => {
+      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    })
+    .catch(() => null);
+  await page
+    .waitForFunction(
+      () => {
+        const t = document.body.innerText || "";
+        if (/편집본 작성 중|조사해서 글 쓰는 중|올리기 전 점검|만드는 중…|쓰는 중/.test(t)) {
+          return false;
+        }
+        const disabled = document.querySelector(
+          'button[disabled]:not([aria-hidden="true"])'
+        );
+        if (disabled?.textContent?.includes("만드는 중")) return false;
+        return true;
+      },
+      { timeout: timeoutMs }
+    )
+    .catch(() => null);
+  await page.waitForTimeout(500);
+}
+
+async function resetWorkspaceBetweenRuns(page) {
+  await waitForWorkspaceIdle(page, 180_000);
+  await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+  await dismissWorkspaceModals(page);
+  await page.waitForTimeout(1200);
+}
+
+function uniqueSlaForm(form) {
+  const stamp = String(Date.now()).slice(-6);
+  return {
+    ...form,
+    brandName: form.brandName ? `${form.brandName}${stamp}` : form.brandName,
+  };
+}
+
 async function ensureStandalone(page, channel) {
-  const label = page.getByText(/단독으로 만들기/i).first();
+  const label = page.getByText(/단독으로 받기/i).first();
   if (!(await label.count())) return;
-  const box = page.locator(`label:has-text("단독으로 만들기") input[type="checkbox"]`).first();
+  const box = page.locator(`label:has-text("단독으로 받기") input[type="checkbox"]`).first();
   if (await box.count()) {
     const checked = await box.isChecked();
     if (!checked) await box.check({ force: true }).catch(() => null);
@@ -216,23 +256,47 @@ async function waitForBlogResult(page, timeoutMs) {
 }
 
 async function waitForChannelResult(page, persona, timeoutMs) {
+  const channelId =
+    persona.channel === "insta"
+      ? "instagram"
+      : persona.channel === "image"
+        ? "image"
+        : persona.channel;
+
+  const apiPromise = page
+    .waitForResponse(
+      (r) =>
+        r.url().includes("/api/content/channel") &&
+        r.request().method() === "POST",
+      { timeout: timeoutMs }
+    )
+    .then(async (res) => ({
+      status: res.status(),
+      ok: res.ok(),
+      body: await res.json().catch(() => ({})),
+    }))
+    .catch((e) => ({ apiError: e.message }));
+
   await page
     .getByRole("button", { name: persona.generatePattern })
     .first()
     .click({ timeout: 10_000 });
 
   const hint = persona.resultHint;
-  await page.waitForFunction(
+  const uiPromise = page.waitForFunction(
     ({ re }) => {
       const t = document.body.innerText || "";
-      if (/만드는 중|쓰는 중|준비 중/.test(t) && !new RegExp(re, "i").test(t)) {
-        return false;
-      }
-      return new RegExp(re, "i").test(t) || t.length > 600;
+      if (/만드는 중|쓰는 중|준비 중|편집본 작성 중/.test(t)) return false;
+      return new RegExp(re, "i").test(t);
     },
     { re: hint },
     { timeout: timeoutMs }
   );
+
+  const [apiSettled, uiSettled] = await Promise.allSettled([apiPromise, uiPromise]);
+  const api = apiSettled.status === "fulfilled" ? apiSettled.value : { apiError: apiSettled.reason?.message };
+  const uiOk = uiSettled.status === "fulfilled";
+  return { api, uiOk, channelId };
 }
 
 async function runPersona(page, persona, errors, networkFails, apiTrace) {
@@ -250,6 +314,7 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
 
   const t0 = Date.now();
   try {
+    await resetWorkspaceBetweenRuns(page);
     await openChannel(page, persona.menuPattern);
     run.phases.navigateMs = Date.now() - t0;
 
@@ -258,7 +323,8 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
     }
 
     const fillStart = Date.now();
-    await fillCommonFields(page, persona.form);
+    const form = uniqueSlaForm(persona.form);
+    await fillCommonFields(page, form);
     if (persona.form.placeHeadline) {
       await fillIfPresent(page, /헤드라인|한 줄/i, persona.form.placeHeadline);
     }
@@ -296,11 +362,42 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
         run.errors.push(`blog_api_${api.status}`);
         run.network.push({ url: "/api/content/blog", status: api.status });
       }
-      if (api.body?.mode === "error" || api.body?.ok === false) {
-        run.errors.push(api.body?.userMessage || api.body?.error || "blog_api_error");
+      if (
+        api.body?.withheld ||
+        api.body?.ok === false ||
+        !api.body?.blogContent?.sections?.length
+      ) {
+        run.status = "fail";
+        run.errors.push(
+          api.body?.userMessage || api.body?.error || "blog_api_no_content"
+        );
+        throw new Error("blog_api_no_content");
       }
     } else {
-      await waitForChannelResult(page, persona, remaining);
+      const { api, uiOk } = await waitForChannelResult(page, persona, remaining);
+      run.phases.api = api;
+      run.phases.uiOk = uiOk;
+      if (!uiOk) {
+        run.errors.push("channel_ui_timeout");
+        throw new Error("channel_ui_timeout");
+      }
+      const contentKey =
+        persona.channel === "place"
+          ? "placeContent"
+          : persona.channel === "insta"
+            ? "instagramContent"
+            : "imagePrompts";
+      if (api.status && api.status >= 400) {
+        run.errors.push(`channel_api_${api.status}`);
+        throw new Error(`channel_api_${api.status}`);
+      }
+      if (api.body?.withheld || api.body?.ok === false || !api.body?.[contentKey]) {
+        run.status = "fail";
+        run.errors.push(
+          api.body?.userMessage || api.body?.error || "channel_api_no_content"
+        );
+        throw new Error("channel_api_no_content");
+      }
     }
     run.phases.generateMs = Date.now() - genStart;
     run.elapsedMs = Date.now() - t0;

@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay.js";
 import { formatFeedbackAppliedCustomerLine } from "@/lib/feedback/feedbackAppliedDisplay.js";
+import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack.js";
 
 const readyPack = {
   sections: [{ body: "a" }],

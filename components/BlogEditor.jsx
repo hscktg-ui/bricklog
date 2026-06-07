@@ -85,7 +85,14 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     typeof onNavigate === "function"
       ? () => onNavigate("history")
       : null;
-  const { blogInput, setBlogInput, touched, setTouched } = useContentForm();
+  const {
+    blogInput,
+    setBlogInput,
+    touched,
+    setTouched,
+    signupDraftRestored,
+    acknowledgeSignupDraft,
+  } = useContentForm();
   const {
     blogContent,
     placeContent,
@@ -318,6 +325,27 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
                 : null
             }
           />
+
+          {signupDraftRestored && formValidNow && !blogContent && !generating.blog ? (
+            <div
+              className="mt-4 rounded-xl border border-[#03C75A]/30 bg-[#F6FDF9] px-4 py-3"
+              role="status"
+            >
+              <p className="text-[13px] font-bold text-[#191F28]">
+                가입 전 입력이 그대로 채워졌어요
+              </p>
+              <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+                아래 「{WORKSPACE_BLOG.cta}」만 누르시면 첫 편집본을 받을 수 있어요.
+              </p>
+              <button
+                type="button"
+                onClick={acknowledgeSignupDraft}
+                className="mt-2 text-[11px] font-semibold text-[#8B95A1] hover:text-[#4E5968]"
+              >
+                닫기
+              </button>
+            </div>
+          ) : null}
 
           {!compact && (
             <div className="mt-4 space-y-3">
