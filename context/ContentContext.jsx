@@ -144,7 +144,10 @@ import {
   clearPendingBlogResult,
   restorePendingBlogResult,
 } from "@/lib/generation/pendingBlogRecovery";
-import { emitBrandFormSync } from "@/lib/workspace/brandFormSync";
+import {
+  emitBrandFormSync,
+  mergeWorkspaceBrandIntoInput,
+} from "@/lib/workspace/brandFormSync";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
 import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
 import { normalizeBlogGenerationFailure } from "@/lib/generation/normalizeGenerationError";
@@ -154,6 +157,15 @@ import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
 
 function allowBlogUiRescue() {
   return true;
+}
+
+function resolveBlogGenerationFailMessage(pipelineInput, result) {
+  const msg = String(result?.userMessage || "").trim();
+  if (msg) return msg;
+  if (!hasFilledBlogAxes(pipelineInput)) {
+    return "브랜드 · 지역 · 주제를 모두 입력해 주세요.";
+  }
+  return "이번에는 편집본을 화면에 올리지 못했어요. 잠시 후 「조사 후 글 받기」를 다시 눌러 주세요.";
 }
 
 function missionProseFallbackForUi(pipelineInput) {
@@ -593,20 +605,13 @@ export function ContentProvider({
     const brandId = brandHooks?.activeBrandId;
     if (!brand?.brandName?.trim() || !brandId) return;
     setBlogInput((prev) => {
-      if (prev.brandId !== brandId) return prev;
-      if (
-        prev.brandName?.trim() === brand.brandName?.trim() &&
-        prev.region?.trim()
-      ) {
-        return prev;
-      }
       const seeded = brandMemoryToFormInput(brand);
       const merged = {
         ...seeded,
         ...prev,
         brandId,
-        brandName: brand.brandName?.trim() || prev.brandName,
-        region: prev.region?.trim() || seeded.region,
+        brandName: prev.brandName?.trim() || brand.brandName?.trim() || seeded.brandName,
+        region: prev.region?.trim() || seeded.region || brand.region,
         industry: prev.industry?.trim() || seeded.industry,
         topic: prev.topic?.trim() || seeded.topic,
         mainKeyword: prev.mainKeyword?.trim() || seeded.mainKeyword,
@@ -887,9 +892,12 @@ export function ContentProvider({
       return;
     }
     if (!requireEmailVerified({ setHint: true })) return;
-    let input = inputOverride
-      ? { ...DEFAULT_BLOG_INPUT, ...blogInput, ...inputOverride }
-      : blogInput;
+    let input = mergeWorkspaceBrandIntoInput(
+      inputOverride
+        ? { ...DEFAULT_BLOG_INPUT, ...blogInput, ...inputOverride }
+        : blogInput,
+      brandHooks
+    );
     const errors = validateForm(input);
     if (Object.keys(errors).length > 0) {
       onToast?.(errors[Object.values(errors)[0]], "error");
@@ -1096,11 +1104,14 @@ export function ContentProvider({
           if (rescued?.blogContent?.sections?.length) {
             result = rescued;
           } else {
-            const failMsg =
-              result.userMessage ||
-              "브랜드 · 지역 · 주제 세 가지를 모두 입력해 주세요.";
+            const failMsg = resolveBlogGenerationFailMessage(
+              pipelineInput,
+              result
+            );
             setBlogGenHint(failMsg);
-            setBlogGenHintSoft(!result.userMessage?.includes("세 가지"));
+            setBlogGenHintSoft(
+              hasFilledBlogAxes(pipelineInput) || Boolean(result.userMessage)
+            );
             finishLoadingOverlay("blog", startedAt, {
               success: false,
               message: failMsg,
@@ -1132,11 +1143,14 @@ export function ContentProvider({
             result = rescued;
             blog = rescued.blogContent;
           } else {
-            const failMsg =
-              result.userMessage ||
-              "브랜드 · 지역 · 주제를 입력해 주세요.";
+            const failMsg = resolveBlogGenerationFailMessage(
+              pipelineInput,
+              result
+            );
             setBlogGenHint(failMsg);
-            setBlogGenHintSoft(true);
+            setBlogGenHintSoft(
+              hasFilledBlogAxes(pipelineInput) || Boolean(result.userMessage)
+            );
             finishLoadingOverlay("blog", startedAt, {
               success: false,
               message: failMsg,
