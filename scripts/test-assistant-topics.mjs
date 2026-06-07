@@ -1,34 +1,53 @@
 /**
- * 도움말 빠른 답변 — 현황 주제 회귀
+ * 도움말 빠른 답변 — 제품 UI·설정과 일치 회귀
  */
 import { matchQuickReply } from "../lib/assistant/matchTopic.js";
 import { QUICK_PROMPTS, QUICK_TEXT } from "../lib/assistant/knowledge.js";
+import { FORM_ADVANCED_SECTION } from "../lib/assistant/productGuide.js";
+import { CHANNEL_PRODUCTS } from "../lib/channels/channelProducts.js";
+import { V4_SPEAKER_OPTIONS } from "../lib/persona/v4Speakers.js";
+
+const plainReviewLabel = V4_SPEAKER_OPTIONS.find(
+  (o) => o.value === "plain_review"
+)?.label;
 
 const cases = [
   {
     message: QUICK_TEXT.research,
     topic: "자료조사",
-    must: ["자료조사", "팩트", "플레이스"],
+    must: ["자료조사", FORM_ADVANCED_SECTION, "플레이스"],
   },
   {
     message: QUICK_TEXT.speaker,
     topic: "화자",
-    must: ["화자", "방문", "후기"],
+    must: [plainReviewLabel, FORM_ADVANCED_SECTION, "방문"],
   },
   {
     message: QUICK_TEXT.quality,
     topic: "콘텐츠코칭",
-    must: ["자료조사", "화자", "템플릿"],
+    must: [FORM_ADVANCED_SECTION, "자료조사", plainReviewLabel],
+  },
+  {
+    message: QUICK_TEXT.emoji,
+    topic: "이모지",
+    must: [FORM_ADVANCED_SECTION, CHANNEL_PRODUCTS.growth.menuLabel],
+    mustNot: ["편의·습관"],
   },
   {
     message: "플레이스 인스타 채널 연동",
     topic: "채널",
-    must: ["자료조사", "플레이스"],
+    must: [CHANNEL_PRODUCTS.insta.menuLabel, "인스타 캡션"],
+    mustNot: ["편의·습관"],
   },
   {
     message: "생성 오류 안 나와요",
     topic: "검수",
     must: ["자료조사", "재시도"],
+  },
+  {
+    message: QUICK_TEXT.start,
+    topic: "시작하기",
+    must: ["휴대폰", FORM_ADVANCED_SECTION],
   },
 ];
 
@@ -49,6 +68,12 @@ for (const c of cases) {
       process.exit(1);
     }
   }
+  for (const bad of c.mustNot || []) {
+    if (hit.reply.includes(bad)) {
+      console.error("FAIL: stale phrase", bad, "in", c.message);
+      process.exit(1);
+    }
+  }
 }
 
 for (const q of QUICK_PROMPTS) {
@@ -56,6 +81,12 @@ for (const q of QUICK_PROMPTS) {
     console.error("FAIL: missing QUICK_TEXT for", q.id);
     process.exit(1);
   }
+}
+
+const stale = matchQuickReply("이모지 어디서 바꿔요", { loggedIn: true });
+if (stale?.reply?.includes("편의·습관")) {
+  console.error("FAIL: emoji reply still mentions 편의·습관");
+  process.exit(1);
 }
 
 console.log("OK assistant-topics");

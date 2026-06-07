@@ -173,7 +173,7 @@ export default function BriclogAssistant({
               <div className="min-w-0">
                 <p className="text-[15px] font-bold text-[#191F28]">도움말</p>
                 <p className="truncate text-[11px] text-[#8B95A1]">
-                  자료조사·화자·채널·한도·요금 안내
+                  더 맞추기·채널·플랜·한도 안내
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
