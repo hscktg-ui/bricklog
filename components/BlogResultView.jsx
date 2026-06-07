@@ -26,6 +26,8 @@ import {
   CUSTOMER_DRAFT_REVIEW,
 } from "@/lib/copy/customerFacing";
 import { USER_QUALITY_GOAL } from "@/lib/quality/qualityTargets";
+import { isPaidPlan } from "@/lib/billing/plans";
+import BriclogStrengthChips from "@/components/BriclogStrengthChips";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import { COMPLETION_READY_HINT } from "@/lib/product/completionStandard";
@@ -56,6 +58,8 @@ export default function BlogResultView({
   const [sectionsOpen, setSectionsOpen] = useState(false);
   const [expertOpen, setExpertOpen] = useState(false);
   const isStudio = billingPlanId === "studio";
+  const isPaid = isPaidPlan(billingPlanId);
+  const showQualityBadge = isPaid || isStudio;
   const { simpleMode } = useSimpleWorkspaceMode(userId);
   const mobileSimple = mobileView || conciseView;
   const [showSubheadings, setShowSubheadings] = useState(
@@ -510,6 +514,8 @@ export default function BlogResultView({
           factCheck={draft.qualityReport?.factCheck}
         />
 
+        <BriclogStrengthChips draft={draft} blogInput={blogInput} />
+
         <div className="flex flex-wrap gap-2">
           <div
             className={`rounded-xl px-3 py-2 text-[11px] font-semibold ${
@@ -522,7 +528,7 @@ export default function BlogResultView({
             {!meetsMin &&
               ` · 권장 ${lengthTier.target.toLocaleString()}자 (${lengthTier.min.toLocaleString()}자+)`}
           </div>
-          {isStudio && typeof qualityScore === "number" && (
+          {showQualityBadge && typeof qualityScore === "number" && (
             <div
               className={`rounded-xl border px-3 py-2 text-[11px] font-semibold ${
                 draftQualityReady
@@ -611,7 +617,7 @@ export default function BlogResultView({
           />
         )}
 
-        {contentItemId && isStudio && (
+        {contentItemId && isPaid && (
           <PerformanceInputPanel contentItemId={contentItemId} />
         )}
 
