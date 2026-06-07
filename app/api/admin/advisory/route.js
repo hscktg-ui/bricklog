@@ -4,6 +4,7 @@ import { createServiceSupabase } from "@/lib/supabase/server";
 import { aggregateFeedbackStats } from "@/lib/feedback/adminStats";
 import { fetchAdminDashboardExtras } from "@/lib/admin/fetchDashboardData";
 import { buildOperatorAdvisory } from "@/lib/admin/buildOperatorAdvisory";
+import { startOfTodayKstIso } from "@/lib/admin/kstTime";
 
 export const runtime = "nodejs";
 
@@ -20,17 +21,16 @@ export async function GET(request) {
     );
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayIso = today.toISOString();
+  const todayIso = startOfTodayKstIso();
 
   const [errorsRes, itemsTodayRes, eventsTodayRes, feedbackRes, brandsActiveRes] =
     await Promise.all([
       db
         .from("error_logs")
-        .select("id, route, message, created_at")
+        .select("id, route, message, meta, created_at")
+        .gte("created_at", todayIso)
         .order("created_at", { ascending: false })
-        .limit(20),
+        .limit(30),
       db
         .from("content_items")
         .select("id, channel, quality_score, prompt_input, brand_id")
