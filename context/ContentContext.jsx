@@ -146,6 +146,7 @@ import {
 } from "@/lib/generation/pendingBlogRecovery";
 import {
   emitBrandFormSync,
+  coalesceBlogGenerationInput,
   mergeWorkspaceBrandIntoInput,
 } from "@/lib/workspace/brandFormSync";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
@@ -444,6 +445,7 @@ export function ContentProvider({
         message,
         immediate = false,
         hintIsAuth = false,
+        hintSoft = undefined,
         quietSuccess = false,
         revealSuccess = false,
         revealMs = 450,
@@ -459,6 +461,9 @@ export function ContentProvider({
           setBlogGenHintSoft(false);
         } else {
           setBlogGenHint(message || null);
+          if (typeof hintSoft === "boolean") {
+            setBlogGenHintSoft(hintSoft);
+          }
           setBlogGenHintIsAuth(
             hintIsAuth ||
               (Boolean(message) &&
@@ -894,7 +899,10 @@ export function ContentProvider({
     if (!requireEmailVerified({ setHint: true })) return;
     let input = mergeWorkspaceBrandIntoInput(
       inputOverride
-        ? { ...DEFAULT_BLOG_INPUT, ...blogInput, ...inputOverride }
+        ? coalesceBlogGenerationInput(
+            { ...DEFAULT_BLOG_INPUT, ...blogInput },
+            inputOverride
+          )
         : blogInput,
       brandHooks
     );
@@ -1039,10 +1047,11 @@ export function ContentProvider({
             setGenerating((g) => ({ ...g, blog: false }));
             setResearchResult(null);
             setBlogGenHint(axis.userMessage);
-            setBlogGenHintSoft(true);
+            setBlogGenHintSoft(hasFilledBlogAxes(pipelineInput));
             finishLoadingOverlay("blog", startedAt, {
               success: false,
               message: axis.userMessage,
+              hintSoft: hasFilledBlogAxes(pipelineInput),
               toastType: "info",
             });
             return;
@@ -1607,6 +1616,7 @@ export function ContentProvider({
           success: false,
           message: norm.message,
           hintIsAuth: err?.status === 401 || err?.status === 403,
+          hintSoft: norm.soft,
           toastType: norm.toastType,
         });
       } finally {

@@ -201,6 +201,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       }
       formApiRef.current?.replaceAll?.(next);
       setDraftForm(next);
+      setBlogInput(next);
       setTouched(true);
       onStartGenerate?.();
       generateBlog(next, { blogOnly });
