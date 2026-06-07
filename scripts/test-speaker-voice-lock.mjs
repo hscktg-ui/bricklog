@@ -201,6 +201,26 @@ if (
   console.error("FAIL: soft experiential opening still present", softOpen.slice(0, 240));
   process.exit(1);
 }
+
+const snippetOpeningPack = {
+  title: "파주 에이스침대, 루체3 전시",
+  sections: [
+    {
+      heading: "도입",
+      body: [
+        "파주 에이스침대, 루체3 전시 파주 에이스침대 루체3 전시소식 안내",
+        "신혼침대-에이스침대 프레임 루체3 화이트 오크 퀸사이즈 후기: 구매한게 침대였다!",
+        "전시 일정은 매장 공식 안내 기준으로 확인하면 됩니다.",
+      ].join(" "),
+    },
+  ],
+};
+const snippetScrubbed = scrubSpeakerMismatchTitleOpening(snippetOpeningPack, brandIntro);
+const snippetOpen = snippetScrubbed.sections?.[0]?.body || "";
+if (/신혼침대-|후기\s*:|구매한게/.test(snippetOpen)) {
+  console.error("FAIL: naver review snippet still in opening", snippetOpen.slice(0, 200));
+  process.exit(1);
+}
 const softSurface = scoreSpeakerSurfaceAlignment(softScrubbed, brandIntro);
 if (!softSurface.ok) {
   console.error("FAIL: soft prod surface after scrub", softSurface);
