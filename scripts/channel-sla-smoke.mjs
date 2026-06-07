@@ -21,6 +21,8 @@ import {
   createAuthenticatedContext,
   dismissWorkspaceModals,
   fillBlogFormViaDom,
+  fillChannelFormViaDom,
+  ensureSmokeBrand,
   waitForWorkspaceReady,
 } from "./lib/e2eAuth.js";
 
@@ -124,7 +126,22 @@ async function fillLabeledField(page, labelRe, value) {
   return true;
 }
 
-async function fillCommonFields(page, form) {
+async function fillCommonFields(page, form, channel) {
+  if (channel && channel !== "blog") {
+    await ensureSmokeBrand(page, BASE, form);
+  }
+  if (channel === "insta" || channel === "image") {
+    await fillChannelFormViaDom(page, channel, form);
+    if (channel === "insta" && form.instaScene) {
+      await fillIfPresent(page, /장면/i, form.instaScene);
+    }
+    if (channel === "image") {
+      await fillLabeledField(page, /주제 \(직접 입력\)/, form.topic || "");
+    }
+    await page.waitForTimeout(600);
+    return;
+  }
+
   let filled =
     (await fillLabeledField(page, /^브랜드명$/, form.brandName || "")) ||
     (await fillIfPresent(page, /매장·브랜드|브랜드|팀 이름/i, form.brandName || ""));
@@ -282,6 +299,17 @@ async function waitForChannelResult(page, persona, timeoutMs) {
       : persona.channel === "image"
         ? "image"
         : persona.channel;
+  const contentKey =
+    persona.channel === "place"
+      ? "placeContent"
+      : persona.channel === "insta"
+        ? "instagramContent"
+        : "imagePrompts";
+
+  const btn = page
+    .locator(`[data-briclog-generate="${persona.channel}"]`)
+    .first();
+  await btn.scrollIntoViewIfNeeded().catch(() => null);
 
   const apiPromise = page
     .waitForResponse(
@@ -297,25 +325,15 @@ async function waitForChannelResult(page, persona, timeoutMs) {
     }))
     .catch((e) => ({ apiError: e.message }));
 
-  const btn = page.getByRole("button", { name: persona.generatePattern }).first();
-  await btn.scrollIntoViewIfNeeded().catch(() => null);
   await btn.click({ timeout: 10_000 });
-
-  const hint = persona.resultHint;
-  const uiPromise = page.waitForFunction(
-    ({ re }) => {
-      const t = document.body.innerText || "";
-      if (/만드는 중|쓰는 중|준비 중|편집본 작성 중/.test(t)) return false;
-      return new RegExp(re, "i").test(t);
-    },
-    { re: hint },
-    { timeout: timeoutMs }
-  );
-
-  const [apiSettled, uiSettled] = await Promise.allSettled([apiPromise, uiPromise]);
-  const api = apiSettled.status === "fulfilled" ? apiSettled.value : { apiError: apiSettled.reason?.message };
-  const uiOk = uiSettled.status === "fulfilled";
-  return { api, uiOk, channelId };
+  const api = await apiPromise;
+  const hasContent =
+    !api.apiError &&
+    api.ok !== false &&
+    !api.body?.withheld &&
+    api.body?.ok !== false &&
+    Boolean(api.body?.[contentKey]);
+  return { api, uiOk: hasContent, channelId };
 }
 
 async function runPersona(page, persona, errors, networkFails, apiTrace) {
@@ -342,7 +360,7 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
 
     const fillStart = Date.now();
     const form = uniqueSlaForm(persona.form);
-    await fillCommonFields(page, form);
+    await fillCommonFields(page, form, persona.channel);
     if (persona.form.placeHeadline) {
       await fillIfPresent(page, /헤드라인|한 줄/i, persona.form.placeHeadline);
     }

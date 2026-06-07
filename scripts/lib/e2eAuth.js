@@ -113,6 +113,97 @@ export async function getE2eBearerToken() {
 }
 
 /** React controlled input — Playwright fill만으로는 버튼이 안 풀리는 경우 대비 */
+/** 채널 단독 폼 — 인스타(오늘의 소재)·이미지(주제 직접 입력) */
+export async function fillChannelFormViaDom(page, channel, form) {
+  return page.evaluate(
+    ({ ch, f }) => {
+      const fire = (el, value) => {
+        if (!el) return false;
+        const proto =
+          el.tagName === "TEXTAREA"
+            ? window.HTMLTextAreaElement.prototype
+            : window.HTMLInputElement.prototype;
+        const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+        setter?.call(el, value);
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+        el.dispatchEvent(new Event("blur", { bubbles: true }));
+        return true;
+      };
+
+      const byLabel = (text) => {
+        for (const label of document.querySelectorAll("label")) {
+          const head = label.textContent?.trim() || "";
+          if (!head.includes(text)) continue;
+          const input = label.querySelector("input, textarea");
+          if (input) return input;
+        }
+        return null;
+      };
+
+      if (ch === "insta") {
+        return {
+          topic: fire(byLabel("오늘의 소재"), f.topic || ""),
+          scene: fire(byLabel("장면 한 줄"), f.instaScene || ""),
+        };
+      }
+      if (ch === "image") {
+        return { topic: fire(byLabel("주제 (직접 입력)"), f.topic || "") };
+      }
+      return {};
+    },
+    { ch: channel, f: form }
+  );
+}
+
+/** API로 브랜드 확보 후 사이드바에서 선택 — 채널 단독 생성 필수 */
+export async function ensureSmokeBrand(page, baseUrl, form) {
+  const tokenRes = await getE2eBearerToken();
+  if (!tokenRes.ok) return { ok: false, reason: tokenRes.reason };
+
+  const headers = {
+    Authorization: `Bearer ${tokenRes.token}`,
+    "Content-Type": "application/json",
+  };
+  const listRes = await fetch(`${baseUrl}/api/brands`, { headers });
+  const listBody = await listRes.json().catch(() => ({}));
+  const brands = listBody.brands || listBody.data?.brands || [];
+  let brand = brands.find((b) => b.brandName === form.brandName);
+
+  if (!brand) {
+    const createRes = await fetch(`${baseUrl}/api/brands`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        brandName: form.brandName,
+        region: form.region || "전국",
+        industry: "기타",
+        metadata: {},
+      }),
+    });
+    const createBody = await createRes.json().catch(() => ({}));
+    brand = createBody.brand || createBody.data?.brand;
+    if (!brand?.id) {
+      return { ok: false, reason: "brand_create_failed" };
+    }
+  }
+
+  const switcher = page
+    .getByRole("button", { name: /브랜드 목록 펼치기|브랜드를 선택해 주세요/i })
+    .first();
+  if (await switcher.count()) {
+    await switcher.click({ timeout: 8000 }).catch(() => null);
+    await page.waitForTimeout(400);
+    const pick = page.getByRole("button", { name: form.brandName }).first();
+    if (await pick.count()) {
+      await pick.click({ timeout: 8000 });
+      await page.waitForTimeout(600);
+    }
+  }
+
+  return { ok: true, brandId: brand.id, brandName: form.brandName };
+}
+
 export async function fillBlogFormViaDom(page, form) {
   return page.evaluate((f) => {
     const fire = (el, value) => {
