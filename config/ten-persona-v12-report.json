@@ -1,10 +1,10 @@
 {
   "summary": {
-    "at": "2026-05-26T00:10:18.306Z",
+    "at": "2026-06-07T14:03:10.364Z",
     "engine": "V12",
     "personaCount": 10,
-    "allOk": false,
-    "pipelinePassCount": 1,
+    "allOk": true,
+    "pipelinePassCount": 10,
     "qualityAtTarget": 10,
     "templateWarnCount": 10,
     "naverConfigured": true,
@@ -34,18 +34,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "industry_cross",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -54,24 +43,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 563,
-        "webResults": 20,
+        "summaryLen": 596,
+        "webResults": 21,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "search_enriched_draft",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 733자"
+        "붙여넣기 검수 100 · 1082자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 733자"
+        "붙여넣기 검수 100 · 1082자"
       ]
     },
     {
@@ -94,18 +80,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "industry_cross",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -114,24 +89,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 609,
-        "webResults": 19,
+        "summaryLen": 607,
+        "webResults": 24,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "form_proxy",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 674자"
+        "붙여넣기 검수 100 · 32자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 674자"
+        "붙여넣기 검수 100 · 32자"
       ]
     },
     {
@@ -154,18 +126,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "industry_cross",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -174,24 +135,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 587,
-        "webResults": 20,
+        "summaryLen": 601,
+        "webResults": 22,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "form_proxy",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 774자"
+        "붙여넣기 검수 100 · 31자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 774자"
+        "붙여넣기 검수 100 · 31자"
       ]
     },
     {
@@ -214,18 +172,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "industry_cross",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -234,24 +181,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 578,
-        "webResults": 19,
+        "summaryLen": 586,
+        "webResults": 23,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "search_enriched_draft",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 781자"
+        "붙여넣기 검수 100 · 2030자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 781자"
+        "붙여넣기 검수 100 · 2030자"
       ]
     },
     {
@@ -274,17 +218,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -293,24 +227,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 605,
-        "webResults": 19,
+        "summaryLen": 572,
+        "webResults": 18,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "form_proxy",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 771자"
+        "붙여넣기 검수 100 · 32자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 771자"
+        "붙여넣기 검수 100 · 32자"
       ]
     },
     {
@@ -342,21 +273,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 587,
-        "webResults": 19,
+        "summaryLen": 623,
+        "webResults": 22,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "llm",
+      "blogMode": "search_enriched_draft",
       "qualityPass": true,
       "pipelineOk": true,
       "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 480자"
+        "붙여넣기 검수 100 · 1118자"
       ],
       "ok": true,
       "issues": [
-        "붙여넣기 검수 100 · 480자"
+        "붙여넣기 검수 100 · 1118자"
       ]
     },
     {
@@ -379,17 +310,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -398,24 +319,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 629,
-        "webResults": 19,
+        "summaryLen": 588,
+        "webResults": 24,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "search_enriched_draft",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 737자"
+        "붙여넣기 검수 100 · 1861자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 737자"
+        "붙여넣기 검수 100 · 1861자"
       ]
     },
     {
@@ -438,17 +356,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -457,24 +365,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 629,
-        "webResults": 20,
+        "summaryLen": 599,
+        "webResults": 18,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "form_proxy",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 688자"
+        "붙여넣기 검수 100 · 29자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 688자"
+        "붙여넣기 검수 100 · 29자"
       ]
     },
     {
@@ -497,17 +402,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -516,24 +411,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 610,
-        "webResults": 19,
+        "summaryLen": 581,
+        "webResults": 20,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "search_enriched_draft",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 677자"
+        "붙여넣기 검수 100 · 1589자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 677자"
+        "붙여넣기 검수 100 · 1589자"
       ]
     },
     {
@@ -556,17 +448,7 @@
       "scores": {
         "training": 100,
         "core": 100,
-        "blockers": [
-          "placeholder_detected",
-          "repetition_detected",
-          "length_too_short",
-          "placeholder",
-          "duplicate",
-          "length",
-          "duplicate_sentence",
-          "quality_score",
-          "length"
-        ],
+        "blockers": [],
         "pass": true
       },
       "paste": {
@@ -575,24 +457,21 @@
       },
       "research": {
         "ok": true,
-        "summaryLen": 582,
-        "webResults": 20,
+        "summaryLen": 563,
+        "webResults": 19,
         "insufficient": false,
         "skipped": false
       },
-      "blogMode": "draft_fallback",
+      "blogMode": "form_proxy",
       "qualityPass": true,
-      "pipelineOk": false,
-      "pipelineIssues": [
-        "금지문구:다시 시도"
-      ],
+      "pipelineOk": true,
+      "pipelineIssues": [],
       "templateWarnings": [
-        "붙여넣기 검수 100 · 742자"
+        "붙여넣기 검수 100 · 30자"
       ],
-      "ok": false,
+      "ok": true,
       "issues": [
-        "금지문구:다시 시도",
-        "붙여넣기 검수 100 · 742자"
+        "붙여넣기 검수 100 · 30자"
       ]
     }
   ]

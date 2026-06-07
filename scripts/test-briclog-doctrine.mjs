@@ -2,12 +2,24 @@
  * BRICLOG Doctrine — Human Writer · Brand Memory · Anti SEO · Editor Principle
  */
 import { buildBriclogMissionPromptBlock } from "../lib/product/briclogMission.js";
+import {
+  buildSpeakerPurposeExplainBrief,
+  assessContentExplainabilityForPublish,
+  BRICLOG_CONTENT_NORTH_STAR,
+} from "../lib/product/briclogContentDoctrine.js";
+import { assertCompleteBlogPackForDelivery } from "../lib/product/completeDeliveryGate.js";
 import { buildMasterSystemV6Brief } from "../lib/product/briclogMasterSystemV6.js";
 import { applyAntiSeoSpamGate, scoreAntiSeoSpam } from "../lib/content/antiSeoSpamGate.js";
 import { countTokenMentions } from "../lib/product/antiSeoSpamEngine.js";
 
 const mission = buildBriclogMissionPromptBlock();
 const required = [
+  "BRICLOG CONTENT DOCTRINE",
+  "North Star",
+  "SPEAKER · PURPOSE · EXPLAIN",
+  "새로운 사실을 전달",
+  "좋은 설명을 우선",
+  "주제를 설명할 수 없는",
   "ULTIMATE CONTENT ENGINE V20",
   "브랜드를 축적하는 AI 콘텐츠 팀",
   "Reviewer AI",
@@ -39,6 +51,56 @@ for (const needle of required) {
     console.error("FAIL: mission missing", needle);
     process.exit(1);
   }
+}
+
+const speakerBrief = buildSpeakerPurposeExplainBrief({
+  brandName: "에이스침대",
+  region: "파주",
+  topic: "루체3 전시소식",
+  publishPurpose: "행사 홍보",
+  v4Speaker: "real_use",
+});
+if (!speakerBrief.includes(BRICLOG_CONTENT_NORTH_STAR)) {
+  console.error("FAIL: speaker purpose brief missing north star");
+  process.exit(1);
+}
+
+const thinGate = assessContentExplainabilityForPublish({
+  brandName: "테스트",
+  region: "서울",
+  topic: "소개",
+  researchFacts: [{ fact: "짧음", source: "research" }],
+});
+if (thinGate.ok) {
+  console.error("FAIL: thin topic should be withheld");
+  process.exit(1);
+}
+
+const aceGate = assessContentExplainabilityForPublish({
+  brandName: "에이스침대",
+  region: "파주",
+  topic: "루체3 전시소식",
+  researchFacts: [
+    { fact: "파주 매장 루체3 전시", source: "research" },
+    { fact: "전시 기간 매장 안내", source: "research" },
+  ],
+});
+if (!aceGate.ok) {
+  console.error("FAIL: ace topic should be explainable", aceGate.reasons);
+  process.exit(1);
+}
+
+const stubComplete = assertCompleteBlogPackForDelivery(
+  {
+    title: "테스트",
+    sections: [{ heading: "주제", body: "짧음" }],
+    _meta: { generationMode: "form_proxy" },
+  },
+  { brandName: "테스트", region: "서울", topic: "소개", blogLengthTier: "medium" }
+);
+if (stubComplete.ok) {
+  console.error("FAIL: form_proxy stub should be blocked");
+  process.exit(1);
 }
 
 const spammy = "템퍼 ".repeat(6) + "평택 ".repeat(5) + "모션베드 ".repeat(4);

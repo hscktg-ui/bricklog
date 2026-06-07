@@ -1,41 +1,45 @@
 {
-  "at": "2026-06-07T12:17:51.018Z",
+  "at": "2026-06-07T13:25:01.302Z",
   "base": "https://briclog.ai",
   "results": [
     {
-      "at": "2026-06-07T12:17:51.018Z",
+      "at": "2026-06-07T13:25:01.302Z",
       "base": "https://briclog.ai",
       "label": "에이스침대_광교",
-      "sectionCount": 5,
-      "chars": 2505,
-      "title": "광교 에이스침대 솔직 후기, 로얄에이스 매트리스 라인업 소개",
-      "opening500": "광교 에이스침대 솔직 후기, 로얄에이스 매트리스 라인업 소개 어떤 모델·옵션을 비교하는지 허리·숙면 불편이 길어지면서 침대부터 손대게 됐고, 왜 로얄에이스 매트리스 라인업 소개를 찾게 됐는지부터 정리해 봤어요. 고를 때 광교 지역에서 에이스침대 매장을 방문하면 다양한 매트리스를 체험할 수 있어요.가 기준이 됐어요. 브랜드 로얄에이스 매트리스 안내 — 고객 맞춤형 경험 — 당일 매장 설명과 맞춰 메모해 뒀어요. 로얄에이스 매트리스 라인업: 있는데요~ 로얄에이스 라인업은 많은 고객님이 추천하는 프리미엄 침대 라인 입니다. 로얄에이스 매트리스 관련 에이스침대 광교 — 이용을 고를 때 계절·목적별로 달라지는 기준을 먼저 정리해 두면 선택이 수월해요. 광교 매장 로얄에이스 매트리스 방문 시 주차·대기·체험 시간을 함께 보면 동선이 편해요. 에이스침대 기준으로 이용 관련 조건·구성을 중립적으로 정리해 봤어요. 쇼룸 로얄에이스 매트리스 — 확인되지 않은 할인·재고는 단정하지 말고 매장·공식 문의",
+      "sectionCount": 0,
+      "chars": 0,
+      "title": "",
+      "opening500": "",
       "igoseCount": 0,
-      "hookFloodCount": 1,
+      "hookFloodCount": 0,
       "mechanicalTitle": false,
       "snippetLeakOk": true,
       "snippetLeakHits": [],
       "humanReady": false,
-      "publishLabel": "한 번 더 다듬는 중",
-      "publishStatus": "polishing",
+      "publishLabel": "올리기 전 한 번 읽어 보세요",
+      "publishStatus": "review",
       "failReasons": [
-        "topic_dominance_low",
-        "information_yield_low",
-        "duplicate_killer_fail",
-        "duplicate_content",
-        "editor_editor_v95"
+        "length_tier_under",
+        "brand_region_topic_weak",
+        "structure_structure_thin",
+        "editor_structure_flow",
+        "editor_editor_v95",
+        "editor_missing_brand",
+        "editor_missing_region",
+        "not_publishable"
       ],
       "humanReasons": [
-        "checklist_template_high",
-        "checklist_voice",
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95",
-        "deep_learning_below_min",
-        "information_yield_low"
+        "not_publishable",
+        "outline_only_output",
+        "human_belief_low",
+        "grounded_specificity_low",
+        "empty_pack",
+        "deep_learning_below_min"
       ],
-      "ms": 67679,
-      "apiStatus": 200,
-      "apiMode": "research_gate_stamped"
+      "ms": 2185,
+      "apiStatus": 401,
+      "apiOk": false,
+      "apiError": "세션이 만료되었습니다. 다시 로그인해 주세요."
     }
   ]
 }

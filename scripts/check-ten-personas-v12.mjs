@@ -64,6 +64,27 @@ async function checkPersona(persona) {
     persona.input,
     persona
   );
+  if (!blogProxy?.sections?.length) {
+    return {
+      id: persona.id,
+      label: persona.label,
+      v4Speaker: persona.v4Speaker,
+      persona: resolved.persona,
+      subtype: resolved.subtype,
+      clueVariants: (clues.entityVariants || []).slice(0, 4),
+      clueQueries: (clues.searchQueries || []).slice(0, 3),
+      scores: { training: 0, core: 0, blockers: ["empty_pack"], pass: false },
+      paste: { pass: false, score: 0 },
+      research: { ok: false, summaryLen: 0, webResults: 0, skipped: true },
+      blogMode: blogMode || "withheld",
+      qualityPass: false,
+      pipelineOk: false,
+      pipelineIssues: ["본문 없음"],
+      templateWarnings: ["withheld"],
+      ok: false,
+      issues: ["withheld"],
+    };
+  }
   const tierKey = withSpeaker.blogLengthTier || "medium";
   const ctx = {
     brandName: withSpeaker.brandName,
@@ -78,7 +99,10 @@ async function checkPersona(persona) {
   const training = scoreTrainingContent(blogProxy, ctx, "blog");
   const core = scoreCoreContent(blogProxy, ctx, "blog");
   const qualityPass =
-    training.total >= TARGET && core.total >= TARGET;
+    training.pass &&
+    core.pass &&
+    training.total >= TARGET &&
+    core.total >= TARGET;
   const scores = {
     training: training.total,
     core: core.total,
