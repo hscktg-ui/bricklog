@@ -12,12 +12,23 @@ import { deliverBlogDespiteGate } from "../lib/product/deliverySoftPass.js";
 import { computeContentQualityValue } from "../lib/product/contentQualityValue.js";
 import { slimBlogApiPayload } from "../lib/generation/slimBlogApiPayload.js";
 import {
+  scrubSpeakerMismatchTitleOpening,
+  scoreSpeakerSurfaceAlignment,
+} from "../lib/persona/speakerVoiceLock.js";
+import { applyFurnitureExhibitionPackPolish } from "../lib/product/furnitureExhibitionEngine.js";
+import {
   getResearchDepthMaxRounds,
   getNaverMaxQueries,
 } from "../lib/config/briclogFastPipeline.js";
 import { buildSpeakerPurposeExplainBrief } from "../lib/product/briclogContentDoctrine.js";
 
-const brandIntro = { v4Speaker: "brand_intro", brandName: "에이스침대", region: "파주", topic: "루체3" };
+const brandIntro = {
+  v4Speaker: "brand_intro",
+  brandName: "에이스침대",
+  region: "파주",
+  topic: "루체3 전시소식",
+  industry: "가구/침대",
+};
 const realUse = { v4Speaker: "real_use", brandName: "에이스침대", region: "파주", topic: "루체3" };
 
 if (resolveSpeakerDisplayLabel(brandIntro) !== "브랜드 소개형") {
@@ -109,5 +120,33 @@ if (getNaverMaxQueries() < 6) {
   process.exit(1);
 }
 
-console.log("OK: speaker voice lock — label, belief, delivery, sqv, slim payload");
+const visitTitlePack = {
+  title: "파주 에이스침대 루체3 전시소식 직접 다녀온 후기",
+  representativeTitle: "파주 에이스침대 루체3 전시소식 직접 다녀온 후기",
+  sections: [
+    {
+      heading: "도입",
+      body: "파주 에이스침대 루체3 전시소식 직접 다녀온 후기 쇼룸에서 직접 본 점을 정리했어요.",
+    },
+    { heading: "정리", body: "전시 구성과 안내는 매장 공식 기준으로 확인하면 됩니다." },
+  ],
+};
+const scrubbed = scrubSpeakerMismatchTitleOpening(visitTitlePack, brandIntro);
+if (/직접\s*다녀|다녀온\s*후기/.test(scrubbed.title || "")) {
+  console.error("FAIL: title still visit-review after scrub", scrubbed.title);
+  process.exit(1);
+}
+const surface = scoreSpeakerSurfaceAlignment(scrubbed, brandIntro);
+if (!surface.ok) {
+  console.error("FAIL: surface alignment after scrub", surface);
+  process.exit(1);
+}
+
+const furnPolished = applyFurnitureExhibitionPackPolish(visitTitlePack, brandIntro);
+if (/보러\s*다녀|직접\s*다녀/.test(furnPolished.title || furnPolished.sections?.[0]?.heading || "")) {
+  console.error("FAIL: furniture polish forced visit tone for brand_intro", furnPolished.title);
+  process.exit(1);
+}
+
+console.log("OK: speaker voice lock — label, belief, delivery, sqv, slim payload, surface scrub");
 console.log("  brand belief score:", brandBelief.score, "sqv:", sqv.score);
