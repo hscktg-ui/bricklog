@@ -127,6 +127,8 @@ const row = {
   ms: Date.now() - t0,
   apiStatus: res.status,
   apiMode: body.mode,
+  apiOk: body.ok,
+  apiError: body.error || body.userMessage || body.userDetail || null,
 };
 
 mkdirSync(join(root, "config"), { recursive: true });
