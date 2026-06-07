@@ -174,6 +174,39 @@ if (!prodScrubbed._meta?.speakerSurfaceScrub) {
   process.exit(1);
 }
 
+const softProdPack = {
+  title: "파주 에이스침대, 루체3 전시",
+  representativeTitle: "파주 에이스침대, 루체3 전시",
+  sections: [
+    {
+      heading: "도입",
+      body: [
+        "파주 에이스침대, 루체3 전시 파주 에이스침대 루체3 전시소식 안내",
+        "루체3 전시소식 기준으로 기준으로 신혼 준비를 하다 보면 침실만큼 고민되는 공간이 없다.",
+        "체험·시연 후 바로 결정하지 않고 하루 두고 메모를 다시 읽어 봤어요.",
+        "10분 넘게 누워보니 허리 지지감과 뒤척임 때 소음·진동 전달이 꽤 달랐어요.",
+        "처음엔 인테리어·이사·교체 기준만 보다가, 쇼룸에서 보니 감이 왔어요.",
+      ].join(" "),
+    },
+    { heading: "정리", body: "전시 일정과 구성을 미리 확인하면 방문 동선을 짧게 잡을 수 있습니다." },
+  ],
+};
+const softScrubbed = scrubSpeakerMismatchTitleOpening(softProdPack, brandIntro);
+const softOpen = softScrubbed.sections?.[0]?.body || "";
+if (
+  /누워\s*보|메모(?:를|)\s*.{0,12}읽|쇼룸(?:에서|)\s*.{0,20}보(?:니|고)|감이\s*왔|체험(?:·|\/)?\s*시연|뒤척임|기준으로\s+기준으로/.test(
+    softOpen
+  )
+) {
+  console.error("FAIL: soft experiential opening still present", softOpen.slice(0, 240));
+  process.exit(1);
+}
+const softSurface = scoreSpeakerSurfaceAlignment(softScrubbed, brandIntro);
+if (!softSurface.ok) {
+  console.error("FAIL: soft prod surface after scrub", softSurface);
+  process.exit(1);
+}
+
 const furnPolished = applyFurnitureExhibitionPackPolish(visitTitlePack, brandIntro);
 if (/보러\s*다녀|직접\s*다녀/.test(furnPolished.title || furnPolished.sections?.[0]?.heading || "")) {
   console.error("FAIL: furniture polish forced visit tone for brand_intro", furnPolished.title);
