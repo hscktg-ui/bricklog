@@ -533,8 +533,11 @@ async function main() {
   }
 
   const limit = Number(process.env.CHANNEL_SLA_LIMIT) || 0;
-  const personas =
-    limit > 0 ? CHANNEL_SLA_PERSONAS.slice(0, limit) : CHANNEL_SLA_PERSONAS;
+  const start = Number(process.env.CHANNEL_SLA_START) || 0;
+  const slice = limit > 0
+    ? CHANNEL_SLA_PERSONAS.slice(start, start + limit)
+    : CHANNEL_SLA_PERSONAS.slice(start);
+  const personas = slice.length ? slice : CHANNEL_SLA_PERSONAS;
 
   const attachPageListeners = (p) => {
     p.on("console", (msg) => {
