@@ -83,8 +83,12 @@ async function dismissWelcome(page) {
 async function openWorkspace(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissWorkspaceModals(page);
-  await page.waitForTimeout(2000);
-  const ready = await isWorkspaceReady(page);
+  await page.waitForTimeout(2500);
+  let ready = await isWorkspaceReady(page);
+  if (!ready) {
+    await page.waitForTimeout(3000);
+    ready = await isWorkspaceReady(page);
+  }
   return { ok: ready, reason: ready ? "supabase_session" : "workspace_missing" };
 }
 
@@ -290,10 +294,9 @@ async function waitForChannelResult(page, persona, timeoutMs) {
     }))
     .catch((e) => ({ apiError: e.message }));
 
-  await page
-    .getByRole("button", { name: persona.generatePattern })
-    .first()
-    .click({ timeout: 10_000 });
+  const btn = page.getByRole("button", { name: persona.generatePattern }).first();
+  await btn.scrollIntoViewIfNeeded().catch(() => null);
+  await btn.click({ timeout: 10_000 });
 
   const hint = persona.resultHint;
   const uiPromise = page.waitForFunction(
@@ -533,12 +536,11 @@ async function main() {
   const personas =
     limit > 0 ? CHANNEL_SLA_PERSONAS.slice(0, limit) : CHANNEL_SLA_PERSONAS;
 
-  for (const persona of personas) {
-    const personaPage = await context.newPage();
-    personaPage.on("console", (msg) => {
+  const attachPageListeners = (p) => {
+    p.on("console", (msg) => {
       if (msg.type() === "error") consoleErrors.push(msg.text());
     });
-    personaPage.on("response", (res) => {
+    p.on("response", (res) => {
       if (res.url().includes("/api/")) {
         apiTrace.push({
           url: res.url().split("?")[0],
@@ -551,16 +553,26 @@ async function main() {
         }
       }
     });
-    const login = await openWorkspace(personaPage);
-    if (!login.ok) {
-      report.runs.push({
-        id: persona.id,
-        status: "fail",
-        failReason: "workspace_not_ready",
-        errors: [login.reason],
-      });
-      await personaPage.close();
-      continue;
+  };
+
+  attachPageListeners(page);
+
+  for (let i = 0; i < personas.length; i++) {
+    const persona = personas[i];
+    const personaPage = i === 0 ? page : await context.newPage();
+    if (i > 0) {
+      attachPageListeners(personaPage);
+      const login = await openWorkspace(personaPage);
+      if (!login.ok) {
+        report.runs.push({
+          id: persona.id,
+          status: "fail",
+          failReason: "workspace_not_ready",
+          errors: [login.reason],
+        });
+        await personaPage.close();
+        continue;
+      }
     }
     report.runs.push(
       await runPersona(
@@ -571,7 +583,7 @@ async function main() {
         apiTrace
       )
     );
-    await personaPage.close();
+    if (i > 0) await personaPage.close();
   }
 
   await browser.close();
