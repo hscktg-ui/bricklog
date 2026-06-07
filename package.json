@@ -90,6 +90,7 @@
     "test:pet-cafe-visit": "node --import ./scripts/register-alias.mjs scripts/test-pet-cafe-visit.mjs",
     "test:human-writing-gate": "node --import ./scripts/register-alias.mjs scripts/test-human-writing-gate.mjs",
     "test:research-human-pack": "node --import ./scripts/register-alias.mjs scripts/test-research-human-pack.mjs",
+    "test:research-channel-pack": "node --import ./scripts/register-alias.mjs scripts/test-research-channel-pack.mjs",
     "test:safe-regex": "node --import ./scripts/register-alias.mjs scripts/test-safe-regex.mjs",
     "test:v6-priority": "node --import ./scripts/register-alias.mjs scripts/test-v6-priority-improvements.mjs",
     "test:topic-proof-gate": "node --import ./scripts/register-alias.mjs scripts/test-topic-proof-gate.mjs",
