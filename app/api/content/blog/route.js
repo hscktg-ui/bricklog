@@ -23,6 +23,7 @@ import {
   isStrictBrandGuardEnabled,
 } from "@/lib/config/brandEngineFlags";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
+import { slimBlogApiPayload } from "@/lib/generation/slimBlogApiPayload";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -75,7 +76,8 @@ export async function POST(request) {
 
   let savedInput = {};
   try {
-    const input = await request.json();
+    const rawInput = await request.json();
+    const input = slimBlogApiPayload(rawInput);
     savedInput = input;
     input.billingPlan = entitlement.usage?.planId || "free";
     const prepared = await prepareBrandFirstInput({
@@ -141,7 +143,7 @@ export async function POST(request) {
     });
     try {
       const enriched = enrichMinimalBlogInput({
-        ...savedInput,
+        ...slimBlogApiPayload(savedInput),
         v2PipelineEnforced: true,
         v3EngineEnforced: true,
         betaTestGuardEnforced: true,

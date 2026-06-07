@@ -120,6 +120,7 @@
     "test:engineering-depth": "node --import ./scripts/register-alias.mjs scripts/test-engineering-depth.mjs",
     "test:blog-generation-gates": "node --import ./scripts/register-alias.mjs scripts/test-blog-generation-gates.mjs",
     "test:generation-input-coalesce": "node --import ./scripts/register-alias.mjs scripts/test-generation-input-coalesce.mjs",
+    "test:slim-blog-api-payload": "node --import ./scripts/register-alias.mjs scripts/test-slim-blog-api-payload.mjs",
     "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",
     "test:completion-standard": "node --import ./scripts/register-alias.mjs scripts/test-completion-standard.mjs",
