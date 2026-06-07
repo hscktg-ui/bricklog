@@ -8,7 +8,7 @@ import { BRICLOG_MULTICHANNEL_TEASER } from "@/lib/product/briclogPerspectiveCop
 const ACTIONS = [
   { id: "place", label: "플레이스 소식", icon: "map", key: "place" },
   { id: "insta", label: "인스타그램 바디", icon: "camera", key: "instagram" },
-  { id: "image", label: "이미지 프롬프트", icon: "image", key: "image" },
+  { id: "image", label: "썸네일 문구", icon: "image", key: "image" },
 ];
 
 export default function PipelineQuickActions({
@@ -56,7 +56,7 @@ export default function PipelineQuickActions({
                 <Icon name={action.icon} className="h-4 w-4" />
                 {action.label}
               </span>
-              <span className="text-[10px]">플러스</span>
+              <span className="text-[10px]">베타</span>
             </div>
           ))}
         </div>
@@ -81,7 +81,7 @@ export default function PipelineQuickActions({
       {!simpleMode && (
         <p className="mt-0.5 text-[11px] leading-relaxed text-[#8B95A1]">
           이야기 작성 직후 플레이스·인스타는 자동 생성됐을 수 있습니다. 비어 있으면
-          아래에서 다시 만드세요. 프롬프트는 「프롬프트」 메뉴에서 따로 만듭니다.
+          아래에서 다시 만드세요.
         </p>
       )}
       <div className="mt-3 space-y-2">

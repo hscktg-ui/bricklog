@@ -3,7 +3,10 @@ import {
   assessPublicTestQuota,
   recordPublicTestRun,
 } from "@/lib/publicTest/publicTestQuotaServer";
-import { runPublicBrandTest } from "@/lib/publicTest/runPublicBrandTest";
+import {
+  runPublicBrandTest,
+  tryInstantPublicTestSample,
+} from "@/lib/publicTest/runPublicBrandTest";
 import { PUBLIC_TEST_QUOTA_EXCEEDED } from "@/lib/publicTest/publicTestConfig";
 
 export const runtime = "nodejs";
@@ -35,7 +38,24 @@ export async function POST(request) {
 
   const sessionId = String(body.sessionId || "").slice(0, 64);
   const quota = await assessPublicTestQuota(request, sessionId);
+
   if (!quota.ok) {
+    const instant = tryInstantPublicTestSample(body);
+    if (instant?.ok) {
+      return NextResponse.json({
+        ok: true,
+        preview: instant.preview,
+        metrics: instant.metrics,
+        publishReady: instant.publishReady === true,
+        instant: true,
+        instantQuotaBypass: true,
+        quota: {
+          remaining: 0,
+          used: quota.used,
+          resetsAt: quota.resetsAt,
+        },
+      });
+    }
     return NextResponse.json({
       ok: false,
       withheld: true,

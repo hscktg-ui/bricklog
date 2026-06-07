@@ -89,11 +89,6 @@ export default function PublicBrandTestSection({ onSignup }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    if (quota.remaining <= 0) {
-      setError(PUBLIC_TEST_QUOTA_EXCEEDED);
-      return;
-    }
-
     setLoading(true);
     setError(null);
     setResult(null);
@@ -130,7 +125,9 @@ export default function PublicBrandTestSection({ onSignup }) {
         return;
       }
 
-      bumpLocalPublicTestQuota();
+      if (!data.instantQuotaBypass) {
+        bumpLocalPublicTestQuota();
+      }
       stashPublicTestDraftForSignup({ brandName, region, topic });
       setResult(data);
     } catch {

@@ -117,6 +117,7 @@
     "test:editor-humanization": "node --import ./scripts/register-alias.mjs scripts/test-editor-humanization-engine.mjs",
     "test:deep-learning": "node --import ./scripts/register-alias.mjs scripts/test-deep-learning-engine.mjs",
     "test:customer-ui": "node --import ./scripts/register-alias.mjs scripts/test-customer-ui-phase1.mjs",
+    "test:publish-readiness": "node --import ./scripts/register-alias.mjs scripts/test-publish-readiness-display.mjs",
     "test:salon-sample": "node --import ./scripts/register-alias.mjs scripts/test-salon-featured-sample.mjs",
     "test:narrative-belief": "node --import ./scripts/register-alias.mjs scripts/test-narrative-belief-pass.mjs",
     "test:v17-narrative": "node --import ./scripts/register-alias.mjs scripts/test-v17-narrative-final.mjs",

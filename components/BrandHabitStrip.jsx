@@ -5,7 +5,10 @@ import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
 import { BRICLOG_FEEDBACK_SAVED_EVENT } from "@/lib/feedback/constants";
-import { BRICLOG_DIRECTOR_LINE } from "@/lib/product/briclogPerspectiveCopy";
+import {
+  BRICLOG_DIRECTOR_LINE,
+  FEEDBACK_NEXT_DRAFT_TOAST,
+} from "@/lib/product/briclogPerspectiveCopy";
 
 export default function BrandHabitStrip({ className = "" }) {
   const { activeBrand, activeBrandId } = useBrandWorkspace();
@@ -34,7 +37,7 @@ export default function BrandHabitStrip({ className = "" }) {
   useEffect(() => {
     const onSaved = (e) => {
       if (e.detail?.brandId && e.detail.brandId !== activeBrandId) return;
-      setPendingNote("방금 피드백 · 다음 글에 반영 예정");
+      setPendingNote(FEEDBACK_NEXT_DRAFT_TOAST);
       loadLearned();
     };
     window.addEventListener(BRICLOG_FEEDBACK_SAVED_EVENT, onSaved);

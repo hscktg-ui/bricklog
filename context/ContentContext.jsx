@@ -35,6 +35,7 @@ import {
   formatFeedbackIntentBrief,
   mergeFeedbackHints,
 } from "@/lib/feedback/feedbackIntentEngine";
+import { formatFeedbackAppliedCustomerLine } from "@/lib/feedback/feedbackAppliedDisplay";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import { autoImproveContent } from "@/lib/editorAI/autoImprove";
 import { runEditorAI, compareEditorScores } from "@/lib/editorAI";
@@ -1862,6 +1863,10 @@ export function ContentProvider({
             return { ok: false };
           }
 
+          const feedbackAppliedSummary = formatFeedbackAppliedCustomerLine(
+            intentHints,
+            feedbackText
+          );
           let next = {
             ...blog,
             _edited: true,
@@ -1870,6 +1875,8 @@ export function ContentProvider({
               rewritten: true,
               feedbackRewrite: true,
               rewriteCount: pipelineInput.rewriteCount,
+              feedbackAppliedSummary: feedbackAppliedSummary || undefined,
+              feedbackAppliedIntents: intentHints,
             },
           };
 

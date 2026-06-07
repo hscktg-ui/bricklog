@@ -143,7 +143,7 @@ async function fillCommonFields(page, form) {
 async function waitForGenerateEnabled(page, timeoutMs = 15_000, pattern) {
   const re =
     pattern ||
-    /조사 후 글 받기|구성안 만들기|이야기 쓰기|플레이스 소개글|인스타 초안|이미지 프롬프트/i;
+    /조사 후 글 받기|구성안 만들기|이야기 쓰기|플레이스 소개글|인스타 초안|썸네일 문구|이미지 프롬프트/i;
   const btn = page.locator("button:not([disabled])").filter({ hasText: re }).first();
   await btn.waitFor({ state: "visible", timeout: timeoutMs });
   return btn;

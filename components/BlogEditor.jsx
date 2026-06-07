@@ -54,6 +54,7 @@ import ChannelPackToggle from "@/components/blog/ChannelPackToggle";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import ChannelExpandCard from "@/components/product/ChannelExpandCard";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
+import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
@@ -776,6 +777,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   blogInput={blogInput}
                   billingPlanId={billingPlanId}
                   onToast={onToast}
+                  onNavigate={onNavigate}
                   onResultDisplayed={acknowledgeBlogResultDisplayed}
                   conciseView={concise || isMobile}
                   mobileView={isMobile}
@@ -789,11 +791,9 @@ const BlogEditorResults = memo(function BlogEditorResults({
                       contentItemId: memoryContentIds?.blog,
                       channel: "blog",
                     });
-                    const ready =
-                      blogContent?._meta?.publishReady === true ||
-                      blogContent?._meta?.primaryDirective?.publishReady === true;
+                    const readiness = resolvePublishReadiness(blogContent);
                     onToast?.(
-                      ready
+                      readiness.status === "ready"
                         ? "복사됐어요. 네이버 블로그에 붙여 넣고 발행하시면 됩니다."
                         : "복사됐어요. 올리기 전에 한 번 더 읽어 보세요.",
                       "success"
@@ -871,18 +871,18 @@ const BlogEditorResults = memo(function BlogEditorResults({
             {resultTab === "image" && imagePrompts && (
               <div className="rounded-xl border border-[#E8EBED] bg-white p-5">
                 <p className="text-[13px] font-semibold text-[#191F28]">
-                  비주얼 프롬프트
+                  썸네일 문구
                 </p>
                 <pre className="mt-3 whitespace-pre-wrap text-[13px] leading-relaxed text-[#4E5968]">
                   {imagePrompts.activePrompt ||
                     imagePrompts.thumbnailPrompt ||
-                    "프롬프트 없음"}
+                    "문구 없음"}
                 </pre>
               </div>
             )}
             {resultTab === "image" && !imagePrompts && (
               <p className="text-center text-[14px] text-[#8B95A1]">
-                프롬프트는 「프롬프트」 메뉴에서 따로 만듭니다.
+                썸네일 문구는 「썸네일 문구」 메뉴에서 이어 만들 수 있어요.
               </p>
             )}
           </>

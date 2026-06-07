@@ -30,7 +30,7 @@ import { isPaidPlan } from "@/lib/billing/plans";
 import BriclogStrengthChips from "@/components/BriclogStrengthChips";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
-import { COMPLETION_READY_HINT } from "@/lib/product/completionStandard";
+import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay";
 
 export default function BlogResultView({
   blog,
@@ -51,6 +51,7 @@ export default function BlogResultView({
   onFeedbackReflected,
   onResultDisplayed,
   onToast,
+  onNavigate,
   conciseView = false,
   mobileView = false,
 }) {
@@ -167,10 +168,9 @@ export default function BlogResultView({
 
   const versionContentId = `blog-${brandId || "x"}-${draft.representativeTitle || "draft"}`;
   const feedbackRound = draft._meta?.rewriteCount || 0;
-  const publishReady =
-    draft._meta?.publishReady === true ||
-    draft._meta?.primaryDirective?.publishReady === true ||
-    draft._meta?.aiEditorAudit?.publishReady === true;
+  const publishReadiness = resolvePublishReadiness(draft);
+  const goReview =
+    typeof onNavigate === "function" ? () => onNavigate("review") : null;
   const dwellRef = useRef({ started: Date.now(), sent: 0 });
   const [publishedMarked, setPublishedMarked] = useState(false);
 
@@ -337,6 +337,10 @@ export default function BlogResultView({
         )
       )}
 
+      {!isBriefOnly ? (
+        <BriclogStrengthChips draft={draft} blogInput={blogInput} />
+      ) : null}
+
       {simWarn && (simpleMode || !showExpertPanels) ? (
         <div
           className="rounded-xl border border-[#FFE0B2] bg-[#FFF8E6] px-4 py-3 text-[12px] font-medium leading-relaxed text-[#E67700]"
@@ -360,10 +364,16 @@ export default function BlogResultView({
                 : RESULT_VIEW.copyBlockTitle}
             </p>
             {!isBriefOnly ? (
-              <p className="mt-1 text-[11px] font-semibold text-[#03A94D]">
-                {publishReady
-                  ? "수정 없이 복사·발행 가능한 편집본입니다"
-                  : COMPLETION_READY_HINT}
+              <p
+                className={`mt-1 text-[11px] font-semibold ${
+                  publishReadiness.status === "ready"
+                    ? "text-[#03A94D]"
+                    : publishReadiness.status === "polishing"
+                      ? "text-[#E67700]"
+                      : "text-[#4E5968]"
+                }`}
+              >
+                {publishReadiness.label}
               </p>
             ) : null}
           </div>
@@ -382,6 +392,15 @@ export default function BlogResultView({
               text={copyText}
               onCopy={() => onCopy?.(copyText)}
             />
+            {!isBriefOnly && goReview ? (
+              <button
+                type="button"
+                onClick={goReview}
+                className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-[#E8EBED] bg-white px-3 py-2 text-[12px] font-semibold text-[#4E5968] hover:bg-[#F9FAFB]"
+              >
+                붙여넣어 점검
+              </button>
+            ) : null}
             {!isBriefOnly && userId && contentItemId ? (
               <button
                 type="button"
@@ -521,8 +540,6 @@ export default function BlogResultView({
             브릭로그는 「왜」부터 풀어 쓰고, 피드백·브랜드 습관이 다음 글에 이어집니다.
           </p>
         ) : null}
-        <BriclogStrengthChips draft={draft} blogInput={blogInput} />
-
         <div className="flex flex-wrap gap-2">
           <div
             className={`rounded-xl px-3 py-2 text-[11px] font-semibold ${
@@ -542,13 +559,7 @@ export default function BlogResultView({
                   ? "border-[#03C75A]/20 bg-[#E8F9EF] text-[#03A94D]"
                   : "border-[#FFE0B2] bg-[#FFF8E6] text-[#E67700]"
               }`}
-              title={
-                humanWritingReady === false
-                  ? `사람글·화자 기준 미달: ${(draft._meta?.humanWritingDelivery?.reasons || []).join(", ")}`
-                  : completionReady === false
-                    ? COMPLETION_READY_HINT
-                    : undefined
-              }
+              title={publishReadiness.hint}
             >
               {draft._meta?.outputWithheld
                 ? CUSTOMER_DRAFT_REVIEW
