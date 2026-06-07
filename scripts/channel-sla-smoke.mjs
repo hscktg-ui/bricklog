@@ -224,6 +224,21 @@ async function waitForBlogResult(page, timeoutMs) {
 
   await genBtn.click({ timeout: 10_000 });
 
+  const apiSettled = await apiPromise;
+  if (
+    apiSettled.apiError ||
+    apiSettled.body?.withheld ||
+    apiSettled.body?.ok === false ||
+    !apiSettled.body?.blogContent?.sections?.length
+  ) {
+    return {
+      api: apiSettled,
+      uiMs: Date.now() - t0,
+      uiOk: false,
+      uiError: apiSettled.body?.userMessage || apiSettled.apiError || "blog_api_no_content",
+    };
+  }
+
   const uiPromise = page.waitForFunction(
     () => {
       const t = document.body.innerText || "";
@@ -244,14 +259,12 @@ async function waitForBlogResult(page, timeoutMs) {
     { timeout: timeoutMs }
   );
 
-  const [apiSettled, uiSettled] = await Promise.allSettled([apiPromise, uiPromise]);
-  const api = apiSettled.status === "fulfilled" ? apiSettled.value : { apiError: apiSettled.reason?.message };
-  const uiOk = uiSettled.status === "fulfilled";
+  const uiOk = (await Promise.allSettled([uiPromise]))[0].status === "fulfilled";
   return {
-    api,
+    api: apiSettled,
     uiMs: Date.now() - t0,
     uiOk,
-    uiError: uiOk ? null : uiSettled.reason?.message,
+    uiError: uiOk ? null : "ui_result_timeout",
   };
 }
 
@@ -314,7 +327,6 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
 
   const t0 = Date.now();
   try {
-    await resetWorkspaceBetweenRuns(page);
     await openChannel(page, persona.menuPattern);
     run.phases.navigateMs = Date.now() - t0;
 
@@ -522,9 +534,44 @@ async function main() {
     limit > 0 ? CHANNEL_SLA_PERSONAS.slice(0, limit) : CHANNEL_SLA_PERSONAS;
 
   for (const persona of personas) {
+    const personaPage = await context.newPage();
+    personaPage.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
+    personaPage.on("response", (res) => {
+      if (res.url().includes("/api/")) {
+        apiTrace.push({
+          url: res.url().split("?")[0],
+          status: res.status(),
+          method: res.request().method(),
+          at: Date.now(),
+        });
+        if (res.status() >= 400) {
+          networkFails.push({ url: res.url(), status: res.status() });
+        }
+      }
+    });
+    const login = await openWorkspace(personaPage);
+    if (!login.ok) {
+      report.runs.push({
+        id: persona.id,
+        status: "fail",
+        failReason: "workspace_not_ready",
+        errors: [login.reason],
+      });
+      await personaPage.close();
+      continue;
+    }
     report.runs.push(
-      await runPersona(page, persona, consoleErrors, networkFails, apiTrace)
+      await runPersona(
+        personaPage,
+        persona,
+        consoleErrors,
+        networkFails,
+        apiTrace
+      )
     );
+    await personaPage.close();
   }
 
   await browser.close();

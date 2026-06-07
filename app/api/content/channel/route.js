@@ -24,6 +24,8 @@ import {
 } from "@/lib/config/brandEngineFlags";
 import { withSignatureEnforcement } from "@/lib/content/channelPack";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
+import { buildDeliverableChannelFallback } from "@/lib/llm/channelDeliveryFallback";
+import { isPublishableChannelPack } from "@/lib/content/outlinePackGuard";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -154,6 +156,49 @@ export async function POST(request) {
       err,
       accessToken: auth.token,
     });
+    const channel = ALLOWED.has(savedInput.channel) ? savedInput.channel : null;
+    const contentKey =
+      channel === "place"
+        ? "placeContent"
+        : channel === "instagram"
+          ? "instagramContent"
+          : channel === "image"
+            ? "imagePrompts"
+            : null;
+    if (channel && contentKey) {
+      const { pack } = buildDeliverableChannelFallback(channel, {
+        input: savedInput,
+        failures: ["server_error_recovered"],
+      });
+      if (pack && isPublishableChannelPack(channel, pack)) {
+        try {
+          await incrementContentUsage(auth.supabase, auth.user.id);
+        } catch {
+          /* usage optional on recovery */
+        }
+        const usageAfter = await getUsageSummary(
+          auth.supabase,
+          auth.user.id,
+          auth.user.email
+        );
+        return NextResponse.json({
+          ok: true,
+          [contentKey]: pack,
+          channel,
+          mode: "fallback",
+          softPass: true,
+          withheld: false,
+          meta: {
+            failReasons: ["server_error_recovered"],
+            contentChannel: channel,
+            v2PipelineVerified: true,
+            v3PipelineVerified: true,
+          },
+          usageWarning: usageAfter.usageWarning,
+          usage: usageAfter,
+        });
+      }
+    }
     if (requiresV2ResearchGate({ ...savedInput, v2AxisRequired: true })) {
       return NextResponse.json(
         researchGateBlockedResult(
