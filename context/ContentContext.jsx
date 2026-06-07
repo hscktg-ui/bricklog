@@ -35,6 +35,11 @@ import {
   formatFeedbackIntentBrief,
   mergeFeedbackHints,
 } from "@/lib/feedback/feedbackIntentEngine";
+import {
+  applyFeedbackSurgicalRewrite,
+  polishFeedbackRewritePack,
+  shouldFeedbackFullRegen,
+} from "@/lib/feedback/feedbackBlogDelivery";
 import { formatFeedbackAppliedCustomerLine } from "@/lib/feedback/feedbackAppliedDisplay";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import { autoImproveContent } from "@/lib/editorAI/autoImprove";
@@ -1851,6 +1856,67 @@ export function ContentProvider({
             rewriteCount: (blogContent._meta?.rewriteCount || 0) + 1,
           });
 
+          const useSurgicalFeedback = !shouldFeedbackFullRegen({
+            intents: intentHints,
+            tagIds,
+            scope,
+            memo: feedbackText,
+            inputPatch,
+            existingPack: blogContent,
+          });
+
+          if (useSurgicalFeedback) {
+            setFeedbackStep(FEEDBACK_REWRITE_STEPS[1].text);
+            const ctx = buildRewriteCtx();
+            const { pack: surgicalPack, intent } = applyFeedbackSurgicalRewrite(
+              blogContent,
+              feedbackText,
+              { ...ctx, input: pipelineInput },
+              scope,
+              tagIds,
+              pipelineInput
+            );
+            const feedbackAppliedSummary = formatFeedbackAppliedCustomerLine(
+              intentHints,
+              feedbackText
+            );
+            const next = {
+              ...surgicalPack,
+              _edited: true,
+              _meta: {
+                ...surgicalPack._meta,
+                rewritten: true,
+                feedbackRewrite: true,
+                feedbackSurgical: true,
+                rewriteCount: pipelineInput.rewriteCount,
+                feedbackAppliedSummary: feedbackAppliedSummary || undefined,
+                feedbackAppliedIntents: intentHints,
+              },
+            };
+            setFeedbackStep(FEEDBACK_REWRITE_STEPS[2].text);
+            setBlogContent(next);
+            clearDerived();
+            recordRewriteLearning(
+              brandHooks?.activeBrandId,
+              "blog",
+              feedbackText,
+              intent
+            );
+            persistChannelMemory("blog", next, buildMemMeta(next));
+            trackContentEvent({
+              eventType: "rewrite",
+              brandId: brandHooks?.activeBrandId,
+              contentItemId: memoryContentIds.blog,
+              channel: "blog",
+              meta: { scope, source: "feedback", surgical: true },
+            });
+            finishLoadingOverlay("feedback", startedAt, {
+              success: true,
+              message: "피드백이 반영된 편집본을 다듬었습니다.",
+            });
+            return { ok: true, pack: next, intent };
+          }
+
           setFeedbackStep(FEEDBACK_REWRITE_STEPS[1].text);
           let result = await ensureBlogDelivery(pipelineInput, {
             setPipelineStep: setFeedbackStep,
@@ -1906,21 +1972,19 @@ export function ContentProvider({
             },
           };
 
-          if (scope !== "all" || tagIds.length > 0) {
-            const ctx = buildRewriteCtx();
-            const scoped = runRewrite(
-              "blog",
-              next,
-              feedbackText,
-              {
-                ...ctx,
-                input: normalizePipelineInput(patchedInput),
-              },
-              scope,
-              tagIds
-            );
-            next = { ...scoped.pack, _edited: true, _meta: next._meta };
-          }
+          next = polishFeedbackRewritePack(
+            next,
+            buildRewriteCtx(),
+            pipelineInput
+          );
+          next = {
+            ...next,
+            _edited: true,
+            _meta: {
+              ...next._meta,
+              feedbackFullRegen: true,
+            },
+          };
 
           setFeedbackStep(FEEDBACK_REWRITE_STEPS[2].text);
           setBlogContent(next);
@@ -1959,18 +2023,20 @@ export function ContentProvider({
 
       const effectiveInput = { ...blogInput, ...inputPatch };
       const ctx = buildRewriteCtx();
+      const normalizedInput = normalizePipelineInput(effectiveInput);
       const result = runRewrite(
         "blog",
         blogContent,
         feedbackText,
         {
           ...ctx,
-          input: normalizePipelineInput(effectiveInput),
+          input: normalizedInput,
         },
         scope,
         tagIds
       );
-      const next = { ...result.pack, _edited: true };
+      let next = polishFeedbackRewritePack(result.pack, ctx, normalizedInput);
+      next = { ...next, _edited: true };
       setBlogContent(next);
       clearDerived();
       recordRewriteLearning(
