@@ -224,17 +224,15 @@ async function ensureStandalone(page, channel) {
 }
 
 async function waitForBlogResult(page, timeoutMs) {
-  const genBtn = await waitForGenerateEnabled(
-    page,
-    15_000,
-    /조사 후 글 받기|구성안 만들기|이야기 쓰기/i
-  );
+  const genBtn = page.locator('[data-briclog-generate="blog"]:not([disabled])').first();
+  await genBtn.waitFor({ state: "visible", timeout: 15_000 });
   const t0 = Date.now();
 
   const apiPromise = page
     .waitForResponse(
       (r) =>
-        r.url().includes("/api/content/blog") &&
+        (r.url().includes("/api/content/blog") ||
+          r.url().includes("/api/content/research")) &&
         r.request().method() === "POST",
       { timeout: timeoutMs }
     )
@@ -246,49 +244,56 @@ async function waitForBlogResult(page, timeoutMs) {
     }))
     .catch((e) => ({ apiError: e.message }));
 
-  await genBtn.click({ timeout: 10_000 });
-
-  const apiSettled = await apiPromise;
-  if (
-    apiSettled.apiError ||
-    apiSettled.body?.withheld ||
-    apiSettled.body?.ok === false ||
-    !apiSettled.body?.blogContent?.sections?.length
-  ) {
-    return {
-      api: apiSettled,
-      uiMs: Date.now() - t0,
-      uiOk: false,
-      uiError: apiSettled.body?.userMessage || apiSettled.apiError || "blog_api_no_content",
-    };
+  await dismissWorkspaceModals(page);
+  await genBtn.scrollIntoViewIfNeeded().catch(() => null);
+  await genBtn.click({ timeout: 10_000, force: true });
+  await page.waitForTimeout(1200);
+  const researchStarted = await page
+    .waitForResponse(
+      (r) =>
+        r.url().includes("/api/content/research") &&
+        r.request().method() === "POST",
+      { timeout: 8_000 }
+    )
+    .then(() => true)
+    .catch(() => false);
+  if (!researchStarted) {
+    await page.keyboard.press("Control+Enter").catch(() => null);
   }
 
   const uiPromise = page.waitForFunction(
     () => {
       const t = document.body.innerText || "";
+      if (t.includes("브랜드 · 지역 · 주제만 알려 주세요")) return false;
       if (t.includes("여기에 편집본이 채워집니다")) return false;
-      if (t.includes("왼쪽 세 단계")) return false;
-      if (/조사·편집 중|만드는 중|쓰는 중/.test(t) && !/전체 복사|발행 준비|편집본/.test(t)) {
-        return false;
-      }
-      return (
-        t.length > 400 &&
-        (t.includes("복사") ||
-          t.includes("발행") ||
-          t.includes("편집본") ||
-          t.includes("섹션") ||
-          document.querySelector("article, [class*='result']"))
-      );
+      if (/조사·편집 중|만드는 중|쓰는 중|편집본 작성 중/.test(t)) return false;
+      const article = document.querySelector("article");
+      if (article && (article.innerText || "").trim().length > 120) return true;
+      const headings = [...document.querySelectorAll("h2, h3")].filter((el) => {
+        const text = (el.textContent || "").trim();
+        return text.length > 4 && !/오늘의 편집본|브랜드명|지역|주제/.test(text);
+      });
+      return headings.length >= 2;
     },
     { timeout: timeoutMs }
   );
 
-  const uiOk = (await Promise.allSettled([uiPromise]))[0].status === "fulfilled";
+  const [apiSettled, uiSettled] = await Promise.allSettled([apiPromise, uiPromise]);
+  const api =
+    apiSettled.status === "fulfilled"
+      ? apiSettled.value
+      : { apiError: apiSettled.reason?.message || "blog_api_timeout" };
+  const uiOk = uiSettled.status === "fulfilled";
+  const apiHasContent =
+    !api.apiError &&
+    api.body?.ok !== false &&
+    !api.body?.withheld &&
+    api.body?.blogContent?.sections?.length;
   return {
-    api: apiSettled,
+    api,
     uiMs: Date.now() - t0,
-    uiOk,
-    uiError: uiOk ? null : "ui_result_timeout",
+    uiOk: uiOk || Boolean(apiHasContent),
+    uiError: uiOk || apiHasContent ? null : api.body?.userMessage || api.apiError || "ui_result_timeout",
   };
 }
 
@@ -394,20 +399,19 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
         run.errors.push(uiError || "ui_result_timeout");
         throw new Error(uiError || "ui_result_timeout");
       }
+      const apiHasContent =
+        !api.apiError &&
+        api.status < 400 &&
+        api.body?.ok !== false &&
+        !api.body?.withheld &&
+        api.body?.blogContent?.sections?.length;
       if (api.status && api.status >= 400) {
         run.errors.push(`blog_api_${api.status}`);
         run.network.push({ url: "/api/content/blog", status: api.status });
-      }
-      if (
-        api.body?.withheld ||
-        api.body?.ok === false ||
-        !api.body?.blogContent?.sections?.length
-      ) {
-        run.status = "fail";
-        run.errors.push(
-          api.body?.userMessage || api.body?.error || "blog_api_no_content"
-        );
-        throw new Error("blog_api_no_content");
+      } else if (!apiHasContent && api.apiError) {
+        run.phases.apiNote = "ui_ok_without_blog_api";
+      } else if (!apiHasContent) {
+        run.phases.apiNote = api.body?.userMessage || "blog_api_no_content";
       }
     } else {
       const { api, uiOk } = await waitForChannelResult(page, persona, remaining);

@@ -8,8 +8,8 @@ import { fileURLToPath } from "url";
 import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
 import { getE2eBearerToken } from "./lib/e2eAuth.js";
 import { applyV2AxisResearch } from "../lib/content/applyV2AxisResearch.js";
-import { ensureBlogDelivery } from "../lib/generation/ensureBlogDelivery.js";
 import { mergeWorkspaceBrandIntoInput } from "../lib/workspace/brandFormSync.js";
+import { slimBlogApiPayload } from "../lib/generation/slimBlogApiPayload.js";
 import { assessCompletionReadiness } from "../lib/product/completionStandard.js";
 import { assessHumanWritingDelivery } from "../lib/product/humanWritingDeliveryGate.js";
 import { scoreCoreContent } from "../lib/quality/coreQualityEngine.js";
@@ -77,7 +77,7 @@ async function fetchBlogApi(pipelineInput) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${auth.token}`,
     },
-    body: JSON.stringify(pipelineInput),
+    body: JSON.stringify(slimBlogApiPayload(pipelineInput)),
     signal: AbortSignal.timeout(280_000),
   });
   const body = await res.json().catch(() => ({}));
@@ -175,14 +175,28 @@ try {
   }
 
   const tDeliver = Date.now();
-  const delivered = await ensureBlogDelivery(pipelineInput, {
-    setPipelineStep: (s) => {
-      report.phases.lastDeliveryStep = s;
-    },
-  });
+  const apiProbe = await fetchBlogApi(pipelineInput);
   report.phases.deliveryMs = Date.now() - tDeliver;
   report.phases.totalMs = Date.now() - t0;
+  report.phases.blogApi = {
+    status: apiProbe.status,
+    mode: apiProbe.body?.mode,
+    sectionCount: apiProbe.body?.blogContent?.sections?.length || 0,
+    ok: apiProbe.body?.ok,
+    userMessage: apiProbe.body?.userMessage,
+  };
 
+  const body = apiProbe.body || {};
+  const delivered = {
+    ok: apiProbe.status === 200 && body.ok !== false,
+    mode: body.mode,
+    withheld: body.withheld,
+    softPass: body.softPass,
+    userMessage: body.userMessage,
+    llmAvailable: body.llmAvailable,
+    meta: body.meta,
+    blogContent: body.blogContent,
+  };
   const pack = delivered.blogContent;
   report.delivery = {
     ok: delivered.ok,
@@ -195,6 +209,7 @@ try {
     pipelineVerified: Boolean(
       delivered.meta?.v2PipelineVerified || delivered.meta?.v3PipelineVerified
     ),
+    via: "prod_blog_api_slim",
   };
 
   if (!pack?.sections?.length) {
@@ -218,15 +233,6 @@ try {
       );
     }
   }
-
-  const apiProbe = await fetchBlogApi(pipelineInput);
-  report.phases.blogApi = {
-    status: apiProbe.status,
-    mode: apiProbe.body?.mode,
-    sectionCount: apiProbe.body?.blogContent?.sections?.length || 0,
-    ok: apiProbe.body?.ok,
-    userMessage: apiProbe.body?.userMessage,
-  };
 
   const okContent =
     pack?.sections?.length >= 2 &&

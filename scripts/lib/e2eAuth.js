@@ -84,6 +84,14 @@ export async function dismissWorkspaceModals(page) {
   if (await profileLater.count()) {
     await profileLater.first().click({ timeout: 5000 }).catch(() => null);
   }
+  const idleHintClose = page
+    .locator("div")
+    .filter({ hasText: /맞춤 개인화|계정 습관/ })
+    .getByRole("button", { name: "닫기" })
+    .first();
+  if (await idleHintClose.count()) {
+    await idleHintClose.click({ timeout: 3000 }).catch(() => null);
+  }
   await page.waitForTimeout(600);
 }
 
@@ -229,10 +237,21 @@ export async function fillBlogFormViaDom(page, form) {
       return null;
     };
 
+    const clickChip = (text) => {
+      for (const btn of document.querySelectorAll("button")) {
+        if (btn.textContent?.trim() === text) {
+          btn.click();
+          return true;
+        }
+      }
+      return false;
+    };
+
     const results = {
       brand: fire(byLabel("브랜드명"), f.brandName || ""),
       region: fire(byLabel("지역"), f.region || ""),
       topic: fire(byLabel("오늘의 주제"), f.topic || ""),
+      industry: f.industry ? clickChip(f.industry) : false,
     };
     return results;
   }, form);
