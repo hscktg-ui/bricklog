@@ -142,6 +142,37 @@ if (!surface.ok) {
   process.exit(1);
 }
 
+const prodOpeningPack = {
+  title: "파주 에이스침대, 루체3 전시",
+  representativeTitle: "파주 에이스침대, 루체3 전시",
+  sections: [
+    {
+      heading: "도입",
+      body: [
+        "파주 에이스침대, 루체3 전시소식을 메모해 뒀어요.",
+        "신혼침대-에이스침대 파주 매장: 템바보드 헤드보드가 헤드…",
+        "루체3 전시 구성은 매장 안내 기준으로 확인하면 됩니다.",
+      ].join(" "),
+    },
+    { heading: "정리", body: "전시 일정과 구성을 미리 확인하면 방문 동선을 짧게 잡을 수 있습니다." },
+  ],
+};
+const prodScrubbed = scrubSpeakerMismatchTitleOpening(prodOpeningPack, brandIntro);
+const prodOpen = prodScrubbed.sections?.[0]?.body || "";
+if (/메모(?:해|한)\s*뒀|템바보드|신혼침대-/.test(prodOpen)) {
+  console.error("FAIL: prod-like opening still contaminated", prodOpen.slice(0, 200));
+  process.exit(1);
+}
+const prodSurface = scoreSpeakerSurfaceAlignment(prodScrubbed, brandIntro);
+if (!prodSurface.ok) {
+  console.error("FAIL: prod-like surface after scrub", prodSurface);
+  process.exit(1);
+}
+if (!prodScrubbed._meta?.speakerSurfaceScrub) {
+  console.error("FAIL: prod-like pack should be marked scrubbed");
+  process.exit(1);
+}
+
 const furnPolished = applyFurnitureExhibitionPackPolish(visitTitlePack, brandIntro);
 if (/보러\s*다녀|직접\s*다녀/.test(furnPolished.title || furnPolished.sections?.[0]?.heading || "")) {
   console.error("FAIL: furniture polish forced visit tone for brand_intro", furnPolished.title);
