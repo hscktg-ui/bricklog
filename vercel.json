@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.briclog.ai" }],
+      "destination": "https://briclog.ai/:path*",
+      "permanent": true
+    }
+  ],
   "crons": [
     {
       "path": "/api/trends/collect",

@@ -1,14 +1,480 @@
 {
-  "at": "2026-05-28T10:59:53.510Z",
-  "base": "http://127.0.0.1:3005",
-  "slaMs": 120000,
+  "at": "2026-06-07T04:21:14.692Z",
+  "base": "https://briclog.ai",
+  "slaMs": 180000,
   "login": {
-    "ok": false,
-    "reason": "no_credentials"
+    "ok": true,
+    "email": "hundred-ux-smoke@briclog.ai",
+    "session": {
+      "ok": true,
+      "email": "hundred-ux-smoke@briclog.ai",
+      "storageKey": "sb-rftuibjhyecmvewhkeel-auth-token",
+      "tokenValue": "[redacted]",
+      "storageState": {
+        "cookies": [],
+        "origins": [
+          {
+            "origin": "https://briclog.ai",
+            "localStorage": [],
+            "sessionStorage": [
+              {
+                "name": "sb-rftuibjhyecmvewhkeel-auth-token",
+                "value": "[redacted]"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "reused": true,
+    "reason": "supabase_session"
   },
-  "runs": [],
+  "runs": [
+    {
+      "id": "c_insta_flower",
+      "channel": "insta",
+      "label": "인스타 — 부산 꽃집",
+      "slaMs": 180000,
+      "status": "fail",
+      "elapsedMs": 180011,
+      "phases": {
+        "navigateMs": 694,
+        "fillMs": 625,
+        "api": {
+          "apiError": "page.waitForResponse: Timeout 178666ms exceeded while waiting for event \"response\""
+        },
+        "uiOk": true
+      },
+      "errors": [
+        "channel_api_no_content",
+        "channel_api_no_content"
+      ],
+      "network": [],
+      "failReason": "channel_api_no_content",
+      "consoleErrors": [],
+      "networkFails": [],
+      "apiTrace": [
+        {
+          "url": "https://briclog.ai/api/public/visit",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806076119
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806076393
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806076438
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806076608
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806076625
+        },
+        {
+          "url": "https://briclog.ai/api/content/status",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806076828
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806077087
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806077196
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079175
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079279
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079280
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079830
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079830
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806166423
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806166423
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806256664
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806256664
+        }
+      ],
+      "pageSnippet": "브릭로그 BRICLOG — 브릭로그(BRICLOG)는 네이버 블로그·스마트플레이스·인스타그램 글을 한곳에서 차곡 쌓는 AI 브랜드 글쓰기 서비스입니다. 매장·브랜드 홍보, SNS 마케팅, 콘텐츠 작성을 briclog.ai에서 시작하세요.\n\nBRICLOG (Briclog) stacks Naver blog, Smart Place, and Instagram drafts in one brand writing workspace at briclog.ai.\n\nBRICLOG\n\n브랜드 창고\n\n브랜드를 선택해 주세요\n▾\n브랜드 목록 펼치기\n브랜드를 선택하세요\n(베타)\n플랜\n이번 달 생성 · 한도 없음\n베타 기간 무료 이용\n\n콘텐츠 만들기\n\n이야기\n기본\n플레이스\n인스타 캡션\n\n더 보기\n\n썸네일 문구\n붙여넣기 검수\n브랜드 작업실\n\n기록\n\n초안 기록\n설정\n펼치기\n효과음\n배경음악\n로그아웃\n인스타 캡션\n스튜디오 (베타)\n플랜\nU\n\n맞춤 개인화: 계정 습관이 쌓이면 말투·문장 길이가 다음 글에 반영됩니다.\n\n닫기\n\n인스타 캡션 · 브리프\n\n인스타 캡션에서 바로 시작\n\n이야기 없이도 캡션·해시태그를 만들 수 있어요. 톤·이모지·줄바꿈까지 피드·릴스에 맞게 만듭니다.\n\n캡션·줄바꿈\n\n피드·릴스에 맞는 짧은 문장\n\n해시태그\n\n지역·주제 태그 묶음\n\n톤 선택\n\n감성·정보·프로모션 톤 전환\n\n저장·방문·DM 등 캠페인 목표를 먼저 정하면, 맹목적인 해시태그 나열이 아니라 피드에 맞는 캡션이 나옵니다.\n\n1. 캠페인 목표\n\n이번 게시물로 무엇을 얻고 싶은지 정합니다.\n\n저장·공감\n피드 저장·공유\n방문·예약\n매장·링크 유도\n댓글·DM\n대화·참여\n신규·론칭\n신메뉴·오픈\n주요 독자\n동네·근처\n단골·재방문\n처음 보는 사람\n2. 소재·후크\n\n첫 줄에서 멈추게 할 장면·각도입니다.\n\n오늘의 소재\n*\n후크 각도\n감성·장면\n꿀팁·정보\n비하인드\n혜택·한정\n장면 한 줄 (선택)\n\n비우면 브랜드·업종에 맞게 자동\n\n3. 포맷·분량\n\n릴스/숏폼은 더 짧게 잡습니다.\n\n일반\n숏폼\n짧게\n보통\n길게\n4. 톤·이모지\n캡션 톤\n감성형\n정보형\n프리미엄형\n미니멀형\n이모지\n사용안함\n적게\n보통\n많이\n보통 (legacy)\n적게 (legacy)\n많이 (legacy)\n\n기본값은 적절히 — 후크·마무리에 자연스럽게 넣어요\n\n5. 해시태그\n\n최대 5개 · 브랜드·지역 기반 추천\n\n없음\n1개\n2개\n3개\n4개\n5개\n자동 추천\n직접 입력\n6. 마무리 CTA·피할 표현\n\n댓글·DM·프로필 링크 등 부드"
+    },
+    {
+      "id": "c_image_pension",
+      "channel": "image",
+      "label": "썸네일 문구 — 제주 펜션",
+      "slaMs": 180000,
+      "status": "fail",
+      "elapsedMs": 180015,
+      "phases": {
+        "navigateMs": 2687,
+        "fillMs": 624,
+        "api": {
+          "apiError": "page.waitForResponse: Timeout 176678ms exceeded while waiting for event \"response\""
+        },
+        "uiOk": true
+      },
+      "errors": [
+        "channel_api_no_content",
+        "channel_api_no_content"
+      ],
+      "network": [],
+      "failReason": "channel_api_no_content",
+      "consoleErrors": [],
+      "networkFails": [],
+      "apiTrace": [
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079174
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079175
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079279
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079280
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079830
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806079830
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806166423
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806166423
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806256664
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806256664
+        },
+        {
+          "url": "https://briclog.ai/api/public/visit",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806260396
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806260738
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806260757
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806260757
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806260786
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806260786
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806260871
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806260891
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806261420
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806261469
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806261469
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806261547
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806261576
+        },
+        {
+          "url": "https://briclog.ai/api/content/status",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806261775
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806262061
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806262165
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806262204
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806262412
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806262794
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806264954
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 200,
+          "method": "GET",
+          "at": 1780806264954
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806346409
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806346409
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806350558
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806436361
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806436361
+        },
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 200,
+          "method": "POST",
+          "at": 1780806440569
+        }
+      ],
+      "pageSnippet": "브릭로그 BRICLOG — 브릭로그(BRICLOG)는 네이버 블로그·스마트플레이스·인스타그램 글을 한곳에서 차곡 쌓는 AI 브랜드 글쓰기 서비스입니다. 매장·브랜드 홍보, SNS 마케팅, 콘텐츠 작성을 briclog.ai에서 시작하세요.\n\nBRICLOG (Briclog) stacks Naver blog, Smart Place, and Instagram drafts in one brand writing workspace at briclog.ai.\n\nBRICLOG\n\n브랜드 창고\n\n브랜드를 선택해 주세요\n▾\n브랜드 목록 펼치기\n브랜드를 선택하세요\n(베타)\n플랜\n이번 달 생성 · 한도 없음\n베타 기간 무료 이용\n\n콘텐츠 만들기\n\n이야기\n기본\n플레이스\n인스타 캡션\n\n더 보기\n\n썸네일 문구\n붙여넣기 검수\n브랜드 작업실\n\n기록\n\n초안 기록\n설정\n펼치기\n효과음\n배경음악\n로그아웃\n썸네일 문구\n스튜디오 (베타)\n플랜\nU\n\n맞춤 개인화: 계정 습관이 쌓이면 말투·문장 길이가 다음 글에 반영됩니다.\n\n닫기\n\n썸네일 문구 · 브리프\n\n썸네일 문구에서 바로 시작\n\n주제·브랜드만으로도 썸네일 문구를 만들 수 있어요. 다른 채널 초안이 있으면 톤을 이어받습니다.\n\n썸네일 문구\n\n클릭을 부르는 한 줄·카드 카피\n\n비율·목적\n\n1:1·16:9 등 용도별 프롬프트\n\n브랜드 톤\n\n이야기·다른 채널 초안과 맞춤\n\n프롬프트 브리프\n\n주제를 직접 입력하고 용도를 고릅니다. 이야기·플레이스·인스타 초안이 있으면 「이어 만들기」로 헤드카피와 용도가 맞춰집니다.\n\n주제 (직접 입력)\n\n용도\n\n블로그 썸네일\n플레이스 이미지\n인스타 카드\n이벤트 배너\n\n비율: 1:1 (정사각) (용도별 고정)\n\n단독으로 받기 (블로그·다른 채널 없이)\n브랜드·지역·주제만으로 이 채널 편집본을 새로 받습니다.\n썸네일 문구 만들기\n이야기 탭에서 쓰기\n\n브랜드명과 주제를 입력해 주세요.\n\nTIP\n작성 맥락 힌트\n막히면 「보기」를 눌러 주제·장면 힌트를 펼칠 수 있어요.\n보기\n\n막히면 「보기」를 눌러 주제·장면 힌트를 펼칠 수 있어요.\n\n?\n\n브릭로그 BRICLOG\n\n차곡차곡, 브랜드 글을 쌓아요\n\n브릭로그(BRICLOG)는 네이버 블로그·스마트플레이스·인스타그램 글을 한곳에서 차곡 쌓는 AI 브랜드 글쓰기 서비스입니다. 매장·브랜드 홍보, SNS 마케팅, 콘텐츠 작성을 briclog.ai에서 시작하세요.\n\n해신 · 대표 김태규 · 116-06-68724·2023-경기파주-2430\n\n"
+    }
+  ],
   "summary": {
-    "skipped": true,
-    "reason": "no_credentials"
+    "total": 2,
+    "passed": 0,
+    "failed": 2,
+    "withinSla": [],
+    "overSlaOrError": [
+      {
+        "id": "c_insta_flower",
+        "elapsedMs": 180011,
+        "failReason": "channel_api_no_content",
+        "errors": [
+          "channel_api_no_content",
+          "channel_api_no_content"
+        ]
+      },
+      {
+        "id": "c_image_pension",
+        "elapsedMs": 180015,
+        "failReason": "channel_api_no_content",
+        "errors": [
+          "channel_api_no_content",
+          "channel_api_no_content"
+        ]
+      }
+    ]
   }
 }

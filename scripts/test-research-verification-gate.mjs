@@ -37,12 +37,12 @@ const rich = {
   v2PipelineEnforced: true,
   knowledgeExpansionReady: true,
   researchFacts: [
-    { fact: "수제간식이란 무엇인지 정의와 종류", source: "r" },
-    { fact: "왜 찾는지 필요와 고민 상황", source: "r" },
-    { fact: "특징 구성 성분 스펙", source: "r" },
-    { fact: "차이 비교 대비 포인트", source: "r" },
-    { fact: "대상 고객 추천 누구에게", source: "r" },
-    { fact: "확인 주의 문의 선택 기준", source: "r" },
+    { axis: "brand", fact: "더건강하개 용인점 수제간식 라인업 공개", source: "naver" },
+    { axis: "brand", fact: "더건강하개 반려동물 수제간식 제조 방식", source: "official" },
+    { axis: "brand", fact: "더건강하개 운영 시간 및 문의 채널", source: "official" },
+    { axis: "brand", fact: "더건강하개 주요 원료·성분 표기 기준", source: "research" },
+    { axis: "brand", fact: "더건강하개 신규 고객 추천 메뉴", source: "naver" },
+    { fact: "수제간식 선택 시 확인할 주의 포인트", source: "research" },
   ],
   informationUnits: { unitCount: 8 },
   knowledgeCoverage: {

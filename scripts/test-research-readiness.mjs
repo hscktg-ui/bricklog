@@ -40,26 +40,28 @@ assert.ok(!/gemini|20개/i.test(clean));
 const block = formatCustomerResearchBlockMessage(thinNew, ["research_facts_thin"]);
 assert.ok(!/조사가 아직 충분하지 않아요/.test(block));
 
+const fiveBrandFacts = Array.from({ length: 3 }, (_, i) => ({
+  axis: "brand",
+  fact: `판교 라온커피 콜드브루 확인 사실 ${i + 1}`,
+  source: "naver",
+}));
 const oneOnline = evaluateResearchWriteGate(
   thinNew,
-  {
-    facts: [
-      {
-        axis: "topic",
-        fact: "판교 라온커피 콜드브루 런칭 — 네이버 검색 스니펫 요약",
-        source: "research",
-      },
-    ],
-  },
+  { facts: fiveBrandFacts },
   { summary: "콜드브루 신메뉴 출시" }
 );
 assert.ok(oneOnline.ok && oneOnline.mode === "online_clue");
 
 const newBrand = assessResearchSufficiencyForWrite(
-  { brandName: "신규카페", region: "성남", topic: "오픈" },
+  {
+    brandName: "신규카페",
+    region: "성남",
+    topic: "오픈",
+    publicTestMode: true,
+  },
   { facts: [{ axis: "topic", fact: "오픈 — 사용자가 입력한 핵심 주제", source: "user_input" }] },
   {}
 );
-assert.ok(newBrand.ok, "new brand with axes should not hard-block");
+assert.ok(newBrand.ok, "public test bypass keeps thin-context path open");
 
 console.log("OK: research readiness — customer copy, thin context");

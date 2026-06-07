@@ -1,17 +1,17 @@
 {
-  "at": "2026-06-06T07:29:18.343Z",
+  "at": "2026-06-07T03:41:45.958Z",
   "base": "https://briclog.ai",
-  "total": 90.6,
+  "total": 88.5,
   "band": "production",
-  "functionalTotal": 44.6,
-  "userTotal": 46,
+  "functionalTotal": 44,
+  "userTotal": 44.5,
   "functional": [
     {
       "id": "multi_channel",
       "label": "멀티채널 생성",
       "max": 10,
-      "score": 8.1,
-      "note": "채널 SLA 1/4"
+      "score": 7.5,
+      "note": "채널 SLA 0/4"
     },
     {
       "id": "quality_engine",
@@ -85,8 +85,7 @@
       "id": "speed",
       "label": "속도·대기 체감",
       "max": 6,
-      "score": 5.5,
-      "note": "블로그 SLA 42s"
+      "score": 4
     },
     {
       "id": "mobile",
@@ -105,26 +104,33 @@
       "note": "베타 무료·Toss 미연동"
     },
     {
+      "id": "speed",
+      "label": "속도·대기 체감",
+      "score": 4,
+      "max": 6,
+      "pct": 67
+    },
+    {
+      "id": "multi_channel",
+      "label": "멀티채널 생성",
+      "score": 7.5,
+      "max": 10,
+      "pct": 75,
+      "note": "채널 SLA 0/4"
+    },
+    {
       "id": "first_use",
       "label": "첫 사용·이해",
       "score": 7.5,
       "max": 10,
       "pct": 75,
       "note": "공개 테스트 게이트·가입 CTA"
-    },
-    {
-      "id": "multi_channel",
-      "label": "멀티채널 생성",
-      "score": 8.1,
-      "max": 10,
-      "pct": 81,
-      "note": "채널 SLA 1/4"
     }
   ],
   "signals": {
-    "channelSlaPassCount": 1,
+    "channelSlaPassCount": 0,
     "channelSlaTotal": 4,
-    "blogSlaMs": 41856,
+    "blogSlaMs": null,
     "uxPersonaPass": 100,
     "uxPersonaTotal": 100,
     "mobileUxPass": true,
@@ -148,6 +154,6 @@
     "publicTestLive": true,
     "publicTestPreviewPass": false,
     "publicTestElapsedMs": null,
-    "publicTestStatus": "gate"
+    "publicTestStatus": "quota"
   }
 }

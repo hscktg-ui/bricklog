@@ -33,4 +33,15 @@ const feedbackLine = formatFeedbackAppliedCustomerLine(
 );
 assert.ok(feedbackLine.includes("반복"));
 
+const aligned = ensureBlogDisplayPack(
+  {
+    sections: [{ heading: "h", body: "본문 내용이 충분히 길고 구체적인 설명을 담습니다." }],
+    representativeTitle: "제목",
+    _meta: { displayReady: true, humanWritingDelivery: { humanReady: false } },
+  },
+  { brandName: "테스트", region: "서울", topic: "주제" }
+);
+assert.notEqual(aligned._meta?.displayReady, true);
+assert.notEqual(aligned._meta?.publishReady, true);
+
 console.log("OK: publish-readiness-display");
