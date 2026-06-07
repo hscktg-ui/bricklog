@@ -45,6 +45,25 @@ function loadEnvLocal() {
   applyE2eTestCredentialsToEnv(process.env);
 }
 
+/** 리포트 JSON에 세션 토큰이 커밋되지 않도록 제거 */
+function sanitizeSlaReport(report) {
+  const out = JSON.parse(JSON.stringify(report));
+  const login = out.login;
+  if (!login) return out;
+  if (login.token) login.token = "[redacted]";
+  const session = login.session;
+  if (!session) return out;
+  if (session.tokenValue) session.tokenValue = "[redacted]";
+  for (const origin of session.storageState?.origins || []) {
+    for (const bucket of ["localStorage", "sessionStorage"]) {
+      for (const item of origin[bucket] || []) {
+        if (/auth|token/i.test(item.name || "")) item.value = "[redacted]";
+      }
+    }
+  }
+  return out;
+}
+
 async function dismissIntro(page) {
   const intro = page.locator('[aria-label="BRICLOG 소개"]');
   if (!(await intro.count())) return;
@@ -125,10 +144,7 @@ async function waitForGenerateEnabled(page, timeoutMs = 15_000, pattern) {
   const re =
     pattern ||
     /조사 후 글 받기|구성안 만들기|이야기 쓰기|플레이스 소개글|인스타 초안|이미지 프롬프트/i;
-  const btn = page
-    .locator("button.briclog-btn-primary:not([disabled])")
-    .filter({ hasText: re })
-    .first();
+  const btn = page.locator("button:not([disabled])").filter({ hasText: re }).first();
   await btn.waitFor({ state: "visible", timeout: timeoutMs });
   return btn;
 }
@@ -398,7 +414,7 @@ async function main() {
   if (!report.login.ok) {
     report.summary = { skipped: true, reason: report.login.reason };
     mkdirSync(dirname(OUT), { recursive: true });
-    writeFileSync(OUT, JSON.stringify(report, null, 2), "utf8");
+    writeFileSync(OUT, JSON.stringify(sanitizeSlaReport(report), null, 2), "utf8");
     console.log("SKIP — workspace not ready:", report.login.reason);
     await browser.close();
     process.exit(1);
@@ -434,7 +450,7 @@ async function main() {
   };
 
   mkdirSync(dirname(OUT), { recursive: true });
-  writeFileSync(OUT, JSON.stringify(report, null, 2), "utf8");
+  writeFileSync(OUT, JSON.stringify(sanitizeSlaReport(report), null, 2), "utf8");
 
   console.log(`\n=== CHANNEL SLA SMOKE (${Math.round(CHANNEL_SLA_MS / 1000)}s) ===\n`);
   console.log("Report:", OUT);

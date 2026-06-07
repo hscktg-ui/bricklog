@@ -1,0 +1,35 @@
+{
+  "at": "2026-06-06T23:27:14.767Z",
+  "mode": "api",
+  "base": "https://briclog.ai",
+  "input": {
+    "brandName": "모카하우스",
+    "region": "서울 마포",
+    "topic": "봄 시즌 수제 브런치 메뉴",
+    "sampleId": "cafe_brunch"
+  },
+  "sessionId": "smoke-1780788434767-pb60k6",
+  "slaMs": 90000,
+  "status": "pass",
+  "elapsedMs": 3069,
+  "ok": true,
+  "hasPreview": true,
+  "gateFail": false,
+  "quotaExceeded": false,
+  "userMessage": null,
+  "quotaGet": {
+    "status": 200,
+    "remaining": 1,
+    "limited": false
+  },
+  "httpStatus": 200,
+  "response": {
+    "ok": true,
+    "previewTitle": "모카하우스 봄 시즌 수제 브런치 메뉴",
+    "metrics": {
+      "brandUnderstandingPct": 92,
+      "publishScore": 86,
+      "improvementHint": "브랜드 작업실을 만들면 톤앤매너와 반복 메시지를 저장할 수 있습니다."
+    }
+  }
+}
