@@ -420,6 +420,12 @@ function BlogForm({
         />
       </Field>
 
+      {effectiveSimple && sensitive.isSensitive ? (
+        <p className="inline-flex items-center gap-1 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[12px] font-semibold text-[#E67700]">
+          ⚖️ {sensitive.userBadge}
+        </p>
+      ) : null}
+
       {speakerTopicGuide.kind !== "general" ? (
         <p
           className={`rounded-lg border px-3 py-2.5 text-[12px] leading-relaxed ${
