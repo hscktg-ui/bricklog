@@ -148,6 +148,12 @@ async function runScenario(scenario) {
       ? Boolean(body.userMessage)
       : body.ok && pack?.sections?.length >= 2 && chars >= scenario.minChars);
 
+  const sqvMeta = body.meta?.sqv || pack?._meta?.sqv;
+  const sqvV2Ok =
+    sqvMeta?.version === "v2" &&
+    Boolean(pack?._meta?.contentQualityDelivered) &&
+    typeof body.meta?.contentQualityValue === "number";
+
   const row = {
     at: new Date().toISOString(),
     base: BASE,
@@ -160,7 +166,13 @@ async function runScenario(scenario) {
     v4Speaker: scenario.raw.v4Speaker,
     sqv: sqv?.score ?? null,
     sqvGrade: sqv?.grade ?? null,
+    sqvVersion: sqvMeta?.version ?? null,
+    sqvV2Delivered: sqvV2Ok,
+    contentQualityDelivered: Boolean(pack?._meta?.contentQualityDelivered),
     publishReady: sqv?.publishReady ?? null,
+    outlineOnly: (body.meta?.failReasons || pack?._meta?.failReasons || []).includes(
+      "outline_only_output"
+    ),
     speakerArchetype: sqv?.personaId ?? pack?._meta?.humanBelief?.speakerArchetype,
     snippetLeakOk: snippetLeak.ok,
     humanReady: human.humanReady,

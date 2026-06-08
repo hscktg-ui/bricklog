@@ -4,6 +4,9 @@
 import { finalizeContentQualityForDelivery, attachContentQualityToApiMeta } from "../lib/product/contentQualityDelivery.js";
 import { computeContentQualityValue } from "../lib/product/contentQualityValue.js";
 import { resolvePublishReadiness } from "../lib/product/publishReadinessDisplay.js";
+import { detectOutlineLeak } from "../lib/content/outlinePackGuard.js";
+import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js";
+import { resolveBlogLengthTier } from "../lib/constants.js";
 
 const brandIntro = {
   v4Speaker: "brand_intro",
@@ -70,5 +73,25 @@ if (recomputed.version !== "v2") {
   process.exit(1);
 }
 
+const outline = detectOutlineLeak(finalized, "blog");
+if (outline.isOutline) {
+  console.error("FAIL: outline leak after finalize", outline.reasons);
+  process.exit(1);
+}
+for (const sec of finalized.sections || []) {
+  const len = String(sec.body || "").replace(/\s/g, "").length;
+  if (len < 80) {
+    console.error("FAIL: thin section after finalize", sec.heading, len);
+    process.exit(1);
+  }
+}
+
+const tier = resolveBlogLengthTier(brandIntro.blogLengthTier);
+const chars = countBlogBodyCharsWithSpaces(finalized);
+if (!finalized._meta?.deliveryProseRefill && chars < tier.min) {
+  console.error("FAIL: expected delivery prose refill meta", chars, tier.min);
+  process.exit(1);
+}
+
 console.log("OK: content quality delivery — sqv v2, finalize, api meta, publish readiness");
-console.log("  score:", sqv.score, "grade:", sqv.grade, "publishReady:", sqv.publishReady);
+console.log("  score:", sqv.score, "grade:", sqv.grade, "publishReady:", sqv.publishReady, "chars:", chars);
