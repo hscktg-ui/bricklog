@@ -12,7 +12,7 @@ import { deliverBlogDespiteGate } from "../lib/product/deliverySoftPass.js";
 import { computeContentQualityValue } from "../lib/product/contentQualityValue.js";
 import { slimBlogApiPayload } from "../lib/generation/slimBlogApiPayload.js";
 import {
-  scrubSpeakerMismatchTitleOpening,
+  applySpeakerVoiceLockPack,
   scoreSpeakerSurfaceAlignment,
 } from "../lib/persona/speakerVoiceLock.js";
 import { applyFurnitureExhibitionPackPolish } from "../lib/product/furnitureExhibitionEngine.js";
@@ -131,7 +131,7 @@ const visitTitlePack = {
     { heading: "정리", body: "전시 구성과 안내는 매장 공식 기준으로 확인하면 됩니다." },
   ],
 };
-const scrubbed = scrubSpeakerMismatchTitleOpening(visitTitlePack, brandIntro);
+const scrubbed = applySpeakerVoiceLockPack(visitTitlePack, brandIntro);
 if (/직접\s*다녀|다녀온\s*후기/.test(scrubbed.title || "")) {
   console.error("FAIL: title still visit-review after scrub", scrubbed.title);
   process.exit(1);
@@ -158,7 +158,7 @@ const prodOpeningPack = {
     { heading: "정리", body: "전시 일정과 구성을 미리 확인하면 방문 동선을 짧게 잡을 수 있습니다." },
   ],
 };
-const prodScrubbed = scrubSpeakerMismatchTitleOpening(prodOpeningPack, brandIntro);
+const prodScrubbed = applySpeakerVoiceLockPack(prodOpeningPack, brandIntro);
 const prodOpen = prodScrubbed.sections?.[0]?.body || "";
 if (/메모(?:해|한)\s*뒀|템바보드|신혼침대-|직접\s*확인|쇼룸(?:에서|)\s*.{0,20}직접/.test(prodOpen)) {
   console.error("FAIL: prod-like opening still contaminated", prodOpen.slice(0, 200));
@@ -191,7 +191,7 @@ const softProdPack = {
     { heading: "정리", body: "전시 일정과 구성을 미리 확인하면 방문 동선을 짧게 잡을 수 있습니다." },
   ],
 };
-const softScrubbed = scrubSpeakerMismatchTitleOpening(softProdPack, brandIntro);
+const softScrubbed = applySpeakerVoiceLockPack(softProdPack, brandIntro);
 const softOpen = softScrubbed.sections?.[0]?.body || "";
 if (
   /누워\s*보|메모(?:해|한)\s*(?:뒀|두)|쇼룸(?:에서|)\s*.{0,20}보(?:니|고)|감이\s*왔|체험(?:·|\/)?\s*시연|뒤척임|기준으로\s+기준으로/.test(
@@ -215,7 +215,7 @@ const snippetOpeningPack = {
     },
   ],
 };
-const snippetScrubbed = scrubSpeakerMismatchTitleOpening(snippetOpeningPack, brandIntro);
+const snippetScrubbed = applySpeakerVoiceLockPack(snippetOpeningPack, brandIntro);
 const snippetOpen = snippetScrubbed.sections?.[0]?.body || "";
 if (/신혼침대-|후기\s*:|구매한게/.test(snippetOpen)) {
   console.error("FAIL: naver review snippet still in opening", snippetOpen.slice(0, 200));
@@ -233,5 +233,52 @@ if (/보러\s*다녀|직접\s*다녀/.test(furnPolished.title || furnPolished.se
   process.exit(1);
 }
 
-console.log("OK: speaker voice lock — label, belief, delivery, sqv, slim payload, surface scrub");
+if (!snippetScrubbed._meta?.speakerVoiceLock && !snippetScrubbed._meta?.speakerSurfaceScrub) {
+  console.error("FAIL: snippet pack should be voice-locked");
+  process.exit(1);
+}
+
+const fullBodyPack = {
+  title: "파주 에이스침대, 루체3 전시",
+  sections: [
+    {
+      heading: "안내",
+      body: "파주 에이스침대 루체3 전시소식 관련 전시·구성 을 미리 정리해 두면 방문 전 비교가 수월합니다.",
+    },
+    {
+      heading: "구성",
+      body: [
+        "루체3 전시소식 기준으로 현장에서 산뜻한 침대추천 종류 많고 혜택 많은 쇼룸 에이스스퀘어",
+        "당일 매장 설명과 맞춰 메모해 뒀어요.",
+        "10분 넘게 누워보니 허리 지지감이 달랐어요.",
+      ].join(" "),
+    },
+    {
+      heading: "정리",
+      body: "루체3 전시소식 루체3 전시소식 루체3 전시소식 안내 기준으로 확인하세요.",
+    },
+  ],
+};
+const fullLocked = applySpeakerVoiceLockPack(fullBodyPack, brandIntro);
+const fullText = fullLocked.sections.map((s) => `${s.heading} ${s.body}`).join(" ");
+if (/메모(?:해|한)\s*(?:뒀|두)|누워\s*보|산뜻한\s*침대추천|현장(?:에서|)/.test(fullText)) {
+  console.error("FAIL: full body still has visit/snippet leak", fullText.slice(0, 280));
+  process.exit(1);
+}
+const verbatimAfter = fullLocked._meta?.verbatimTopicAfterLock;
+if (verbatimAfter && !verbatimAfter.ok && verbatimAfter.count > verbatimAfter.maxAllowed + 2) {
+  console.error("FAIL: verbatim topic still extreme after lock", verbatimAfter);
+  process.exit(1);
+}
+const fullSurface = scoreSpeakerSurfaceAlignment(fullLocked, brandIntro);
+if (!fullSurface.ok && fullSurface.issues.some((i) => i.type.includes("visit") || i.type.includes("snippet"))) {
+  console.error("FAIL: full pack surface alignment", fullSurface);
+  process.exit(1);
+}
+if (!fullLocked._meta?.speakerVoiceLock) {
+  console.error("FAIL: speakerVoiceLock meta missing");
+  process.exit(1);
+}
+
+console.log("OK: speaker voice lock — label, belief, delivery, sqv, slim payload, full pack lock");
 console.log("  brand belief score:", brandBelief.score, "sqv:", sqv.score);
