@@ -6,6 +6,22 @@ import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay.j
 import { formatFeedbackAppliedCustomerLine } from "@/lib/feedback/feedbackAppliedDisplay.js";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack.js";
 
+const sqvReadyPack = {
+  sections: [{ body: "a" }],
+  _meta: {
+    sqv: { score: 90, grade: "A", publishReady: true, reasons: [] },
+  },
+};
+assert.equal(resolvePublishReadiness(sqvReadyPack).status, "ready");
+
+const sqvPolishPack = {
+  sections: [{ body: "a" }],
+  _meta: {
+    sqv: { score: 78, grade: "B", publishReady: false, reasons: ["length_tier_under"] },
+  },
+};
+assert.equal(resolvePublishReadiness(sqvPolishPack).status, "polishing");
+
 const readyPack = {
   sections: [{ body: "a" }],
   _meta: {
