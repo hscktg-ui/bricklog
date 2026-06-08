@@ -24,6 +24,7 @@ import {
 } from "@/lib/config/brandEngineFlags";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
 import { slimBlogApiPayload } from "@/lib/generation/slimBlogApiPayload";
+import { attachContentQualityToApiMeta } from "@/lib/product/contentQualityDelivery";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -120,14 +121,17 @@ export async function POST(request) {
     );
     return NextResponse.json({
       ...result,
-      meta: {
-        ...(result.meta || {}),
-        rolloutFlags: {
-          brandFirstEngine: isBrandFirstEngineEnabled(),
-          strictBrandGuard: isStrictBrandGuardEnabled(),
-          officialSourceFirst: isOfficialSourceFirstEnabled(),
+      meta: attachContentQualityToApiMeta(
+        {
+          ...(result.meta || {}),
+          rolloutFlags: {
+            brandFirstEngine: isBrandFirstEngineEnabled(),
+            strictBrandGuard: isStrictBrandGuardEnabled(),
+            officialSourceFirst: isOfficialSourceFirstEnabled(),
+          },
         },
-      },
+        result.blogContent
+      ),
       personalization,
       usageWarning: usageAfter.usageWarning,
       usage: usageAfter,

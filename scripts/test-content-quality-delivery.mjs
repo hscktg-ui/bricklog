@@ -50,7 +50,8 @@ if (!finalized._meta?.contentQualityDelivered) {
   console.error("FAIL: contentQualityDelivered meta");
   process.exit(1);
 }
-if (/메모(?:해|한)\s*(?:뒀|두)|누워\s*보/.test(finalized.sections.map((s) => s.body).join(" "))) {
+const bodyText = finalized.sections.map((s) => s.body).join(" ");
+if (/메모(?:해|한)\s*(?:뒀|두)|누워\s*보|당일\s*들(?:은|어)|실측/.test(bodyText)) {
   console.error("FAIL: visit leak survived finalize");
   process.exit(1);
 }

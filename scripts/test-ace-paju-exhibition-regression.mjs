@@ -19,6 +19,7 @@ const INPUT = {
   mainKeyword: "루체3 전시소식",
   industry: "가구/침대",
   blogLengthTier: "medium",
+  v4Speaker: "brand_intro",
   researchFacts: [
     { fact: "파주 매장에서 루체3 전시 라인업 체험 가능", source: "research" },
     { fact: "전시 기간·대상 모델은 매장 안내 기준", source: "research" },
