@@ -118,13 +118,13 @@ export default function GoldenDatasetPanel({ showToast, embedded = false, sample
         <div>
           <h2 className="text-[16px] font-bold text-[#191F28]">우수글 데이터셋</h2>
           <p className="mt-1 text-[12px] text-[#8B95A1]">
-            해신기획 우수글 Golden Dataset — 생성 시 상위 5개 참조 · 품질 게이트 비교 기준
+            선택적 참고 코퍼스 — 등록 시 생성 프롬프트·유사도 보강 (미등록 업종도 DNA·조사로 생성)
           </p>
         </div>
         )}
         {embedded && (
           <p className="text-[12px] text-[#8B95A1]">
-            등록된 우수글은 생성·품질 게이트에 즉시 반영됩니다 (코드 시드 6건 고정)
+            등록 시 해당 업종 생성에 참고 반영 · 없는 업종은 해신 DNA·조사·LLM 적응형으로 집필
           </p>
         )}
         <select

@@ -30,7 +30,11 @@ for (const s of GOLDEN_BENCHMARK_ARTICLES) {
 
 const block = buildGoldenReferencePromptBlock({ industry: "카페", topic: "여름 메뉴" });
 assert.ok(block.includes("BRICLOG 집필 미션"));
-assert.ok(block.includes("벤치"));
+assert.ok(block.includes("참고") || block.includes("벤치"));
+
+const adaptiveBlock = buildGoldenReferencePromptBlock({ industry: "반려동물", topic: "강아지 간식" });
+assert.ok(adaptiveBlock.includes("DNA·조사"));
+assert.ok(!getGoldenSamplesForInput({ industry: "pet" }, 5).length);
 
 const mission = buildBriclogAuthorMissionBlock({ industry: "꽃집" });
 assert.ok(mission.includes("편집장"));

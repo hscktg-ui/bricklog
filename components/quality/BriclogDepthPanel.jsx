@@ -46,7 +46,7 @@ export default function BriclogDepthPanel({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8B95A1]">
-            브릭로그 발행 준비도
+            브릭로그 발행 준비도 · DNA·조사 기준
           </p>
           <p
             className={`font-bold leading-none text-[#191F28] ${
@@ -73,8 +73,7 @@ export default function BriclogDepthPanel({
               {depth.aheadOfLens ? (
                 <span className="text-[#4E5968]">
                   {" "}
-                  · Lens {lensOverall} 대비 +
-                  {Math.max(0, depth.vsLens)}
+                  · 통합검색 채널 기준 {lensOverall}+
                 </span>
               ) : null}
             </p>

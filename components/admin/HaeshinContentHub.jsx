@@ -62,9 +62,9 @@ export default function HaeshinContentHub({ showToast }) {
   return (
     <section className="mt-8">
       <div className="mb-4">
-        <h2 className="text-[18px] font-bold text-[#191F28]">해신기획 콘텐츠 DNA · Golden Dataset</h2>
+        <h2 className="text-[18px] font-bold text-[#191F28]">해신기획 콘텐츠 DNA · 적응형 품질 엔진</h2>
         <p className="mt-1 text-[12px] text-[#8B95A1]">
-          GPT 재학습 없음 — 생성·검수·Safe Edit·점수 산정 SSOT
+          업종 DNA·조사·LLM이 기본 — 우수글 코퍼스는 있으면 참고 보강 (없어도 생성 가능)
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {TABS.map((t) => (
@@ -196,11 +196,15 @@ export default function HaeshinContentHub({ showToast }) {
                 ))}
               </ul>
               <p className="mt-4 text-[#8B95A1]">
-                90+ PASS · 80–89 수정 권장(Safe Edit) · 80 미만 FAIL(차단·재작성)
+                90+ PASS · 80–89 Safe Edit · 80 미만 FAIL
               </p>
+              <p className="mt-2 text-[#8B95A1]">
+                벤치마크 코퍼스 없는 업종: 해신 DNA·구조 휴리스틱 94% (적응형)
+              </p>
+              <p className="mt-2 text-[#8B95A1]">코퍼스 있는 업종: DNA 82% + 벤치마크 유사도 18%</p>
               <p className="mt-2 text-[#8B95A1]">Safe Edit: 원문 보존 · 문단 단위 수정</p>
               <p className="mt-2 text-[#8B95A1]">
-                실패글 등록 시 생성 후 동일 패턴 감지 → FAIL
+                실패글 등록 시 동일 패턴 감지 → FAIL
               </p>
             </div>
           )}
