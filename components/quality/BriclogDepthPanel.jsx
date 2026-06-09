@@ -23,6 +23,7 @@ export default function BriclogDepthPanel({
     checks,
     improvementHint,
     depth,
+    qualityGate,
   } = data;
 
   const readinessCls =
@@ -61,6 +62,14 @@ export default function BriclogDepthPanel({
           {readiness?.label ? (
             <p className={`mt-1 text-[12px] font-semibold ${readinessCls}`}>
               {readiness.label}
+            </p>
+          ) : null}
+          {qualityGate?.haeshin != null ? (
+            <p className="mt-1 text-[10px] font-medium text-[#8B95A1]">
+              {qualityGate.llmPolished ? "AI 원고 마감 · " : ""}
+              해신 {qualityGate.haeshin}
+              {qualityGate.golden != null ? ` · 품질 ${qualityGate.golden}` : ""}
+              {qualityGate.adaptiveMode ? ` · ${qualityGate.adaptiveMode}` : ""}
             </p>
           ) : null}
         </div>

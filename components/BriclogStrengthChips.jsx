@@ -68,6 +68,13 @@ export default function BriclogStrengthChips({
       <div className="flex flex-wrap gap-2">
         {feedbackLine ? <DetailChip>{feedbackLine}</DetailChip> : null}
         {researchBuilt ? <DetailChip>조사 반영</DetailChip> : null}
+        {meta.llmDeliveryPolish ? <DetailChip>AI 원고 마감</DetailChip> : null}
+        {typeof meta.haeshinScore === "number" ? (
+          <DetailChip>해신 {meta.haeshinScore}</DetailChip>
+        ) : null}
+        {meta.adaptiveQualityModeLabel ? (
+          <DetailChip>{meta.adaptiveQualityModeLabel}</DetailChip>
+        ) : null}
         {!guide.alignmentOk ? (
           <DetailChip warn>
             화자 맞춤 · {speakerLabel}

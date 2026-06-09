@@ -203,6 +203,15 @@ export default function HaeshinContentHub({ showToast }) {
               </p>
               <p className="mt-2 text-[#8B95A1]">코퍼스 있는 업종: DNA 82% + 벤치마크 유사도 18%</p>
               <p className="mt-2 text-[#8B95A1]">Safe Edit: 원문 보존 · 문단 단위 수정</p>
+              <p className="mt-3 font-semibold text-[#191F28]">LLM 원고 송출 마감</p>
+              <p className="mt-1 text-[#8B95A1]">
+                LLM 생성 원고는 템플릿 치환 없이 말투 통일(습니다체) → DNA·조사 앵커 보강 →
+                Safe Edit 순으로 마감합니다.
+              </p>
+              <p className="mt-1 text-[#8B95A1]">
+                해신 86+ · 골든 적응 통과 시 길이 tier·SQV 제한을 완화해 송출 가능
+                (llmAdaptivePublish)
+              </p>
               <p className="mt-2 text-[#8B95A1]">
                 실패글 등록 시 동일 패턴 감지 → FAIL
               </p>
