@@ -1,0 +1,69 @@
+{
+  "at": "2026-06-07T13:24:31.926Z",
+  "base": "https://briclog.ai",
+  "persona": {
+    "brandName": "품질감사카페",
+    "region": "서울 강남",
+    "topic": "봄 시즌 브런치 메뉴 오픈",
+    "mainKeyword": "브런치",
+    "industry": "카페",
+    "storeFeatures": "수제 브런치·로스팅 원두",
+    "blogLengthTier": "medium",
+    "v2AxisRequired": true,
+    "v2PipelineEnforced": true,
+    "v3EngineEnforced": true
+  },
+  "phases": {
+    "lastResearchStep": "검색자 질문 분석 중…",
+    "researchMs": 20402,
+    "axisOk": true,
+    "deliveryMs": 44996,
+    "totalMs": 65398,
+    "blogApi": {
+      "status": 200,
+      "mode": "research_gate_stamped",
+      "sectionCount": 4,
+      "ok": true,
+      "userMessage": null
+    }
+  },
+  "delivery": {
+    "ok": true,
+    "mode": "research_gate_stamped",
+    "withheld": false,
+    "softPass": false,
+    "userMessage": null,
+    "sectionCount": 4,
+    "pipelineVerified": false,
+    "via": "prod_blog_api_slim"
+  },
+  "quality": {
+    "sectionCount": 4,
+    "chars": 3055,
+    "title": "서울 강남 품질감사카페 솔직 후기, 봄 시즌 브런치 메뉴 오픈",
+    "openingExcerpt": "서울 강남 품질감사카페, 봄 시즌 브런치 메뉴 볼 때 짚을 점 점심 전후로 잠깐 앉고 싶은데, 메뉴와 분위기를 검색만으로는 잘 안 그려지는 날이 있다.",
+    "completionReady": false,
+    "displayReady": false,
+    "humanReady": false,
+    "publishStatus": "polishing",
+    "publishLabel": "한 번 더 다듬는 중",
+    "coreScore": 100,
+    "qualityScore": 90,
+    "generationMode": null,
+    "missionFallback": false,
+    "softPass": false,
+    "failReasons": [
+      "topic_dominance_low",
+      "information_yield_low",
+      "duplicate_killer_fail",
+      "duplicate_content",
+      "editor_editor_v95"
+    ]
+  },
+  "verdict": "pass_with_quality_gaps",
+  "userExperience": [
+    "본문 4섹션 · 3055자 · 발행준비 한 번 더 다듬는 중",
+    "사람 글 체감 미달: topic_dominance_low, information_yield_low, duplicate_killer_fail, duplicate_content, editor_editor_v95"
+  ],
+  "errors": []
+}

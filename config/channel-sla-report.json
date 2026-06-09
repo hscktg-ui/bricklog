@@ -1,7 +1,7 @@
 {
-  "at": "2026-06-07T04:21:14.692Z",
+  "at": "2026-06-07T09:17:31.270Z",
   "base": "https://briclog.ai",
-  "slaMs": 180000,
+  "slaMs": 240000,
   "login": {
     "ok": true,
     "email": "hundred-ux-smoke@briclog.ai",
@@ -15,7 +15,12 @@
         "origins": [
           {
             "origin": "https://briclog.ai",
-            "localStorage": [],
+            "localStorage": [
+              {
+                "name": "sb-rftuibjhyecmvewhkeel-auth-token",
+                "value": "[redacted]"
+              }
+            ],
             "sessionStorage": [
               {
                 "name": "sb-rftuibjhyecmvewhkeel-auth-token",
@@ -31,450 +36,2134 @@
   },
   "runs": [
     {
-      "id": "c_insta_flower",
-      "channel": "insta",
-      "label": "인스타 — 부산 꽃집",
-      "slaMs": 180000,
-      "status": "fail",
-      "elapsedMs": 180011,
+      "id": "c_blog_cafe",
+      "channel": "blog",
+      "label": "이야기 — 강남 카페 사장",
+      "slaMs": 240000,
+      "status": "pass_with_warnings",
+      "elapsedMs": 250373,
       "phases": {
-        "navigateMs": 694,
-        "fillMs": 625,
+        "navigateMs": 2574,
+        "fillMs": 1096,
+        "genBudgetMs": 236324,
         "api": {
-          "apiError": "page.waitForResponse: Timeout 178666ms exceeded while waiting for event \"response\""
+          "kind": "blog",
+          "status": 200,
+          "ok": true,
+          "body": {
+            "ok": true,
+            "blogContent": {
+              "title": "서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈",
+              "representativeTitle": "서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈",
+              "sections": [
+                {
+                  "heading": "서울 강남 SLA모닝브루856741, 봄 시즌 브런치 오픈 볼 때 짚을 점",
+                  "body": "점심 전후로 잠깐 앉고 싶은데, 메뉴와 분위기를 검색만으로는 잘 안 그려지는 날이 있다.\n서울 강남 SLA모닝브루856741에 앉아 봄 시즌 브런치 오픈 맛·좌석·분위기를 직접 확인했어요.\n카공·데이트·브런치 때문에 봄 시즌 브런치 오픈을 검색하게 됐고, 메뉴·혼잡 시간을 메모해 뒀어요.\n서울 강남 직접 가봤는데, 의외로 만족했어요.\nSLA모닝브루856741 관련해서 서울 한남동 카페, 갤러리 리움미술관,한강진역 마이크로 명소...: 핵심 요약 한남동은 서울 용산구에 자리한 가장 세련된 …는 조사한 내용과 맞아 떨어졌어요.\n샌드위치....: 폴바셋 굿즈들은 스타벅스처럼 매 시즌 화려한 디자인을…"
+                },
+                {
+                  "heading": "서울 강남 SLA모닝브루856741, 선택지로 볼 때",
+                  "body": "고를 때 SLA모닝브루856741은 봄 시즌에 맞춰 특별한 브런치 메뉴를 제공할 예정이다가 기준이 됐더라구요.\n맞춰 볼 때 서울 성수동 카페거리 도보 가이드 연무장길 서울숲길 뚝섬역...: 낡은 공장 건물의 뼈대는 그대로 두고, 그 안에 스페셜티…가 기준이 됐어요.\n비교할 때 서촌마을 가볼만한곳 매뉴팩트커피 오늘오픈: 총정리 서촌 신상 카페 매뉴팩트커피는 위치, 브랜드, 분위기 모두 괜찮은 편으로…가 기준이 됐어요."
+                },
+                {
+                  "heading": "서울 강남에서 방문·결정 전에",
+                  "body": "SLA모닝브루856741 관련해서 서울 천호 <애슐리퀸즈 뉴코아> 4월 토마토축제 시즌 즐기고 옴: 난 자몽이에게 분명 모닝 브런치를 먹자구 했는뎅 브런치 …는 조사한 내용과 맞아 떨어졌어요.\n봄 시즌 브런치 오픈 안내를 고를 때 성분·보관·목적을 함께 보면 비교가 수월해요.\n진짜 전시 구성이 생각보다 괜찮더라구요.\n서울 강남은 브런치 카페 문화가 발달한 지역이다."
+                }
+              ],
+              "conclusion": "궁금한 점은 매장 문의로 확인하시면 돼요.",
+              "hashtags": [],
+              "_meta": {
+                "researchGroundedHumanPack": true,
+                "personaEngineProfile": {
+                  "id": "expert_guide_column",
+                  "label": "전문 가이드 칼럼",
+                  "persona": "info_intro",
+                  "subtype": "guide",
+                  "v4Speaker": "auto"
+                },
+                "researchFactCount": 45,
+                "regionVoiceLock": {
+                  "ok": true,
+                  "issues": []
+                },
+                "haeyoConsistencyGate": true,
+                "missionProseEngine": "v1.3",
+                "editorEngineV95": {
+                  "ok": false,
+                  "score": 50,
+                  "editorPass": false,
+                  "magazineTone": true,
+                  "issues": [
+                    {
+                      "type": "intro_no_context"
+                    },
+                    {
+                      "type": "sentence_rhythm_flat"
+                    },
+                    {
+                      "type": "brand_over_repeat",
+                      "count": 11,
+                      "max": 5
+                    },
+                    {
+                      "type": "region_over_repeat",
+                      "count": 10,
+                      "max": 4
+                    },
+                    {
+                      "type": "anti_seo_spam",
+                      "key": "brand",
+                      "label": "브랜드명",
+                      "token": "SLA모닝브루856741",
+                      "count": 11
+                    },
+                    {
+                      "type": "anti_seo_spam",
+                      "key": "region",
+                      "label": "지역명",
+                      "token": "서울 강남",
+                      "count": 10
+                    },
+                    {
+                      "type": "anti_seo_spam",
+                      "key": "topic",
+                      "label": "주제명",
+                      "token": "봄 시즌 브런치 오픈 안내",
+                      "count": 6
+                    },
+                    {
+                      "type": "structure_phrase_repeat",
+                      "id": "when_compare",
+                      "count": 3
+                    },
+                    {
+                      "type": "brand_repeat",
+                      "count": 11
+                    },
+                    {
+                      "type": "region_repeat",
+                      "count": 10
+                    },
+                    {
+                      "type": "topic_repeat",
+                      "count": 6
+                    },
+                    {
+                      "type": "human_thought_flow_low",
+                      "hits": 1
+                    },
+                    {
+                      "type": "missing_human_problem_opening",
+                      "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                    }
+                  ],
+                  "checks": {
+                    "intro": {
+                      "ok": false,
+                      "score": 62,
+                      "forbidden": {
+                        "ok": true,
+                        "hits": []
+                      },
+                      "hasContext": false
+                    },
+                    "rhythm": {
+                      "ok": false,
+                      "score": 85,
+                      "variety": {
+                        "ok": true,
+                        "score": 100,
+                        "short": 9,
+                        "medium": 8,
+                        "long": 1,
+                        "kinds": 3
+                      },
+                      "structure": {
+                        "ok": true,
+                        "bucketCounts": {
+                          "da": 1,
+                          "recall": 2,
+                          "haeyo": 1
+                        },
+                        "issues": []
+                      },
+                      "maxSameLenRun": 3,
+                      "rhetoricModes": [
+                        "recall",
+                        "compare",
+                        "analysis"
+                      ]
+                    },
+                    "humanity": {
+                      "ok": true,
+                      "score": 91,
+                      "groups": [
+                        "thought",
+                        "judgment",
+                        "observation"
+                      ],
+                      "specDumpCount": 0
+                    },
+                    "entities": {
+                      "ok": false,
+                      "issues": [
+                        {
+                          "type": "brand_over_repeat",
+                          "count": 11,
+                          "max": 5
+                        },
+                        {
+                          "type": "region_over_repeat",
+                          "count": 10,
+                          "max": 4
+                        },
+                        {
+                          "type": "anti_seo_spam",
+                          "key": "brand",
+                          "label": "브랜드명",
+                          "token": "SLA모닝브루856741",
+                          "count": 11
+                        },
+                        {
+                          "type": "anti_seo_spam",
+                          "key": "region",
+                          "label": "지역명",
+                          "token": "서울 강남",
+                          "count": 10
+                        },
+                        {
+                          "type": "anti_seo_spam",
+                          "key": "topic",
+                          "label": "주제명",
+                          "token": "봄 시즌 브런치 오픈 안내",
+                          "count": 6
+                        }
+                      ],
+                      "anti": {
+                        "ok": false,
+                        "overused": [
+                          {
+                            "key": "brand",
+                            "label": "브랜드명",
+                            "token": "SLA모닝브루856741",
+                            "count": 11
+                          },
+                          {
+                            "key": "region",
+                            "label": "지역명",
+                            "token": "서울 강남",
+                            "count": 10
+                          },
+                          {
+                            "key": "topic",
+                            "label": "주제명",
+                            "token": "봄 시즌 브런치 오픈 안내",
+                            "count": 6
+                          }
+                        ],
+                        "score": 1
+                      }
+                    },
+                    "structure": {
+                      "ok": true,
+                      "bucketCounts": {
+                        "da": 1,
+                        "recall": 2,
+                        "haeyo": 1
+                      },
+                      "issues": []
+                    },
+                    "belief": {
+                      "ok": true,
+                      "score": 90,
+                      "adHits": 0,
+                      "fieldHits": 5,
+                      "issues": []
+                    },
+                    "guard": {
+                      "ok": false,
+                      "score": 38,
+                      "issues": [
+                        {
+                          "type": "structure_phrase_repeat",
+                          "id": "when_compare",
+                          "count": 3
+                        },
+                        {
+                          "type": "brand_repeat",
+                          "count": 11
+                        },
+                        {
+                          "type": "region_repeat",
+                          "count": 10
+                        },
+                        {
+                          "type": "topic_repeat",
+                          "count": 6
+                        },
+                        {
+                          "type": "human_thought_flow_low",
+                          "hits": 1
+                        },
+                        {
+                          "type": "missing_human_problem_opening",
+                          "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                        }
+                      ],
+                      "hardFail": false,
+                      "checks": {
+                        "esseoCount": 5,
+                        "structure": {
+                          "before_visit": 0,
+                          "before_consult": 0,
+                          "when_compare": 3,
+                          "confirm_please": 0,
+                          "procedure_flow": 0
+                        },
+                        "visit": {
+                          "parking": 0,
+                          "hours": 0,
+                          "reserve": 0
+                        },
+                        "thoughtHits": 1,
+                        "industry": {
+                          "ok": true,
+                          "lockedKey": "cafe",
+                          "issues": []
+                        },
+                        "humanStory": {
+                          "ok": false,
+                          "score": 72,
+                          "issues": [
+                            {
+                              "type": "missing_human_problem_opening",
+                              "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "editorV95Pass": false,
+                "humanityCommonSense": {
+                  "ok": true,
+                  "score": 88,
+                  "humanRead": true,
+                  "issues": [],
+                  "checks": {
+                    "stack": {
+                      "ok": true,
+                      "count": 0,
+                      "issues": []
+                    },
+                    "structure": {
+                      "ok": true,
+                      "bucketCounts": {
+                        "da": 1,
+                        "recall": 2,
+                        "haeyo": 1
+                      },
+                      "issues": []
+                    },
+                    "variety": {
+                      "ok": true,
+                      "score": 100,
+                      "short": 9,
+                      "medium": 8,
+                      "long": 1,
+                      "kinds": 3
+                    },
+                    "industry": {
+                      "ok": true,
+                      "lockedKey": "cafe",
+                      "issues": []
+                    },
+                    "region": {
+                      "ok": true,
+                      "issues": []
+                    },
+                    "arc": {
+                      "ok": true,
+                      "met": 4,
+                      "total": 5,
+                      "hit": [
+                        {
+                          "id": "why",
+                          "label": "왜 찾게 되었는가",
+                          "ok": true
+                        },
+                        {
+                          "id": "saw",
+                          "label": "무엇을 보았는가",
+                          "ok": true
+                        },
+                        {
+                          "id": "impression",
+                          "label": "무엇이 인상적이었는가",
+                          "ok": true
+                        },
+                        {
+                          "id": "audience",
+                          "label": "누구에게 맞는가",
+                          "ok": false
+                        },
+                        {
+                          "id": "criteria",
+                          "label": "어떤 기준으로 선택",
+                          "ok": true
+                        }
+                      ],
+                      "score": 80
+                    }
+                  }
+                },
+                "humanReadLikely": true,
+                "humanColumnPolish": true,
+                "humanColumnArcRoles": [
+                  "gi",
+                  "seung",
+                  "seung",
+                  "jeon",
+                  "jeon",
+                  "gyeol"
+                ],
+                "magazineArcPolish": true,
+                "magazineArc": {
+                  "ok": true,
+                  "score": 100,
+                  "reasons": [],
+                  "gi": true,
+                  "seung": true,
+                  "jeon": true,
+                  "gyeol": true,
+                  "bookends": {
+                    "ok": true,
+                    "score": 80,
+                    "reasons": [
+                      "weak_opener_field",
+                      "weak_closer_reflect"
+                    ],
+                    "openVoice": "haeyo",
+                    "closeVoice": "haeyo"
+                  }
+                },
+                "humanConversationalVoice": true,
+                "conversationalVoice": {
+                  "ok": true,
+                  "score": 63,
+                  "hits": 3,
+                  "matched": [
+                    "(?:다행이에요|다행히|다행)",
+                    "(?:생각보다|예상보다)",
+                    "(?:직접\\s*(?:가|다녀|방문|체험|누워)|다녀"
+                  ]
+                },
+                "conversationalBookends": true,
+                "editorialPackGate": {
+                  "reshaped": true,
+                  "beforeSections": 6,
+                  "afterSections": 5,
+                  "checklistBefore": {
+                    "ok": false,
+                    "score": 11,
+                    "templateHits": 3,
+                    "confirmRatio": 0,
+                    "forbiddenHeadings": 4,
+                    "sectionCount": 6,
+                    "issues": [
+                      "checklist_template_high",
+                      "checklist_voice"
+                    ]
+                  }
+                },
+                "humanWriterHeadingGate": {
+                  "rewrites": 1
+                },
+                "missionProseGate": true,
+                "narrativeBeliefPass": {
+                  "applied": true,
+                  "scoreAfter": 92,
+                  "okAfter": true
+                },
+                "humanBelief": {
+                  "ok": true,
+                  "score": 92,
+                  "adHits": 0,
+                  "fieldHits": 6,
+                  "issues": [],
+                  "strippedAdPhrases": false,
+                  "grounded": {
+                    "ok": true,
+                    "score": 100,
+                    "factAnchors": 14,
+                    "concreteMarkers": 2,
+                    "grounding": {
+                      "ratio": 0.95,
+                      "grounded": 19,
+                      "total": 20
+                    },
+                    "issues": []
+                  },
+                  "failReasons": [],
+                  "localEditorPass": true,
+                  "narrativeBeliefPass": true
+                },
+                "humanBeliefScore": 92,
+                "groundedSpecificityScore": 100,
+                "personaEngineAlignment": {
+                  "ok": true,
+                  "score": 76,
+                  "issues": [
+                    {
+                      "type": "persona_intro_style",
+                      "style": "question_first"
+                    }
+                  ],
+                  "profile": {
+                    "id": "expert_guide_column",
+                    "label": "전문 가이드 칼럼",
+                    "archetype": "expert_column",
+                    "introStyle": "question_first",
+                    "requiredVoice": [
+                      {}
+                    ],
+                    "forbiddenVoice": [
+                      {},
+                      {},
+                      {}
+                    ],
+                    "introMarkers": {},
+                    "brandMentionMax": 4,
+                    "regionMentionMax": 3,
+                    "narrativeEmphasis": [
+                      "why",
+                      "criteria",
+                      "audience"
+                    ],
+                    "promptBrief": "전문 에디터 가이드. FAQ·체크리스트 찍기 금지 — 칼럼 흐름에 녹일 것. 분석·비교형 문장 혼합.",
+                    "persona": "info_intro",
+                    "subtype": "guide",
+                    "v4Speaker": "auto",
+                    "v4Label": "추천",
+                    "personaLabel": "정보 소개",
+                    "source": "auto"
+                  },
+                  "arcHit": [
+                    {
+                      "id": "why",
+                      "ok": true
+                    },
+                    {
+                      "id": "criteria",
+                      "ok": true
+                    },
+                    {
+                      "id": "audience",
+                      "ok": false
+                    }
+                  ]
+                },
+                "personaAligned": true,
+                "contentQuality": {
+                  "ok": false,
+                  "score": 48,
+                  "humanEditorPass": false,
+                  "humanReadLikely": true,
+                  "issues": [
+                    {
+                      "type": "content_root",
+                      "code": "scenes"
+                    },
+                    {
+                      "type": "content_root",
+                      "code": "human"
+                    },
+                    {
+                      "type": "brand_over_repeat",
+                      "count": 11
+                    },
+                    {
+                      "type": "entity_token_spam",
+                      "tokens": [
+                        "region",
+                        "brand",
+                        "topic"
+                      ]
+                    },
+                    {
+                      "type": "intro_no_context"
+                    },
+                    {
+                      "type": "sentence_rhythm_flat"
+                    },
+                    {
+                      "type": "brand_over_repeat",
+                      "count": 11,
+                      "max": 5
+                    },
+                    {
+                      "type": "region_over_repeat",
+                      "count": 11,
+                      "max": 4
+                    },
+                    {
+                      "type": "anti_seo_spam",
+                      "key": "brand",
+                      "label": "브랜드명",
+                      "token": "SLA모닝브루856741",
+                      "count": 11
+                    },
+                    {
+                      "type": "anti_seo_spam",
+                      "key": "region",
+                      "label": "지역명",
+                      "token": "서울 강남",
+                      "count": 11
+                    },
+                    {
+                      "type": "anti_seo_spam",
+                      "key": "topic",
+                      "label": "주제명",
+                      "token": "봄 시즌 브런치 오픈 안내",
+                      "count": 6
+                    },
+                    {
+                      "type": "brand_repeat",
+                      "count": 11
+                    }
+                  ],
+                  "checks": {
+                    "humanity": {
+                      "ok": true,
+                      "score": 88,
+                      "humanRead": true,
+                      "issues": [],
+                      "checks": {
+                        "stack": {
+                          "ok": true,
+                          "count": 0,
+                          "issues": []
+                        },
+                        "structure": {
+                          "ok": true,
+                          "bucketCounts": {
+                            "da": 2,
+                            "recall": 2,
+                            "haeyo": 1
+                          },
+                          "issues": []
+                        },
+                        "variety": {
+                          "ok": true,
+                          "score": 100,
+                          "short": 10,
+                          "medium": 8,
+                          "long": 1,
+                          "kinds": 3
+                        },
+                        "industry": {
+                          "ok": true,
+                          "lockedKey": "cafe",
+                          "issues": []
+                        },
+                        "region": {
+                          "ok": true,
+                          "issues": []
+                        },
+                        "arc": {
+                          "ok": true,
+                          "met": 4,
+                          "total": 5,
+                          "hit": [
+                            {
+                              "id": "why",
+                              "label": "왜 찾게 되었는가",
+                              "ok": true
+                            },
+                            {
+                              "id": "saw",
+                              "label": "무엇을 보았는가",
+                              "ok": true
+                            },
+                            {
+                              "id": "impression",
+                              "label": "무엇이 인상적이었는가",
+                              "ok": true
+                            },
+                            {
+                              "id": "audience",
+                              "label": "누구에게 맞는가",
+                              "ok": false
+                            },
+                            {
+                              "id": "criteria",
+                              "label": "어떤 기준으로 선택",
+                              "ok": true
+                            }
+                          ],
+                          "score": 80
+                        }
+                      }
+                    },
+                    "root": {
+                      "ok": false,
+                      "checks": {
+                        "intentDefined": true,
+                        "titleBodyAlign": true,
+                        "personaConsistent": true,
+                        "noIndustryGeneral": true,
+                        "noRepeat": true,
+                        "constitution": false
+                      },
+                      "failures": [
+                        "scenes",
+                        "human"
+                      ],
+                      "intent": {
+                        "ok": true,
+                        "thesis": "봄 시즌 브런치 오픈 안내 — SLA모닝브루856741의 봄 시즌 브런치 오픈 안내 이야기를 브랜드 입장에서 전하고 싶다",
+                        "userIntent": "SLA모닝브루856741의 봄 시즌 브런치 오픈 안내 이야기를 브랜드 입장에서 전하고 싶다",
+                        "readerGain": "SLA모닝브루856741가 어떤 곳인지, 왜 들러 볼 만한지 느끼게 된다",
+                        "coreTopic": "봄 시즌 브런치 오픈 안내",
+                        "reason": null
+                      },
+                      "titleAlign": {
+                        "ok": true,
+                        "title": "서울 강남에서 봄 시즌 브런치 오픈 안내를 바라보는 시선, SLA모닝브루856741 봄 시즌",
+                        "anchors": [
+                          {
+                            "type": "brand",
+                            "value": "SLA모닝브루856741"
+                          },
+                          {
+                            "type": "region",
+                            "value": "서울 강남"
+                          },
+                          {
+                            "type": "season",
+                            "pattern": {}
+                          },
+                          {
+                            "type": "event",
+                            "pattern": {}
+                          },
+                          {
+                            "type": "topic",
+                            "value": "봄 시즌 브런치 오픈 안내"
+                          }
+                        ],
+                        "missing": []
+                      },
+                      "personaCheck": {
+                        "ok": true,
+                        "persona": "auto",
+                        "violations": []
+                      },
+                      "constitution": {
+                        "ok": false,
+                        "checks": {
+                          "sceneMoments": false,
+                          "emotion": true,
+                          "brand": true,
+                          "why": true,
+                          "human": false,
+                          "noBannedHeadings": true,
+                          "noVisibleKeyword": true,
+                          "noForbiddenOpen": true,
+                          "noRepeat": true
+                        },
+                        "failures": [
+                          "scenes",
+                          "human"
+                        ],
+                        "fullText": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 다녀온 후기\n서울 강남 봄 시즌 브런치 오픈 안내 방문 후기 · SLA모닝브루856741\nSLA모닝브루856741 서울 강남 매장, 봄 시즌 브런치 오픈 안내 솔직후기\n서울 강남에서 봄 시즌 브런치 오픈 안내를 바라보는 시선, SLA모닝브루856741 봄 시즌\n서울 강남 SLA모닝브루856741, 봄 시즌 브런치 오픈 볼 때 짚을 점 점심 전후로 잠깐 앉고 싶은데, 메뉴와 분위기를 검색만으로는 잘 안 그려지는 날이 있다.\n\n서울 강남 SLA모닝브루856741에 앉아 봄 시즌 브런치 오픈 맛·좌석·분위기를 직접 확인했어요.\n\n카공·데이트·브런치 때문에 봄 시즌 브런치 오픈을 검색하게 됐고, 메뉴·혼잡 시간을 메모해 뒀어요.\n\n서울 강남 직접 가봤는데, 의외로 만족했어요.\n\nSLA모닝브루856741 관련해서 서울 한남동 카페, 갤러리 리움미술관,한강진역 마이크로 명소...: 핵심 요약 한남동은 서울 용산구에 자리한 가장 세련된 …는 조사한 내용과 맞아 떨어졌어요.\n\n샌드위치....: 폴바셋 굿즈들은 스타벅스처럼 매 시즌 화려한 디자인을…\n서울 강남 SLA모닝브루856741, 선택지로 볼 때 고를 때 SLA모닝브루856741은 봄 시즌에 맞춰 특별한 브런치 메뉴를 제공할 예정이다가 기준이 됐더라구요.\n\n맞춰 볼 때 서울 성수동 카페거리 도보 가이드 연무장길 서울숲길 뚝섬역...: 낡은 공장 건물의 뼈대는 그대로 두고, 그 안에 스페셜티…가 기준이 됐어요.\n\n비교할 때 서촌마을 가볼만한곳 매뉴팩트커피 오늘오픈: 총정리 서촌 신상 카페 매뉴팩트커피는 위치, 브랜드, 분위기 모두 괜찮은 편으로…가 기준이 됐어요.\n서울 강남에서 방문·결정 전에 SLA모닝브루856741 관련해서 서울 천호 <애슐리퀸즈 뉴코아> 4월 토마토축제 시즌 즐기고 옴: 난 자몽이에게 분명 모닝 브런치를 먹자구 했는뎅 브런치 …는 조사한 내용과 맞아 떨어졌어요.\n\n봄 시즌 브런치 오픈 안내를 고를 때 성분·보관·목적을 함께 보면 비교가 수월해요.\n\n진짜 전시 구성이 생각보다 괜찮더라구요.\n\n서울 강남은 브런치 카페 문화가 발달한 지역이다.\n궁금한 점은 매장 문의로 확인하시면 돼요."
+                      }
+                    },
+                    "topicSense": {
+                      "ok": true,
+                      "lockedKey": "cafe",
+                      "issues": [],
+                      "topicKey": "cafe"
+                    },
+                    "industry": {
+                      "ok": true,
+                      "lockedKey": "cafe",
+                      "issues": []
+                    },
+                    "region": {
+                      "ok": true,
+                      "issues": []
+                    },
+                    "brand": {
+                      "ok": false,
+                      "issues": [
+                        {
+                          "type": "brand_over_repeat",
+                          "count": 11
+                        }
+                      ],
+                      "mentionCount": 11
+                    },
+                    "seo": {
+                      "ok": true,
+                      "issues": []
+                    },
+                    "duplicate": {
+                      "ok": true,
+                      "issues": [],
+                      "structure": {
+                        "ok": true,
+                        "bucketCounts": {
+                          "da": 2,
+                          "recall": 2,
+                          "haeyo": 1
+                        },
+                        "issues": []
+                      }
+                    },
+                    "stack": {
+                      "ok": true,
+                      "count": 0,
+                      "issues": []
+                    },
+                    "belief": {
+                      "ok": true,
+                      "score": 90,
+                      "adHits": 0,
+                      "fieldHits": 5,
+                      "issues": []
+                    },
+                    "editorV95": {
+                      "ok": false,
+                      "score": 50,
+                      "editorPass": false,
+                      "magazineTone": true,
+                      "issues": [
+                        {
+                          "type": "intro_no_context"
+                        },
+                        {
+                          "type": "sentence_rhythm_flat"
+                        },
+                        {
+                          "type": "brand_over_repeat",
+                          "count": 11,
+                          "max": 5
+                        },
+                        {
+                          "type": "region_over_repeat",
+                          "count": 11,
+                          "max": 4
+                        },
+                        {
+                          "type": "anti_seo_spam",
+                          "key": "brand",
+                          "label": "브랜드명",
+                          "token": "SLA모닝브루856741",
+                          "count": 11
+                        },
+                        {
+                          "type": "anti_seo_spam",
+                          "key": "region",
+                          "label": "지역명",
+                          "token": "서울 강남",
+                          "count": 11
+                        },
+                        {
+                          "type": "anti_seo_spam",
+                          "key": "topic",
+                          "label": "주제명",
+                          "token": "봄 시즌 브런치 오픈 안내",
+                          "count": 6
+                        },
+                        {
+                          "type": "brand_repeat",
+                          "count": 11
+                        },
+                        {
+                          "type": "region_repeat",
+                          "count": 11
+                        },
+                        {
+                          "type": "topic_repeat",
+                          "count": 6
+                        },
+                        {
+                          "type": "human_thought_flow_low",
+                          "hits": 1
+                        },
+                        {
+                          "type": "missing_human_problem_opening",
+                          "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                        }
+                      ],
+                      "checks": {
+                        "intro": {
+                          "ok": false,
+                          "score": 62,
+                          "forbidden": {
+                            "ok": true,
+                            "hits": []
+                          },
+                          "hasContext": false
+                        },
+                        "rhythm": {
+                          "ok": false,
+                          "score": 85,
+                          "variety": {
+                            "ok": true,
+                            "score": 100,
+                            "short": 10,
+                            "medium": 8,
+                            "long": 1,
+                            "kinds": 3
+                          },
+                          "structure": {
+                            "ok": true,
+                            "bucketCounts": {
+                              "da": 2,
+                              "recall": 2,
+                              "haeyo": 1
+                            },
+                            "issues": []
+                          },
+                          "maxSameLenRun": 3,
+                          "rhetoricModes": [
+                            "recall",
+                            "compare",
+                            "analysis"
+                          ]
+                        },
+                        "humanity": {
+                          "ok": true,
+                          "score": 91,
+                          "groups": [
+                            "thought",
+                            "judgment",
+                            "observation"
+                          ],
+                          "specDumpCount": 0
+                        },
+                        "entities": {
+                          "ok": false,
+                          "issues": [
+                            {
+                              "type": "brand_over_repeat",
+                              "count": 11,
+                              "max": 5
+                            },
+                            {
+                              "type": "region_over_repeat",
+                              "count": 11,
+                              "max": 4
+                            },
+                            {
+                              "type": "anti_seo_spam",
+                              "key": "brand",
+                              "label": "브랜드명",
+                              "token": "SLA모닝브루856741",
+                              "count": 11
+                            },
+                            {
+                              "type": "anti_seo_spam",
+                              "key": "region",
+                              "label": "지역명",
+                              "token": "서울 강남",
+                              "count": 11
+                            },
+                            {
+                              "type": "anti_seo_spam",
+                              "key": "topic",
+                              "label": "주제명",
+                              "token": "봄 시즌 브런치 오픈 안내",
+                              "count": 6
+                            }
+                          ],
+                          "anti": {
+                            "ok": false,
+                            "overused": [
+                              {
+                                "key": "brand",
+                                "label": "브랜드명",
+                                "token": "SLA모닝브루856741",
+                                "count": 11
+                              },
+                              {
+                                "key": "region",
+                                "label": "지역명",
+                                "token": "서울 강남",
+                                "count": 11
+                              },
+                              {
+                                "key": "topic",
+                                "label": "주제명",
+                                "token": "봄 시즌 브런치 오픈 안내",
+                                "count": 6
+                              }
+                            ],
+                            "score": 1
+                          }
+                        },
+                        "structure": {
+                          "ok": true,
+                          "bucketCounts": {
+                            "da": 2,
+                            "recall": 2,
+                            "haeyo": 1
+                          },
+                          "issues": []
+                        },
+                        "belief": {
+                          "ok": true,
+                          "score": 90,
+                          "adHits": 0,
+                          "fieldHits": 5,
+                          "issues": []
+                        },
+                        "guard": {
+                          "ok": false,
+                          "score": 50,
+                          "issues": [
+                            {
+                              "type": "brand_repeat",
+                              "count": 11
+                            },
+                            {
+                              "type": "region_repeat",
+                              "count": 11
+                            },
+                            {
+                              "type": "topic_repeat",
+                              "count": 6
+                            },
+                            {
+                              "type": "human_thought_flow_low",
+                              "hits": 1
+                            },
+                            {
+                              "type": "missing_human_problem_opening",
+                              "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                            }
+                          ],
+                          "hardFail": false,
+                          "checks": {
+                            "esseoCount": 5,
+                            "structure": {
+                              "before_visit": 0,
+                              "before_consult": 0,
+                              "when_compare": 1,
+                              "confirm_please": 0,
+                              "procedure_flow": 0
+                            },
+                            "visit": {
+                              "parking": 0,
+                              "hours": 0,
+                              "reserve": 0
+                            },
+                            "thoughtHits": 1,
+                            "industry": {
+                              "ok": true,
+                              "lockedKey": "cafe",
+                              "issues": []
+                            },
+                            "humanStory": {
+                              "ok": false,
+                              "score": 72,
+                              "issues": [
+                                {
+                                  "type": "missing_human_problem_opening",
+                                  "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "personaAlign": {
+                      "ok": true,
+                      "score": 76,
+                      "issues": [
+                        {
+                          "type": "persona_intro_style",
+                          "style": "question_first"
+                        }
+                      ],
+                      "profile": {
+                        "id": "expert_guide_column",
+                        "label": "전문 가이드 칼럼",
+                        "archetype": "expert_column",
+                        "introStyle": "question_first",
+                        "requiredVoice": [
+                          {}
+                        ],
+                        "forbiddenVoice": [
+                          {},
+                          {},
+                          {}
+                        ],
+                        "introMarkers": {},
+                        "brandMentionMax": 4,
+                        "regionMentionMax": 3,
+                        "narrativeEmphasis": [
+                          "why",
+                          "criteria",
+                          "audience"
+                        ],
+                        "promptBrief": "전문 에디터 가이드. FAQ·체크리스트 찍기 금지 — 칼럼 흐름에 녹일 것. 분석·비교형 문장 혼합.",
+                        "persona": "info_intro",
+                        "subtype": "guide",
+                        "v4Speaker": "auto",
+                        "v4Label": "추천",
+                        "personaLabel": "정보 소개",
+                        "source": "auto"
+                      },
+                      "arcHit": [
+                        {
+                          "id": "why",
+                          "ok": true
+                        },
+                        {
+                          "id": "criteria",
+                          "ok": true
+                        },
+                        {
+                          "id": "audience",
+                          "ok": false
+                        }
+                      ]
+                    },
+                    "tokenSpam": [
+                      "region",
+                      "brand",
+                      "topic"
+                    ]
+                  },
+                  "finalReview": [
+                    {
+                      "id": "human_voice",
+                      "label": "사람이 직접 작성한 것처럼 보이는가",
+                      "pass": false
+                    },
+                    {
+                      "id": "brand_asset",
+                      "label": "브랜드 자산으로 축적 가능한가",
+                      "pass": null
+                    },
+                    {
+                      "id": "information_depth",
+                      "label": "정보량이 충분한가 (반복 패딩 없음)",
+                      "pass": true
+                    },
+                    {
+                      "id": "no_duplication",
+                      "label": "동일 정보·유사 문장(70%+) 반복이 없는가",
+                      "pass": true
+                    },
+                    {
+                      "id": "no_ai_smell",
+                      "label": "GPT·AI·템플릿·반복문 냄새가 없는가",
+                      "pass": true
+                    },
+                    {
+                      "id": "publish_ready",
+                      "label": "바로 발행 가능한 수준인가",
+                      "pass": null
+                    }
+                  ]
+                },
+                "humanEditorPass": false,
+                "humanEditorGuard": {
+                  "ok": false,
+                  "score": 50,
+                  "issues": [
+                    {
+                      "type": "brand_repeat",
+                      "count": 11
+                    },
+                    {
+                      "type": "region_repeat",
+                      "count": 11
+                    },
+                    {
+                      "type": "topic_repeat",
+                      "count": 6
+                    },
+                    {
+                      "type": "human_thought_flow_low",
+                      "hits": 1
+                    },
+                    {
+                      "type": "missing_human_problem_opening",
+                      "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                    }
+                  ],
+                  "hardFail": false,
+                  "checks": {
+                    "esseoCount": 5,
+                    "structure": {
+                      "before_visit": 0,
+                      "before_consult": 0,
+                      "when_compare": 1,
+                      "confirm_please": 0,
+                      "procedure_flow": 0
+                    },
+                    "visit": {
+                      "parking": 0,
+                      "hours": 0,
+                      "reserve": 0
+                    },
+                    "thoughtHits": 1,
+                    "industry": {
+                      "ok": true,
+                      "lockedKey": "cafe",
+                      "issues": []
+                    },
+                    "humanStory": {
+                      "ok": false,
+                      "score": 72,
+                      "issues": [
+                        {
+                          "type": "missing_human_problem_opening",
+                          "sample": "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내\n서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 "
+                        }
+                      ]
+                    }
+                  }
+                },
+                "humanEditorGuardPass": false,
+                "editorHumanization": true,
+                "editorHumanizationScore": 100,
+                "editorHumanizationOk": true,
+                "editorHumanizationIssues": [],
+                "deepLearningApplied": true,
+                "deepLearningScore": 95,
+                "deepLearningOk": true,
+                "deepLearningIssues": [
+                  "region_repeat"
+                ],
+                "deepLearningDimensions": {
+                  "humanity": 25,
+                  "observation": 20,
+                  "brandness": 20,
+                  "information": 15,
+                  "structure": 8,
+                  "seoNatural": 7,
+                  "fieldScenes": 4
+                },
+                "customerSituations": [
+                  "분위기 좋은 자리를 찾는다",
+                  "메뉴 옵션이 많아 고르기 어렵다",
+                  "테이크아웃과 매장 이용이 헷갈린다"
+                ],
+                "fieldScenePlan": [
+                  "서울 강남 SLA모닝브루856741에 들어서니 봄 시즌 브런치 오픈 메뉴판부터 천천히 봤어요.",
+                  "창가 쪽 좌석 분위기가 생각보다 조용해서 잠깐 쉬기 좋았어요."
+                ],
+                "missionOutputSanitizer": "v1",
+                "missionOutputSanitizerForce": true,
+                "informationalTopicPackGate": true,
+                "humanityFinishPass": {
+                  "applied": true,
+                  "beliefScore": 92,
+                  "beliefOk": true
+                },
+                "knowledgeCoverageGate": true,
+                "coverageAreas": 15,
+                "coverageGate": {
+                  "ok": true,
+                  "failures": [],
+                  "coverage": {
+                    "covered": [
+                      {
+                        "id": "brand",
+                        "label": "브랜드",
+                        "headingSuffix": "브랜드·개요",
+                        "keywords": [
+                          "브랜드"
+                        ],
+                        "group": "brand",
+                        "heading": "서울 강남 SLA모닝브루856741, 브랜드·개요",
+                        "searchQuery": "SLA모닝브루856741 브랜드 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "reserve",
+                        "label": "예약",
+                        "headingSuffix": "예약·문의",
+                        "keywords": [
+                          "예약",
+                          "문의"
+                        ],
+                        "group": "visit",
+                        "heading": "예약 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 예약 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "visit",
+                        "label": "방문",
+                        "headingSuffix": "방문·위치",
+                        "keywords": [
+                          "방문",
+                          "위치"
+                        ],
+                        "group": "visit",
+                        "heading": "방문 비교 포인트",
+                        "searchQuery": "SLA모닝브루856741 방문 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "prep",
+                        "label": "준비",
+                        "headingSuffix": "이용 전 준비",
+                        "keywords": [
+                          "준비",
+                          "확인"
+                        ],
+                        "group": "feature",
+                        "heading": "이용 전 준비",
+                        "searchQuery": "SLA모닝브루856741 준비 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "compare",
+                        "label": "비교",
+                        "headingSuffix": "비교·선택",
+                        "keywords": [
+                          "비교",
+                          "선택"
+                        ],
+                        "group": "compare",
+                        "heading": "비교 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 비교 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "checklist",
+                        "label": "체크리스트",
+                        "headingSuffix": "확인 체크",
+                        "keywords": [
+                          "체크",
+                          "확인"
+                        ],
+                        "group": "purchase",
+                        "heading": "체크리스트 비교 포인트",
+                        "searchQuery": "SLA모닝브루856741 체크리스트 봄 시즌 브런치 오픈"
+                      }
+                    ],
+                    "missing": [
+                      {
+                        "id": "offer",
+                        "label": "제품·서비스",
+                        "headingSuffix": "제품·서비스",
+                        "keywords": [
+                          "제품",
+                          "서비스"
+                        ],
+                        "group": "product",
+                        "heading": "SLA모닝브루856741 봄 시즌 브런치 오픈, 제품·서비스",
+                        "searchQuery": "SLA모닝브루856741 제품·서비스 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "feature",
+                        "label": "특징",
+                        "headingSuffix": "특징·차별",
+                        "keywords": [
+                          "특징",
+                          "차별"
+                        ],
+                        "group": "feature",
+                        "heading": "특징 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 특징 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "price",
+                        "label": "가격",
+                        "headingSuffix": "가격·조건",
+                        "keywords": [
+                          "가격",
+                          "비용"
+                        ],
+                        "group": "purchase",
+                        "heading": "가격 비교 포인트",
+                        "searchQuery": "SLA모닝브루856741 가격 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "promo",
+                        "label": "혜택",
+                        "headingSuffix": "혜택·행사",
+                        "keywords": [
+                          "혜택",
+                          "할인"
+                        ],
+                        "group": "purchase",
+                        "heading": "혜택·행사",
+                        "searchQuery": "SLA모닝브루856741 혜택 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "process",
+                        "label": "이용 과정",
+                        "headingSuffix": "이용·절차",
+                        "keywords": [
+                          "이용",
+                          "절차"
+                        ],
+                        "group": "ops",
+                        "heading": "이용 과정, 이용 전에 먼저 볼 것",
+                        "searchQuery": "SLA모닝브루856741 이용 과정 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "care",
+                        "label": "관리",
+                        "headingSuffix": "관리·사후",
+                        "keywords": [
+                          "관리",
+                          "사후"
+                        ],
+                        "group": "ops",
+                        "heading": "관리, 이용 전에 먼저 볼 것",
+                        "searchQuery": "SLA모닝브루856741 관리 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "faq",
+                        "label": "FAQ",
+                        "headingSuffix": "자주 묻는 질문",
+                        "keywords": [
+                          "FAQ"
+                        ],
+                        "group": "faq",
+                        "heading": "자주 묻는 질문",
+                        "searchQuery": "SLA모닝브루856741 FAQ 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "caution",
+                        "label": "주의",
+                        "headingSuffix": "주의·유의",
+                        "keywords": [
+                          "주의",
+                          "유의"
+                        ],
+                        "group": "feature",
+                        "heading": "주의, 이용 전에 먼저 볼 것",
+                        "searchQuery": "SLA모닝브루856741 주의 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "support",
+                        "label": "지원",
+                        "headingSuffix": "A/S·지원",
+                        "keywords": [
+                          "지원",
+                          "AS"
+                        ],
+                        "group": "ops",
+                        "heading": "지원 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 지원 봄 시즌 브런치 오픈"
+                      }
+                    ],
+                    "ratio": 0.4,
+                    "ok": true
+                  },
+                  "map": {
+                    "categoryKey": "cafe",
+                    "brand": "SLA모닝브루856741",
+                    "region": "서울 강남",
+                    "topic": "봄 시즌 브런치 오픈",
+                    "areas": [
+                      {
+                        "id": "brand",
+                        "label": "브랜드",
+                        "headingSuffix": "브랜드·개요",
+                        "keywords": [
+                          "브랜드"
+                        ],
+                        "group": "brand",
+                        "heading": "서울 강남 SLA모닝브루856741, 브랜드·개요",
+                        "searchQuery": "SLA모닝브루856741 브랜드 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "offer",
+                        "label": "제품·서비스",
+                        "headingSuffix": "제품·서비스",
+                        "keywords": [
+                          "제품",
+                          "서비스"
+                        ],
+                        "group": "product",
+                        "heading": "SLA모닝브루856741 봄 시즌 브런치 오픈, 제품·서비스",
+                        "searchQuery": "SLA모닝브루856741 제품·서비스 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "feature",
+                        "label": "특징",
+                        "headingSuffix": "특징·차별",
+                        "keywords": [
+                          "특징",
+                          "차별"
+                        ],
+                        "group": "feature",
+                        "heading": "특징 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 특징 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "price",
+                        "label": "가격",
+                        "headingSuffix": "가격·조건",
+                        "keywords": [
+                          "가격",
+                          "비용"
+                        ],
+                        "group": "purchase",
+                        "heading": "가격 비교 포인트",
+                        "searchQuery": "SLA모닝브루856741 가격 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "promo",
+                        "label": "혜택",
+                        "headingSuffix": "혜택·행사",
+                        "keywords": [
+                          "혜택",
+                          "할인"
+                        ],
+                        "group": "purchase",
+                        "heading": "혜택·행사",
+                        "searchQuery": "SLA모닝브루856741 혜택 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "process",
+                        "label": "이용 과정",
+                        "headingSuffix": "이용·절차",
+                        "keywords": [
+                          "이용",
+                          "절차"
+                        ],
+                        "group": "ops",
+                        "heading": "이용 과정, 이용 전에 먼저 볼 것",
+                        "searchQuery": "SLA모닝브루856741 이용 과정 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "reserve",
+                        "label": "예약",
+                        "headingSuffix": "예약·문의",
+                        "keywords": [
+                          "예약",
+                          "문의"
+                        ],
+                        "group": "visit",
+                        "heading": "예약 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 예약 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "visit",
+                        "label": "방문",
+                        "headingSuffix": "방문·위치",
+                        "keywords": [
+                          "방문",
+                          "위치"
+                        ],
+                        "group": "visit",
+                        "heading": "방문 비교 포인트",
+                        "searchQuery": "SLA모닝브루856741 방문 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "prep",
+                        "label": "준비",
+                        "headingSuffix": "이용 전 준비",
+                        "keywords": [
+                          "준비",
+                          "확인"
+                        ],
+                        "group": "feature",
+                        "heading": "이용 전 준비",
+                        "searchQuery": "SLA모닝브루856741 준비 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "care",
+                        "label": "관리",
+                        "headingSuffix": "관리·사후",
+                        "keywords": [
+                          "관리",
+                          "사후"
+                        ],
+                        "group": "ops",
+                        "heading": "관리, 이용 전에 먼저 볼 것",
+                        "searchQuery": "SLA모닝브루856741 관리 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "compare",
+                        "label": "비교",
+                        "headingSuffix": "비교·선택",
+                        "keywords": [
+                          "비교",
+                          "선택"
+                        ],
+                        "group": "compare",
+                        "heading": "비교 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 비교 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "checklist",
+                        "label": "체크리스트",
+                        "headingSuffix": "확인 체크",
+                        "keywords": [
+                          "체크",
+                          "확인"
+                        ],
+                        "group": "purchase",
+                        "heading": "체크리스트 비교 포인트",
+                        "searchQuery": "SLA모닝브루856741 체크리스트 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "faq",
+                        "label": "FAQ",
+                        "headingSuffix": "자주 묻는 질문",
+                        "keywords": [
+                          "FAQ"
+                        ],
+                        "group": "faq",
+                        "heading": "자주 묻는 질문",
+                        "searchQuery": "SLA모닝브루856741 FAQ 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "caution",
+                        "label": "주의",
+                        "headingSuffix": "주의·유의",
+                        "keywords": [
+                          "주의",
+                          "유의"
+                        ],
+                        "group": "feature",
+                        "heading": "주의, 이용 전에 먼저 볼 것",
+                        "searchQuery": "SLA모닝브루856741 주의 봄 시즌 브런치 오픈"
+                      },
+                      {
+                        "id": "support",
+                        "label": "지원",
+                        "headingSuffix": "A/S·지원",
+                        "keywords": [
+                          "지원",
+                          "AS"
+                        ],
+                        "group": "ops",
+                        "heading": "지원 — 방문·상담 때 확인할 것",
+                        "searchQuery": "SLA모닝브루856741 지원 봄 시즌 브런치 오픈"
+                      }
+                    ],
+                    "minAreas": 20,
+                    "coverageCount": 15,
+                    "meetsMinimum": false
+                  }
+                },
+                "coverageMinAreas": 20,
+                "suggestCoverageReresearch": false,
+                "charCount": 894,
+                "blogLengthTier": "medium",
+                "lengthControl": {
+                  "current": 894,
+                  "target": 3000,
+                  "min": 2800,
+                  "max": 3200,
+                  "tooShort": true,
+                  "tooLong": false,
+                  "inBand": false,
+                  "strictOk": false,
+                  "missionSoftLength": true,
+                  "paragraphCount": 5,
+                  "minParagraphs": 9,
+                  "maxParagraphs": 12,
+                  "sectionCount": 3,
+                  "minSections": 6,
+                  "bandAttempts": 0
+                },
+                "lengthTierMet": true,
+                "passOutput": true,
+                "lengthStrict": true,
+                "missionSoftLength": true,
+                "brandContentEngine": true,
+                "giSeungJeonGyeol": true,
+                "postVerifySalvaged": true,
+                "blocked": true,
+                "humanWritingWithheld": true,
+                "densityFirst": true,
+                "missionProseTierOk": true,
+                "missionProseChars": 808,
+                "lengthTierSkipped": "density_first",
+                "isBriefOnly": false,
+                "metaLayerScrubbed": true,
+                "completeDraft": true,
+                "displayReady": true,
+                "publishReady": false,
+                "completionReadiness": {
+                  "displayReady": false,
+                  "completeDraft": false,
+                  "hardBlock": true,
+                  "reasons": [
+                    "first_delivery_human_editor",
+                    "first_delivery_editor_v95",
+                    "deep_learning_below_min"
+                  ],
+                  "humanBelief": {
+                    "ok": true,
+                    "score": 92,
+                    "issues": []
+                  },
+                  "grounded": {
+                    "ok": true,
+                    "score": 100,
+                    "factAnchors": 14,
+                    "concreteMarkers": 2,
+                    "grounding": {
+                      "ratio": 0.95,
+                      "grounded": 19,
+                      "total": 20
+                    },
+                    "issues": []
+                  }
+                },
+                "humanWritingDelivery": {
+                  "humanReady": false,
+                  "displayReady": false,
+                  "reasons": [
+                    "first_delivery_human_editor",
+                    "first_delivery_editor_v95",
+                    "deep_learning_below_min",
+                    "information_yield_low",
+                    "industry_contamination"
+                  ]
+                },
+                "researchGateRescue": true,
+                "failReasons": [
+                  "topic_dominance_low",
+                  "length_tier_under",
+                  "information_yield_low",
+                  "duplicate_killer_fail",
+                  "brand_mechanical_title",
+                  "perspective_mechanical_title",
+                  "mechanical_title",
+                  "duplicate_content",
+                  "editor_mechanical_title",
+                  "editor_verbatim_topic_dump",
+                  "editor_editor_v95"
+                ],
+                "deliveryPreview": false,
+                "softPass": false,
+                "postVerifySoft": false,
+                "customerCompleteDelivery": true
+              },
+              "fullCopyText": "서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈\n\n서울 강남 SLA모닝브루856741, 봄 시즌 브런치 오픈 볼 때 짚을 점\n\n점심 전후로 잠깐 앉고 싶은데, 메뉴와 분위기를 검색만으로는 잘 안 그려지는 날이 있다.\n서울 강남 SLA모닝브루856741에 앉아 봄 시즌 브런치 오픈 맛·좌석·분위기를 직접 확인했어요.\n카공·데이트·브런치 때문에 봄 시즌 브런치 오픈을 검색하게 됐고, 메뉴·혼잡 시간을 메모해 뒀어요.\n서울 강남 직접 가봤는데, 의외로 만족했어요.\nSLA모닝브루856741 관련해서 서울 한남동 카페, 갤러리 리움미술관,한강진역 마이크로 명소...: 핵심 요약 한남동은 서울 용산구에 자리한 가장 세련된 …는 조사한 내용과 맞아 떨어졌어요.\n샌드위치....: 폴바셋 굿즈들은 스타벅스처럼 매 시즌 화려한 디자인을…\n\n서울 강남 SLA모닝브루856741, 선택지로 볼 때\n\n고를 때 SLA모닝브루856741은 봄 시즌에 맞춰 특별한 브런치 메뉴를 제공할 예정이다가 기준이 됐더라구요.\n맞춰 볼 때 서울 성수동 카페거리 도보 가이드 연무장길 서울숲길 뚝섬역...: 낡은 공장 건물의 뼈대는 그대로 두고, 그 안에 스페셜티…가 기준이 됐어요.\n비교할 때 서촌마을 가볼만한곳 매뉴팩트커피 오늘오픈: 총정리 서촌 신상 카페 매뉴팩트커피는 위치, 브랜드, 분위기 모두 괜찮은 편으로…가 기준이 됐어요.\n\n서울 강남에서 방문·결정 전에\n\nSLA모닝브루856741 관련해서 서울 천호 <애슐리퀸즈 뉴코아> 4월 토마토축제 시즌 즐기고 옴: 난 자몽이에게 분명 모닝 브런치를 먹자구 했는뎅 브런치 …는 조사한 내용과 맞아 떨어졌어요.\n봄 시즌 브런치 오픈 안내를 고를 때 성분·보관·목적을 함께 보면 비교가 수월해요.\n진짜 전시 구성이 생각보다 괜찮더라구요.\n서울 강남은 브런치 카페 문화가 발달한 지역이다.\n\n궁금한 점은 매장 문의로 확인하시면 돼요.",
+              "titles": [
+                "서울 강남에서 봄 시즌 브런치 오픈 안내를 바라보는 시선, SLA모닝브루856741 봄 시즌 ",
+                "서울 강남 SLA모닝브루856741 솔직 후기, 봄 시즌 브런치 오픈 안내",
+                "서울 강남 SLA모닝브루856741 봄 시즌 브런치 오픈 안내 직접 다녀온 후기",
+                "서울 강남 봄 시즌 브런치 오픈 안내 방문 후기 · SLA모닝브루856741",
+                "SLA모닝브루856741 서울 강남 매장, 봄 시즌 브런치 오픈 안내 솔직후기"
+              ]
+            },
+            "withheld": false,
+            "softPass": false,
+            "userMessage": null,
+            "mode": "research_gate_stamped",
+            "meta": {
+              "failReasons": [
+                "topic_dominance_low",
+                "length_tier_under",
+                "information_yield_low",
+                "duplicate_killer_fail",
+                "brand_mechanical_title",
+                "perspective_mechanical_title",
+                "mechanical_title",
+                "duplicate_content",
+                "editor_mechanical_title",
+                "editor_verbatim_topic_dump",
+                "editor_editor_v95"
+              ],
+              "rolloutFlags": {
+                "brandFirstEngine": true,
+                "strictBrandGuard": false,
+                "officialSourceFirst": false
+              }
+            },
+            "personalization": {
+              "userBrief": "",
+              "accountBrief": "",
+              "brandBrief": "고정 톤: 감성 · 문장 습관: 보통 문장",
+              "feedbackBrief": "",
+              "styleContinuityBrief": "",
+              "dataAssetBrief": "",
+              "assetCounts": {
+                "generations": 0,
+                "feedback": 0,
+                "events": 0,
+                "performance": 0,
+                "hasLearning": true
+              },
+              "brandKnowledgeBrief": "",
+              "userMemoryBrief": "",
+              "brandMemoryBrief": "고정 톤: 감성 · 문장 습관: 보통 문장",
+              "contentMemoryBrief": "",
+              "combinedPromptAddon": "【BRAND MEMORY】\n고정 톤: 감성 · 문장 습관: 보통 문장",
+              "approvedContentCount": 0,
+              "styleAnchors": [],
+              "styleAnchorBrief": "【STYLE ANCHOR】승인본이 없으면 업종·브랜드 메모리 톤만 사용. 매번 처음 소개 금지.",
+              "approvedContentBrief": "",
+              "brandPhilosophyBrief": "브랜드 철학: 고정 톤: 감성 · 문장 습관: 보통 문장"
+            },
+            "usageWarning": false,
+            "usage": {
+              "planId": "studio",
+              "planLabel": "스튜디오",
+              "displayPrice": "39,000원/월",
+              "source": "beta_period",
+              "billingReady": true,
+              "period": "2026-06",
+              "content": {
+                "used": 0,
+                "limit": null,
+                "remaining": null
+              },
+              "image": {
+                "used": 0,
+                "limit": null,
+                "remaining": null
+              },
+              "bypassQuotas": true,
+              "usageWarning": false,
+              "entitlements": {
+                "brandMemory": true,
+                "imageGeneration": true,
+                "sensitiveAudit": true,
+                "advancedAudit": true,
+                "topicRecommendations": true,
+                "historyDays": null,
+                "maxBrands": null,
+                "pipelineChannels": [
+                  "blog",
+                  "place",
+                  "instagram",
+                  "image"
+                ]
+              }
+            }
+          },
+          "apiMs": 80376
         },
-        "uiOk": true
+        "uiMs": 246215,
+        "uiOk": true,
+        "generateMs": 246697,
+        "setupMs": 3676,
+        "blogApiCalled": true
       },
-      "errors": [
-        "channel_api_no_content",
-        "channel_api_no_content"
-      ],
+      "errors": [],
       "network": [],
-      "failReason": "channel_api_no_content",
-      "consoleErrors": [],
-      "networkFails": [],
+      "warnings": [
+        "sla_exceeded"
+      ],
+      "failReason": "sla_exceeded",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()",
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ],
+      "networkFails": [
+        {
+          "url": "https://briclog.ai/api/presence/heartbeat",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity?brandCount=0",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity?brandCount=0",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401
+        }
+      ],
       "apiTrace": [
         {
           "url": "https://briclog.ai/api/public/visit",
           "status": 200,
           "method": "POST",
-          "at": 1780806076119
+          "at": 1780823852830
         },
         {
           "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
+          "status": 401,
           "method": "POST",
-          "at": 1780806076393
+          "at": 1780823852881
         },
         {
           "url": "https://briclog.ai/api/auth/profile",
           "status": 200,
           "method": "GET",
-          "at": 1780806076438
+          "at": 1780823853404
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780823853559
         },
         {
           "url": "https://briclog.ai/api/auth/profile",
           "status": 200,
           "method": "POST",
-          "at": 1780806076608
+          "at": 1780823854096
         },
         {
           "url": "https://briclog.ai/api/auth/profile",
           "status": 200,
           "method": "POST",
-          "at": 1780806076625
+          "at": 1780823854101
         },
         {
           "url": "https://briclog.ai/api/content/status",
           "status": 200,
           "method": "GET",
-          "at": 1780806076828
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806077087
-        },
-        {
-          "url": "https://briclog.ai/api/brands",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806077196
-        },
-        {
-          "url": "https://briclog.ai/api/workspace/maturity",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079175
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079279
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079280
-        },
-        {
-          "url": "https://briclog.ai/api/workspace/maturity",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079830
-        },
-        {
-          "url": "https://briclog.ai/api/workspace/maturity",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079830
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806166423
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806166423
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806256664
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806256664
-        }
-      ],
-      "pageSnippet": "브릭로그 BRICLOG — 브릭로그(BRICLOG)는 네이버 블로그·스마트플레이스·인스타그램 글을 한곳에서 차곡 쌓는 AI 브랜드 글쓰기 서비스입니다. 매장·브랜드 홍보, SNS 마케팅, 콘텐츠 작성을 briclog.ai에서 시작하세요.\n\nBRICLOG (Briclog) stacks Naver blog, Smart Place, and Instagram drafts in one brand writing workspace at briclog.ai.\n\nBRICLOG\n\n브랜드 창고\n\n브랜드를 선택해 주세요\n▾\n브랜드 목록 펼치기\n브랜드를 선택하세요\n(베타)\n플랜\n이번 달 생성 · 한도 없음\n베타 기간 무료 이용\n\n콘텐츠 만들기\n\n이야기\n기본\n플레이스\n인스타 캡션\n\n더 보기\n\n썸네일 문구\n붙여넣기 검수\n브랜드 작업실\n\n기록\n\n초안 기록\n설정\n펼치기\n효과음\n배경음악\n로그아웃\n인스타 캡션\n스튜디오 (베타)\n플랜\nU\n\n맞춤 개인화: 계정 습관이 쌓이면 말투·문장 길이가 다음 글에 반영됩니다.\n\n닫기\n\n인스타 캡션 · 브리프\n\n인스타 캡션에서 바로 시작\n\n이야기 없이도 캡션·해시태그를 만들 수 있어요. 톤·이모지·줄바꿈까지 피드·릴스에 맞게 만듭니다.\n\n캡션·줄바꿈\n\n피드·릴스에 맞는 짧은 문장\n\n해시태그\n\n지역·주제 태그 묶음\n\n톤 선택\n\n감성·정보·프로모션 톤 전환\n\n저장·방문·DM 등 캠페인 목표를 먼저 정하면, 맹목적인 해시태그 나열이 아니라 피드에 맞는 캡션이 나옵니다.\n\n1. 캠페인 목표\n\n이번 게시물로 무엇을 얻고 싶은지 정합니다.\n\n저장·공감\n피드 저장·공유\n방문·예약\n매장·링크 유도\n댓글·DM\n대화·참여\n신규·론칭\n신메뉴·오픈\n주요 독자\n동네·근처\n단골·재방문\n처음 보는 사람\n2. 소재·후크\n\n첫 줄에서 멈추게 할 장면·각도입니다.\n\n오늘의 소재\n*\n후크 각도\n감성·장면\n꿀팁·정보\n비하인드\n혜택·한정\n장면 한 줄 (선택)\n\n비우면 브랜드·업종에 맞게 자동\n\n3. 포맷·분량\n\n릴스/숏폼은 더 짧게 잡습니다.\n\n일반\n숏폼\n짧게\n보통\n길게\n4. 톤·이모지\n캡션 톤\n감성형\n정보형\n프리미엄형\n미니멀형\n이모지\n사용안함\n적게\n보통\n많이\n보통 (legacy)\n적게 (legacy)\n많이 (legacy)\n\n기본값은 적절히 — 후크·마무리에 자연스럽게 넣어요\n\n5. 해시태그\n\n최대 5개 · 브랜드·지역 기반 추천\n\n없음\n1개\n2개\n3개\n4개\n5개\n자동 추천\n직접 입력\n6. 마무리 CTA·피할 표현\n\n댓글·DM·프로필 링크 등 부드"
-    },
-    {
-      "id": "c_image_pension",
-      "channel": "image",
-      "label": "썸네일 문구 — 제주 펜션",
-      "slaMs": 180000,
-      "status": "fail",
-      "elapsedMs": 180015,
-      "phases": {
-        "navigateMs": 2687,
-        "fillMs": 624,
-        "api": {
-          "apiError": "page.waitForResponse: Timeout 176678ms exceeded while waiting for event \"response\""
-        },
-        "uiOk": true
-      },
-      "errors": [
-        "channel_api_no_content",
-        "channel_api_no_content"
-      ],
-      "network": [],
-      "failReason": "channel_api_no_content",
-      "consoleErrors": [],
-      "networkFails": [],
-      "apiTrace": [
-        {
-          "url": "https://briclog.ai/api/workspace/maturity",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079174
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079175
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079279
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079280
-        },
-        {
-          "url": "https://briclog.ai/api/workspace/maturity",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079830
-        },
-        {
-          "url": "https://briclog.ai/api/workspace/maturity",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806079830
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806166423
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806166423
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806256664
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806256664
-        },
-        {
-          "url": "https://briclog.ai/api/public/visit",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806260396
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806260738
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806260757
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806260757
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806260786
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806260786
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806260871
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806260891
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806261420
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806261469
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806261469
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806261547
-        },
-        {
-          "url": "https://briclog.ai/api/auth/profile",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806261576
+          "at": 1780823856119
         },
         {
           "url": "https://briclog.ai/api/content/status",
           "status": 200,
           "method": "GET",
-          "at": 1780806261775
+          "at": 1780823856119
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856120
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856120
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856120
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856120
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856120
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856120
         },
         {
           "url": "https://briclog.ai/api/auth/profile",
           "status": 200,
           "method": "GET",
-          "at": 1780806262061
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/auth/profile",
+          "status": 200,
+          "method": "GET",
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/workspace/maturity",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856121
+        },
+        {
+          "url": "https://briclog.ai/api/billing/usage",
+          "status": 401,
+          "method": "GET",
+          "at": 1780823856121
         },
         {
           "url": "https://briclog.ai/api/brands",
           "status": 200,
-          "method": "GET",
-          "at": 1780806262165
+          "method": "POST",
+          "at": 1780823860306
+        },
+        {
+          "url": "https://briclog.ai/api/brands",
+          "status": 200,
+          "method": "POST",
+          "at": 1780823860306
         },
         {
           "url": "https://briclog.ai/api/workspace/maturity",
           "status": 200,
           "method": "GET",
-          "at": 1780806262204
-        },
-        {
-          "url": "https://briclog.ai/api/billing/usage",
-          "status": 200,
-          "method": "GET",
-          "at": 1780806262412
+          "at": 1780823861434
         },
         {
           "url": "https://briclog.ai/api/workspace/maturity",
           "status": 200,
           "method": "GET",
-          "at": 1780806262794
+          "at": 1780823861435
         },
         {
-          "url": "https://briclog.ai/api/billing/usage",
+          "url": "https://briclog.ai/api/memory/content",
           "status": 200,
           "method": "GET",
-          "at": 1780806264954
+          "at": 1780823861495
         },
         {
-          "url": "https://briclog.ai/api/billing/usage",
+          "url": "https://briclog.ai/api/memory/content",
           "status": 200,
           "method": "GET",
-          "at": 1780806264954
+          "at": 1780823861495
+        },
+        {
+          "url": "https://briclog.ai/api/memory/brand-learning",
+          "status": 200,
+          "method": "GET",
+          "at": 1780823862502
+        },
+        {
+          "url": "https://briclog.ai/api/memory/brand-learning",
+          "status": 200,
+          "method": "GET",
+          "at": 1780823862502
+        },
+        {
+          "url": "https://briclog.ai/api/content/research",
+          "status": 200,
+          "method": "POST",
+          "at": 1780823885594
+        },
+        {
+          "url": "https://briclog.ai/api/content/research",
+          "status": 200,
+          "method": "POST",
+          "at": 1780823885594
+        },
+        {
+          "url": "https://briclog.ai/api/content/blog",
+          "status": 200,
+          "method": "POST",
+          "at": 1780823925813
+        },
+        {
+          "url": "https://briclog.ai/api/content/blog",
+          "status": 200,
+          "method": "POST",
+          "at": 1780823925813
+        },
+        {
+          "url": "https://briclog.ai/api/brands/579733b6-92ef-4edd-b012-307810dc78ff",
+          "status": 200,
+          "method": "PATCH",
+          "at": 1780823939841
+        },
+        {
+          "url": "https://briclog.ai/api/brands/579733b6-92ef-4edd-b012-307810dc78ff",
+          "status": 200,
+          "method": "PATCH",
+          "at": 1780823939841
         },
         {
           "url": "https://briclog.ai/api/presence/heartbeat",
           "status": 200,
           "method": "POST",
-          "at": 1780806346409
+          "at": 1780823942903
         },
         {
           "url": "https://briclog.ai/api/presence/heartbeat",
           "status": 200,
           "method": "POST",
-          "at": 1780806346409
+          "at": 1780823942903
         },
         {
           "url": "https://briclog.ai/api/presence/heartbeat",
           "status": 200,
           "method": "POST",
-          "at": 1780806350558
+          "at": 1780824034236
         },
         {
           "url": "https://briclog.ai/api/presence/heartbeat",
           "status": 200,
           "method": "POST",
-          "at": 1780806436361
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806436361
-        },
-        {
-          "url": "https://briclog.ai/api/presence/heartbeat",
-          "status": 200,
-          "method": "POST",
-          "at": 1780806440569
+          "at": 1780824034236
         }
-      ],
-      "pageSnippet": "브릭로그 BRICLOG — 브릭로그(BRICLOG)는 네이버 블로그·스마트플레이스·인스타그램 글을 한곳에서 차곡 쌓는 AI 브랜드 글쓰기 서비스입니다. 매장·브랜드 홍보, SNS 마케팅, 콘텐츠 작성을 briclog.ai에서 시작하세요.\n\nBRICLOG (Briclog) stacks Naver blog, Smart Place, and Instagram drafts in one brand writing workspace at briclog.ai.\n\nBRICLOG\n\n브랜드 창고\n\n브랜드를 선택해 주세요\n▾\n브랜드 목록 펼치기\n브랜드를 선택하세요\n(베타)\n플랜\n이번 달 생성 · 한도 없음\n베타 기간 무료 이용\n\n콘텐츠 만들기\n\n이야기\n기본\n플레이스\n인스타 캡션\n\n더 보기\n\n썸네일 문구\n붙여넣기 검수\n브랜드 작업실\n\n기록\n\n초안 기록\n설정\n펼치기\n효과음\n배경음악\n로그아웃\n썸네일 문구\n스튜디오 (베타)\n플랜\nU\n\n맞춤 개인화: 계정 습관이 쌓이면 말투·문장 길이가 다음 글에 반영됩니다.\n\n닫기\n\n썸네일 문구 · 브리프\n\n썸네일 문구에서 바로 시작\n\n주제·브랜드만으로도 썸네일 문구를 만들 수 있어요. 다른 채널 초안이 있으면 톤을 이어받습니다.\n\n썸네일 문구\n\n클릭을 부르는 한 줄·카드 카피\n\n비율·목적\n\n1:1·16:9 등 용도별 프롬프트\n\n브랜드 톤\n\n이야기·다른 채널 초안과 맞춤\n\n프롬프트 브리프\n\n주제를 직접 입력하고 용도를 고릅니다. 이야기·플레이스·인스타 초안이 있으면 「이어 만들기」로 헤드카피와 용도가 맞춰집니다.\n\n주제 (직접 입력)\n\n용도\n\n블로그 썸네일\n플레이스 이미지\n인스타 카드\n이벤트 배너\n\n비율: 1:1 (정사각) (용도별 고정)\n\n단독으로 받기 (블로그·다른 채널 없이)\n브랜드·지역·주제만으로 이 채널 편집본을 새로 받습니다.\n썸네일 문구 만들기\n이야기 탭에서 쓰기\n\n브랜드명과 주제를 입력해 주세요.\n\nTIP\n작성 맥락 힌트\n막히면 「보기」를 눌러 주제·장면 힌트를 펼칠 수 있어요.\n보기\n\n막히면 「보기」를 눌러 주제·장면 힌트를 펼칠 수 있어요.\n\n?\n\n브릭로그 BRICLOG\n\n차곡차곡, 브랜드 글을 쌓아요\n\n브릭로그(BRICLOG)는 네이버 블로그·스마트플레이스·인스타그램 글을 한곳에서 차곡 쌓는 AI 브랜드 글쓰기 서비스입니다. 매장·브랜드 홍보, SNS 마케팅, 콘텐츠 작성을 briclog.ai에서 시작하세요.\n\n해신 · 대표 김태규 · 116-06-68724·2023-경기파주-2430\n\n"
+      ]
     }
   ],
   "summary": {
-    "total": 2,
-    "passed": 0,
-    "failed": 2,
-    "withinSla": [],
-    "overSlaOrError": [
-      {
-        "id": "c_insta_flower",
-        "elapsedMs": 180011,
-        "failReason": "channel_api_no_content",
-        "errors": [
-          "channel_api_no_content",
-          "channel_api_no_content"
-        ]
-      },
-      {
-        "id": "c_image_pension",
-        "elapsedMs": 180015,
-        "failReason": "channel_api_no_content",
-        "errors": [
-          "channel_api_no_content",
-          "channel_api_no_content"
-        ]
-      }
-    ]
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "withinSla": [
+      "c_blog_cafe"
+    ],
+    "overSlaOrError": []
   }
 }

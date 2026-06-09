@@ -1,0 +1,73 @@
+{
+  "api": {
+    "ok": false,
+    "blogContent": null,
+    "withheld": true,
+    "userMessage": "아직 올리지 않았어요. 본문이 비어 있어요. 입력을 조금 구체적으로 한 뒤 「다시 받기」를 눌러 주세요.",
+    "mode": "research_gate",
+    "meta": {
+      "failReasons": [
+        "empty_pack"
+      ],
+      "rolloutFlags": {
+        "brandFirstEngine": true,
+        "strictBrandGuard": false,
+        "officialSourceFirst": false
+      }
+    },
+    "personalization": null,
+    "usageWarning": false,
+    "usage": {
+      "planId": "studio",
+      "planLabel": "스튜디오",
+      "displayPrice": "39,000원/월",
+      "source": "beta_period",
+      "billingReady": true,
+      "period": "2026-06",
+      "content": {
+        "used": 0,
+        "limit": null,
+        "remaining": null
+      },
+      "image": {
+        "used": 0,
+        "limit": null,
+        "remaining": null
+      },
+      "bypassQuotas": true,
+      "usageWarning": false,
+      "entitlements": {
+        "brandMemory": true,
+        "imageGeneration": true,
+        "sensitiveAudit": true,
+        "advancedAudit": true,
+        "topicRecommendations": true,
+        "historyDays": null,
+        "maxBrands": null,
+        "pipelineChannels": [
+          "blog",
+          "place",
+          "instagram",
+          "image"
+        ]
+      }
+    }
+  },
+  "delivered": {
+    "ok": false,
+    "mode": "output_verify",
+    "llmAvailable": false,
+    "blogContent": null,
+    "softPass": false,
+    "withheld": true,
+    "userMessage": "아직 올리지 않았어요. 본문이 비어 있어요. 입력을 조금 구체적으로 한 뒤 「다시 받기」를 눌러 주세요.",
+    "userDetail": null,
+    "meta": {
+      "generationMode": "beta_test_guard_blocked",
+      "failReasons": [
+        "empty_pack"
+      ]
+    }
+  },
+  "uiOk": false
+}

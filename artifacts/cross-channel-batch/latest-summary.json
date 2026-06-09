@@ -1,0 +1,294 @@
+{
+  "startedAt": "2026-06-09T05:22:21.120Z",
+  "total": 234,
+  "pass": 0,
+  "fail": 234,
+  "passRate": 0,
+  "byChannel": {
+    "blog": {
+      "total": 78,
+      "pass": 0,
+      "passRate": 0
+    },
+    "place": {
+      "total": 78,
+      "pass": 0,
+      "passRate": 0
+    },
+    "instagram": {
+      "total": 78,
+      "pass": 0,
+      "passRate": 0
+    }
+  },
+  "failReasons": {
+    "human_belief_low": 147,
+    "first_delivery_human_editor": 74,
+    "first_delivery_editor_v95": 74,
+    "first_delivery_persona": 47,
+    "first_delivery_human_belief": 119,
+    "deep_learning_below_min": 27,
+    "information_yield_low": 103,
+    "length_tier_under": 78,
+    "first_delivery_channel_editor": 154,
+    "first_delivery_channel_format": 33,
+    "insufficient_verified_brand_facts": 26,
+    "industry_contamination": 10,
+    "topic_lock_foreign_entity": 4,
+    "persona_voice_weak": 16,
+    "ai_pattern_detected": 5,
+    "info_speaker_mismatch": 5,
+    "not_publishable": 4,
+    "empty_pack": 4,
+    "grounded_facts_low": 4,
+    "concrete_detail_low": 4,
+    "grounded_specificity_low": 3,
+    "research_facts_thin": 1,
+    "checklist_voice": 5
+  },
+  "failedSamples": [
+    {
+      "id": "카페_0_blog",
+      "channel": "blog",
+      "label": "카페 · 강남 · blog",
+      "failReasons": [
+        "human_belief_low",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_persona",
+        "first_delivery_human_belief",
+        "deep_learning_below_min"
+      ],
+      "belief": 60,
+      "chars": 938
+    },
+    {
+      "id": "카페_0_place",
+      "channel": "place",
+      "label": "카페 · 강남 · place",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 66,
+      "chars": 287
+    },
+    {
+      "id": "카페_0_instagram",
+      "channel": "instagram",
+      "label": "카페 · 강남 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief",
+        "first_delivery_channel_format"
+      ],
+      "belief": 46,
+      "chars": 195
+    },
+    {
+      "id": "카페_1_blog",
+      "channel": "blog",
+      "label": "카페 · 홍대 · blog",
+      "failReasons": [
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "insufficient_verified_brand_facts",
+        "industry_contamination",
+        "information_yield_low",
+        "topic_lock_foreign_entity"
+      ],
+      "belief": 88,
+      "chars": 1969
+    },
+    {
+      "id": "카페_1_place",
+      "channel": "place",
+      "label": "카페 · 홍대 · place",
+      "failReasons": [
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief"
+      ],
+      "belief": 54,
+      "chars": 304
+    },
+    {
+      "id": "카페_1_instagram",
+      "channel": "instagram",
+      "label": "카페 · 홍대 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief",
+        "first_delivery_channel_format"
+      ],
+      "belief": 50,
+      "chars": 203
+    },
+    {
+      "id": "카페_2_blog",
+      "channel": "blog",
+      "label": "카페 · 부산 해운대 · blog",
+      "failReasons": [
+        "human_belief_low",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_persona",
+        "first_delivery_human_belief",
+        "persona_voice_weak"
+      ],
+      "belief": 72,
+      "chars": 1504
+    },
+    {
+      "id": "카페_2_place",
+      "channel": "place",
+      "label": "카페 · 부산 해운대 · place",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 66,
+      "chars": 169
+    },
+    {
+      "id": "카페_2_instagram",
+      "channel": "instagram",
+      "label": "카페 · 부산 해운대 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 66,
+      "chars": 375
+    },
+    {
+      "id": "카페_3_blog",
+      "channel": "blog",
+      "label": "카페 · 대구 수성 · blog",
+      "failReasons": [
+        "human_belief_low",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_persona",
+        "first_delivery_human_belief",
+        "persona_voice_weak"
+      ],
+      "belief": 72,
+      "chars": 1755
+    },
+    {
+      "id": "카페_3_place",
+      "channel": "place",
+      "label": "카페 · 대구 수성 · place",
+      "failReasons": [
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief"
+      ],
+      "belief": 46,
+      "chars": 179
+    },
+    {
+      "id": "카페_3_instagram",
+      "channel": "instagram",
+      "label": "카페 · 대구 수성 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 66,
+      "chars": 389
+    },
+    {
+      "id": "카페_4_blog",
+      "channel": "blog",
+      "label": "카페 · 인천 송도 · blog",
+      "failReasons": [
+        "human_belief_low",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_persona",
+        "first_delivery_human_belief",
+        "persona_voice_weak"
+      ],
+      "belief": 72,
+      "chars": 1619
+    },
+    {
+      "id": "카페_4_place",
+      "channel": "place",
+      "label": "카페 · 인천 송도 · place",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 72,
+      "chars": 165
+    },
+    {
+      "id": "카페_4_instagram",
+      "channel": "instagram",
+      "label": "카페 · 인천 송도 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 72,
+      "chars": 388
+    },
+    {
+      "id": "꽃집_0_blog",
+      "channel": "blog",
+      "label": "꽃집 · 홍대 · blog",
+      "failReasons": [
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "insufficient_verified_brand_facts",
+        "industry_contamination",
+        "ai_pattern_detected",
+        "information_yield_low"
+      ],
+      "belief": 97,
+      "chars": 2235
+    },
+    {
+      "id": "꽃집_0_place",
+      "channel": "place",
+      "label": "꽃집 · 홍대 · place",
+      "failReasons": [
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief"
+      ],
+      "belief": 54,
+      "chars": 302
+    },
+    {
+      "id": "꽃집_0_instagram",
+      "channel": "instagram",
+      "label": "꽃집 · 홍대 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief"
+      ],
+      "belief": 50,
+      "chars": 339
+    },
+    {
+      "id": "꽃집_1_blog",
+      "channel": "blog",
+      "label": "꽃집 · 부산 해운대 · blog",
+      "failReasons": [
+        "human_belief_low",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_persona",
+        "first_delivery_human_belief",
+        "persona_voice_weak"
+      ],
+      "belief": 72,
+      "chars": 1579
+    },
+    {
+      "id": "꽃집_1_place",
+      "channel": "place",
+      "label": "꽃집 · 부산 해운대 · place",
+      "failReasons": [
+        "first_delivery_channel_editor"
+      ],
+      "belief": 66,
+      "chars": 169
+    }
+  ]
+}

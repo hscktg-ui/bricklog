@@ -1,0 +1,29 @@
+{
+  "ensure": {
+    "ok": true,
+    "withheld": false,
+    "mode": "guaranteed_mission_delivery",
+    "userMessage": null,
+    "sections": 3,
+    "chars": 468
+  },
+  "uiDelivery": {
+    "ok": false,
+    "userMessage": "아직 올리지 않았어요. 주제만 반복하고 정보가 부족해요. 「다시 받기」를 누르면 분량을 맞춰 다시 다듬어요.",
+    "gateReasons": [
+      "topic_dominance_low",
+      "length_tier_under",
+      "structure_structure_thin",
+      "editor_verbatim_topic_dump",
+      "editor_structure_flow",
+      "editor_editor_v95"
+    ]
+  },
+  "customerMessage": "아직 올리지 않았어요. 주제만 반복하고 정보가 부족해요. 「다시 받기」를 누르면 분량을 맞춰 다시 다듬어요.",
+  "simulatedClient": {
+    "ok": true,
+    "sections": 3,
+    "chars": 481,
+    "publishReady": false
+  }
+}

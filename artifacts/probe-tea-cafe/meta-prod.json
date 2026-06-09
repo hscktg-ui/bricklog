@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "httpStatus": 200,
+    "elapsedMs": 5523,
+    "ok": false,
+    "withheld": true,
+    "mode": "research_gate",
+    "userMessage": "조사·검증 기준에 미달해 글을 작성하지 않습니다. 조사를 보강한 뒤 다시 시도해 주세요.",
+    "chars": 0
+  },
+  "input": {
+    "brandName": "다온티하우스",
+    "region": "경주",
+    "topic": "가을 시즌 티 메뉴와 다실 분위기",
+    "mainKeyword": "경주 티카페",
+    "industry": "티카페",
+    "blogLengthTier": "medium",
+    "writingSkillLevel": "civilian",
+    "v2AxisRequired": true,
+    "v2PipelineEnforced": true,
+    "v3EngineEnforced": true,
+    "researchEnabled": true,
+    "researchMode": "v2_axis",
+    "skipAutoPipeline": true
+  }
+}

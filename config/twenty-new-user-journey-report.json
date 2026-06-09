@@ -1,0 +1,421 @@
+{
+  "at": "2026-06-09T11:30:17.119Z",
+  "base": "https://briclog.ai",
+  "slaMs": 300000,
+  "uxRuns": [
+    {
+      "id": "u001",
+      "label": "카페·F&B · 첫 방문 게스트(모바일)",
+      "journeyType": "guest_mobile",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro_dismiss",
+          "ok": true,
+          "detail": "dismissed"
+        },
+        {
+          "step": "start_cta",
+          "ok": true
+        },
+        {
+          "step": "no_blockers",
+          "ok": true,
+          "blockers": 0
+        }
+      ]
+    },
+    {
+      "id": "u002",
+      "label": "카페·F&B · 첫 방문 게스트(PC)",
+      "journeyType": "guest_desktop",
+      "device": "desktop",
+      "phase": "onboarding_ux",
+      "status": "pass",
+      "steps": [
+        {
+          "step": "intro_dismiss",
+          "ok": true,
+          "detail": "dismissed"
+        },
+        {
+          "step": "start_cta",
+          "ok": true
+        },
+        {
+          "step": "no_blockers",
+          "ok": true,
+          "blockers": 0
+        }
+      ]
+    },
+    {
+      "id": "u003",
+      "label": "카페·F&B · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u004",
+      "label": "카페·F&B · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "desktop",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u013",
+      "label": "꽃집·선물 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u014",
+      "label": "꽃집·선물 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "desktop",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u023",
+      "label": "의료·클리닉 · 신규 가입(모바일)",
+      "journeyType": "signup_mobile",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u024",
+      "label": "의료·클리닉 · 신규 가입(PC)",
+      "journeyType": "signup_desktop",
+      "device": "desktop",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u006",
+      "label": "카페·F&B · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u016",
+      "label": "꽃집·선물 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u026",
+      "label": "의료·클리닉 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u036",
+      "label": "뷰티·피부 · 이야기 집중 작성",
+      "journeyType": "blog_writer",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u007",
+      "label": "카페·F&B · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u017",
+      "label": "꽃집·선물 · 채널팩(이야기+연쇄)",
+      "journeyType": "channel_pack",
+      "device": "tablet",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u008",
+      "label": "카페·F&B · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    },
+    {
+      "id": "u018",
+      "label": "꽃집·선물 · 단독 채널(플레이스/인스타)",
+      "journeyType": "channel_standalone",
+      "device": "mobile",
+      "phase": "onboarding_ux",
+      "status": "skip",
+      "steps": [],
+      "skipReason": "auth_required"
+    }
+  ],
+  "writerRuns": [
+    {
+      "id": "p1_cafe",
+      "label": "강남 카페 사장",
+      "phase": "channel_write_api",
+      "status": "pass",
+      "channels": {
+        "blog": {
+          "ok": true,
+          "status": 200,
+          "mode": "llm",
+          "sections": 3,
+          "chars": 433,
+          "withheld": false,
+          "userMessage": null,
+          "ms": 59680
+        },
+        "place": {
+          "ok": true,
+          "hasTitle": true,
+          "bodyChars": 235,
+          "ms": 47
+        },
+        "insta": {
+          "ok": true,
+          "hashtagCount": 6,
+          "ms": 15
+        },
+        "image": {
+          "ok": false,
+          "ms": 4
+        }
+      },
+      "totalMs": 78553
+    },
+    {
+      "id": "p2_salon",
+      "label": "홍대 미용실 원장",
+      "phase": "channel_write_api",
+      "status": "pass",
+      "channels": {
+        "blog": {
+          "ok": true,
+          "status": 200,
+          "mode": "research_gate_stamped",
+          "sections": 3,
+          "chars": 326,
+          "withheld": false,
+          "userMessage": null,
+          "ms": 65080
+        },
+        "place": {
+          "ok": true,
+          "hasTitle": true,
+          "bodyChars": 248,
+          "ms": 11
+        },
+        "insta": {
+          "ok": true,
+          "hashtagCount": 7,
+          "ms": 8
+        },
+        "image": {
+          "ok": false,
+          "ms": 3
+        }
+      },
+      "totalMs": 92329
+    },
+    {
+      "id": "p4_flower",
+      "label": "꽃집 마케터",
+      "phase": "channel_write_api",
+      "status": "pass",
+      "channels": {
+        "blog": {
+          "ok": true,
+          "status": 200,
+          "mode": "llm",
+          "sections": 5,
+          "chars": 2210,
+          "withheld": false,
+          "userMessage": null,
+          "ms": 64793
+        },
+        "place": {
+          "ok": true,
+          "hasTitle": true,
+          "bodyChars": 232,
+          "ms": 7
+        },
+        "insta": {
+          "ok": true,
+          "hashtagCount": 7,
+          "ms": 10
+        },
+        "image": {
+          "ok": false,
+          "ms": 3
+        }
+      },
+      "totalMs": 85403
+    },
+    {
+      "id": "p5_pension",
+      "label": "제주 펜션 운영",
+      "phase": "channel_write_api",
+      "status": "pass",
+      "channels": {
+        "blog": {
+          "ok": true,
+          "status": 200,
+          "mode": "llm",
+          "sections": 3,
+          "chars": 283,
+          "withheld": false,
+          "userMessage": null,
+          "ms": 61388
+        },
+        "place": {
+          "ok": true,
+          "hasTitle": true,
+          "bodyChars": 239,
+          "ms": 7
+        },
+        "insta": {
+          "ok": true,
+          "hashtagCount": 5,
+          "ms": 8
+        },
+        "image": {
+          "ok": false,
+          "ms": 2
+        }
+      },
+      "totalMs": 83651
+    }
+  ],
+  "e2eRuns": [
+    {
+      "id": "c_blog_cafe",
+      "label": "이야기 — 강남 카페 사장",
+      "channel": "blog",
+      "phase": "channel_e2e_playwright",
+      "status": "pass",
+      "elapsedMs": 122411,
+      "failReason": null
+    },
+    {
+      "id": "c_place_salon",
+      "label": "플레이스 — 홍대 미용실",
+      "channel": "place",
+      "phase": "channel_e2e_playwright",
+      "status": "pass",
+      "elapsedMs": 35802,
+      "failReason": null
+    },
+    {
+      "id": "c_insta_flower",
+      "label": "인스타 — 부산 꽃집",
+      "channel": "insta",
+      "phase": "channel_e2e_playwright",
+      "status": "fail",
+      "elapsedMs": 25617,
+      "failReason": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for locator('button:not([disabled])').filter({ hasText: /인스타 캡션·해시태그 만들기/ }).first() to be visible\n"
+    },
+    {
+      "id": "c_image_pension",
+      "label": "썸네일 문구 — 제주 펜션",
+      "channel": "image",
+      "phase": "channel_e2e_playwright",
+      "status": "pass",
+      "elapsedMs": 30979,
+      "failReason": null
+    }
+  ],
+  "auth": {
+    "ok": true,
+    "email": "hundred-ux-smoke@briclog.ai",
+    "reused": true,
+    "sessionOk": false
+  },
+  "summary": {
+    "totalPersonas": 20,
+    "ux": {
+      "total": 16,
+      "pass": 2,
+      "fail": 0
+    },
+    "writers": {
+      "total": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "e2eChannels": {
+      "total": 4,
+      "pass": 3,
+      "fail": 1
+    },
+    "feedback": [
+      {
+        "severity": "medium",
+        "area": "가입",
+        "message": "14명 인증 스킵 — 테스트 계정 로그인 필요"
+      },
+      {
+        "severity": "medium",
+        "area": "이야기 품질",
+        "message": "홍대 미용실 원장: 본문 짧음 (326자)",
+        "persona": "p2_salon"
+      },
+      {
+        "severity": "medium",
+        "area": "이야기 품질",
+        "message": "제주 펜션 운영: 본문 짧음 (283자)",
+        "persona": "p5_pension"
+      },
+      {
+        "severity": "critical",
+        "area": "E2E insta",
+        "message": "인스타 — 부산 꽃집: locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n  - waiting for locator('button:not([disabled])').filter({ hasText: /인스타 캡션·해시태그 만들기/ }).first() to be visible\n",
+        "persona": "c_insta_flower"
+      }
+    ],
+    "verdict": "needs_fix"
+  }
+}

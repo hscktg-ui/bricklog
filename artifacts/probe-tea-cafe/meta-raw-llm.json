@@ -1,0 +1,269 @@
+{
+  "facts": 54,
+  "beforeChars": 919,
+  "afterTierChars": 919,
+  "chars": 402,
+  "golden": {
+    "version": "v2-haeshin",
+    "score": 90,
+    "ok": true,
+    "verdict": "pass",
+    "shouldRegen": false,
+    "shouldRevise": false,
+    "shouldBlock": false,
+    "minPass": 90,
+    "reviseMin": 80,
+    "industryKey": "tea_cafe",
+    "breakdown": {
+      "topic_fit": 100,
+      "search_intent": 74,
+      "brand_reflection": 50,
+      "industry_fit": 100,
+      "prose_consistency": 92,
+      "speaker_consistency": 88,
+      "repetition_removal": 95,
+      "ai_cliche_removal": 100,
+      "information_density": 91,
+      "golden_similarity": 78,
+      "structure_score": 74,
+      "human_score": 70,
+      "repetition_score": 95,
+      "sample_free": false
+    },
+    "haeshin": {
+      "version": "v1",
+      "score": 85,
+      "ok": false,
+      "verdict": "revise",
+      "shouldBlock": false,
+      "shouldRevise": true,
+      "components": {
+        "topic_fit": 100,
+        "search_intent": 74,
+        "brand_reflection": 50,
+        "industry_fit": 100,
+        "prose_consistency": 92,
+        "speaker_consistency": 88,
+        "repetition_removal": 95,
+        "ai_cliche_removal": 100,
+        "information_density": 91
+      },
+      "maxPoints": {
+        "topic_fit": 20,
+        "search_intent": 20,
+        "brand_reflection": 15,
+        "industry_fit": 10,
+        "prose_consistency": 10,
+        "speaker_consistency": 10,
+        "repetition_removal": 5,
+        "ai_cliche_removal": 5,
+        "information_density": 5
+      },
+      "reasons": [],
+      "checks": {
+        "topic": {
+          "score": 100,
+          "ok": true,
+          "hit": 5,
+          "total": 5
+        },
+        "intent": {
+          "score": 74,
+          "ok": true,
+          "intentsHit": 3,
+          "mustHit": 3
+        },
+        "brand": {
+          "score": 50,
+          "ok": true,
+          "found": [
+            "brand",
+            "region"
+          ],
+          "dna": {
+            "brand": "다온티하우스",
+            "region": "경주",
+            "slogan": "",
+            "products": [
+              "경주 티카페",
+              "다온티하우스 소개"
+            ],
+            "ops": [],
+            "diff": "",
+            "blob": " 다온티하우스 소개 "
+          }
+        },
+        "industry": {
+          "score": 100,
+          "ok": true,
+          "foreign": [],
+          "preferred": 1,
+          "dnaKey": "tea_cafe"
+        },
+        "prose": {
+          "score": 92,
+          "ok": true,
+          "modes": 1
+        },
+        "speaker": {
+          "score": 88,
+          "ok": true
+        },
+        "repetition": {
+          "score": 95,
+          "ok": true,
+          "repeatSpam": 0
+        },
+        "aiCliche": {
+          "score": 100,
+          "ok": true,
+          "hits": 0
+        },
+        "placeholder": {
+          "score": 100,
+          "ok": true,
+          "hits": 0,
+          "literal": false
+        },
+        "info": {
+          "score": 91,
+          "ok": true,
+          "concrete": 7
+        },
+        "failure": {
+          "hits": [],
+          "reasons": [],
+          "criticalFail": false,
+          "voice": {
+            "modes": 1,
+            "mixed": false,
+            "severe": false
+          },
+          "placeholderHits": 0,
+          "failurePatternCount": 0
+        }
+      }
+    },
+    "reasons": [],
+    "checks": {
+      "haeshin": {
+        "topic": {
+          "score": 100,
+          "ok": true,
+          "hit": 5,
+          "total": 5
+        },
+        "intent": {
+          "score": 74,
+          "ok": true,
+          "intentsHit": 3,
+          "mustHit": 3
+        },
+        "brand": {
+          "score": 50,
+          "ok": true,
+          "found": [
+            "brand",
+            "region"
+          ],
+          "dna": {
+            "brand": "다온티하우스",
+            "region": "경주",
+            "slogan": "",
+            "products": [
+              "경주 티카페",
+              "다온티하우스 소개"
+            ],
+            "ops": [],
+            "diff": "",
+            "blob": " 다온티하우스 소개 "
+          }
+        },
+        "industry": {
+          "score": 100,
+          "ok": true,
+          "foreign": [],
+          "preferred": 1,
+          "dnaKey": "tea_cafe"
+        },
+        "prose": {
+          "score": 92,
+          "ok": true,
+          "modes": 1
+        },
+        "speaker": {
+          "score": 88,
+          "ok": true
+        },
+        "repetition": {
+          "score": 95,
+          "ok": true,
+          "repeatSpam": 0
+        },
+        "aiCliche": {
+          "score": 100,
+          "ok": true,
+          "hits": 0
+        },
+        "placeholder": {
+          "score": 100,
+          "ok": true,
+          "hits": 0,
+          "literal": false
+        },
+        "info": {
+          "score": 91,
+          "ok": true,
+          "concrete": 7
+        },
+        "failure": {
+          "hits": [],
+          "reasons": [],
+          "criticalFail": false,
+          "voice": {
+            "modes": 1,
+            "mixed": false,
+            "severe": false
+          },
+          "placeholderHits": 0,
+          "failurePatternCount": 0
+        }
+      },
+      "compare": {
+        "structure_score": 74,
+        "intent_score": 78,
+        "repetition_score": 95,
+        "human_score": 70,
+        "opening": {
+          "score": 78,
+          "ok": true,
+          "opener": "가을이 되면 티 메뉴판도 조금씩 달라집니다. 따뜻한 보이차·우롱차·허브티·밀크티가 앞쪽에 올라오고, 스콘·마들렌 같은 다과도 계절감 있게 바뀝니다.",
+          "goldenSimilarity": 0.7391304347826086
+        },
+        "human": {
+          "score": 70,
+          "ok": true,
+          "structureSim": 0.9529828922009159,
+          "vocabNorm": 0.1784085086531917
+        },
+        "infoYield": 85,
+        "dominance": 0.7272727272727273,
+        "sampleCount": 3,
+        "referenceTitles": [
+          "가을 티카페, 시즌 메뉴 고를 때 보는 기준",
+          "다실 분위기 좋은 티카페, 좌석과 메뉴를 먼저 보는 이유",
+          "경주에서 티카페 찾을 때, 관광 동선과 함께 보는 기준"
+        ]
+      },
+      "referenceSampleCount": 3,
+      "referenceTitles": [
+        "가을 티카페, 시즌 메뉴 고를 때 보는 기준",
+        "다실 분위기 좋은 티카페, 좌석과 메뉴를 먼저 보는 이유",
+        "경주에서 티카페 찾을 때, 관광 동선과 함께 보는 기준"
+      ]
+    },
+    "userMessage": null
+  },
+  "publishReady": false,
+  "title": "경주에서 가을 시즌 티 메뉴와 다실 분위기 — 다온티하우스 이야기"
+}
