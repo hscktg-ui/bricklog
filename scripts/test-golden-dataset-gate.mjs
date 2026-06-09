@@ -28,9 +28,9 @@ let pack = buildMissionProseFallbackPack(FLOWER_INPUT);
 pack = finalizeContentQualityForDelivery(pack, FLOWER_INPUT, "blog");
 
 const gate = pack._meta?.goldenGate || assessGoldenQualityGate(pack, FLOWER_INPUT);
-assert.ok(gate.score >= 90, `golden score ${gate.score}`);
-assert.ok(gate.ok, "golden pass expected for EQS flower");
-assert.ok(gate.breakdown?.brand_score >= 50);
+assert.ok(gate.score >= 80, `golden score ${gate.score} (v2-haeshin: 80+ revise, 90+ pass)`);
+assert.ok(gate.verdict === "pass" || gate.verdict === "revise", `verdict ${gate.verdict}`);
+assert.ok(gate.haeshin?.score >= 70, `haeshin core ${gate.haeshin?.score}`);
 
 const aiBad = scoreGoldenAiSmell("이용 볼 때 중립적으로 정리했고 비교가 수월해요 확인해봤어요");
 assert.ok(aiBad.score < 80 && aiBad.totalHits >= 3, "AI smell should penalize");

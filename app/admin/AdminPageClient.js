@@ -7,7 +7,7 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import Toast from "@/components/Toast";
 import AuthForm from "@/components/AuthForm";
 import AutoEvolutionStatusPanel from "@/components/admin/AutoEvolutionStatusPanel";
-import GoldenDatasetPanel from "@/components/admin/GoldenDatasetPanel";
+import HaeshinContentHub from "@/components/admin/HaeshinContentHub";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminAdvisoryPanel from "@/components/admin/AdminAdvisoryPanel";
 import AdminOpsHub from "@/components/admin/AdminOpsHub";
@@ -501,7 +501,7 @@ export default function AdminPageClient() {
 
         <AutoEvolutionStatusPanel />
 
-        <GoldenDatasetPanel showToast={showToast} />
+        <HaeshinContentHub showToast={showToast} />
 
         <section className="mt-8">
           <h2 className="text-[16px] font-bold">최근 오류 로그</h2>

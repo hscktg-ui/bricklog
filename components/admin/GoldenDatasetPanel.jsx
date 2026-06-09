@@ -14,7 +14,7 @@ const EMPTY_FORM = {
   brand_presence_score: 85,
 };
 
-export default function GoldenDatasetPanel({ showToast }) {
+export default function GoldenDatasetPanel({ showToast, embedded = false }) {
   const [samples, setSamples] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
@@ -101,7 +101,8 @@ export default function GoldenDatasetPanel({ showToast }) {
   };
 
   return (
-    <section className="mt-8 rounded-xl border border-[#E8EBED] bg-white p-5">
+    <section className={embedded ? "" : "mt-8 rounded-xl border border-[#E8EBED] bg-white p-5"}>
+      {!embedded && (
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-[16px] font-bold text-[#191F28]">우수글 데이터셋</h2>
@@ -122,8 +123,9 @@ export default function GoldenDatasetPanel({ showToast }) {
           ))}
         </select>
       </div>
+      )}
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className={embedded ? "mt-0" : "mt-4 grid gap-4 lg:grid-cols-2"}>
         <div className="space-y-3 rounded-lg border border-[#E8EBED] bg-[#F7F8FA] p-4">
           <h3 className="text-[14px] font-semibold">{editingId ? "우수글 수정" : "우수글 등록"}</h3>
           <input
