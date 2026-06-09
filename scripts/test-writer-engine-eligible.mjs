@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import {
   isWriterEngineEligiblePack,
+  isMissionFallbackPack,
 } from "../lib/product/briclogWriterEngine.js";
 import { guardPackAgainstShrink } from "../lib/product/packShrinkGuard.js";
 import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js";
@@ -19,6 +20,7 @@ const fallbackPack = {
 };
 
 assert.equal(isWriterEngineEligiblePack(fallbackPack), true);
+assert.equal(isMissionFallbackPack(fallbackPack), true);
 assert.equal(
   isWriterEngineEligiblePack(fallbackPack, { mode: "research_gate_stamped" }),
   true
