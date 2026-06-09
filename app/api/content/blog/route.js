@@ -31,7 +31,6 @@ import {
   isLlmOriginatedPack,
 } from "@/lib/product/contentQualityDelivery";
 import { applyWriterEngineIfNeeded } from "@/lib/product/briclogWriterEngine";
-import { needsWriterEnginePass } from "@/lib/product/humanTierRegen";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -149,16 +148,9 @@ export async function POST(request) {
       blog = finalizeContentQualityForDelivery(
         blog,
         requestInput,
-        "blog"
+        "blog",
+        { afterWriterEngine: true }
       );
-      if (needsWriterEnginePass(blog, requestInput)) {
-        blog = await applyWriterEngineIfNeeded(blog, requestInput);
-        blog = finalizeContentQualityForDelivery(
-          blog,
-          requestInput,
-          "blog"
-        );
-      }
       result = {
         ...result,
         blogContent: blog,
