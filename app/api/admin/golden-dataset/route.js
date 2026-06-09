@@ -4,7 +4,7 @@ import { createServiceSupabase } from "@/lib/supabase/server";
 import {
   createGoldenSample,
   listGoldenSamplesAdmin,
-} from "@/lib/golden/goldenDatasetStore";
+} from "@/lib/golden/goldenDatasetStore.server";
 
 export const runtime = "nodejs";
 

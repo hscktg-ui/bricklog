@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/api/adminGuard";
 import { createServiceSupabase } from "@/lib/supabase/server";
-import { deleteGoldenSample, updateGoldenSample } from "@/lib/golden/goldenDatasetStore";
+import { deleteGoldenSample, updateGoldenSample } from "@/lib/golden/goldenDatasetStore.server";
 
 export const runtime = "nodejs";
 
