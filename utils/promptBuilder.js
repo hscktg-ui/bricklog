@@ -17,7 +17,7 @@ import {
   buildSearchSummaryBrief,
 } from "@/lib/research/searchSummaryBuilder";
 import { resolveKpiFromInput } from "@/lib/kpi/contentGoals";
-import { CONTENT_OBJECTIVE_OPTIONS } from "@/lib/constants";
+import { CONTENT_OBJECTIVE_OPTIONS, DEFAULT_BLOG_LENGTH_TIER } from "@/lib/constants";
 import { buildLocationIntel } from "@/lib/location/locationIntelligence";
 import {
   runKeywordIntelligence,
@@ -134,7 +134,7 @@ export function createPromptContext(input) {
       input.brandMemory?.emojiLevel ||
       undefined,
     emojiBrief: formatEmojiEngineBrief(input, "blog"),
-    blogLengthTier: input.blogLengthTier || "medium",
+    blogLengthTier: input.blogLengthTier || DEFAULT_BLOG_LENGTH_TIER,
     placePostType: input.placePostType || "general",
     placeGoal: input.placeGoal || "visit",
     placeHeadline: sanitizeText(input.placeHeadline) || "",

@@ -310,7 +310,7 @@ function BlogForm({
               type="button"
               onClick={() => set("blogLengthTier", o.value)}
               className={`briclog-pressable min-h-[44px] rounded-lg border px-2 py-2 text-left ${
-                (formValues.blogLengthTier || "medium") === o.value
+                (formValues.blogLengthTier || "short") === o.value
                   ? "border-[#03C75A] bg-[#E8F9EF]"
                   : "border-[#E8EBED] bg-white"
               }`}

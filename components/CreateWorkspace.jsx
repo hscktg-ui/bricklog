@@ -95,7 +95,7 @@ export default function CreateWorkspace({
         onTabChange={onTabChange}
         disabled={isGenerating}
         charCount={hasGenerated ? blogChars : null}
-        blogLengthTier={formValues.blogLengthTier || "medium"}
+        blogLengthTier={formValues.blogLengthTier || "short"}
         channelReady={channelReady}
       />
 
@@ -107,7 +107,7 @@ export default function CreateWorkspace({
               <QualityPanel
                 results={results}
                 meta={engineMeta}
-                blogLengthTier={formValues.blogLengthTier || "medium"}
+                blogLengthTier={formValues.blogLengthTier || "short"}
               />
               <ResultToolbar
                 onCopyTab={onCopyTab}

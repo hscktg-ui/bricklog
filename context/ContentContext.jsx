@@ -1114,7 +1114,7 @@ export function ContentProvider({
           result.blogContent?.sections?.length &&
           (result.ok === false || result.withheld) &&
           isLlmOriginatedPack(result.blogContent, result) &&
-          hasSubstantiveLlmBody(result.blogContent)
+          hasSubstantiveLlmBody(result.blogContent, pipelineInput)
         ) {
           const polished = finalizeContentQualityForDelivery(
             result.blogContent,

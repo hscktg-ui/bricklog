@@ -111,7 +111,7 @@ export async function POST(request) {
     let result = blockUnverifiedBlogApiResponse(rawResult, requestInput);
     if (
       !result?.blogContent?.sections?.length &&
-      hasSubstantiveLlmBody(rawResult?.blogContent) &&
+      hasSubstantiveLlmBody(rawResult?.blogContent, requestInput) &&
       isLlmOriginatedPack(rawResult?.blogContent, rawResult)
     ) {
       result = {

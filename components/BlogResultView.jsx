@@ -371,17 +371,27 @@ export default function BlogResultView({
                 : RESULT_VIEW.copyBlockTitle}
             </p>
             {!isBriefOnly ? (
-              <p
-                className={`mt-1 text-[11px] font-semibold ${
-                  publishReadiness.status === "ready"
-                    ? "text-[#03A94D]"
-                    : publishReadiness.status === "polishing"
-                      ? "text-[#E67700]"
-                      : "text-[#4E5968]"
-                }`}
-              >
-                {publishReadiness.label}
-              </p>
+              <>
+                <p
+                  className={`mt-1 text-[11px] font-semibold ${
+                    publishReadiness.status === "ready"
+                      ? "text-[#03A94D]"
+                      : publishReadiness.status === "polishing"
+                        ? "text-[#E67700]"
+                        : "text-[#4E5968]"
+                  }`}
+                >
+                  {publishReadiness.label}
+                </p>
+                {draft._meta?.blogCharCount ? (
+                  <p className="mt-0.5 text-[10px] font-medium text-[#8B95A1]">
+                    {draft._meta.blogCharCount.toLocaleString("ko-KR")}자
+                    {!draft._meta?.lengthTierMet && draft._meta?.lengthTierMin
+                      ? ` · 목표 ${draft._meta.lengthTierMin.toLocaleString("ko-KR")}자`
+                      : null}
+                  </p>
+                ) : null}
+              </>
             ) : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
