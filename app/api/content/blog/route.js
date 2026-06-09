@@ -27,6 +27,8 @@ import { slimBlogApiPayload } from "@/lib/generation/slimBlogApiPayload";
 import {
   attachContentQualityToApiMeta,
   finalizeContentQualityForDelivery,
+  hasSubstantiveLlmBody,
+  isLlmOriginatedPack,
 } from "@/lib/product/contentQualityDelivery";
 
 export const runtime = "nodejs";
@@ -107,6 +109,32 @@ export async function POST(request) {
     requestInput.betaTestGuardEnforced = true;
     const rawResult = await generateBlogWithLLMFirst(requestInput);
     let result = blockUnverifiedBlogApiResponse(rawResult, requestInput);
+    if (
+      !result?.blogContent?.sections?.length &&
+      hasSubstantiveLlmBody(rawResult?.blogContent) &&
+      isLlmOriginatedPack(rawResult?.blogContent, rawResult)
+    ) {
+      result = {
+        ...rawResult,
+        ok: true,
+        withheld: false,
+        softPass: false,
+        userMessage: null,
+        blogContent: finalizeContentQualityForDelivery(
+          rawResult.blogContent,
+          requestInput,
+          "blog"
+        ),
+        meta: attachContentQualityToApiMeta(
+          {
+            ...(rawResult.meta || {}),
+            llmApiInboundRescue: true,
+            passOutput: true,
+          },
+          rawResult.blogContent
+        ),
+      };
+    }
     if (result.blogContent?.sections?.length && !result.withheld) {
       result = {
         ...result,

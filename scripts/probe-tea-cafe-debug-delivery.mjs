@@ -118,6 +118,8 @@ console.log(
   )
 );
 
+let simulated = null;
+
 if (llm.blogContent?.sections?.length) {
   const { applyEditorPreOutputCorrection } = await import("../lib/content/editorPreOutputGate.js");
   const { assertPostWriteDeliverable } = await import("../lib/content/v2PipelineGate.js");
@@ -146,7 +148,7 @@ if (llm.blogContent?.sections?.length) {
 
   const { deliverWithOptionalPostVerify } = await import("../lib/generation/ensureBlogDelivery.js");
   const { requiresV2ResearchGate } = await import("../lib/content/v2PipelineGate.js");
-  const simulated = deliverWithOptionalPostVerify(
+  simulated = deliverWithOptionalPostVerify(
     pipelineInput,
     llm,
     requiresV2ResearchGate(pipelineInput),

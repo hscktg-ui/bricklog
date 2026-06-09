@@ -160,6 +160,11 @@ import { normalizeBlogGenerationFailure } from "@/lib/generation/normalizeGenera
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
 import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
+import {
+  finalizeContentQualityForDelivery,
+  hasSubstantiveLlmBody,
+  isLlmOriginatedPack,
+} from "@/lib/product/contentQualityDelivery";
 
 function allowBlogUiRescue() {
   return true;
@@ -1105,6 +1110,27 @@ export function ContentProvider({
         if (sensitive.isSensitive) {
           setPipelineStep(SENSITIVE_VERIFY_STEP.text);
         }
+        if (
+          result.blogContent?.sections?.length &&
+          (result.ok === false || result.withheld) &&
+          isLlmOriginatedPack(result.blogContent, result) &&
+          hasSubstantiveLlmBody(result.blogContent)
+        ) {
+          const polished = finalizeContentQualityForDelivery(
+            result.blogContent,
+            pipelineInput,
+            "blog"
+          );
+          if (polished?.sections?.length) {
+            result = {
+              ...result,
+              ok: true,
+              withheld: false,
+              userMessage: null,
+              blogContent: polished,
+            };
+          }
+        }
         if (result.ok === false && !result.blogContent) {
           const rescued = allowBlogUiRescue()
             ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
@@ -1216,7 +1242,32 @@ export function ContentProvider({
 
         const deliverBlogResult = () => {
           let delivery = resolveBlogUiDelivery(blog, pipelineInput, result);
-          if (!delivery.ok && allowBlogUiRescue() && blog?.sections?.length) {
+          if (
+            !delivery.ok &&
+            blog?.sections?.length &&
+            isLlmOriginatedPack(blog, result)
+          ) {
+            const polished = finalizeContentQualityForDelivery(
+              ensureBlogDisplayPack(blog, pipelineInput),
+              pipelineInput,
+              "blog"
+            );
+            if (polished?.sections?.length) {
+              delivery = {
+                ok: true,
+                pack: polished,
+                preview: false,
+                userMessage: null,
+                gate: delivery.gate,
+              };
+            }
+          }
+          if (
+            !delivery.ok &&
+            allowBlogUiRescue() &&
+            blog?.sections?.length &&
+            !isLlmOriginatedPack(blog, result)
+          ) {
             const salvaged = salvageBlogPackForDelivery(blog, pipelineInput);
             delivery = resolveBlogUiDelivery(salvaged, pipelineInput, {
               ...result,
