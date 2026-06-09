@@ -30,6 +30,7 @@ import {
   hasSubstantiveLlmBody,
   isLlmOriginatedPack,
 } from "@/lib/product/contentQualityDelivery";
+import { applyWriterEngineIfNeeded } from "@/lib/product/briclogWriterEngine";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -114,6 +115,10 @@ export async function POST(request) {
       hasSubstantiveLlmBody(rawResult?.blogContent, requestInput) &&
       isLlmOriginatedPack(rawResult?.blogContent, rawResult)
     ) {
+      let rescued = await applyWriterEngineIfNeeded(
+        rawResult.blogContent,
+        requestInput
+      );
       result = {
         ...rawResult,
         ok: true,
@@ -121,7 +126,7 @@ export async function POST(request) {
         softPass: false,
         userMessage: null,
         blogContent: finalizeContentQualityForDelivery(
-          rawResult.blogContent,
+          rescued,
           requestInput,
           "blog"
         ),
@@ -131,15 +136,19 @@ export async function POST(request) {
             llmApiInboundRescue: true,
             passOutput: true,
           },
-          rawResult.blogContent
+          rescued
         ),
       };
     }
     if (result.blogContent?.sections?.length && !result.withheld) {
+      let blog = await applyWriterEngineIfNeeded(
+        result.blogContent,
+        requestInput
+      );
       result = {
         ...result,
         blogContent: finalizeContentQualityForDelivery(
-          result.blogContent,
+          blog,
           requestInput,
           "blog"
         ),
