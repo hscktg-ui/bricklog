@@ -1271,7 +1271,10 @@ export function ContentProvider({
                 userMessage: null,
               };
             } else {
-              const failMsg = delivery.userMessage;
+              const failMsg =
+                delivery.userMessage ||
+                resolveDeliveryFailureMessage(delivery.gate || {}) ||
+                resolveBlogGenerationFailMessage(pipelineInput, result);
               setBlogGenHint(failMsg);
               setBlogGenHintSoft(true);
               setGenerating((g) => ({ ...g, blog: false }));
