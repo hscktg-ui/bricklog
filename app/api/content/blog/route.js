@@ -24,7 +24,10 @@ import {
 } from "@/lib/config/brandEngineFlags";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
 import { slimBlogApiPayload } from "@/lib/generation/slimBlogApiPayload";
-import { attachContentQualityToApiMeta } from "@/lib/product/contentQualityDelivery";
+import {
+  attachContentQualityToApiMeta,
+  finalizeContentQualityForDelivery,
+} from "@/lib/product/contentQualityDelivery";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -103,7 +106,17 @@ export async function POST(request) {
     requestInput.v3EngineEnforced = true;
     requestInput.betaTestGuardEnforced = true;
     const rawResult = await generateBlogWithLLMFirst(requestInput);
-    const result = blockUnverifiedBlogApiResponse(rawResult, requestInput);
+    let result = blockUnverifiedBlogApiResponse(rawResult, requestInput);
+    if (result.blogContent?.sections?.length && !result.withheld) {
+      result = {
+        ...result,
+        blogContent: finalizeContentQualityForDelivery(
+          result.blogContent,
+          requestInput,
+          "blog"
+        ),
+      };
+    }
 
     if (
       result.blogContent &&

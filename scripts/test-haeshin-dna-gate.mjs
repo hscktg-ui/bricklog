@@ -1,5 +1,5 @@
 /**
- * Haeshin DNA + Golden Gate regression
+ * Haeshin DNA + Golden Gate regression — 90 PASS
  */
 import assert from "node:assert/strict";
 import { assessHaeshinQualityScore } from "../lib/golden/haeshinQualityScorer.js";
@@ -8,6 +8,8 @@ import { buildHaeshinDnaPromptBlock } from "../lib/golden/haeshinPromptBlocks.js
 import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.js";
 import { finalizeContentQualityForDelivery } from "../lib/product/contentQualityDelivery.js";
 import { GOLDEN_FAILURE_SAMPLES } from "../lib/golden/goldenFailureSeed.js";
+import { detectFailureArticlePatterns } from "../lib/golden/goldenFailureDetection.js";
+import { GOLDEN_PASS_SCORE } from "../lib/golden/goldenQualityGate.js";
 
 const FLOWER = {
   brandName: "그랩앤고플라워",
@@ -24,7 +26,8 @@ assert.ok(buildHaeshinDnaPromptBlock(FLOWER).includes("꽃"));
 let pack = buildMissionProseFallbackPack(FLOWER);
 pack = finalizeContentQualityForDelivery(pack, FLOWER, "blog");
 const gate = pack._meta?.goldenGate;
-assert.ok(gate?.score >= 75, `flower golden ${gate?.score}`);
+assert.ok(gate?.score >= GOLDEN_PASS_SCORE, `flower golden ${gate?.score}`);
+assert.ok(gate?.verdict === "pass");
 
 const failPack = {
   title: "실패",
@@ -32,11 +35,27 @@ const failPack = {
   conclusion: "",
 };
 const failScore = assessHaeshinQualityScore(failPack, FLOWER);
-assert.ok(failScore.score < 80, `fail should be <80 got ${failScore.score}`);
 assert.ok(failScore.shouldBlock);
+assert.ok(detectFailureArticlePatterns(GOLDEN_FAILURE_SAMPLES[0].content, FLOWER).criticalFail);
 
-const safe = applyGoldenSafeEdit(failPack, FLOWER);
-assert.ok(safe._meta?.goldenSafeEdit || safe._meta?.goldenSafeEditSkipped);
+const voiceMix = applyGoldenSafeEdit(
+  {
+    title: "t",
+    sections: [
+      {
+        heading: "",
+        body: "6월이 시작됩니다. 여름에는 리시안셔스와 수국이 어울립니다. 현장에서 리시안셔스 이야기를 들으며 메모해 뒀어요. 색감을 먼저 보게 됩니다.",
+      },
+    ],
+    conclusion: "참고해보세요.",
+  },
+  FLOWER
+);
+const voiceBody = String(voiceMix.sections?.[0]?.body || "");
+assert.ok(
+  !voiceBody.includes("메모해") && !voiceBody.includes("뒀어요"),
+  `voice mix should normalize or rewrite got: ${voiceBody}`
+);
 
 console.log("OK: haeshin-dna-gate");
 console.log("  flower:", gate?.score, gate?.verdict);

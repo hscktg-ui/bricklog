@@ -12,6 +12,7 @@ const EMPTY_FORM = {
   emotion_type: "warm_informative",
   search_intent: "seasonal_recommendation",
   brand_presence_score: 85,
+  sample_kind: "excellent",
 };
 
 export default function GoldenDatasetPanel({ showToast, embedded = false }) {
@@ -54,6 +55,7 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
       emotion_type: sample.emotion_type || "",
       search_intent: sample.search_intent || "",
       brand_presence_score: Number(sample.brand_presence_score || 0),
+      sample_kind: sample.sample_kind || "excellent",
     });
   };
 
@@ -102,14 +104,20 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
 
   return (
     <section className={embedded ? "" : "mt-8 rounded-xl border border-[#E8EBED] bg-white p-5"}>
-      {!embedded && (
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={`flex flex-wrap items-center justify-between gap-3 ${embedded ? "mb-3" : ""}`}>
+        {!embedded && (
         <div>
           <h2 className="text-[16px] font-bold text-[#191F28]">우수글 데이터셋</h2>
           <p className="mt-1 text-[12px] text-[#8B95A1]">
             해신기획 우수글 Golden Dataset — 생성 시 상위 5개 참조 · 품질 게이트 비교 기준
           </p>
         </div>
+        )}
+        {embedded && (
+          <p className="text-[12px] text-[#8B95A1]">
+            등록된 우수글은 생성·품질 게이트에 즉시 반영됩니다 (코드 시드 6건 고정)
+          </p>
+        )}
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -123,7 +131,6 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
           ))}
         </select>
       </div>
-      )}
 
       <div className={embedded ? "mt-0" : "mt-4 grid gap-4 lg:grid-cols-2"}>
         <div className="space-y-3 rounded-lg border border-[#E8EBED] bg-[#F7F8FA] p-4">
@@ -144,6 +151,14 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
                 {o.label}
               </option>
             ))}
+          </select>
+          <select
+            className="w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
+            value={form.sample_kind}
+            onChange={(e) => setForm((f) => ({ ...f, sample_kind: e.target.value }))}
+          >
+            <option value="excellent">우수글 (excellent)</option>
+            <option value="failure">실패글 (failure)</option>
           </select>
           <div className="grid grid-cols-2 gap-2">
             <input
@@ -215,7 +230,8 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
               >
                 <p className="font-semibold text-[#191F28]">{s.title}</p>
                 <p className="mt-1 text-[#8B95A1]">
-                  {s.industry} · {s.writing_style || "—"} · 브랜드 {s.brand_presence_score ?? "—"}점
+                  {s.industry} · {s.sample_kind || "excellent"} · {s.writing_style || "—"} · 브랜드 {s.brand_presence_score ?? "—"}점
+                  {String(s.id || "").startsWith("seed-") ? " · 시드" : ""}
                 </p>
                 <p className="mt-2 line-clamp-3 text-[#4E5968]">{s.content}</p>
                 <div className="mt-2 flex gap-2">
@@ -237,7 +253,7 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
               </li>
             ))}
             {!loading && samples.length === 0 && (
-              <li className="text-[13px] text-[#8B95A1]">등록된 우수글이 없습니다. 시드 3건은 코드에 포함됩니다.</li>
+              <li className="text-[13px] text-[#8B95A1]">등록된 샘플이 없습니다. 코드 시드 6건은 항상 포함됩니다.</li>
             )}
           </ul>
         </div>

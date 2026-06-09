@@ -39,5 +39,9 @@ assert.ok((full.match(/계절·목적별로\s*달라지/g) || []).length < 2, "n
 const gate = pack._meta?.contentGate;
 assert.ok(gate?.score >= 70, `gate score ${gate?.score}`);
 
+const golden = pack._meta?.goldenGate;
+assert.ok(golden?.score >= 90, `golden gate ${golden?.score}`);
+assert.ok(pack._meta?.publishReady === true, "publishReady");
+
 console.log("OK: editorial-quality-standard grab-flower");
-console.log("  gate:", gate?.score, "chars:", full.replace(/\s/g, "").length);
+console.log("  gate:", gate?.score, "golden:", golden?.score, "chars:", full.replace(/\s/g, "").length);
