@@ -27,7 +27,8 @@ const FLOWER_INPUT = {
 };
 
 assert.ok(getGoldenSamplesForInput(FLOWER_INPUT, 5).length >= 4, "flower golden samples");
-assert.ok(buildGoldenReferencePromptBlock(FLOWER_INPUT).includes("GOLDEN DATASET"));
+assert.ok(buildGoldenReferencePromptBlock(FLOWER_INPUT).includes("GOLDEN BENCHMARK"));
+assert.ok(buildGoldenReferencePromptBlock(FLOWER_INPUT).includes("BRICLOG 집필 미션"));
 
 let pack = buildMissionProseFallbackPack(FLOWER_INPUT);
 pack = finalizeContentQualityForDelivery(pack, FLOWER_INPUT, "blog");
