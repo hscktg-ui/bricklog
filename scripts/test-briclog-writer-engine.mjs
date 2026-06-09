@@ -42,7 +42,7 @@ const out = countBlogBodyCharsWithSpaces(next);
 assert.ok(out >= inbound * 0.9, `shrink guard ${inbound} -> ${out}`);
 assert.ok(next._meta?.deliveryGrade, "grade stamped");
 assert.ok(next._meta?.llmDeliveryPolish, "polish path");
-assert.equal(WRITER_ENGINE_VERSION, "briclog-writer-v1");
+assert.equal(WRITER_ENGINE_VERSION, "briclog-writer-v2");
 
 console.log("OK: briclog-writer-engine-local", {
   inbound,
