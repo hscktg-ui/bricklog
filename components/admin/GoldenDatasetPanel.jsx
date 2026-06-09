@@ -13,35 +13,42 @@ const EMPTY_FORM = {
   search_intent: "seasonal_recommendation",
   brand_presence_score: 85,
   sample_kind: "excellent",
+  fail_reason: "custom_failure",
 };
 
-export default function GoldenDatasetPanel({ showToast, embedded = false }) {
+function emptyFormForKind(kind = "excellent") {
+  return { ...EMPTY_FORM, sample_kind: kind };
+}
+
+export default function GoldenDatasetPanel({ showToast, embedded = false, sampleKind = "excellent" }) {
   const [samples, setSamples] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(() => emptyFormForKind(sampleKind));
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const qs = filter ? `?industry=${encodeURIComponent(filter)}` : "";
-      const res = await fetchWithAuth(`/api/admin/golden-dataset${qs}`);
+      const qs = new URLSearchParams();
+      if (filter) qs.set("industry", filter);
+      qs.set("sample_kind", sampleKind);
+      const res = await fetchWithAuth(`/api/admin/golden-dataset?${qs.toString()}`);
       setSamples(res.samples || []);
     } catch (err) {
       showToast?.(err?.message || "우수글 목록을 불러오지 못했습니다.", "error");
     } finally {
       setLoading(false);
     }
-  }, [filter, showToast]);
+  }, [filter, sampleKind, showToast]);
 
   useEffect(() => {
     load();
   }, [load]);
 
   const resetForm = () => {
-    setForm(EMPTY_FORM);
+    setForm(emptyFormForKind(sampleKind));
     setEditingId(null);
   };
 
@@ -55,7 +62,8 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
       emotion_type: sample.emotion_type || "",
       search_intent: sample.search_intent || "",
       brand_presence_score: Number(sample.brand_presence_score || 0),
-      sample_kind: sample.sample_kind || "excellent",
+      sample_kind: sample.sample_kind || sampleKind,
+      fail_reason: sample.fail_reason || sample.search_intent || "custom_failure",
     });
   };
 
@@ -65,21 +73,22 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
       return;
     }
     setSaving(true);
+    const payload = { ...form, sample_kind: sampleKind };
     try {
       if (editingId) {
         await fetchWithAuth(`/api/admin/golden-dataset/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
-        showToast?.("우수글이 수정되었습니다.", "success");
+        showToast?.("저장되었습니다.", "success");
       } else {
         await fetchWithAuth("/api/admin/golden-dataset", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
-        showToast?.("우수글이 등록되었습니다.", "success");
+        showToast?.("등록되었습니다.", "success");
       }
       resetForm();
       await load();
@@ -134,7 +143,15 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
 
       <div className={embedded ? "mt-0" : "mt-4 grid gap-4 lg:grid-cols-2"}>
         <div className="space-y-3 rounded-lg border border-[#E8EBED] bg-[#F7F8FA] p-4">
-          <h3 className="text-[14px] font-semibold">{editingId ? "우수글 수정" : "우수글 등록"}</h3>
+          <h3 className="text-[14px] font-semibold">
+            {editingId
+              ? sampleKind === "failure"
+                ? "실패글 수정"
+                : "우수글 수정"
+              : sampleKind === "failure"
+                ? "실패글 등록"
+                : "우수글 등록"}
+          </h3>
           <input
             className="w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
             placeholder="제목"
@@ -152,14 +169,29 @@ export default function GoldenDatasetPanel({ showToast, embedded = false }) {
               </option>
             ))}
           </select>
+          {!embedded && (
           <select
             className="w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
             value={form.sample_kind}
-            onChange={(e) => setForm((f) => ({ ...f, sample_kind: e.target.value }))}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                sample_kind: e.target.value,
+              }))
+            }
           >
             <option value="excellent">우수글 (excellent)</option>
             <option value="failure">실패글 (failure)</option>
           </select>
+          )}
+          {sampleKind === "failure" && (
+            <input
+              className="w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
+              placeholder="fail_reason (placeholder, voice_mix, industry_mix…)"
+              value={form.fail_reason}
+              onChange={(e) => setForm((f) => ({ ...f, fail_reason: e.target.value }))}
+            />
+          )}
           <div className="grid grid-cols-2 gap-2">
             <input
               className="rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"

@@ -16,6 +16,8 @@ export default function HaeshinContentHub({ showToast }) {
   const [tab, setTab] = useState("excellent");
   const [dna, setDna] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [newForbidden, setNewForbidden] = useState("");
+  const [savingForbidden, setSavingForbidden] = useState(false);
 
   const loadDna = useCallback(async () => {
     setLoading(true);
@@ -32,6 +34,30 @@ export default function HaeshinContentHub({ showToast }) {
   useEffect(() => {
     if (tab !== "excellent") loadDna();
   }, [tab, loadDna]);
+
+  const onAddForbidden = async () => {
+    const phrase = newForbidden.trim();
+    if (!phrase) return;
+    setSavingForbidden(true);
+    try {
+      const res = await fetchWithAuth("/api/admin/haeshin-dna", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ addForbidden: [phrase] }),
+      });
+      setDna((prev) => ({
+        ...(prev || {}),
+        forbiddenGlobal: res.forbiddenGlobal,
+        overrides: res.overrides,
+      }));
+      setNewForbidden("");
+      showToast?.("금칙어가 추가되었습니다. 다음 생성부터 반영됩니다.", "success");
+    } catch (err) {
+      showToast?.(err?.message || "저장 실패", "error");
+    } finally {
+      setSavingForbidden(false);
+    }
+  };
 
   return (
     <section className="mt-8">
@@ -58,29 +84,33 @@ export default function HaeshinContentHub({ showToast }) {
         </div>
       </div>
 
-      {tab === "excellent" && <GoldenDatasetPanel showToast={showToast} embedded />}
+      {tab === "excellent" && (
+        <GoldenDatasetPanel showToast={showToast} embedded sampleKind="excellent" />
+      )}
 
-      {tab !== "excellent" && (
-        <div className="rounded-xl border border-[#E8EBED] bg-white p-5">
-          {loading && <p className="text-[13px] text-[#8B95A1]">불러오는 중…</p>}
-
-          {tab === "failure" && dna && (
-            <div>
-              <p className="text-[13px] text-[#4E5968]">
-                실패글 패턴 {dna.seedFailureCount}건 — 생성 후 동일 패턴 감지 시 FAIL
+      {tab === "failure" && (
+        <div className="space-y-4">
+          <GoldenDatasetPanel showToast={showToast} embedded sampleKind="failure" />
+          {dna && (
+            <div className="rounded-xl border border-red-100 bg-red-50/30 p-4">
+              <p className="text-[12px] font-semibold text-red-800">
+                코드 시드 실패글 {dna.seedFailureCount}건 (기본 패턴)
               </p>
-              <ul className="mt-3 max-h-[480px] space-y-2 overflow-y-auto">
+              <ul className="mt-2 max-h-[200px] space-y-1 overflow-y-auto text-[11px] text-[#4E5968]">
                 {(dna.seedFailureSamples || []).map((s) => (
-                  <li key={s.id} className="rounded-lg border border-red-100 bg-red-50/50 p-3 text-[12px]">
-                    <p className="font-semibold text-red-800">
-                      {s.title} · {s.fail_reason}
-                    </p>
-                    <p className="mt-1 text-[#4E5968]">{s.content}</p>
+                  <li key={s.id}>
+                    {s.title} · {s.fail_reason}
                   </li>
                 ))}
               </ul>
             </div>
           )}
+        </div>
+      )}
+
+      {tab !== "excellent" && tab !== "failure" && (
+        <div className="rounded-xl border border-[#E8EBED] bg-white p-5">
+          {loading && <p className="text-[13px] text-[#8B95A1]">불러오는 중…</p>}
 
           {tab === "dna" && dna && (
             <div className="max-h-[520px] space-y-3 overflow-y-auto text-[12px]">
@@ -103,8 +133,35 @@ export default function HaeshinContentHub({ showToast }) {
 
           {tab === "forbidden" && dna && (
             <div className="space-y-4 text-[12px]">
+              <div className="rounded-lg border border-[#E8EBED] bg-[#F7F8FA] p-3">
+                <p className="font-semibold">운영 금칙어 추가</p>
+                <p className="mt-1 text-[#8B95A1]">
+                  배포 없이 config/haeshin-dna-overrides.json에 저장 · 서버 생성에 즉시 반영
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <input
+                    className="flex-1 rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
+                    placeholder="추가할 금칙어"
+                    value={newForbidden}
+                    onChange={(e) => setNewForbidden(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    disabled={savingForbidden}
+                    onClick={onAddForbidden}
+                    className="rounded-lg bg-[#03A94D] px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50"
+                  >
+                    추가
+                  </button>
+                </div>
+                {dna.overrides?.forbiddenGlobal?.length > 0 && (
+                  <p className="mt-2 text-[#4E5968]">
+                    운영 추가: {dna.overrides.forbiddenGlobal.join(" · ")}
+                  </p>
+                )}
+              </div>
               <div>
-                <p className="font-semibold">전역 금칙어</p>
+                <p className="font-semibold">전역 금칙어 (시드+운영)</p>
                 <p className="mt-1 text-[#4E5968]">{(dna.forbiddenGlobal || []).join(" · ")}</p>
               </div>
               <div>
@@ -141,7 +198,10 @@ export default function HaeshinContentHub({ showToast }) {
               <p className="mt-4 text-[#8B95A1]">
                 90+ PASS · 80–89 수정 권장(Safe Edit) · 80 미만 FAIL(차단·재작성)
               </p>
-              <p className="mt-2 text-[#8B95A1]">Safe Edit: 원문 보존 85% 이상 · 문단 단위 수정 only</p>
+              <p className="mt-2 text-[#8B95A1]">Safe Edit: 원문 보존 · 문단 단위 수정</p>
+              <p className="mt-2 text-[#8B95A1]">
+                실패글 등록 시 생성 후 동일 패턴 감지 → FAIL
+              </p>
             </div>
           )}
         </div>

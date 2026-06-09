@@ -15,10 +15,11 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const industry = searchParams.get("industry") || undefined;
+  const sample_kind = searchParams.get("sample_kind") || undefined;
   const db = createServiceSupabase() || gate.auth.supabase;
 
   try {
-    const result = await listGoldenSamplesAdmin(db, { industry });
+    const result = await listGoldenSamplesAdmin(db, { industry, sample_kind });
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {
     return NextResponse.json(

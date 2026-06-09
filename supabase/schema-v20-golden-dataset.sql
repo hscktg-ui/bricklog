@@ -10,6 +10,8 @@ create table if not exists public.golden_content_samples (
   emotion_type text,
   search_intent text,
   brand_presence_score numeric default 0,
+  sample_kind text not null default 'excellent',
+  fail_reason text,
   is_active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
