@@ -69,6 +69,11 @@ export default function BriclogStrengthChips({
         {feedbackLine ? <DetailChip>{feedbackLine}</DetailChip> : null}
         {researchBuilt ? <DetailChip>조사 반영</DetailChip> : null}
         {meta.llmDeliveryPolish ? <DetailChip>AI 원고 마감</DetailChip> : null}
+        {meta.briclogWriterEngine ? (
+          <DetailChip>
+            {meta.writerEngineExpanded ? "GPT 분량 확장" : "Writer Engine"}
+          </DetailChip>
+        ) : null}
         {typeof meta.haeshinScore === "number" ? (
           <DetailChip>해신 {meta.haeshinScore}</DetailChip>
         ) : null}
