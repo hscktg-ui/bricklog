@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.js";
 import { applyV17PostWritePack } from "../lib/content/v17PostProcess.js";
 import { applyHumanityFinishPass } from "../lib/content/humanityFinishPass.js";
+import { finalizeContentQualityForDelivery } from "../lib/product/contentQualityDelivery.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import {
   GENERIC_DISPLAY_PAD_RES,
@@ -36,6 +37,7 @@ const FORBIDDEN = [
 let pack = buildMissionProseFallbackPack(INPUT);
 pack = applyV17PostWritePack(pack, { input: INPUT, ...INPUT }, "blog");
 pack = applyHumanityFinishPass(pack, { input: INPUT, ...INPUT }, "blog");
+pack = finalizeContentQualityForDelivery(pack, INPUT, "blog");
 
 const full = getBlogFullText(pack);
 

@@ -140,6 +140,7 @@
     "test:narrative-belief": "node --import ./scripts/register-alias.mjs scripts/test-narrative-belief-pass.mjs",
     "test:v17-narrative": "node --import ./scripts/register-alias.mjs scripts/test-v17-narrative-final.mjs",
     "mission:batch": "node --import ./scripts/register-alias.mjs scripts/mission-improvement-batch.mjs --clear",
+    "test:cross-channel-batch": "node --import ./scripts/register-alias.mjs scripts/cross-channel-quality-batch.mjs --clear",
     "learn:naver-blog": "node --import ./scripts/register-alias.mjs scripts/learn-naver-blog-channel.mjs --target 10000 --delay 80",
     "test:naver-engine": "node --import ./scripts/register-alias.mjs scripts/test-naver-engine-upgrade.mjs",
     "diagnose:ace-opimo": "node --import ./scripts/register-alias.mjs scripts/diagnose-ace-opimo.mjs",

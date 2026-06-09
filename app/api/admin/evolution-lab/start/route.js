@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/api/adminGuard";
 import { startLabRun } from "@/lib/evolution-lab/labRunner";
 import { getActiveLabRun } from "@/lib/evolution-lab/state";
+import {
+  isManualEvolutionRunBlocked,
+  NIGHTLY_EVOLUTION_SCHEDULE_KST,
+} from "@/lib/config/nightlyEvolutionConfig";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -11,6 +15,17 @@ export async function POST(request) {
   if (gate.denied) return gate.denied;
   if (gate.rateLimited) return gate.rateLimited;
   const { auth } = gate;
+
+  if (isManualEvolutionRunBlocked()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        userMessage: `수동 실행은 꺼져 있습니다. 매일 KST ${NIGHTLY_EVOLUTION_SCHEDULE_KST} 야간 배치가 자동 실행됩니다.`,
+        autoOnly: true,
+      },
+      { status: 403 }
+    );
+  }
 
   if (getActiveLabRun()?.status === "running") {
     return NextResponse.json({

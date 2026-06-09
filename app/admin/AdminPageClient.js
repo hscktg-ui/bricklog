@@ -6,7 +6,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import Toast from "@/components/Toast";
 import AuthForm from "@/components/AuthForm";
-import EvolutionLabPanel from "@/components/admin/EvolutionLabPanel";
+import AutoEvolutionStatusPanel from "@/components/admin/AutoEvolutionStatusPanel";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminAdvisoryPanel from "@/components/admin/AdminAdvisoryPanel";
 import AdminOpsHub from "@/components/admin/AdminOpsHub";
@@ -41,20 +41,11 @@ export default function AdminPageClient() {
   const [warnings, setWarnings] = useState([]);
   const [toast, setToast] = useState({ visible: false, message: "", type: "info" });
 
-  const [qtRunning, setQtRunning] = useState(false);
-  const [qtStatus, setQtStatus] = useState(null);
-  const [qtReport, setQtReport] = useState(null);
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [advisory, setAdvisory] = useState(null);
   const [advisoryLoading, setAdvisoryLoading] = useState(false);
   const [showDetailMetrics, setShowDetailMetrics] = useState(false);
-  const [qtOptions, setQtOptions] = useState({
-    maxHours: 10,
-    maxCount: 300,
-    targetScore: 90,
-    includeSensitive: true,
-  });
   const pollRef = useRef(null);
 
   const showToast = useCallback((message, type = "info") => {
@@ -233,29 +224,11 @@ export default function AdminPageClient() {
     }
   };
 
-  const pollQtStatus = useCallback(async () => {
-    try {
-      const data = await fetchWithAuth("/api/admin/quality-training/status");
-      setQtStatus(data);
-      setQtRunning(data.status === "running");
-      if (data.report) setQtReport(data.report);
-      if (data.status === "finished" || data.status === "idle") {
-        if (pollRef.current) clearInterval(pollRef.current);
-        pollRef.current = null;
-        const rep = await fetchWithAuth("/api/admin/quality-training/report");
-        if (rep.report) setQtReport(rep.report);
-      }
-    } catch (err) {
-      showToast(err.message, "error");
-    }
-  }, [showToast]);
-
   useEffect(() => {
     if (!user || !hasAdminAccess || accessChecking) return;
     loadStats();
     loadAdvisory();
     loadInsights();
-    pollQtStatus();
   }, [
     user,
     hasAdminAccess,
@@ -263,7 +236,6 @@ export default function AdminPageClient() {
     loadStats,
     loadAdvisory,
     loadInsights,
-    pollQtStatus,
   ]);
 
   useEffect(() => {
@@ -271,32 +243,6 @@ export default function AdminPageClient() {
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
-
-  const startQualityTraining = async () => {
-    try {
-      await fetchWithAuth("/api/admin/quality-training/start", {
-        method: "POST",
-        body: JSON.stringify(qtOptions),
-      });
-      setQtRunning(true);
-      showToast("품질 자동 테스트를 시작했습니다.", "success");
-      if (pollRef.current) clearInterval(pollRef.current);
-      pollRef.current = setInterval(pollQtStatus, 8000);
-      pollQtStatus();
-    } catch (err) {
-      showToast(err.message, "error");
-    }
-  };
-
-  const stopQualityTraining = async () => {
-    try {
-      await fetchWithAuth("/api/admin/quality-training/stop", { method: "POST" });
-      showToast("중단 요청을 보냈습니다.", "info");
-      pollQtStatus();
-    } catch (err) {
-      showToast(err.message, "error");
-    }
-  };
 
   if (loading) {
     return (
@@ -552,135 +498,7 @@ export default function AdminPageClient() {
           사용자당 일일 한도: {stats?.dailyLimitPerUser ?? 20}회
         </p>
 
-        <section className="mt-8 rounded-xl border border-[#E8EBED] bg-white p-5">
-          <h2 className="text-[16px] font-bold">품질 자동 테스트</h2>
-          <p className="mt-1 text-[12px] text-[#8B95A1]">
-            내부 품질 개선용 — 다양한 업종·채널로 생성·검수·재작성을 반복합니다.
-          </p>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="text-[12px] text-[#4E5968]">
-              최대 시간(시간)
-              <input
-                type="number"
-                className="mt-1 w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
-                value={qtOptions.maxHours}
-                onChange={(e) =>
-                  setQtOptions((o) => ({
-                    ...o,
-                    maxHours: Number(e.target.value) || 10,
-                  }))
-                }
-                disabled={qtRunning}
-              />
-            </label>
-            <label className="text-[12px] text-[#4E5968]">
-              최대 생성 수
-              <input
-                type="number"
-                className="mt-1 w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
-                value={qtOptions.maxCount}
-                onChange={(e) =>
-                  setQtOptions((o) => ({
-                    ...o,
-                    maxCount: Number(e.target.value) || 300,
-                  }))
-                }
-                disabled={qtRunning}
-              />
-            </label>
-            <label className="text-[12px] text-[#4E5968]">
-              목표 점수
-              <input
-                type="number"
-                className="mt-1 w-full rounded-lg border border-[#E8EBED] px-3 py-2 text-[13px]"
-                value={qtOptions.targetScore}
-                onChange={(e) =>
-                  setQtOptions((o) => ({
-                    ...o,
-                    targetScore: Number(e.target.value) || 90,
-                  }))
-                }
-                disabled={qtRunning}
-              />
-            </label>
-            <label className="flex items-center gap-2 text-[12px] text-[#4E5968] pt-6">
-              <input
-                type="checkbox"
-                checked={qtOptions.includeSensitive}
-                onChange={(e) =>
-                  setQtOptions((o) => ({
-                    ...o,
-                    includeSensitive: e.target.checked,
-                  }))
-                }
-                disabled={qtRunning}
-              />
-              민감 업종 포함
-            </label>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={startQualityTraining}
-              disabled={qtRunning}
-              className="rounded-lg bg-[#03C75A] px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50"
-            >
-              품질 자동 테스트 시작
-            </button>
-            <button
-              type="button"
-              onClick={stopQualityTraining}
-              disabled={!qtRunning}
-              className="rounded-lg border border-[#E8EBED] px-4 py-2 text-[13px] disabled:opacity-50"
-            >
-              중단
-            </button>
-          </div>
-
-          {qtStatus && qtStatus.status !== "idle" && (
-            <div className="mt-4 rounded-lg bg-[#F7F8FA] p-3 text-[12px] text-[#4E5968]">
-              <p>
-                상태: {qtStatus.status === "running" ? "실행 중" : "종료"} ·
-                진행 {qtStatus.completed ?? 0}/{qtStatus.total ?? 300} · 평균{" "}
-                {qtStatus.avgScore ?? "—"}점 · 연속 통과{" "}
-                {qtStatus.consecutivePass ?? 0} · 호출 {qtStatus.apiCalls ?? 0}
-              </p>
-              {qtStatus.stopReason && (
-                <p className="mt-1 text-[#8B95A1]">
-                  중단 사유: {qtStatus.stopReason}
-                </p>
-              )}
-            </div>
-          )}
-
-          {qtReport && (
-            <div className="mt-4 rounded-lg border border-[#E8EBED] p-3 text-[12px]">
-              <p className="font-semibold">최근 리포트</p>
-              <p className="mt-2">
-                총 {qtReport.totalGenerated}건 · 평균 {qtReport.avgScore}점 ·
-                90점 이상 {qtReport.passRate}%
-              </p>
-              {qtReport.weakestCategory && (
-                <p className="mt-1 text-[#8B95A1]">
-                  가장 약한 업종: {qtReport.weakestCategory}
-                </p>
-              )}
-              {qtReport.topErrors?.length > 0 && (
-                <ul className="mt-2 list-disc pl-4 text-[#4E5968]">
-                  {qtReport.topErrors.slice(0, 5).map((e) => (
-                    <li key={e.reason}>
-                      {e.reason} ({e.count})
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </section>
-
-        <EvolutionLabPanel onToast={showToast} />
+        <AutoEvolutionStatusPanel />
 
         <section className="mt-8">
           <h2 className="text-[16px] font-bold">최근 오류 로그</h2>

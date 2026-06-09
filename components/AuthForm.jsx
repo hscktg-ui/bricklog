@@ -486,7 +486,7 @@ export default function AuthForm({
             />
             <p className="text-[12px] leading-relaxed text-[#4E5968] sm:text-[11px]">
               {isSignupPhoneOptional()
-                ? "개발 모드: 휴대폰 인증 없이 가입할 수 있습니다."
+                ? "휴대폰 인증은 선택입니다. 인증 없이도 가입할 수 있어요."
                 : "휴대폰 번호는 한 계정에 하나만 등록됩니다. 문자 인증만 완료하면 바로 이용할 수 있어요."}{" "}
               닉네임·호칭은 로그인 뒤 안내에서 입력할 수 있어요.
             </p>

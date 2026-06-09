@@ -11,6 +11,18 @@ POST /api/cron/daily-develop
 Authorization: Bearer <CRON_SECRET>
 ```
 
+### 01:30 KST — 자동 학습·진화 (Run 버튼 대체)
+
+```http
+POST /api/cron/nightly-evolution
+Authorization: Bearer <CRON_SECRET>
+```
+
+- `vercel.json`: `30 16 * * *` (UTC) = **01:30 KST**
+- 인사이트 자동 승인 · evolution rules 캐시 갱신 · 소량 품질 테스트·Evolution Lab 배치
+- 관리자 `/admin`에는 **상태만** 표시 (수동 Run 없음)
+- 끄기: `BRICLOG_AUTO_NIGHTLY_EVOLUTION=0`
+
 ### 정오 (12:00 KST) — 당일 부분 피드백
 
 ```http
