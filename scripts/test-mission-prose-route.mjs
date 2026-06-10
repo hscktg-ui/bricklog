@@ -53,13 +53,16 @@ for (const [label, input] of [
 
   if (label === "chair") {
     assert.ok(/앉아\s*보면|생각보다/.test(full), "chair experience");
-    assert.ok(!/매트리스|누워|전시\s*소식/.test(full), "no mattress leak");
+    assert.ok(!/매트리스|누워|전시\s*소식|전시\s*구성·안내|찾게\s*된\s*계기/.test(full), "no mattress leak");
+    assert.ok(/에이스침대|스트레스리스/.test(full), "chair brand product");
   }
 
   const eval_ = assessContentEvaluation(pack, input);
   console.log(
     JSON.stringify({ label, evalScore: eval_.score, pass: eval_.pass, withheld: eval_.shouldWithhold }, null, 2)
   );
+  assert.ok(eval_.score >= 90, `${label} eval >= 90`);
+  assert.equal(eval_.pass, true, `${label} eval pass`);
 }
 
 console.log("OK: mission prose route");
