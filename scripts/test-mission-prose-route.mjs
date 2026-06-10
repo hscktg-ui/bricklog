@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { buildForcedMissionProsePack } from "../lib/product/missionProseRouteEngine.js";
 import { shouldForceMissionProseOnlyPath } from "../lib/product/missionProseRouteFlags.js";
+import { finalizeContentQualityForDelivery } from "../lib/product/contentQualityDelivery.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import { assessContentEvaluation } from "../lib/product/contentEvaluationEngine.js";
 
@@ -63,6 +64,35 @@ for (const [label, input] of [
   );
   assert.ok(eval_.score >= 90, `${label} eval >= 90`);
   assert.equal(eval_.pass, true, `${label} eval pass`);
+
+  const finalized = finalizeContentQualityForDelivery(pack, input, "blog");
+  const sqv = finalized._meta?.sqv;
+  console.log(
+    JSON.stringify(
+      {
+        label: `${label}_final`,
+        evalScore: finalized._meta?.contentEvaluation?.score,
+        sqvScore: sqv?.score,
+        sqvGrade: sqv?.grade,
+        deliveryGrade: finalized._meta?.deliveryGrade,
+        outputWithheld: finalized._meta?.outputWithheld,
+      },
+      null,
+      2
+    )
+  );
+  assert.ok(
+    (finalized._meta?.contentEvaluation?.score ?? 0) >= 90,
+    `${label} finalize eval`
+  );
+  assert.ok((sqv?.score ?? 0) >= 76, `${label} sqv >= B (${sqv?.score})`);
+  assert.ok(["A", "B"].includes(sqv?.grade), `${label} sqv grade A/B (${sqv?.grade})`);
+  assert.equal(finalized._meta?.outputWithheld, false, `${label} not withheld`);
+  assert.ok(
+    finalized._meta?.deliveryGrade === "human" ||
+      finalized._meta?.deliveryGrade === "publish",
+    `${label} human+ delivery grade`
+  );
 }
 
 console.log("OK: mission prose route");

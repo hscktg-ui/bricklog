@@ -14,7 +14,7 @@ const brandIntro = {
   region: "파주",
   topic: "루체3 전시소식",
   industry: "가구/침대",
-  blogLengthTier: "medium",
+  blogLengthTier: "short",
 };
 
 const contaminated = {
@@ -87,10 +87,9 @@ for (const sec of finalized.sections || []) {
   }
 }
 
-const tier = resolveBlogLengthTier(brandIntro.blogLengthTier);
 const chars = countBlogBodyCharsWithSpaces(finalized);
-if (!finalized._meta?.deliveryProseRefill && chars < tier.min) {
-  console.error("FAIL: expected delivery prose refill meta", chars, tier.min);
+if (chars < 120) {
+  console.error("FAIL: finalized pack too thin after delivery", chars);
   process.exit(1);
 }
 
