@@ -1,0 +1,57 @@
+/**
+ * Mission prose 강제 라우팅 — 꽃·체어 LLM 우회
+ */
+import assert from "node:assert/strict";
+import { buildForcedMissionProsePack } from "../lib/product/missionProseRouteEngine.js";
+import { shouldForceMissionProseOnlyPath } from "../lib/product/missionProseRouteFlags.js";
+import { getBlogFullText } from "../utils/qualityCheck.js";
+import { assessContentEvaluation } from "../lib/product/contentEvaluationEngine.js";
+
+process.env.BRICLOG_MISSION = "true";
+process.env.BRICLOG_RESET_QUALITY = "true";
+process.env.BRICLOG_EXPERIENCE_OPINION = "true";
+
+const flowerInput = {
+  brandName: "그랩앤고플라워",
+  region: "파주 운정",
+  topic: "여름철 꽃 추천",
+  industry: "꽃집",
+  storeFeatures: "24시간 무인, 만원 꽃다발",
+};
+
+const chairInput = {
+  brandName: "에이스침대",
+  region: "경기도 용인",
+  topic: "스트레스리스 다이닝체어 STRESSLESS MINT LB D200",
+  industry: "가구",
+  storeFeatures: "프랜차이즈 쇼룸",
+};
+
+for (const [label, input] of [
+  ["flower", flowerInput],
+  ["chair", chairInput],
+]) {
+  assert.equal(shouldForceMissionProseOnlyPath(input), true);
+  const pack = buildForcedMissionProsePack(input);
+  const full = getBlogFullText(pack);
+  assert.ok(pack.sections?.length, `${label} sections`);
+  assert.ok(pack._meta?.forcedMissionProseRoute, `${label} route meta`);
+
+  if (label === "flower") {
+    assert.ok(/수국|해바라기|거베라/.test(full), "flower names");
+    assert.ok(!/직원분|상월했|전시\s*소식/.test(full), "no visit template");
+    assert.ok(/실제로|많이\s*선택|생각보다/.test(full), "experience framing");
+  }
+
+  if (label === "chair") {
+    assert.ok(/앉아\s*보면|생각보다/.test(full), "chair experience");
+    assert.ok(!/매트리스|누워|전시\s*소식/.test(full), "no mattress leak");
+  }
+
+  const eval_ = assessContentEvaluation(pack, input);
+  console.log(
+    JSON.stringify({ label, evalScore: eval_.score, pass: eval_.pass, withheld: eval_.shouldWithhold }, null, 2)
+  );
+}
+
+console.log("OK: mission prose route");

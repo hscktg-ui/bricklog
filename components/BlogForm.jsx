@@ -36,6 +36,8 @@ import { resolveContentPerspective } from "@/lib/content/perspectiveEngine";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import ResearchModePanel from "@/components/research/ResearchModePanel";
 import SteppedWriteFields from "@/components/product/SteppedWriteFields";
+import ChannelAiRecommendCard from "@/components/product/ChannelAiRecommendCard";
+import { resolveBlogAiRecommendCard } from "@/lib/product/channelAiDefaults";
 import {
   getBlogLengthFieldLabel,
   getBlogLengthTierOptionsForUi,
@@ -113,6 +115,10 @@ function BlogForm({
   const topicRef = useRef(null);
   const lengthTierOptions = useMemo(() => getBlogLengthTierOptionsForUi(), []);
   const lengthFieldLabel = useMemo(() => getBlogLengthFieldLabel(), []);
+  const blogAiCard = useMemo(
+    () => resolveBlogAiRecommendCard(formValues),
+    [formValues.brandName, formValues.region, formValues.topic, formValues.industry]
+  );
 
   useEffect(() => {
     if (!formValues.region?.trim()) {
@@ -370,6 +376,10 @@ function BlogForm({
         onRegionCompositionEnd={onRegionCompositionEnd}
         compact={compact}
       />
+
+      {formValues.brandName?.trim() && formValues.topic?.trim() ? (
+        <ChannelAiRecommendCard channel="blog" card={blogAiCard} compact={compact} />
+      ) : null}
 
       {effectiveSimple && sensitive.isSensitive ? (
         <p className="inline-flex items-center gap-1 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[12px] font-semibold text-[#E67700]">
