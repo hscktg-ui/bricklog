@@ -1,0 +1,338 @@
+{
+  "summary": {
+    "tested": 12,
+    "failures": 0,
+    "avgEvalScore": 89,
+    "avgCustomerScore": 100,
+    "failureDetails": []
+  },
+  "results": [
+    {
+      "id": "salon",
+      "customerScenario": "첫 염색이라 두피 상담이 필요한 직장인",
+      "industryKey": "salon",
+      "editorialPath": true,
+      "bodyChars": 728,
+      "lengthTierMin": 2800,
+      "evalScore": 93,
+      "evalPass": true,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "hospital",
+      "customerScenario": "면역 관리 한방 상담을 찾는 40대",
+      "industryKey": "hospital",
+      "editorialPath": true,
+      "bodyChars": 669,
+      "lengthTierMin": 2800,
+      "evalScore": 84,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 75,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "brand_fact_presence_low",
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "pet_snack",
+      "customerScenario": "첫 수제 간식을 고르는 반려견 보호자",
+      "industryKey": "pet",
+      "editorialPath": true,
+      "bodyChars": 664,
+      "lengthTierMin": 2800,
+      "evalScore": 88,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "restaurant",
+      "customerScenario": "가족 모임 식당 메뉴를 비교하는 고객",
+      "industryKey": "restaurant",
+      "editorialPath": true,
+      "bodyChars": 666,
+      "lengthTierMin": 2800,
+      "evalScore": 92,
+      "evalPass": true,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "pension",
+      "customerScenario": "여름 바베큐 펜션을 예약하려는 가족",
+      "industryKey": "pension",
+      "editorialPath": true,
+      "bodyChars": 633,
+      "lengthTierMin": 2800,
+      "evalScore": 88,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "education",
+      "customerScenario": "퇴근 후 영어 회화반을 찾는 직장인",
+      "industryKey": "education",
+      "editorialPath": true,
+      "bodyChars": 637,
+      "lengthTierMin": 2800,
+      "evalScore": 87,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "craft",
+      "customerScenario": "여행 중 원데이 도자기 체험을 예약하는 커플",
+      "industryKey": "craft",
+      "editorialPath": true,
+      "bodyChars": 576,
+      "lengthTierMin": 2800,
+      "evalScore": 87,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "construction",
+      "customerScenario": "원룸 리모델 견적을 비교하는 1인 가구",
+      "industryKey": "construction",
+      "editorialPath": true,
+      "bodyChars": 632,
+      "lengthTierMin": 2800,
+      "evalScore": 84,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 75,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "brand_fact_presence_low",
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "tea_cafe",
+      "customerScenario": "조용한 티코스를 찾는 차 애호가",
+      "industryKey": "tea_cafe",
+      "editorialPath": true,
+      "bodyChars": 586,
+      "lengthTierMin": 2800,
+      "evalScore": 95,
+      "evalPass": true,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "pet_cafe",
+      "customerScenario": "대형견과 함께 갈 애견 카페를 찾는 보호자",
+      "industryKey": "pet_cafe",
+      "editorialPath": true,
+      "bodyChars": 610,
+      "lengthTierMin": 2800,
+      "evalScore": 87,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "furniture_mattress",
+      "customerScenario": "매트리스 체험 전 비교 기준을 정리하는 고객",
+      "industryKey": "furniture",
+      "editorialPath": true,
+      "bodyChars": 585,
+      "lengthTierMin": 2800,
+      "evalScore": 91,
+      "evalPass": true,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 88,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    },
+    {
+      "id": "carwash",
+      "customerScenario": "겨울철 세차·코팅을 알아보는 운전자",
+      "industryKey": "carwash",
+      "editorialPath": true,
+      "bodyChars": 558,
+      "lengthTierMin": 2800,
+      "evalScore": 87,
+      "evalPass": false,
+      "customerScore": 100,
+      "customerPass": true,
+      "overnightScore": 75,
+      "customerChecks": {
+        "topicAddressed": true,
+        "searchIntentClear": true,
+        "customerSituation": true,
+        "actionableDetail": true,
+        "brandPresent": true,
+        "notBrochureOnly": true,
+        "noVisitFictionLeak": true,
+        "enoughSections": true,
+        "lengthAdequate": true
+      },
+      "evalHardReasons": [
+        "explain_quality_low"
+      ]
+    }
+  ],
+  "failures": []
+}

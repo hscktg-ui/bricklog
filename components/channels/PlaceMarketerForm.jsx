@@ -134,20 +134,18 @@ export default function PlaceMarketerForm({
       />
 
       {formValues.brandName?.trim() && formValues.topic?.trim() ? (
-        <ChannelAiRecommendCard channel="place" card={ai.card} compact={compact} />
+        <>
+          <ChannelAiRecommendCard channel="place" card={ai.card} compact={compact} />
+          <p className="text-[12px] leading-relaxed text-[#8B95A1]">
+            브랜드·지역·주제만 입력하면 공지 유형·톤·CTA는 AI가 추천합니다.
+          </p>
+        </>
       ) : null}
 
       <div className="space-y-3 rounded-xl border border-[#E8EBED] bg-white p-3 md:p-4">
         <p className="text-[13px] font-semibold text-[#191F28]">
-          오늘 고객에게 꼭 알려야 할 내용
+          오늘 고객에게 꼭 알릴 한 줄
         </p>
-        <OptionGrid
-          options={PLACE_NOTICE_KIND_OPTIONS}
-          value={notice}
-          onChange={applyNotice}
-          cols={3}
-          compact
-        />
 
         <ChannelField label="공지 한 줄" required compact={compact}>
           <input
@@ -217,6 +215,16 @@ export default function PlaceMarketerForm({
 
       {advancedOpen ? (
         <div className="space-y-3 rounded-xl border border-dashed border-[#E8EBED] bg-[#FAFBFC] p-3 md:p-4">
+          <ChannelFormSection title="공지 유형" compact={compact} defaultOpen>
+            <OptionGrid
+              options={PLACE_NOTICE_KIND_OPTIONS}
+              value={notice}
+              onChange={applyNotice}
+              cols={3}
+              compact
+            />
+          </ChannelFormSection>
+
           <ChannelFormSection title="목표·CTA" compact={compact} defaultOpen>
             <OptionGrid
               options={PLACE_GOAL_OPTIONS}

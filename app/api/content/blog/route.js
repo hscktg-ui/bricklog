@@ -31,6 +31,7 @@ import {
   isLlmOriginatedPack,
 } from "@/lib/product/contentQualityDelivery";
 import { applyWriterEngineIfNeeded } from "@/lib/product/briclogWriterEngine";
+import { alignBlogApiDeliveryResponse } from "@/lib/product/blogApiDeliveryGate";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -165,6 +166,8 @@ export async function POST(request) {
     ) {
       await incrementContentUsage(auth.supabase, auth.user.id);
     }
+
+    result = alignBlogApiDeliveryResponse(result, requestInput);
 
     const usageAfter = await getUsageSummary(
       auth.supabase,

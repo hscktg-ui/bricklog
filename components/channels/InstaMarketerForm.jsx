@@ -143,29 +143,13 @@ export default function InstaMarketerForm({
       />
 
       {formValues.brandName?.trim() && formValues.topic?.trim() ? (
-        <ChannelAiRecommendCard channel="insta" card={ai.card} compact={compact} />
+        <>
+          <ChannelAiRecommendCard channel="insta" card={ai.card} compact={compact} />
+          <p className="text-[12px] leading-relaxed text-[#8B95A1]">
+            브랜드·지역·주제만 입력하면 캡션 톤·목적·해시태그는 AI가 맞춥니다.
+          </p>
+        </>
       ) : null}
-
-      <div className="space-y-3 rounded-xl border border-[#E8EBED] bg-white p-3 md:p-4">
-        <ChannelField label="이번 게시물 목적은?" compact={compact}>
-          <OptionGrid
-            options={INSTA_PURPOSE_QUESTIONS}
-            value={purpose}
-            onChange={applyPurpose}
-            cols={3}
-            compact
-          />
-        </ChannelField>
-        <ChannelField label="이번 게시물 분위기는?" compact={compact}>
-          <OptionGrid
-            options={INSTA_MOOD_QUESTIONS}
-            value={mood}
-            onChange={applyMood}
-            cols={2}
-            compact
-          />
-        </ChannelField>
-      </div>
 
       <button
         type="button"
@@ -177,6 +161,27 @@ export default function InstaMarketerForm({
 
       {advancedOpen ? (
         <div className="space-y-3 rounded-xl border border-dashed border-[#E8EBED] bg-[#FAFBFC] p-3 md:p-4">
+          <ChannelFormSection title="목적·분위기" compact={compact} defaultOpen>
+            <ChannelField label="이번 게시물 목적" compact={compact}>
+              <OptionGrid
+                options={INSTA_PURPOSE_QUESTIONS}
+                value={purpose}
+                onChange={applyPurpose}
+                cols={3}
+                compact
+              />
+            </ChannelField>
+            <ChannelField label="분위기" compact={compact}>
+              <OptionGrid
+                options={INSTA_MOOD_QUESTIONS}
+                value={mood}
+                onChange={applyMood}
+                cols={2}
+                compact
+              />
+            </ChannelField>
+          </ChannelFormSection>
+
           <ChannelFormSection
             title="캠페인·독자"
             compact={compact}

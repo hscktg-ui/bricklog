@@ -375,7 +375,8 @@ export default function AuthForm({
     !phoneOptional &&
     (!phoneSmsVerified || !phoneVerificationId || phoneRegistered || phoneChecking);
   const phoneAvailabilityBlocks =
-    signupPhoneFilled && (phoneRegistered || phoneChecking);
+    signupPhoneFilled &&
+    (phoneRegistered || (!phoneOptional && phoneChecking));
   const signupSubmitDisabled =
     loading ||
     (mode === MODES.signup &&
