@@ -32,6 +32,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 측정: `npm run test:quality-trust-kpi`
 - 90점 미만·placeholder·업종 오염 → 사용자 노출 금지 (`lib/product/briclogResetQualityGate.js`)
 
+### EXPLAIN V3 (Research → Explain → Write)
+
+`lib/product/briclogExplainEngine.js` — 키워드→문장 금지 · 설명·이유·활용 필수 · 브랜드 연결
+
+KPI: Research 30% · **Explain 40%** · Writing 20% · SEO 10% · 설명률 85%+
+
+측정: `npm run test:explain-engine-v3`
+
 ### RESEARCH FIRST V2 (조사 우선 — 글쓰기 폐기)
 
 **브릭로그는 AI Writer가 아니라 브랜드 콘텐츠 리서치 엔진.** `Research First · Writing Second · Quality Third`
