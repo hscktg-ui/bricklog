@@ -103,6 +103,8 @@
     "test:briclog-writer-engine": "node --import ./scripts/register-alias.mjs scripts/test-briclog-writer-engine.mjs",
     "test:placeholder-contamination": "node --import ./scripts/register-alias.mjs scripts/test-placeholder-contamination.mjs",
     "test:brand-log-topics": "node --import ./scripts/register-alias.mjs scripts/test-brand-log-topics.mjs",
+    "test:blog-category-probe": "node --import ./scripts/register-alias.mjs scripts/probe-untested-blog-categories.mjs",
+    "test:blog-category-probe:prod": "node --import ./scripts/register-alias.mjs scripts/probe-untested-blog-categories.mjs",
     "test:llm-ui-delivery-preserve": "node --import ./scripts/register-alias.mjs scripts/test-llm-ui-delivery-preserve.mjs",
     "test:content-doctrine": "npm run test:briclog-doctrine && npm run test:speaker-voice-lock && npm run test:content-quality-delivery && npm run test:publish-readiness && npm run test:ace-paju-exhibition && npm run test:editorial-quality && npm run test:industry-scoped-rules && npm run test:golden-benchmark && npm run test:golden-adaptive && npm run test:llm-delivery-polish && npm run test:golden-dataset && npm run test:haeshin-dna && npm run test:brand-wiki",
     "test:speaker-voice-lock": "node --import ./scripts/register-alias.mjs scripts/test-speaker-voice-lock.mjs",
