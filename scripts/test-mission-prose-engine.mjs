@@ -9,8 +9,10 @@ import {
   buildMissionExperienceCatalog,
   filterMissionExperienceParagraphs,
   isMissionChecklistPad,
+  isMissionBrochurePad,
   polishMissionProsePack,
 } from "@/lib/product/missionProseEngine.js";
+import { isInformationalTopicInput } from "@/lib/content/topicFacetEngine.js";
 import { buildHumanStoryProblemOpeningLead } from "@/lib/product/humanStoryEngine.js";
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback.js";
 import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass.js";
@@ -47,6 +49,21 @@ const cases = [
     lead: /꽃을 사야|막히/,
   },
   {
+    id: "flower_grab",
+    industryKey: "flower",
+    input: {
+      brandName: "그랩앤고플라워",
+      region: "파주",
+      industry: "꽃집",
+      topic: "오늘의꽃",
+      mainKeyword: "파주 꽃집",
+      blogLengthTier: "short",
+    },
+    forbidden:
+      /시즌\s*꽃재|확인된\s*범위|자주\s*문의|짚을\s*점|조금씩\s*달라집니다|여름철에는\s*시원한\s*톤|어디에\s*놓을지\s*먼저\s*생각/,
+    lead: /꽃|막히|직접|가보|헷갈/,
+  },
+  {
     id: "cafe",
     input: {
       brandName: "테스트카페",
@@ -75,9 +92,22 @@ const cases = [
 
 assert.ok(isMissionChecklistPad("비교할 때 가격·조건·이용 절차를 표로 정리"));
 assert.ok(!isMissionChecklistPad("매장에서 브런치 메뉴 안내를 직접 들었어요."));
+assert.ok(isMissionBrochurePad("시즌 꽃재에 따라 색감·가격대가 달라질 수 있어요."));
+assert.ok(
+  isMissionBrochurePad("그랩앤고플라워에서 자주 문의되는 조건을 확인된 범위에서 정리했어요.")
+);
+assert.ok(!isMissionBrochurePad("진열대에서 여름 톤 꽃을 하나씩 비교해 봤어요."));
+
+const grabInput = {
+  brandName: "그랩앤고플라워",
+  region: "파주",
+  industry: "꽃집",
+  topic: "오늘의꽃",
+};
+assert.equal(isInformationalTopicInput(grabInput), false, "flower retail uses visit tone");
 
 for (const c of cases) {
-  const expectedKey = c.id;
+  const expectedKey = c.industryKey || c.id;
   assert.equal(resolveBriclogIndustryKey(c.input), expectedKey);
   const p = deriveTopicWritingContext(c.input);
   const catalog = buildMissionExperienceCatalog(p, c.input, []);
