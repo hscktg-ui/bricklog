@@ -63,6 +63,7 @@ export default function BriclogStrengthChips({
         contextScore={contextScore}
         variant="compact"
         showDepthBadge
+        channelReady={{ place: hasPlace, insta: hasInsta }}
       />
 
       <div className="flex flex-wrap gap-2">

@@ -53,6 +53,7 @@ import {
 import ChannelPackToggle from "@/components/blog/ChannelPackToggle";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import ChannelExpandCard from "@/components/product/ChannelExpandCard";
+import ChannelRoadmapStrip from "@/components/product/ChannelRoadmapStrip";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
@@ -287,7 +288,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   return (
     <>
       <div
-        className={`flex min-h-0 w-full shrink-0 flex-col border-[#E8EBED] bg-white lg:block lg:w-[min(380px,38vw)] lg:max-w-[420px] lg:border-r ${
+        className={`flex min-h-0 w-full shrink-0 flex-col border-[#E8EBED] bg-white lg:block lg:w-[min(320px,30vw)] lg:max-w-[360px] lg:border-r ${
           hideFormPanel ? "max-lg:hidden" : ""
         } ${mobileIdleFull ? "max-lg:min-h-0 max-lg:flex-1" : "max-lg:max-h-[min(46dvh,420px)] max-lg:border-b"}`}
       >
@@ -746,6 +747,15 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 />
               </div>
             )}
+            <ChannelRoadmapStrip
+              className="mb-4"
+              ready={{
+                blog: !!blogContent,
+                place: !!placeContent,
+                insta: !!instagramContent,
+                image: !!imagePrompts,
+              }}
+            />
             {showChannelTabs && (
             <ChannelResultsTabs
               activeTab={resultTab}

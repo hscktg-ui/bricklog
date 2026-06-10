@@ -35,7 +35,7 @@ import {
 import { resolveContentPerspective } from "@/lib/content/perspectiveEngine";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import ResearchModePanel from "@/components/research/ResearchModePanel";
-import WriteFlowSteps from "@/components/product/WriteFlowSteps";
+import SteppedWriteFields from "@/components/product/SteppedWriteFields";
 import {
   getBlogLengthFieldLabel,
   getBlogLengthTierOptionsForUi,
@@ -359,66 +359,17 @@ function BlogForm({
 
   return (
     <div className={compact ? "space-y-3" : "space-y-4"}>
-      <WriteFlowSteps values={formValues} />
-      {!compact && (
-        <p className="text-[11px] text-[#8B95A1] leading-snug">
-          소제목·문단 순서는 직접 지정하지 않아도 됩니다. 톤과 소재만 알려 주세요.
-        </p>
-      )}
-      <Field label="브랜드명" required error={errors.brandName}>
-        <input
-          className={fieldClass}
-          value={formValues.brandName}
-          onChange={(e) => set("brandName", e.target.value)}
-          onBlur={textBlur}
-          placeholder="매장·브랜드·팀 이름"
-        />
-      </Field>
-
-      {compact ? (
-        <details className="rounded-xl border border-[#E8EBED] bg-[#FAFBFC]">
-          <summary className="briclog-no-slab flex min-h-[44px] cursor-pointer list-none items-center justify-between px-3.5 py-3 text-[13px] font-semibold text-[#4E5968] marker:content-none [&::-webkit-details-marker]:hidden">
-            업종·분량 등 (선택)
-            <span className="text-[11px] font-normal text-[#8B95A1]">펼치기</span>
-          </summary>
-          <div className="space-y-3 border-t border-[#E8EBED] px-3.5 pb-3.5 pt-3">
-            {optionalFields}
-          </div>
-        </details>
-      ) : (
-        optionalFields
-      )}
-
-      <Field label="지역" required error={errors.region}>
-        <input
-          ref={regionInputRef}
-          className={fieldClass}
-          value={formValues.region}
-          onChange={(e) => set("region", e.target.value)}
-          onCompositionStart={onRegionCompositionStart}
-          onCompositionEnd={onRegionCompositionEnd}
-          onBlur={textBlur}
-          placeholder="예: 서울 마포"
-        />
-      </Field>
-
-      <Field label="오늘의 주제" required error={errors.topic}>
-        <textarea
-          ref={topicRef}
-          className={`${fieldClass} ${compact ? "min-h-[56px]" : "min-h-[72px]"} resize-y`}
-          value={formValues.topic || ""}
-          onChange={(e) => {
-            const topic = e.target.value;
-            patch({
-              topic,
-              mainKeyword:
-                formValues.mainKeyword || topic.split(/[,，]/)[0]?.trim(),
-            });
-          }}
-          onBlur={textBlur}
-          placeholder="오늘 전하고 싶은 이야기, 장면, 감정"
-        />
-      </Field>
+      <SteppedWriteFields
+        values={formValues}
+        errors={errors}
+        onPatch={(next) => patchImmediate(next)}
+        onBlur={textBlur}
+        regionInputRef={regionInputRef}
+        topicRef={topicRef}
+        onRegionCompositionStart={onRegionCompositionStart}
+        onRegionCompositionEnd={onRegionCompositionEnd}
+        compact={compact}
+      />
 
       {effectiveSimple && sensitive.isSensitive ? (
         <p className="inline-flex items-center gap-1 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[12px] font-semibold text-[#E67700]">
@@ -462,6 +413,7 @@ function BlogForm({
 
       {advancedOpen && (
         <div className="rounded-xl border border-dashed border-[#E8EBED] bg-[#FAFBFC] p-4 space-y-3">
+          {optionalFields}
           <ResearchModePanel
             compact={compact}
             enabled={Boolean(formValues.researchEnabled)}

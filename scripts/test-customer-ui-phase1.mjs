@@ -25,7 +25,8 @@ assert.equal(
   CUSTOMER_PIPELINE_STEP_LABELS.review
 );
 assert.ok(!mapCustomerPipelineStepLabel("정보 단위 분해")?.includes("단위"));
-assert.equal(RESULT_VIEW.sectionLabel, "복사용 편집본");
+assert.equal(RESULT_VIEW.sectionLabel, "발행용 원고");
+assert.equal(RESULT_VIEW.copyBlockTitle, "오늘의 원고");
 assert.ok(REFINE_COPY.blog.includes("다듬"));
 assert.ok(WELCOME.situationHint.includes("상황"));
 
