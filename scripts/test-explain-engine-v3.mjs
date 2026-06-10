@@ -74,8 +74,8 @@ for (const [label, input] of [
   }
 
   if (label === "flower") {
-    if (!/풍성한 형태|밝고 선명|관리가 쉬운/.test(full)) {
-      console.error("FAIL: flower explain missing", full.slice(0, 500));
+    if (!/많이\s*선택|실제로|생각보다|만족도/.test(full)) {
+      console.error("FAIL: flower experience framing missing", full.slice(0, 500));
       process.exit(1);
     }
     if (!/그랩앤고플라워/.test(full)) {

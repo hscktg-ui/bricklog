@@ -113,6 +113,8 @@
     "test:furniture-chair-prose": "node --import ./scripts/register-alias.mjs scripts/test-furniture-chair-prose.mjs",
     "test:research-first-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-research-first-pipeline.mjs",
     "test:explain-engine-v3": "node --import ./scripts/register-alias.mjs scripts/test-explain-engine-v3.mjs",
+    "test:brand-content-os": "node --import ./scripts/register-alias.mjs scripts/test-brand-content-os.mjs",
+    "test:experience-opinion-engine": "node --import ./scripts/register-alias.mjs scripts/test-experience-opinion-engine.mjs",
     "test:llm-ui-delivery-preserve": "node --import ./scripts/register-alias.mjs scripts/test-llm-ui-delivery-preserve.mjs",
     "test:content-doctrine": "npm run test:briclog-doctrine && npm run test:speaker-voice-lock && npm run test:content-quality-delivery && npm run test:publish-readiness && npm run test:ace-paju-exhibition && npm run test:editorial-quality && npm run test:industry-scoped-rules && npm run test:golden-benchmark && npm run test:golden-adaptive && npm run test:llm-delivery-polish && npm run test:golden-dataset && npm run test:haeshin-dna && npm run test:brand-wiki",
     "test:speaker-voice-lock": "node --import ./scripts/register-alias.mjs scripts/test-speaker-voice-lock.mjs",

@@ -16,9 +16,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:briclog-ops -->
 
 <!-- BEGIN:briclog-reset -->
-## BRICLOG EMERGENCY REBUILD — 평가 우선 (최우선)
+## BRICLOG VISION — Brand Content OS
 
-**브릭로그는 글 생성기가 아니라 글 평가기다.** 생성 성공률보다 **글 신뢰도**를 KPI로 한다.
+**브릭로그는 AI Writer가 아니다.** GPT·Claude·Gemini와 경쟁하지 않는다.
+**대한민국 최고의 브랜드 블로그 운영 AI** — `lib/product/briclogBrandContentOS.js`
+
+| 가치 | 내용 |
+|------|------|
+| 사용자가 얻는 것 | 「글을 받았다」❌ → **「이번 달 운영 계획이 생겼다」** ✅ |
+| 우선순위 | 기획 30 · 조사 30 · 설명 20 · 글쓰기 10 · 검수 10 |
+
+## BRICLOG EMERGENCY REBUILD — 평가 우선
+
+생성 성공률보다 **글 신뢰도**를 KPI로 한다.
 **문제는 GPT가 아니라 파이프라인 오염** — `lib/product/pipelineContaminationRootCause.js` 참고.
 
 ### 개발 동결 (품질 KPI 달성 전)
@@ -36,9 +46,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 `lib/product/briclogExplainEngine.js` — 키워드→문장 금지 · 설명·이유·활용 필수 · 브랜드 연결
 
-KPI: Research 30% · **Explain 40%** · Writing 20% · SEO 10% · 설명률 85%+
+KPI: **Planning 30 · Research 30 · Explain 20 · Writing 10 · Review 10** · 설명률 85%+
 
 측정: `npm run test:explain-engine-v3`
+
+### EXPERIENCE + OPINION (정보 → 설명 → 관찰 → 의견)
+
+`lib/product/briclogExperienceOpinionEngine.js` — 주요 정보에 관찰·경험·의견 중 최소 1개 연결
+
+금지: 건조 사실 나열 (`~특징입니다`, `~조절할 수 있습니다` 등 스펙만 있는 문장)
+
+목표: 독자가 정보를 읽는 느낌이 아니라 **실제 경험을 듣는 느낌**
+
+측정: `npm run test:experience-opinion-engine`
 
 ### RESEARCH FIRST V2 (조사 우선 — 글쓰기 폐기)
 
@@ -83,6 +103,7 @@ FAIL: 조사 없음 · 업종 정보 부족 · 브랜드 없음 · placeholder (
 
 ### env
 
+- `BRICLOG_EXPERIENCE_OPINION=true` — 관찰·경험·의견 연결·건조 사실 금지 (기본: RESET 품질과 연동)
 - `BRICLOG_RESEARCH_FIRST=true` — 조사 dossier 없으면 글 생성 금지 (기본: RESET 품질과 연동)
 - `BRICLOG_RESET_QUALITY=true` — 90점 게이트·파이프라인 정화
 - `BRICLOG_DEV_FREEZE=true` — 기능 동결 (기본: RESET 품질 모드와 연동)
