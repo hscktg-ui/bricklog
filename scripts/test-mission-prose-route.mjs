@@ -40,7 +40,15 @@ for (const [label, input] of [
   if (label === "flower") {
     assert.ok(/수국|해바라기|거베라/.test(full), "flower names");
     assert.ok(!/직원분|상월했|전시\s*소식/.test(full), "no visit template");
+    assert.ok(
+      !/들어서서|직접\s*들어가|찾게\s*된\s*계기|안내을\s*고를|꽃\s*추천\s*글을\s*읽다/.test(full),
+      "no visit arc leak"
+    );
+    assert.ok(!/솔직히\s+여름철\s+꽃\s+추천\s+알아보던/.test(full), "no visit opener");
     assert.ok(/실제로|많이\s*선택|생각보다/.test(full), "experience framing");
+    const paras = full.split(/\n\n+/).map((p) => p.trim()).filter((p) => p.length > 20);
+    const keys = paras.map((p) => p.replace(/\s/g, "").slice(0, 40));
+    assert.equal(keys.length, new Set(keys).size, "no duplicate paragraphs");
   }
 
   if (label === "chair") {
