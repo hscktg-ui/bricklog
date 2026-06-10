@@ -33,15 +33,18 @@ function loadEnvLocal() {
   }
 }
 
-async function ensureE2eProfile(admin, userId, email) {
+async function ensureE2eProfile(admin, userId, email, nickname) {
   const now = new Date().toISOString();
+  const nick =
+    nickname ||
+    `ux${String(userId).replace(/-/g, "").slice(0, 10)}`;
   const { error } = await admin.from("profiles").upsert(
     {
       id: userId,
       email,
       terms_agreed_at: now,
       privacy_agreed_at: now,
-      nickname: "ux스모크",
+      nickname: nick,
       profile_completed_at: now,
     },
     { onConflict: "id" }
@@ -89,7 +92,12 @@ export async function ensureE2eTestUser(options = {}) {
     if (updErr) {
       return { ok: false, reason: `update_user:${updErr.message}` };
     }
-    const prof = await ensureE2eProfile(admin, existing.id, email);
+    const prof = await ensureE2eProfile(
+      admin,
+      existing.id,
+      email,
+      options.nickname
+    );
     if (!prof.ok) return prof;
     return { ok: true, email, password, reused: true };
   }
@@ -103,7 +111,12 @@ export async function ensureE2eTestUser(options = {}) {
     return { ok: false, reason: `create_user:${createErr.message}` };
   }
 
-  const prof = await ensureE2eProfile(admin, created.user.id, email);
+  const prof = await ensureE2eProfile(
+    admin,
+    created.user.id,
+    email,
+    options.nickname
+  );
   if (!prof.ok) return prof;
   return { ok: true, email, password, reused: false };
 }

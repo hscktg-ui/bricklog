@@ -127,6 +127,7 @@ export default function AuthForm({
       if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
         setEmailRegistered(false);
         setEmailCheckMsg("");
+        setEmailChecking(false);
         return;
       }
       setEmailChecking(true);
@@ -341,6 +342,22 @@ export default function AuthForm({
   const previewDevice = landingPreview?.preview ?? "desktop";
   const setPreviewDevice = landingPreview?.setPreview;
   const simulating = landingPreview?.simulating ?? false;
+
+  const phoneOptional = isSignupPhoneOptional();
+  const signupPhoneFilled = signupPhone.trim().length > 0;
+  const phoneBlocksSignup =
+    !phoneOptional &&
+    (!phoneSmsVerified || !phoneVerificationId || phoneRegistered || phoneChecking);
+  const phoneAvailabilityBlocks =
+    signupPhoneFilled && (phoneRegistered || phoneChecking);
+  const signupSubmitDisabled =
+    loading ||
+    (mode === MODES.signup &&
+      (!termsAgreed ||
+        emailRegistered ||
+        emailChecking ||
+        phoneAvailabilityBlocks ||
+        phoneBlocksSignup));
 
   const shell = (
     <div
@@ -564,17 +581,7 @@ export default function AuthForm({
 
         <button
           type="submit"
-          disabled={
-            loading ||
-            (mode === MODES.signup &&
-              (!termsAgreed ||
-                emailRegistered ||
-                emailChecking ||
-                phoneRegistered ||
-                phoneChecking ||
-                (!isSignupPhoneOptional() &&
-                  (!phoneSmsVerified || !phoneVerificationId))))
-          }
+          disabled={signupSubmitDisabled}
           className={AUTH_PRIMARY_BTN_CLASS}
         >
           {loading

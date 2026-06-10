@@ -51,6 +51,7 @@
     "test:context-lock": "node --import ./scripts/register-alias.mjs scripts/test-context-lock.mjs",
     "test:director-context": "node --import ./scripts/register-alias.mjs scripts/test-director-context.mjs",
     "test:channel-sla": "node scripts/channel-sla-smoke.mjs",
+    "test:meticulous-journey": "node --import ./scripts/register-alias.mjs scripts/meticulous-new-user-journey.mjs",
     "test:section-planner": "node --import ./scripts/register-alias.mjs scripts/test-section-planner-leak.mjs",
     "test:search-expansion": "node --import ./scripts/register-alias.mjs scripts/test-search-expansion.mjs",
     "test:knowledge-coverage": "node --import ./scripts/register-alias.mjs scripts/test-knowledge-coverage.mjs",
