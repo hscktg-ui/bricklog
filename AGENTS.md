@@ -32,9 +32,31 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 측정: `npm run test:quality-trust-kpi`
 - 90점 미만·placeholder·업종 오염 → 사용자 노출 금지 (`lib/product/briclogResetQualityGate.js`)
 
+### RESEARCH FIRST V2 (조사 우선 — 글쓰기 폐기)
+
+**브릭로그는 AI Writer가 아니라 브랜드 콘텐츠 리서치 엔진.** `Research First · Writing Second · Quality Third`
+
+`lib/product/briclogResearchFirstPipeline.js` — STEP1–9 SSOT
+
+| STEP | 내용 |
+|------|------|
+| 1 | 사용자 입력 분석 (지역·브랜드·주제) |
+| 2 | 검색 의도 분석 |
+| 3 | 조사 항목 생성 (추정 금지) |
+| 4 | 브랜드 DB 조회 |
+| 5 | 지역 조회 |
+| 6 | 계절·트렌드 |
+| 7 | **조사 결과 정리** (글 아님) |
+| 8 | 아웃라인 |
+| 9 | 글 작성 — 조사 부족 시 **금지** |
+
+FAIL: 조사 없음 · 업종 정보 부족 · 브랜드 없음 · placeholder (`이용`·`좋은내용`·`전시 소식` 등)
+
+측정: `npm run test:research-first-pipeline`
+
 ### 12단계 프로세스 (평가 우선)
 
-`lib/product/briclogEvaluateFirstPipeline.js` — STEP1–7 컨텍스트 · STEP10–12 평가·문단수정·출력
+`lib/product/briclogEvaluateFirstPipeline.js` — Research dossier(STEP1–8) · STEP10–12 평가·문단수정·출력
 
 ### 100점 평가 엔진
 
@@ -49,9 +71,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | 브랜드 정보 강제 주입 | `lib/content/brandFactInjectionEngine.js` |
 | 재검수 (문단·85% 보존) | `lib/golden/paragraphSafeEditEngine.js` |
 | 품질 게이트 | `lib/product/contentEvaluationEngine.js` |
+| 조사 우선 파이프라인 | `lib/product/briclogResearchFirstPipeline.js` |
 
 ### env
 
+- `BRICLOG_RESEARCH_FIRST=true` — 조사 dossier 없으면 글 생성 금지 (기본: RESET 품질과 연동)
 - `BRICLOG_RESET_QUALITY=true` — 90점 게이트·파이프라인 정화
 - `BRICLOG_DEV_FREEZE=true` — 기능 동결 (기본: RESET 품질 모드와 연동)
 - `BRICLOG_RESET_PAYMENT_PAUSED=true` / `BRICLOG_RESET_SIGNUP_LIMIT=true`
