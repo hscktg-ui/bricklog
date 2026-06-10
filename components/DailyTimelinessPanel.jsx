@@ -142,6 +142,10 @@ function DailyTimelinessPanel({
       industryLabel: debouncedIndustry,
       region: debouncedRegion,
       brandName,
+      storeFeatures: blogInput.storeFeatures || brandMemory?.brandDescription,
+      brandDescription: blogInput.brandDescription || brandMemory?.brandDescription,
+      includePhrases: debouncedInclude || brandMemory?.includePhrases,
+      preferredKeywords: brandMemory?.preferredKeywords || brandMemory?.mainKeyword,
       brandTone:
         brandMemory?.differentiator ||
         brandMemory?.brandPhilosophy ||

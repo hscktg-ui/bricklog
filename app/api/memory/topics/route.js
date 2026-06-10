@@ -47,10 +47,16 @@ export async function GET(request) {
         .eq("user_id", auth.user.id)
         .maybeSingle();
       if (b) {
+        const meta = b.metadata && typeof b.metadata === "object" ? b.metadata : {};
         brand = {
           brandName: b.brand_name,
           industry: b.industry,
           region: b.region,
+          storeFeatures: meta.storeFeatures || meta.brandDescription || "",
+          brandDescription: meta.brandDescription || "",
+          includePhrases: meta.includePhrases || "",
+          services: meta.services || "",
+          preferredKeywords: meta.preferredKeywords || meta.mainKeyword || "",
         };
       }
 
