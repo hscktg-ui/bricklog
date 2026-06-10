@@ -86,7 +86,8 @@ for (const [label, input] of [
     `${label} finalize eval`
   );
   assert.ok((sqv?.score ?? 0) >= 76, `${label} sqv >= B (${sqv?.score})`);
-  assert.ok(["A", "B"].includes(sqv?.grade), `${label} sqv grade A/B (${sqv?.grade})`);
+  assert.equal(sqv?.grade, "A", `${label} sqv grade A (${sqv?.grade})`);
+  assert.equal(finalized._meta?.professionalEditorGrade || sqv?.professionalEditorGrade, true, `${label} editor grade`);
   assert.equal(finalized._meta?.outputWithheld, false, `${label} not withheld`);
   assert.ok(
     finalized._meta?.deliveryGrade === "human" ||

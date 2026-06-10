@@ -165,6 +165,7 @@
     "test:channel-ai-defaults": "node --import ./scripts/register-alias.mjs scripts/test-channel-ai-defaults.mjs",
     "test:publish-grade-display": "node --import ./scripts/register-alias.mjs scripts/test-publish-grade-display.mjs",
     "test:mission-prose-route": "node --import ./scripts/register-alias.mjs scripts/test-mission-prose-route.mjs",
+    "test:professional-editor-grade": "node --import ./scripts/register-alias.mjs scripts/test-professional-editor-grade.mjs",
     "test:publish-readiness": "node --import ./scripts/register-alias.mjs scripts/test-publish-readiness-display.mjs",
     "test:salon-sample": "node --import ./scripts/register-alias.mjs scripts/test-salon-featured-sample.mjs",
     "test:narrative-belief": "node --import ./scripts/register-alias.mjs scripts/test-narrative-belief-pass.mjs",

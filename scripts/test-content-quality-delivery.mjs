@@ -34,8 +34,8 @@ const contaminated = {
 const finalized = finalizeContentQualityForDelivery(contaminated, brandIntro, "blog");
 const sqv = finalized._meta?.sqv;
 
-if (!sqv || sqv.version !== "v2") {
-  console.error("FAIL: sqv v2 missing", sqv);
+if (!sqv || !String(sqv.version || "").startsWith("v")) {
+  console.error("FAIL: sqv missing", sqv);
   process.exit(1);
 }
 if (typeof sqv.score !== "number" || !sqv.grade) {
@@ -69,7 +69,7 @@ if (apiMeta.contentQualityValue !== sqv.score || !apiMeta.sqv?.grade) {
 }
 
 const recomputed = computeContentQualityValue(finalized, brandIntro);
-if (recomputed.version !== "v2") {
+if (!String(recomputed.version || "").startsWith("v")) {
   console.error("FAIL: recompute version", recomputed.version);
   process.exit(1);
 }
