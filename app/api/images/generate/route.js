@@ -13,6 +13,10 @@ import {
   pickPromptFromPack,
 } from "@/lib/images/buildMarketingPrompt";
 import { resolveRatio, getImageType } from "@/lib/images/imageTypes";
+import {
+  assertDevFreezeAllowed,
+  DEV_FREEZE_FEATURES,
+} from "@/lib/config/devFreeze";
 
 export const runtime = "nodejs";
 
@@ -20,6 +24,14 @@ const MAX_PER_MIN =
   Number(process.env.BRICLOG_IMAGE_RATE_LIMIT_PER_MIN) || 6;
 
 export async function POST(request) {
+  const frozen = assertDevFreezeAllowed(DEV_FREEZE_FEATURES.image);
+  if (!frozen.ok) {
+    return NextResponse.json(
+      { ok: false, userMessage: frozen.userMessage, code: "dev_freeze" },
+      { status: 503 }
+    );
+  }
+
   const ip = getClientIp(request);
   const limit = checkRateLimit(`image:${ip}`, {
     max: MAX_PER_MIN,

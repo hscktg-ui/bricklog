@@ -5,6 +5,10 @@ import {
   sendPhoneOtp,
 } from "@/lib/auth/phoneOtpServer";
 import { formatSmsSenderDisplay } from "@/lib/sms/smsDisplay";
+import {
+  isBriclogResetSignupLimited,
+  RESET_SIGNUP_LIMIT_MESSAGE,
+} from "@/lib/config/resetLaunchFlags";
 
 export const runtime = "nodejs";
 
@@ -30,6 +34,12 @@ export async function POST(request) {
 
   try {
     const purpose = String(body?.purpose || "signup").toLowerCase();
+    if (purpose === "signup" && isBriclogResetSignupLimited()) {
+      return NextResponse.json(
+        { ok: false, userMessage: RESET_SIGNUP_LIMIT_MESSAGE, code: "signup_limited" },
+        { status: 403 }
+      );
+    }
     const excludeUserId = body?.excludeUserId?.trim() || null;
     const result = await sendPhoneOtp(body?.phone ?? "", {
       excludeUserId,

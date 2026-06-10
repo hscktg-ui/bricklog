@@ -15,6 +15,8 @@ import { resolvePublishReadiness } from "../lib/product/publishReadinessDisplay.
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js";
 import { countPlaceholderContamination } from "../lib/content/placeholderContaminationEngine.js";
+import { assessContentEvaluation } from "../lib/product/contentEvaluationEngine.js";
+import { assessContentTrustReadable } from "../lib/quality/qualityTrustKpi.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
@@ -159,6 +161,23 @@ const SCENARIOS = [
     },
   },
   {
+    id: "flower_summer",
+    label: "무인꽃집 · 여름 꽃 추천",
+    raw: {
+      brandName: "그랩앤고플라워",
+      region: "파주 운정",
+      topic: "여름 꽃 추천",
+      mainKeyword: "여름 꽃 추천",
+      industry: "꽃집",
+      storeFeatures: "24시간 무인, 만원 꽃다발, 무인 픽업",
+      blogLengthTier: "short",
+      v4Speaker: "plain_review",
+      v2AxisRequired: true,
+      v2PipelineEnforced: true,
+      v3EngineEnforced: true,
+    },
+  },
+  {
     id: "shop",
     label: "온라인 쇼핑몰 · 여름 출시",
     raw: {
@@ -233,6 +252,10 @@ async function runScenario(scenario, token) {
     deliveryGrade: null,
     publishLabel: null,
     placeholderHits: 0,
+    evalScore: null,
+    evalPass: false,
+    trustReadable: false,
+    contentWithheld: false,
     failReasons: [],
     openingExcerpt: "",
     error: null,
@@ -285,13 +308,32 @@ async function runScenario(scenario, token) {
     row.openingExcerpt = excerpt(full.split("\n").find((l) => l.trim().length > 40) || full);
     row.placeholderHits = countPlaceholderContamination(full).total;
 
+    process.env.BRICLOG_RESET_QUALITY = "true";
+    const evaluation = assessContentEvaluation(pack, input);
+    const trust = assessContentTrustReadable(pack, input);
+    row.evalScore = evaluation.score;
+    row.evalPass = evaluation.pass;
+    row.trustReadable = trust.readable;
+    row.contentWithheld = Boolean(
+      pack._meta?.resetQualityWithheld ||
+        pack._meta?.contentEvalPass === false ||
+        body.withheld
+    );
+    row.evalHardFail = evaluation.hardFail;
+    row.evalBreakdown = evaluation.breakdown;
+
     const human = assessHumanWritingDelivery(pack, input);
     const publish = resolvePublishReadiness(pack);
     row.humanReady = human.humanReady;
     row.deliveryGrade = pack._meta?.deliveryGrade || null;
     row.publishLabel = publish.label;
     row.failReasons = (pack._meta?.failReasons || human.reasons || []).slice(0, 8);
-    row.pass = row.sections >= 2 && row.chars >= 800 && row.apiStatus === 200;
+    row.pass =
+      row.sections >= 2 &&
+      row.chars >= 800 &&
+      row.apiStatus === 200 &&
+      row.trustReadable &&
+      row.placeholderHits === 0;
     return row;
   } catch (e) {
     row.error = e?.message || String(e);
@@ -324,7 +366,7 @@ for (const scenario of activeScenarios) {
   results.push(row);
   const status = row.error
     ? `FAIL ${row.error}`
-    : `${row.sections}섹션 · ${row.chars}자 · grade=${row.deliveryGrade || "?"} · placeholder=${row.placeholderHits}`;
+    : `${row.sections}섹션 · ${row.chars}자 · grade=${row.deliveryGrade || "?"} · eval=${row.evalScore} · placeholder=${row.placeholderHits} · trust=${row.trustReadable}`;
   console.log(`  ${status}`);
   if (row.openingExcerpt) console.log(`  "${row.openingExcerpt.slice(0, 120)}…"`);
 }
@@ -334,6 +376,12 @@ const report = {
   base: BASE,
   note: "Prod blog API — 업종 미감사 (카페·가구 제외)",
   passCount: results.filter((r) => r.pass && !r.error).length,
+  trustReadableCount: results.filter((r) => r.trustReadable && !r.error).length,
+  evalPassCount: results.filter((r) => r.evalPass && !r.error).length,
+  kpiTarget: 0.9,
+  trustRate: results.length
+    ? results.filter((r) => r.trustReadable && !r.error).length / results.length
+    : 0,
   total: results.length,
   results,
 };
@@ -342,3 +390,6 @@ mkdirSync(join(root, "config"), { recursive: true });
 writeFileSync(OUT, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 console.log(`\nReport: ${OUT}`);
 console.log(`pass: ${report.passCount}/${report.total}`);
+console.log(
+  `trust KPI: ${report.trustReadableCount}/${report.total} (${Math.round(report.trustRate * 100)}%, target 90%)`
+);

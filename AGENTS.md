@@ -14,3 +14,45 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Run 허용 UI 추가 금지** — Admin에 품질/Evolution Lab 시작 버튼 되돌리지 않음. 상태 패널(`AutoEvolutionStatusPanel`)만 유지.
 - **비상 수동 실행** — 로컬/dev만 `BRICLOG_ALLOW_MANUAL_EVOLUTION_RUN=1`.
 <!-- END:briclog-ops -->
+
+<!-- BEGIN:briclog-reset -->
+## BRICLOG EMERGENCY REBUILD — 평가 우선 (최우선)
+
+**브릭로그는 글 생성기가 아니라 글 평가기다.** 생성 성공률보다 **글 신뢰도**를 KPI로 한다.
+**문제는 GPT가 아니라 파이프라인 오염** — `lib/product/pipelineContaminationRootCause.js` 참고.
+
+### 개발 동결 (품질 KPI 달성 전)
+
+- 신규 기능·이미지·요금제 개발 **중단** — `lib/config/devFreeze.js`, `BRICLOG_DEV_FREEZE`
+- 품질 게이트·업종 분리·placeholder 제거·재검수(Safe Edit)만 허용
+
+### KPI
+
+- 목표: **글 100개 중 90개 이상** 사람이 읽을 수 있는 수준 (`lib/quality/qualityTrustKpi.js`)
+- 측정: `npm run test:quality-trust-kpi`
+- 90점 미만·placeholder·업종 오염 → 사용자 노출 금지 (`lib/product/briclogResetQualityGate.js`)
+
+### 12단계 프로세스 (평가 우선)
+
+`lib/product/briclogEvaluateFirstPipeline.js` — STEP1–7 컨텍스트 · STEP10–12 평가·문단수정·출력
+
+### 100점 평가 엔진
+
+`lib/product/contentEvaluationEngine.js` — 검색20·업종20·브랜드15·밀도15·문체10·반복10·placeholder10 · **90 미만 출력 금지**
+
+### 파이프라인 SSOT
+
+| 축 | 모듈 |
+|----|------|
+| Placeholder 추적·제거 | `lib/content/placeholderTraceEngine.js` |
+| 업종 엔진 분리 | `lib/product/industryPipelineRouter.js` |
+| 브랜드 정보 강제 주입 | `lib/content/brandFactInjectionEngine.js` |
+| 재검수 (문단·85% 보존) | `lib/golden/paragraphSafeEditEngine.js` |
+| 품질 게이트 | `lib/product/contentEvaluationEngine.js` |
+
+### env
+
+- `BRICLOG_RESET_QUALITY=true` — 90점 게이트·파이프라인 정화
+- `BRICLOG_DEV_FREEZE=true` — 기능 동결 (기본: RESET 품질 모드와 연동)
+- `BRICLOG_RESET_PAYMENT_PAUSED=true` / `BRICLOG_RESET_SIGNUP_LIMIT=true`
+<!-- END:briclog-reset -->

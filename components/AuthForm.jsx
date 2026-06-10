@@ -96,6 +96,8 @@ export default function AuthForm({
   const [emailRegistered, setEmailRegistered] = useState(false);
   const [emailCheckMsg, setEmailCheckMsg] = useState("");
   const [emailChecking, setEmailChecking] = useState(false);
+  const [signupLimited, setSignupLimited] = useState(false);
+  const [signupLimitMessage, setSignupLimitMessage] = useState("");
   const emailCheckTimer = useRef(null);
 
   const hasSocial = getEnabledOAuthProviders().length > 0;
@@ -108,6 +110,21 @@ export default function AuthForm({
       setEmail(saved);
       setSaveEmail(true);
     }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/launch/flags")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data?.reset) return;
+        setSignupLimited(Boolean(data.reset.signupLimited));
+        setSignupLimitMessage(String(data.reset.signupLimitMessage || ""));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -193,6 +210,15 @@ export default function AuthForm({
       }
 
       if (mode === MODES.signup) {
+        if (signupLimited) {
+          onToast?.(
+            signupLimitMessage ||
+              "지금은 품질 안정화 기간이라 신규 가입을 잠시 받지 않습니다.",
+            "error"
+          );
+          return;
+        }
+
         if (emailRegistered) {
           onToast?.(
             "이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해 주세요.",

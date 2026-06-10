@@ -9,10 +9,29 @@ import {
   buildCustomerKey,
   getTossClientKey,
 } from "@/lib/billing/toss/server";
+import { isBriclogResetPaymentPaused } from "@/lib/config/resetLaunchFlags";
+import {
+  assertDevFreezeAllowed,
+  DEV_FREEZE_FEATURES,
+} from "@/lib/config/devFreeze";
 
 export const runtime = "nodejs";
 
 export async function POST(request) {
+  const frozen = assertDevFreezeAllowed(DEV_FREEZE_FEATURES.pricing);
+  if (!frozen.ok || isBriclogResetPaymentPaused()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        userMessage:
+          frozen.userMessage ||
+          "품질 안정화 기간에는 결제를 받지 않습니다.",
+        code: "payment_paused",
+      },
+      { status: 503 }
+    );
+  }
+
   if (!isTossConfigured()) {
     return NextResponse.json(
       {

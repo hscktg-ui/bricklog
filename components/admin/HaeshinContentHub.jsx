@@ -8,8 +8,10 @@ const TABS = [
   { id: "excellent", label: "우수글 데이터셋" },
   { id: "failure", label: "실패글 데이터셋" },
   { id: "dna", label: "업종별 DNA" },
+  { id: "questions", label: "고객 질문 DB" },
+  { id: "philosophy", label: "브랜드 철학 DB" },
   { id: "forbidden", label: "금칙어·문체" },
-  { id: "scoring", label: "품질 점수 기준" },
+  { id: "scoring", label: "품질 평가 기준" },
 ];
 
 export default function HaeshinContentHub({ showToast }) {
@@ -62,9 +64,9 @@ export default function HaeshinContentHub({ showToast }) {
   return (
     <section className="mt-8">
       <div className="mb-4">
-        <h2 className="text-[18px] font-bold text-[#191F28]">해신기획 콘텐츠 DNA · 적응형 품질 엔진</h2>
+        <h2 className="text-[18px] font-bold text-[#191F28]">콘텐츠 품질 엔진 · 평가 우선</h2>
         <p className="mt-1 text-[12px] text-[#8B95A1]">
-          업종 DNA·조사·LLM이 기본 — 우수글 코퍼스는 있으면 참고 보강 (없어도 생성 가능)
+          글 생성기가 아닌 글 평가기 — 우수글·실패글·업종 DNA·고객 질문·브랜드 철학 SSOT
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {TABS.map((t) => (
@@ -185,18 +187,57 @@ export default function HaeshinContentHub({ showToast }) {
             </div>
           )}
 
-          {tab === "scoring" && dna && (
+          {tab === "questions" && dna && (
             <div className="text-[12px]">
-              <p className="font-semibold">100점 만점 가중치</p>
-              <ul className="mt-2 space-y-1 text-[#4E5968]">
-                {Object.entries(dna.scoreWeights || {}).map(([k, v]) => (
-                  <li key={k}>
-                    {k}: {v}점
+              <p className="font-semibold">6대 고객 질문 (CUSTOMER QUESTION ENGINE)</p>
+              <ul className="mt-2 space-y-2 text-[#4E5968]">
+                {[
+                  "왜 찾는가",
+                  "누가 찾는가",
+                  "언제 찾는가",
+                  "무엇을 비교하는가",
+                  "가장 많이 하는 질문",
+                  "구매 전 실수",
+                ].map((q) => (
+                  <li key={q} className="rounded-lg border border-[#E8EBED] px-3 py-2">
+                    {q}
                   </li>
                 ))}
               </ul>
+              <p className="mt-3 text-[#8B95A1]">
+                생성 전 prepareBriclogPreWriteContext · customerQuestionMap에 로드됩니다.
+              </p>
+            </div>
+          )}
+
+          {tab === "philosophy" && dna && (
+            <div className="text-[12px]">
+              <p className="font-semibold">브랜드 철학 DB (해신 시드)</p>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-[#4E5968]">
+                {(dna.philosophy || []).map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <p className="mt-3 text-[#8B95A1]">
+                브랜드별 철학은 brandWiki·brandMemory와 병합되어 STEP4에 주입됩니다.
+              </p>
+            </div>
+          )}
+
+          {tab === "scoring" && dna && (
+            <div className="text-[12px]">
+              <p className="font-semibold">100점 만점 — 콘텐츠 평가 엔진 (contentEvaluationEngine)</p>
+              <ul className="mt-2 space-y-1 text-[#4E5968]">
+                <li>검색 의도 충족: 20점</li>
+                <li>업종 적합도: 20점</li>
+                <li>브랜드 반영: 15점</li>
+                <li>정보 밀도: 15점</li>
+                <li>사람 문체: 10점</li>
+                <li>반복 제거: 10점</li>
+                <li>Placeholder 제거: 10점</li>
+              </ul>
               <p className="mt-4 text-[#8B95A1]">
-                90+ PASS · 80–89 Safe Edit · 80 미만 FAIL
+                90+ PASS · 90 미만 출력 금지 · 재검수는 문단 단위 Safe Edit (원문 85%+)
               </p>
               <p className="mt-2 text-[#8B95A1]">
                 벤치마크 코퍼스 없는 업종: 해신 DNA·구조 휴리스틱 94% (적응형)
