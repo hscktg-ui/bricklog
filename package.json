@@ -78,6 +78,7 @@
     "test:human-story": "node --import ./scripts/register-alias.mjs scripts/test-human-story-engine.mjs",
     "test:region-voice-lock": "node --import ./scripts/register-alias.mjs scripts/test-region-voice-lock.mjs",
     "test:mission-prose": "node --import ./scripts/register-alias.mjs scripts/test-mission-prose-engine.mjs",
+    "test:narrative-arc-shape": "node --import ./scripts/register-alias.mjs scripts/test-narrative-arc-shape.mjs",
     "test:furniture-exhibition": "node --import ./scripts/register-alias.mjs scripts/test-furniture-exhibition-engine.mjs",
     "test:opimo-user-sample": "node --import ./scripts/register-alias.mjs scripts/test-opimo-user-sample.mjs",
     "test:story-target": "node --import ./scripts/register-alias.mjs scripts/test-story-target-engine.mjs",
