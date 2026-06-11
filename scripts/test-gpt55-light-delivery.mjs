@@ -9,6 +9,7 @@ import {
   applyGpt55PostWriteLightPass,
 } from "@/lib/product/gpt55LightDelivery.js";
 import { needsWriterEnginePass } from "@/lib/product/humanTierRegen.js";
+import { assessHumanColumnContract } from "@/lib/product/humanColumnContract.js";
 import { isWriterEngineExpansionEnabled } from "@/lib/config/briclogFastPipeline.js";
 import { isSlimWriterPromptEnabled } from "@/lib/config/briclogFastPipeline.js";
 import { buildMissionConclusionLine } from "@/lib/product/missionProseEngine.js";
@@ -17,8 +18,10 @@ import { getBlogFullText } from "@/utils/qualityCheck.js";
 const prevDominant = process.env.BRICLOG_GPT55_DOMINANT;
 const prevKey = process.env.OPENAI_API_KEY;
 const prevWriter = process.env.BRICLOG_WRITER_ENGINE;
+const prevMax = process.env.BRICLOG_MAX_QUALITY;
 process.env.BRICLOG_GPT55_DOMINANT = "true";
 process.env.OPENAI_API_KEY = "sk-test-key-for-gpt55-light-delivery-0123456789";
+process.env.BRICLOG_MAX_QUALITY = "false";
 delete process.env.BRICLOG_WRITER_ENGINE;
 
 const input = {
@@ -52,8 +55,14 @@ const llmPack = {
 assert.ok(isWriterEngineExpansionEnabled() === false, "writer engine default off for gpt55");
 assert.ok(isSlimWriterPromptEnabled(), "slim writer always on for gpt55");
 assert.ok(shouldUseGpt55LightDelivery(llmPack, input));
-assert.ok(shouldSkipWriterEngineForGpt55(llmPack, input));
-assert.ok(!needsWriterEnginePass(llmPack, input));
+const contract = assessHumanColumnContract(llmPack, input);
+if (contract.ok && contract.humanVoiceMet) {
+  assert.ok(shouldSkipWriterEngineForGpt55(llmPack, input));
+  assert.ok(!needsWriterEnginePass(llmPack, input));
+} else {
+  assert.ok(!shouldSkipWriterEngineForGpt55(llmPack, input));
+  assert.ok(needsWriterEnginePass(llmPack, input));
+}
 
 const catalog = buildMissionConclusionLine(
   { regionBit: "경기도 용인 ", brand: "에이스침대", topicFacet: "스트레스리스" },
@@ -78,5 +87,7 @@ if (prevKey === undefined) delete process.env.OPENAI_API_KEY;
 else process.env.OPENAI_API_KEY = prevKey;
 if (prevWriter === undefined) delete process.env.BRICLOG_WRITER_ENGINE;
 else process.env.BRICLOG_WRITER_ENGINE = prevWriter;
+if (prevMax === undefined) delete process.env.BRICLOG_MAX_QUALITY;
+else process.env.BRICLOG_MAX_QUALITY = prevMax;
 
 console.log("OK: gpt55 light delivery — writer off, slim prompt, pre-publish + ui finalize");

@@ -9,7 +9,11 @@ import {
   getGenerationTimeBudgetMs,
   isSlimWriterPromptEnabled,
   shouldSkipOffAxisPrune,
+  isBriclogFastPipelineEnabled,
 } from "../lib/config/briclogFastPipeline.js";
+
+const prevMax = process.env.BRICLOG_MAX_QUALITY;
+process.env.BRICLOG_MAX_QUALITY = "false";
 import {
   needsCoreRegen,
   partitionCoreRegenReasons,
@@ -81,5 +85,8 @@ assert(
 );
 
 assert(getQualityTarget() === 95, "prod quality target 95");
+
+if (prevMax === undefined) delete process.env.BRICLOG_MAX_QUALITY;
+else process.env.BRICLOG_MAX_QUALITY = prevMax;
 
 console.log("OK: quality pipeline alignment — budget, slim prompt, soft regen, telemetry");

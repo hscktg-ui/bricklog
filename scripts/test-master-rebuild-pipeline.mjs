@@ -21,8 +21,10 @@ import { assessContentEvaluation } from "@/lib/product/contentEvaluationEngine.j
 
 const prevReset = process.env.BRICLOG_RESET_QUALITY;
 const prevMaster = process.env.BRICLOG_MASTER_REBUILD;
+const prevMax = process.env.BRICLOG_MAX_QUALITY;
 process.env.BRICLOG_RESET_QUALITY = "true";
 process.env.BRICLOG_MASTER_REBUILD = "true";
+process.env.BRICLOG_MAX_QUALITY = "false";
 
 assert.ok(isBriclogMasterRebuildEnforced(), "master rebuild enforced");
 assert.ok(isBriclogAlwaysDeliverEnabled(), "always deliver enabled");
@@ -130,5 +132,7 @@ if (prevReset === undefined) delete process.env.BRICLOG_RESET_QUALITY;
 else process.env.BRICLOG_RESET_QUALITY = prevReset;
 if (prevMaster === undefined) delete process.env.BRICLOG_MASTER_REBUILD;
 else process.env.BRICLOG_MASTER_REBUILD = prevMaster;
+if (prevMax === undefined) delete process.env.BRICLOG_MAX_QUALITY;
+else process.env.BRICLOG_MAX_QUALITY = prevMax;
 
 console.log("OK: master rebuild 2026 — always deliver, fact-first, delete, no withhold");
