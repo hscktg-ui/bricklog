@@ -37,6 +37,22 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local IDE / agent
+.cursor/
+.vscode/
+
+# local task notes (agent-generated)
+NEXT_TASK.md
+audit-report.md
+priority-roadmap.md
+
+# generated probe / journey artifacts (local only)
+artifacts/local-mission-samples/
+artifacts/prod-quality-samples/
+artifacts/meticulous-journey.log
+config/*-report.json
+config/*report*.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
