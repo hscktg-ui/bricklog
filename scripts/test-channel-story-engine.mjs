@@ -36,10 +36,12 @@ const placeRaw = {
 const placePolished = applyChannelStoryGate(placeRaw, "place", { input });
 assert.ok(!/가능합니다/.test(placePolished.shortNotice + placePolished.detailBody));
 assert.ok(!/다른\s*브랜드/.test(placePolished.detailBody));
+assert.ok(!/솔직\s*후기|다녀(?:왔|온)/.test(`${placePolished.shortNotice}\n${placePolished.detailBody}`));
 assert.ok(
-  /쇼룸|전시|매장|방문|다녀|봤/.test(
+  /안내(?:드립|해)|운영|매장|저희|예약|입고|이벤트/.test(
     `${placePolished.shortNotice}\n${placePolished.detailBody}`
-  )
+  ),
+  "place should use owner-notice voice"
 );
 assert.equal(placePolished._meta?.channelStoryGate, true);
 
@@ -50,7 +52,8 @@ const instaRaw = {
   hashtags: ["#가구"],
 };
 const instaPolished = applyChannelStoryGate(instaRaw, "instagram", { input });
-assert.ok(/해요|었어요|봤|느껴|솔직/.test(instaPolished.lineBreakBody + instaPolished.hook));
+assert.ok(/신혼|화이트|침실|설렘|무드|분위기|장면|해요|프로필/.test(instaPolished.lineBreakBody + instaPolished.hook + instaPolished.ending));
+assert.ok(!/솔직\s*후기/.test(instaPolished.hook));
 assert.ok(instaPolished.hashtags.some((h) => /신혼|화이트|인테리어/.test(h)));
 
 const placeScore = scoreChannelStoryPack(placePolished, "place", input);

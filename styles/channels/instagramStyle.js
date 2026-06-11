@@ -23,6 +23,8 @@ import { scrubExampleBrandsFromPack } from "@/utils/exampleBrandGuard";
 import { buildWithRepetitionGuard } from "@/utils/repetitionGuard";
 import { getInstaPersonaStyle } from "@/lib/persona/personaChannelStyle";
 import { overlapsChannelText } from "@/lib/content/channelIsolation";
+import { buildStoryTargetSceneLines } from "@/lib/product/storyTargetEngine";
+import { deriveTopicWritingContext } from "@/lib/content/topicFacetEngine";
 import { stripSourceCitations } from "@/lib/research/reinterpret";
 import {
   adaptInstaLinesFromBlog,
@@ -193,14 +195,14 @@ function ensureMediumBodyQuality(body, ctx, insights) {
   if (countChars(text) >= INSTA_BODY_LENGTH.medium.min && lineCount >= 3) {
     return text;
   }
-  const brand = String(ctx.brandName || "브랜드").trim();
-  const region = String(ctx.region || "지역").trim();
-  const topic = String(ctx.topic || ctx.mainKeyword || "주제").trim();
+  const p = deriveTopicWritingContext(ctx);
+  const scenes = buildStoryTargetSceneLines(ctx, 3, "instagram");
   const additions = compact([
-    `${region}에서 ${topic}를 찾는 사람은 결론보다 기준을 먼저 봅니다.`,
-    `${brand}는 한 줄 홍보보다 실제 사용 장면이 보이도록 설명합니다.`,
-    insights?.emotionalLine || `${topic}를 고를 때 비교 포인트를 짧게라도 남겨 두세요.`,
-  ]);
+    scenes[0],
+    scenes[1],
+    insights?.emotionalLine?.slice(0, 72) ||
+      `${p.regionBit}${p.brand}${p.topicBit ? ` · ${p.topicBit}` : ""}`.trim(),
+  ]).filter((line) => line && !/결론보다|알아보시다|정리하면|확인하세요/.test(line));
   const enriched = [text, ...additions].filter(Boolean).join("\n");
   return clampByChars(enriched, INSTA_BODY_LENGTH.medium.min, INSTA_BODY_LENGTH.medium.max);
 }

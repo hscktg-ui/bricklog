@@ -14,7 +14,6 @@ import { applyEmojiDensity } from "@/lib/emoji/emojiDensityEngine";
 import { scrubExampleBrandsFromPack } from "@/utils/exampleBrandGuard";
 import { buildWithRepetitionGuard } from "@/utils/repetitionGuard";
 import { getPlacePersonaStyle } from "@/lib/persona/personaChannelStyle";
-import { pickSceneLine } from "@/lib/scene/sceneEngine";
 import {
   adaptPlaceLineFromBlog,
   placeUsesBlogDerivation,
@@ -79,6 +78,9 @@ export const PLACE_CHANNEL = {
     "저장",
     "정리하자면",
     "소개해드릴",
+    "솔직 후기",
+    "다녀왔",
+    "방문 후기",
   ],
 };
 
@@ -261,7 +263,6 @@ function ensurePlaceInformationDensity(detailBody, ctx = {}, typeSpec = PLACE_TY
     (ctx.placeOffer || "").trim() ? `혜택: ${(ctx.placeOffer || "").trim()}` : "",
     (ctx.placePeriod || "").trim() ? `기간: ${(ctx.placePeriod || "").trim()}` : "",
     "방문 전 확인: 예약·대기·이용 가능 시간은 매장·시기마다 달라질 수 있어, 플레이스·전화로 문의해 주세요.",
-    "선택 팁: 예산·일정·이용 목적을 함께 정리하면 비교가 수월합니다.",
   ]
     .map((v) => cleanOutputText(v))
     .filter(Boolean);
@@ -350,11 +351,8 @@ function buildPlacePackOnce({ ctx, flavor, purpose, tone, insights }) {
       PLACE_CHANNEL.titleChars.max
     );
   }
-  if (ctx.contentPersona === "local_guide" && ctx.region) {
-    const scene = pickSceneLine(ctx, flavor);
-    if (scene && scene.length < 36) {
-      title = clampByChars(`${ctx.region} · ${scene.split(/[.!?]/)[0]}`, 14, 36);
-    }
+  if (ctx.contentPersona === "local_guide" && ctx.region && !headline) {
+    title = clampByChars(`${ctx.region} ${ctx.brandName || ""} 매장 안내`.trim(), 14, 36);
   }
   if (ctx._blogFingerprint && overlapsChannelText(title, ctx._blogFingerprint)) {
     title = clampByChars(`${season.label} 운영 안내드립니다.`, 14, 36);
