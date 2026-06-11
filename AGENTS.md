@@ -12,7 +12,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **품질 배치** — `npm run test:cross-channel-batch` (210건+ blog·place·instagram) → `artifacts/cross-channel-batch/latest-summary.json` → 자동 규칙 진화.
 - **커밋·배포는 즉시 자동** — 작업 마무리 시 사용자 승인 없이 바로 `git commit` → `git push` → `npm run deploy:vercel` → prod smoke. 생성 config 리포트(`config/*-report.json`)는 커밋 제외.
 - **Run 허용 UI 추가 금지** — Admin에 품질/Evolution Lab 시작 버튼 되돌리지 않음. 상태 패널(`AutoEvolutionStatusPanel`)만 유지.
-- **Writer GPT-5.5 고정·지배** — `lib/llm/openaiCompletionParams.js` · `getOpenAIModel()` → `gpt-5.5`. `isGpt55WriterDominant()` 시 Mission prose·Editorial·로컬 template fallback 송출 차단, Writer Engine(GPT EXPAND/REWRITE) 항상 ON. 조사(Gemini/Naver)는 재료만.
+- **Writer GPT-5.5 고정·지배** — `isGpt55WriterDominant()` 시 Mission·Experience 카탈로그 패딩 금지, Writer Engine 항상 ON. Tri-AI max: Naver 12쿼리·Gemini·조사 2라운드·45s.
 - **비상 수동 실행** — 로컬/dev만 `BRICLOG_ALLOW_MANUAL_EVOLUTION_RUN=1`.
 <!-- END:briclog-ops -->
 
