@@ -11,12 +11,14 @@ import {
   assistFabBottom,
 } from "@/lib/ui/assistFabLayout";
 import {
-  DEVICE_LABELS,
-  nextPreviewDevice,
-} from "@/lib/workspace/devicePreviewCycle";
+  DEVICE_EMOJI,
+  DEVICE_TAB_SHORT,
+  deviceCycleAriaLabel,
+} from "@/lib/workspace/devicePreviewCopy";
+import { nextPreviewDevice } from "@/lib/workspace/devicePreviewCycle";
 
 /**
- * 도움말 FAB 위 — 아이콘만 탭하여 모바일·태블릿·PC 미리보기 전환
+ * 도움말 FAB 위 — 탭으로 폰·패드·PC 미리보기 순환
  */
 export default function WorkspaceDevicePreviewToggle({ className = "" }) {
   const { preview, native, simulating, cycle } = useWorkspacePreview();
@@ -27,20 +29,28 @@ export default function WorkspaceDevicePreviewToggle({ className = "" }) {
     <button
       type="button"
       onClick={cycle}
-      title={`${DEVICE_LABELS[preview]} 화면 · 다음 ${DEVICE_LABELS[next]}`}
-      aria-label={`화면 크기 ${DEVICE_LABELS[preview]}. 누르면 ${DEVICE_LABELS[next]}로 바뀝니다`}
+      title={`${DEVICE_EMOJI[preview]} ${DEVICE_TAB_SHORT[preview]} · 다음 ${DEVICE_TAB_SHORT[next]}`}
+      aria-label={deviceCycleAriaLabel(preview, next)}
       className={`fixed z-[90] cursor-pointer ${ASSIST_FAB_SIZE} ${ASSIST_FAB_SHELL} ${ASSIST_FAB_SIDE} ${
         simulating ? ASSIST_FAB_ACTIVE : ASSIST_FAB_IDLE
       } ${bottom.device} ${className}`}
     >
-      <SketchDeviceIcon
-        device={preview}
-        active={simulating}
-        className="h-6 w-6 sm:h-7 sm:w-7"
-      />
+      <span className="relative inline-flex items-center justify-center">
+        <SketchDeviceIcon
+          device={preview}
+          active={simulating}
+          className="h-6 w-6 sm:h-7 sm:w-7"
+        />
+        <span
+          className="absolute -right-1 -top-1 text-[11px] leading-none"
+          aria-hidden
+        >
+          {DEVICE_EMOJI[preview]}
+        </span>
+      </span>
       {native !== preview ? (
         <span className="sr-only">
-          실제 기기는 {DEVICE_LABELS[native]}
+          실제 기기는 {DEVICE_TAB_SHORT[native]}
         </span>
       ) : null}
     </button>

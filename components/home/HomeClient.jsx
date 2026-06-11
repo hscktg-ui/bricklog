@@ -6,6 +6,7 @@ import AuthForm from "@/components/AuthForm";
 import LandingPage from "@/components/landing/LandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
 import LandingDevicePreviewToggle from "@/components/landing/LandingDevicePreviewToggle";
+import LandingFloatingDeviceBar from "@/components/landing/LandingFloatingDeviceBar";
 import Toast from "@/components/Toast";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import TermsConsentModal from "@/components/auth/TermsConsentModal";
@@ -350,6 +351,7 @@ export default function HomeClient() {
         />
         {!authMode && (
           <>
+            <LandingFloatingDeviceBar />
             <LandingDevicePreviewToggle className="hidden sm:flex" />
             <BriclogAssistant layout="landing" />
           </>

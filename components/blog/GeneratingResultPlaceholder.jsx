@@ -51,12 +51,11 @@ export default function GeneratingResultPlaceholder({
   );
 
   const title = revealing
-    ? `${channelLabel} 표시 중…`
-    : `${channelLabel} 만드는 중…`;
+    ? "원고 표시 중…"
+    : "원고 작성 중…";
   const body = revealing
-    ? "완성본을 화면에 올리고 있어요. 잠시만 기다려 주세요."
-    : stepLabel ||
-      "브랜드·지역·주제에 맞춰 이야기를 쓰고 있어요. 잠시만 기다려 주세요.";
+    ? "완성본을 올리고 있어요."
+    : stepLabel || "브랜드·지역·주제에 맞춰 쓰고 있어요.";
 
   const elapsedSec =
     startedAt && !revealing
@@ -164,8 +163,8 @@ export default function GeneratingResultPlaceholder({
         </p>
       ) : null}
       {mobileSimple && !revealing ? (
-        <p className="mt-4 text-center text-[12px] text-[#8B95A1]">
-          완성되면 「편집본」으로 자동 전환됩니다 · 창을 닫지 마세요
+        <p className="mt-4 text-center text-[12px] font-medium text-[#8B95A1]">
+          완성되면 「원고」로 전환 · 창을 닫지 마세요
         </p>
       ) : null}
     </div>

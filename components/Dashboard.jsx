@@ -63,6 +63,7 @@ import {
 import ProfileSetupBanner from "@/components/ProfileSetupBanner";
 import { WorkspacePreviewProvider, useWorkspacePreview } from "@/context/WorkspacePreviewContext";
 import WorkspaceDevicePreviewToggle from "@/components/workspace/WorkspaceDevicePreviewToggle";
+import WorkspaceDevicePreviewTabs from "@/components/workspace/WorkspaceDevicePreviewTabs";
 import DevicePreviewViewport from "@/components/workspace/DevicePreviewViewport";
 import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
@@ -849,7 +850,10 @@ function DashboardLayout({
       </div>
 
       {!demoMode && !isLaunchBuild() ? (
-        <WorkspaceDevicePreviewToggle className="hidden sm:flex" />
+        <>
+          <WorkspaceDevicePreviewTabs />
+          <WorkspaceDevicePreviewToggle className="hidden sm:flex" />
+        </>
       ) : null}
       <MobileBottomNav
           activeMenu={showChannelWelcome ? null : activeMenu}

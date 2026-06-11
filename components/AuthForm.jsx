@@ -433,10 +433,11 @@ export default function AuthForm({
             device={previewDevice}
             onChange={setPreviewDevice}
             simulating={simulating}
+            native={landingPreview?.native ?? previewDevice}
             compact
           />
           <p className="mt-2 text-center text-[11px] leading-snug text-[#8B95A1]">
-            로그인 후에도 같은 화면 크기로 작업할 수 있어요
+            로그인 후에도 같은 화면으로 이어갑니다
           </p>
         </div>
       )}
