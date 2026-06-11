@@ -8,6 +8,7 @@ import {
   buildChatCompletionCreateParams,
   resolveWriterModel,
 } from "../lib/llm/openaiCompletionParams.js";
+import { isGpt55WriterDominant } from "../lib/llm/llmProvider.js";
 
 const key = (process.env.OPENAI_API_KEY || "").trim();
 const configured = key.length >= 20 && key.startsWith("sk-");
@@ -19,6 +20,7 @@ if (!configured) {
 
 const model = resolveWriterModel();
 console.log("OPENAI_WRITER_MODEL (locked):", model);
+console.log("gpt55Dominant:", isGpt55WriterDominant());
 console.log("matches SSOT:", model === OPENAI_WRITER_MODEL);
 
 if (process.env.OPENAI_MODEL && process.env.OPENAI_MODEL !== OPENAI_WRITER_MODEL) {
