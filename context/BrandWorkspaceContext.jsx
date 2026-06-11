@@ -17,7 +17,6 @@ import {
   saveAllBrands,
   recordBrandContent,
   createEmptyBrandMemory,
-  searchBrands,
   importDemoSampleBrands,
 } from "@/lib/brands/brandMemory";
 import { setBrandStorageScope } from "@/lib/brands/brandStorageScope";
@@ -42,7 +41,6 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
   const [agency, setAgency] = useState(null);
   const [brands, setBrands] = useState([]);
   const [activeBrandId, setActiveBrandId] = useState(null);
-  const [brandSearch, setBrandSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const isDemo = isInternalDemoWorkspace(userId, demoMode);
   const useServer =
@@ -93,11 +91,6 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
   const activeBrand = useMemo(
     () => (activeBrandId ? findBrand(brands, activeBrandId) : null),
     [activeBrandId, brands]
-  );
-
-  const filteredBrands = useMemo(
-    () => searchBrands(brandSearch, brands),
-    [brandSearch, brands]
   );
 
   const selectBrand = useCallback((id) => {
@@ -356,12 +349,10 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
   const value = useMemo(
     () => ({
       agency,
-      brands: filteredBrands,
+      brands,
       allBrands: brands,
       activeBrand,
       activeBrandId,
-      brandSearch,
-      setBrandSearch,
       selectBrand,
       addBrand,
       updateActiveBrand,
@@ -383,11 +374,9 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
     }),
     [
       agency,
-      filteredBrands,
       brands,
       activeBrand,
       activeBrandId,
-      brandSearch,
       selectBrand,
       addBrand,
       updateActiveBrand,

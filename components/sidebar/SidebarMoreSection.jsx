@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import BrandSwitcher from "@/components/BrandSwitcher";
 import SubscriptionPanel from "@/components/billing/SubscriptionPanel";
 import SidebarMenuOrderEditor from "@/components/sidebar/SidebarMenuOrderEditor";
 import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
@@ -18,10 +17,7 @@ export default function SidebarMoreSection({
   demoMode,
   onUpgradeClick,
   onToast,
-  showBrandWarehouse = false,
-  onBrandChange,
   onMobileClose,
-  brandWarehouseSummary,
   inNav = false,
   userId = null,
   primaryChannel = "blog",
@@ -63,20 +59,6 @@ export default function SidebarMoreSection({
                 </span>
               </span>
             </label>
-          )}
-
-          {showBrandWarehouse && onBrandChange && (
-            <div>
-              <p className="mb-1 text-[11px] font-medium text-[#8B95A1]">
-                브랜드 바꾸기
-              </p>
-              <BrandSwitcher
-                compact
-                onBrandChange={onBrandChange}
-                onMobileClose={onMobileClose}
-                summaryLine={brandWarehouseSummary}
-              />
-            </div>
           )}
 
           <div className="rounded-lg border border-[#E8EBED] bg-white px-2.5 py-2">

@@ -7,6 +7,7 @@ import { itemsFromBrandArchive } from "@/lib/growth/brandArchiveHistory";
 import { mergeDraftHistoryItems } from "@/lib/growth/mergeDraftHistoryItems";
 import { REVIEW_DRAFT_SAVED_EVENT } from "@/lib/review/persistReviewDraft";
 import { normalizePlanId } from "@/lib/billing/plans";
+import BrandMemoryPanel from "@/components/BrandMemoryPanel";
 
 const TABS = [
   { id: "history", label: "저장한 글" },
@@ -205,23 +206,6 @@ export default function GrowthStudio({
       setLearningLoading(false);
     }
   }, [brandId, notify]);
-
-  const recomputeLearning = async () => {
-    if (!brandId) return;
-    setLearningLoading(true);
-    try {
-      const data = await fetchWithAuth(
-        `/api/memory/brand-learning?brandId=${encodeURIComponent(brandId)}`,
-        { method: "POST" }
-      );
-      setBrandLearning((prev) => ({ ...prev, ...data }));
-      notify("브랜드 습관을 다시 집계했습니다.", "success");
-    } catch (err) {
-      notify(err.message, "error");
-    } finally {
-      setLearningLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (tab === "history") loadItems();
@@ -517,14 +501,7 @@ export default function GrowthStudio({
                 · 이모지: {brandLearning.profile.styleFingerprint.emojiDensity}
               </p>
             )}
-            <button
-              type="button"
-              disabled={!brandId || learningLoading}
-              onClick={recomputeLearning}
-              className="rounded-lg border border-[#E8EBED] px-4 py-2 text-[12px] font-medium text-[#4E5968] disabled:opacity-50"
-            >
-              습관 다시 집계
-            </button>
+            <BrandMemoryPanel embedded defaultOpen />
           </div>
         )}
 

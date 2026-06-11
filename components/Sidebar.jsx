@@ -243,10 +243,7 @@ export default function Sidebar({
               onToast={onToast}
               demoMode={demoMode}
               onUpgradeClick={onUpgradeClick}
-              showBrandWarehouse={showBrandWarehouse}
-              onBrandChange={onBrandChange}
               onMobileClose={onMobileClose}
-              brandWarehouseSummary={hub.summaries.warehouse}
               inNav
               userId={userId}
               primaryChannel={effectivePrimary}

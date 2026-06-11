@@ -78,7 +78,6 @@ import { serializeContent } from "@/lib/contentFormat";
 import { saveGeneration, saveChannelGeneration } from "@/lib/generations";
 import { getPurposeModifier } from "@/lib/prompts/purposes";
 import { getToneModifier } from "@/lib/prompts/tones";
-import { recordGenerationSignal } from "@/lib/trends/trendIntelligence";
 import {
   reapplyBlogEdits,
   reapplyPlaceEdits,
@@ -621,22 +620,31 @@ export function ContentProvider({
     if (!brand?.brandName?.trim() || !brandId) return;
     setBlogInput((prev) => {
       const seeded = brandMemoryToFormInput(brand);
-      const merged = {
-        ...seeded,
-        ...prev,
-        brandId,
-        brandName: prev.brandName?.trim() || brand.brandName?.trim() || seeded.brandName,
-        region: prev.region?.trim() || seeded.region || brand.region,
-        industry: prev.industry?.trim() || seeded.industry,
-        topic: prev.topic?.trim() || seeded.topic,
-        mainKeyword: prev.mainKeyword?.trim() || seeded.mainKeyword,
-        subKeyword: prev.subKeyword?.trim() || seeded.subKeyword,
-        excludePhrases: prev.excludePhrases?.trim()
-          ? prev.excludePhrases
-          : seeded.excludePhrases,
-      };
+      const brandSwitched = prev.brandId !== brandId;
+      const merged = brandSwitched
+        ? {
+            ...seeded,
+            brandId,
+            contentDate: prev.contentDate || today,
+          }
+        : {
+            ...seeded,
+            ...prev,
+            brandId,
+            brandName: prev.brandName?.trim() || brand.brandName?.trim() || seeded.brandName,
+            region: prev.region?.trim() || seeded.region || brand.region,
+            industry: prev.industry?.trim() || seeded.industry,
+            topic: prev.topic?.trim() || seeded.topic,
+            mainKeyword: prev.mainKeyword?.trim() || seeded.mainKeyword,
+            subKeyword: prev.subKeyword?.trim() || seeded.subKeyword,
+            tone: prev.tone || seeded.tone,
+            excludePhrases: prev.excludePhrases?.trim()
+              ? prev.excludePhrases
+              : seeded.excludePhrases,
+          };
       const ensured = ensureChannelGenerateInput(merged, brand);
       if (
+        !brandSwitched &&
         ensured.values.brandName === prev.brandName &&
         ensured.values.region === prev.region &&
         ensured.values.brandId === prev.brandId
@@ -650,6 +658,7 @@ export function ContentProvider({
     brandHooks?.activeBrandId,
     brandHooks?.activeBrand?.brandName,
     brandHooks?.activeBrand?.region,
+    brandHooks?.activeBrand?.tone,
   ]);
 
   useEffect(() => {
@@ -840,7 +849,8 @@ export function ContentProvider({
         brandHooks.activeBrandId,
         "blog",
         before,
-        plain
+        plain,
+        brandHooks.activeBrand
       );
       if (learned) brandHooks?.updateActiveBrand?.(learned);
     }
@@ -874,7 +884,8 @@ export function ContentProvider({
         brandHooks.activeBrandId,
         "place",
         before,
-        plain
+        plain,
+        brandHooks.activeBrand
       );
       if (learned) brandHooks?.updateActiveBrand?.(learned);
     }
@@ -891,7 +902,8 @@ export function ContentProvider({
         brandHooks.activeBrandId,
         "instagram",
         before,
-        plain
+        plain,
+        brandHooks.activeBrand
       );
       if (learned) brandHooks?.updateActiveBrand?.(learned);
     }
@@ -1417,9 +1429,6 @@ export function ContentProvider({
 
         if (result.mode === "llm" && result.meta?.passOutput) {
           brandHooks?.onChannelSaved?.("blog", blog);
-          recordGenerationSignal(brandHooks?.activeBrandId, "blog", {
-            opener: blog?.sections?.[0]?.body?.slice(0, 60),
-          });
         }
 
         const runPostBlogTail = async () => {
@@ -2406,7 +2415,9 @@ export function ContentProvider({
             },
           };
           setter(updated);
-          if (brandId) learnEditorAIAction(brandId, actionId);
+          if (brandId) {
+            learnEditorAIAction(brandId, actionId, brandHooks?.activeBrand);
+          }
           pushRewriteVersion(`${contentIdPrefix}-${brandId}`, {
             label: `문장 다듬기 · ${actionId}`,
             content: updated,
@@ -2774,9 +2785,6 @@ export function ContentProvider({
         brandHooks?.onChannelSaved?.("place", sig.content);
         persistChannelMemory("place", sig.content);
         void persistChannelHistory("place", formValues, sig.content);
-        recordGenerationSignal(brandHooks?.activeBrandId, "place", {
-          title: sig.content?.title,
-        });
         finishLoadingOverlay("place", startedAt, { success: true });
       } catch (err) {
         onToast?.(err?.message || "플레이스 소개글 만들기 실패", "error");
@@ -2930,9 +2938,6 @@ export function ContentProvider({
         brandHooks?.onChannelSaved?.("insta", sig.content);
         persistChannelMemory("instagram", sig.content);
         void persistChannelHistory("instagram", formValues, sig.content);
-        recordGenerationSignal(brandHooks?.activeBrandId, "instagram", {
-          hook: sig.content?.hook,
-        });
         finishLoadingOverlay("instagram", startedAt, { success: true });
       } catch (err) {
         onToast?.(err?.message || "인스타 캡션 만들기 실패", "error");

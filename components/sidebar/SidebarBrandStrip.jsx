@@ -6,13 +6,13 @@ import { buildSidebarPersonalization } from "@/lib/dashboard/sidebarPersonalizat
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 
 /**
- * 브랜드 창고 — 콘텐츠 기록이 쌓인 사용자에게만 (로고 아래가 아님)
+ * 브랜드 창고 — 사이드바 SSOT (설정에 중복 배치하지 않음)
  */
 export default function SidebarBrandStrip({
   profile,
   onBrandChange,
   onMobileClose,
-  showBrandWarehouse = false,
+  showBrandWarehouse = true,
 }) {
   const { activeBrand } = useBrandWorkspace();
   const hub = useMemo(
