@@ -55,8 +55,8 @@ for (const [label, input] of [
     process.exit(1);
   }
 
-  if (label === "flower" && !/실제로|많이\s*선택|생각보다/.test(full)) {
-    console.error("FAIL: flower missing experience markers");
+  if (label === "flower" && !/실제로|자주\s*활용|여름/.test(full)) {
+    console.error("FAIL: flower missing narrative markers");
     process.exit(1);
   }
 

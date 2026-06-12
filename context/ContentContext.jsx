@@ -1963,7 +1963,8 @@ export function ContentProvider({
               brandHooks?.activeBrandId,
               "blog",
               feedbackText,
-              intent
+              intent,
+              brandHooks?.activeBrand
             );
             persistChannelMemory("blog", next, buildMemMeta(next));
             trackContentEvent({
@@ -2056,7 +2057,8 @@ export function ContentProvider({
             brandHooks?.activeBrandId,
             "blog",
             feedbackText,
-            parseFeedbackIntent(feedbackText, tagIds)
+            parseFeedbackIntent(feedbackText, tagIds),
+            brandHooks?.activeBrand
           );
           persistChannelMemory("blog", next, buildMemMeta(next));
           trackContentEvent({
@@ -2106,7 +2108,8 @@ export function ContentProvider({
         brandHooks?.activeBrandId,
         "blog",
         feedbackText,
-        result.intent
+        result.intent,
+        brandHooks?.activeBrand
       );
       persistChannelMemory("blog", next, buildMemMeta(next));
       trackContentEvent({
@@ -2339,7 +2342,8 @@ export function ContentProvider({
           brandHooks?.activeBrandId,
           "place",
           feedbackText,
-          result?.intent
+          result?.intent,
+          brandHooks?.activeBrand
         );
         persistChannelMemory("place", next);
         brandHooks?.onChannelSaved?.("place", next);
@@ -2547,7 +2551,8 @@ export function ContentProvider({
           brandHooks?.activeBrandId,
           "instagram",
           feedbackText,
-          result?.intent
+          result?.intent,
+          brandHooks?.activeBrand
         );
         persistChannelMemory("instagram", next);
         brandHooks?.onChannelSaved?.("insta", next);

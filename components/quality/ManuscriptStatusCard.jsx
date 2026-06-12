@@ -15,9 +15,10 @@ export default function ManuscriptStatusCard({
 }) {
   if (!contextScore?.axes?.length) return null;
 
-  const grade = resolvePublishGrade(contextScore);
+  const grade = contextScore.publishGrade || resolvePublishGrade(contextScore);
   const lines = buildManuscriptStatusLines(contextScore.axes);
-  const { readiness, publishScore, checks } = contextScore;
+  const { readiness, publishScore, checks, sqvDiagnostic, humanVoiceMet, catalogProseOk } =
+    contextScore;
 
   return (
     <div
@@ -29,7 +30,7 @@ export default function ManuscriptStatusCard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8B95A1]">
-            현재 상태
+            발행 등급
           </p>
           <p
             className={`mt-1 font-bold text-[#191F28] ${
@@ -77,6 +78,22 @@ export default function ManuscriptStatusCard({
           </li>
         ))}
       </ul>
+
+      {!catalogProseOk ? (
+        <p className="mt-2 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[11px] text-[#E67700]">
+          카탈로그·체크리스트 문장이 섞여 있어 서사형으로 다듬는 중입니다.
+        </p>
+      ) : humanVoiceMet === false ? (
+        <p className="mt-2 text-[11px] text-[#8B95A1]">
+          사람 칼럼 말투 편집을 마치는 중입니다.
+        </p>
+      ) : null}
+
+      {showScoreDetails && sqvDiagnostic ? (
+        <p className="mt-2 text-[11px] text-[#8B95A1]">
+          내부 글값(SQV): {sqvDiagnostic.label} — 발행 등급과 별도로 참고용입니다.
+        </p>
+      ) : null}
 
       {showScoreDetails ? (
         <details className="mt-3 rounded-lg border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2">
