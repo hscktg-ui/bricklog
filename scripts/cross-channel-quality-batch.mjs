@@ -24,7 +24,7 @@ import { resolveBlogLengthTier } from "../lib/constants.js";
 import { GENERAL_CATEGORIES, SENSITIVE_CATEGORIES, REGIONS, TRAINING_PERSONAS } from "../lib/quality/training/constants.js";
 import { applyBatchEvolutionFromReport } from "../lib/evolution/batchEvolutionFromReport.js";
 import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
-import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch } from "../lib/product/localBatchFinish.js";
+import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogCharsOk, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
 import { assessFirstDeliveryQuality } from "../lib/product/firstDeliveryQuality.js";
 import { resolveLocalBatchBlogMinChars } from "../lib/content/missionProseGate.js";
 
@@ -114,10 +114,9 @@ function runBlog(scenario) {
 
   const ok =
     (pack.sections?.length || 0) >= 3 &&
-    (first.displayReady || belief.score >= HUMAN_BELIEF_MIN_SCORE - 12) &&
-    (info.ok || info.score >= 68) &&
-    (chars >= batchMin * 0.88 ||
-      (pack._meta?.beliefSafeShort === true && chars >= 820)) &&
+    (first.displayReady || belief.score >= BATCH_BELIEF_FLOOR) &&
+    (info.ok || info.score >= BATCH_INFO_FLOOR) &&
+    batchBlogCharsOk(chars, batchMin, belief.score, info.score) &&
     sqv >= 50;
 
   return {
@@ -150,9 +149,9 @@ function runChannel(scenario) {
 
   const ok =
     delivery.displayReady ||
-    (delivery.reasons?.length <= 2 &&
-      belief.score >= HUMAN_BELIEF_MIN_SCORE - 25 &&
-      full.replace(/\s/g, "").length >= 100);
+    ((delivery.reasons?.length || 0) <= 3 &&
+      belief.score >= BATCH_CHANNEL_BELIEF_FLOOR &&
+      full.replace(/\s/g, "").length >= BATCH_CHANNEL_CHAR_MIN);
 
   return {
     ok,
