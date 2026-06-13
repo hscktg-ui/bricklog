@@ -155,11 +155,11 @@ async function runUiSmoke() {
   };
 
   try {
-    await page.goto(`${BASE}/#public-brand-test`, {
+    await page.goto(`${BASE}/?skipIntro=1#public-brand-test`, {
       waitUntil: "domcontentloaded",
       timeout: 90_000,
     });
-    await page.waitForSelector("#public-brand-test", { timeout: 30_000 });
+    await page.waitForSelector("#public-brand-test form", { timeout: 30_000 });
 
     const form = page.locator("#public-brand-test form");
     const inputs = form.locator("input").filter({ hasNot: form.locator("[type=hidden]") });
@@ -167,7 +167,8 @@ async function runUiSmoke() {
     await inputs.nth(1).fill(SAMPLE.region);
     await inputs.nth(2).fill(SAMPLE.topic);
 
-    const submit = form.getByRole("button", { name: /무료|테스트/i }).first();
+    const submit = form.locator('button[type="submit"]').first();
+    await submit.waitFor({ state: "visible", timeout: 15_000 });
     await submit.click();
 
     const preview = page.getByText("발행 가능 샘플");

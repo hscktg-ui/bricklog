@@ -13,6 +13,7 @@ import { scoreHumanBelief, HUMAN_BELIEF_MIN_SCORE } from "../lib/product/humanBe
 import { scoreChecklistVoice } from "../lib/product/checklistVoiceEngine.js";
 import { deliverBlogDespiteGate } from "../lib/product/deliverySoftPass.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
+import { ensureMinBlogSections } from "../lib/content/blogLengthControl.js";
 import {
   GENERAL_CATEGORIES,
   SENSITIVE_CATEGORIES,
@@ -135,6 +136,9 @@ function runOne(scenario) {
   let improved;
   try {
     improved = applyV17PostWritePack(polluted, { input, ...input }, "blog");
+    if ((improved.sections?.length || 0) < 3) {
+      improved = ensureMinBlogSections(improved, { input }, input, 3);
+    }
   } catch (err) {
     return {
       id: scenario.id,

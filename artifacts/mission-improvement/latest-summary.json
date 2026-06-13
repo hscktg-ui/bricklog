@@ -1,11 +1,139 @@
 {
-  "startedAt": "2026-05-31T06:40:13.742Z",
+  "startedAt": "2026-06-13T10:48:51.426Z",
   "total": 115,
-  "pass": 115,
-  "fail": 0,
+  "pass": 5,
+  "fail": 110,
   "errors": 0,
-  "passRate": 100,
-  "beliefAvg": 88.1,
-  "failReasons": {},
-  "failedSamples": []
+  "passRate": 4.3,
+  "beliefAvg": 68.7,
+  "failReasons": {
+    "human_belief_low": 77,
+    "checklist_voice": 23,
+    "sections_thin": 67,
+    "delivery_blocked": 67
+  },
+  "failedSamples": [
+    {
+      "id": "cat_0_0",
+      "label": "카페 · 강남",
+      "beliefAfter": 42,
+      "issues": [
+        "persona_voice_forbidden",
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_0_1",
+      "label": "카페 · 홍대",
+      "beliefAfter": 42,
+      "issues": [
+        "persona_voice_forbidden",
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_0_2",
+      "label": "카페 · 부산 해운대",
+      "beliefAfter": 69,
+      "issues": [
+        "checklist_template_high"
+      ]
+    },
+    {
+      "id": "cat_0_3",
+      "label": "카페 · 대구 수성",
+      "beliefAfter": 38,
+      "issues": [
+        "persona_voice_weak",
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_0_4",
+      "label": "카페 · 인천 송도",
+      "beliefAfter": 60,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_1_0",
+      "label": "꽃집 · 홍대",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_1_1",
+      "label": "꽃집 · 부산 해운대",
+      "beliefAfter": 69,
+      "issues": [
+        "checklist_template_high"
+      ]
+    },
+    {
+      "id": "cat_1_2",
+      "label": "꽃집 · 대구 수성",
+      "beliefAfter": 60,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_1_3",
+      "label": "꽃집 · 인천 송도",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_1_4",
+      "label": "꽃집 · 제주 연동",
+      "beliefAfter": 42,
+      "issues": [
+        "persona_voice_forbidden",
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_2_0",
+      "label": "음식점 · 부산 해운대",
+      "beliefAfter": 69,
+      "issues": [
+        "checklist_template_high"
+      ]
+    },
+    {
+      "id": "cat_2_1",
+      "label": "음식점 · 대구 수성",
+      "beliefAfter": 52,
+      "issues": [
+        "persona_voice_weak",
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_2_2",
+      "label": "음식점 · 인천 송도",
+      "beliefAfter": 84,
+      "issues": []
+    },
+    {
+      "id": "cat_2_3",
+      "label": "음식점 · 제주 연동",
+      "beliefAfter": 40,
+      "issues": [
+        "persona_voice_forbidden",
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_2_4",
+      "label": "음식점 · 광주 상무",
+      "beliefAfter": 84,
+      "issues": []
+    }
+  ]
 }
