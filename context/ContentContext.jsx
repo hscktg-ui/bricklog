@@ -155,7 +155,7 @@ import {
 } from "@/lib/workspace/brandFormSync";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
 import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
-import { normalizeBlogGenerationFailure } from "@/lib/generation/normalizeGenerationError";
+import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
 import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
@@ -171,7 +171,7 @@ function allowBlogUiRescue() {
 
 function resolveBlogGenerationFailMessage(pipelineInput, result) {
   const msg = String(result?.userMessage || "").trim();
-  if (msg) return msg;
+  if (msg && !isTechnicalErrorMessage(msg)) return msg;
   if (!hasFilledBlogAxes(pipelineInput)) {
     return "브랜드 · 지역 · 주제를 모두 입력해 주세요.";
   }
