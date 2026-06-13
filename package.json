@@ -47,6 +47,7 @@
     "test:eight-users": "node scripts/eight-user-smoke.mjs",
     "test:hundred-users": "node --import ./scripts/register-alias.mjs scripts/hundred-user-ux-smoke.mjs",
     "run:hundred-feedback": "node --import ./scripts/register-alias.mjs scripts/run-hundred-persona-feedback.mjs",
+    "run:thousand-feedback": "node --import ./scripts/register-alias.mjs scripts/run-thousand-persona-feedback.mjs",
     "test:brand-industry-mismatch": "node --import ./scripts/register-alias.mjs scripts/test-brand-industry-mismatch.mjs",
     "test:context-lock": "node --import ./scripts/register-alias.mjs scripts/test-context-lock.mjs",
     "test:director-context": "node --import ./scripts/register-alias.mjs scripts/test-director-context.mjs",

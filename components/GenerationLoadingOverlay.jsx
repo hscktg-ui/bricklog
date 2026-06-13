@@ -195,6 +195,11 @@ export default function GenerationLoadingOverlay({
                 ? ` · ${LOADING.generationRemaining(remainingLabel)}`
                 : null}
             </p>
+            {!stepLabel && steps.length > 1 ? (
+              <p className="mt-1.5 text-center text-[10px] font-semibold tabular-nums text-[#03A94D]">
+                {stepIndex + 1} / {steps.length}
+              </p>
+            ) : null}
             <p className="mt-1 text-center text-[11px] text-[#B0B8C1]">
               {!remainingLabel
                 ? LOADING.generationOverEstimate

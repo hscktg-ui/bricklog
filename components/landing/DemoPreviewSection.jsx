@@ -49,7 +49,7 @@ export default function DemoPreviewSection({ sample }) {
           </span>
         </div>
         <p className="mt-2 text-[11px] text-[#8B95A1]">
-          접속할 때마다 다른 업종 예시가 보입니다 · 가입 후 같은 흐름으로 작성됩니다
+          접속할 때마다 다른 업종 예시가 보입니다 · 스크롤해 본문 전체를 확인할 수 있어요
         </p>
 
         <div className="mt-4 flex gap-1 rounded-xl bg-[#F7F8FA] p-1">
@@ -75,7 +75,7 @@ export default function DemoPreviewSection({ sample }) {
           </span>
 
           <div
-            className="mt-4 max-h-[min(58vh,480px)] overflow-y-auto pr-1"
+            className="mt-4 max-h-[min(72vh,640px)] overflow-y-auto pr-1 scroll-smooth"
             suppressHydrationWarning
           >
             {tab === "blog" && <SampleBlogPreview blog={s.blog} />}

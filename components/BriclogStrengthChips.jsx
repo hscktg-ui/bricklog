@@ -7,6 +7,7 @@ import {
 } from "@/lib/persona/speakerTopicGuide";
 import { formatFeedbackAppliedCustomerLine } from "@/lib/feedback/feedbackAppliedDisplay";
 import { buildWorkspaceContextScore } from "@/lib/publicTest/briclogContextScore";
+import { buildEditorialReflectionChips } from "@/lib/product/editorialReflectionDisplay";
 import BriclogDepthPanel from "@/components/quality/BriclogDepthPanel";
 
 function DetailChip({ warn, children }) {
@@ -57,8 +58,29 @@ export default function BriclogStrengthChips({
         )
       : "");
 
+  const reflectionChips = useMemo(
+    () => buildEditorialReflectionChips(draft, blogInput || {}),
+    [draft, blogInput]
+  );
+
   return (
     <div className="space-y-3">
+      {reflectionChips.length > 0 ? (
+        <div
+          className="flex flex-wrap gap-1.5"
+          aria-label="입력 반영 요약"
+        >
+          {reflectionChips.map((chip) => (
+            <span
+              key={chip.id}
+              className="rounded-full border border-[#C8F0D8] bg-[#F0FFF5] px-2.5 py-1 text-[10px] font-semibold text-[#027A48]"
+            >
+              {chip.label}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
       <BriclogDepthPanel
         contextScore={contextScore}
         variant="compact"
