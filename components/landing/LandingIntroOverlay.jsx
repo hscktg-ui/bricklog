@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import BrandIcon from "@/components/BrandIcon";
 import { useViewport } from "@/hooks/useViewport";
 import { getLandingIntroCopy } from "@/lib/landing/introCopy";
 import {
@@ -21,7 +22,7 @@ const BRAND_LINE_CLASS = [
 function IntroProgress({ total, current }) {
   return (
     <div
-      className="mt-5 flex justify-center gap-1.5 sm:mt-6"
+      className="mt-6 flex justify-center gap-1.5 sm:mt-7"
       aria-hidden
     >
       {Array.from({ length: total }, (_, i) => (
@@ -29,9 +30,9 @@ function IntroProgress({ total, current }) {
           key={i}
           className={`h-1 rounded-full transition-[width,background-color] duration-300 ${
             i === current
-              ? "w-5 bg-[#03C75A]"
+              ? "w-6 bg-[#03C75A]"
               : i < current
-                ? "w-1.5 bg-[#03C75A]/35"
+                ? "w-1.5 bg-[#03C75A]/40"
                 : "w-1.5 bg-[#E8EBED]"
           }`}
         />
@@ -143,12 +144,10 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   }, [open]);
 
   useEffect(() => {
-    if (!open) return undefined;
-    const id = window.setTimeout(() => {
-      setCanStart(true);
-    }, 4_500);
+    if (!open || brandPhase) return undefined;
+    const id = window.setTimeout(() => setCanStart(true), 5_500);
     return () => window.clearTimeout(id);
-  }, [open]);
+  }, [open, brandPhase]);
 
   const finish = useCallback(() => {
     if (exiting || !canStart) return;
@@ -178,20 +177,33 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
       }}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(3,199,90,0.07),transparent_55%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(3,199,90,0.06),transparent_58%)]"
         aria-hidden
       />
 
       <div
-        className={`relative z-10 flex w-full max-w-lg flex-col items-center ${
+        className={`relative z-10 flex w-full max-w-md flex-col items-center sm:max-w-lg ${
           reduceMotion ? "" : "briclog-intro-desk-in"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="briclog-intro-card w-full px-5 py-8 text-center sm:px-8 sm:py-10">
+        <div className="mb-5 flex flex-col items-center gap-2">
+          <BrandIcon size={isMobile ? 32 : 36} />
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#8B95A1]">
+            BRICLOG
+          </p>
+        </div>
+
+        <div className="briclog-intro-card w-full px-5 py-9 text-center sm:px-8 sm:py-10">
+          <div
+            key={brandPhase ? "brand" : "lines"}
+            className={`min-h-[132px] sm:min-h-[148px] ${
+              reduceMotion ? "" : "briclog-intro-phase-in"
+            }`}
+          >
             {!brandPhase ? (
               <>
-                <div className="text-[17px] leading-[1.75] sm:text-[21px]">
+                <div className="text-[18px] leading-[1.75] sm:text-[22px]">
                   <p
                     className="min-h-[1.75em] font-medium text-[#191F28]"
                     aria-live="polite"
@@ -203,13 +215,15 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
               </>
             ) : (
               <div
-                className="flex min-h-[112px] flex-col items-center justify-center py-2 text-center sm:min-h-[132px]"
+                className="flex min-h-[132px] flex-col items-center justify-center py-1 text-center sm:min-h-[148px]"
                 aria-live="polite"
               >
                 {brandDone.map((line, i) => (
                   <p
                     key={`done-${i}`}
-                    className={`${BRAND_LINE_CLASS[i] ?? ""} ${i === 1 ? "mt-2" : ""}`}
+                    className={`${BRAND_LINE_CLASS[i] ?? ""} briclog-intro-brand-fade ${
+                      i === 1 ? "mt-2" : ""
+                    }`}
                   >
                     {line}
                   </p>
@@ -225,9 +239,10 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                 ) : null}
               </div>
             )}
+          </div>
         </div>
 
-        <div className="mt-6 flex flex-col items-center gap-3 sm:mt-7">
+        <div className="mt-7 flex flex-col items-center gap-3 sm:mt-8">
           <button
             type="button"
             onClick={(e) => {
@@ -246,7 +261,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
           >
             {copy.startLabel}
           </button>
-          {canStart && (
+          {canStart && showCta && (
             <p className="text-[11px] text-[#8B95A1] sm:text-[12px]">
               화면을 눌러 시작할 수 있어요
             </p>

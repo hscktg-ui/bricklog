@@ -52,7 +52,7 @@ export default function DemoPreviewSection({ sample }) {
           접속할 때마다 다른 업종 예시가 보입니다 · 스크롤해 본문 전체를 확인할 수 있어요
         </p>
 
-        <div className="mt-4 flex gap-1 rounded-xl bg-[#F7F8FA] p-1">
+        <div className="mt-4 flex gap-1 rounded-xl bg-[#F7F8FA] p-1 ring-1 ring-[#E8EBED]/60">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -69,7 +69,7 @@ export default function DemoPreviewSection({ sample }) {
           ))}
         </div>
 
-        <div className="mt-4 rounded-2xl border border-[#E8EBED] bg-white p-5 shadow-sm sm:p-6">
+        <div className="mt-4 overflow-hidden rounded-2xl border border-[#E8EBED] bg-white shadow-[0_8px_32px_rgba(25,31,40,0.05)] sm:p-6 p-5">
           <span className="rounded-md bg-[#E8F9EF] px-2 py-0.5 text-[11px] font-semibold text-[#03A94D]">
             {tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"}
           </span>

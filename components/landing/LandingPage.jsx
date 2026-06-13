@@ -167,7 +167,20 @@ export default function LandingPage({ onAuthOpen, onStart }) {
         <details className="group border-t border-[#E8EBED] bg-white">
           <summary className="mx-auto flex max-w-6xl cursor-pointer list-none items-center justify-between gap-2 px-4 py-5 text-[14px] font-semibold text-[#4E5968] marker:content-none md:px-8 [&::-webkit-details-marker]:hidden">
             <span>브릭로그가 어떻게 돌아가는지 더 보기</span>
-            <span className="text-[#8B95A1] transition group-open:rotate-180">▾</span>
+            <svg
+              className="h-4 w-4 shrink-0 text-[#8B95A1] transition-transform duration-200 group-open:rotate-180"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </summary>
           <div className="border-t border-[#E8EBED] bg-[#FAFBFC]">
             <DemoFlow sample={sample} />

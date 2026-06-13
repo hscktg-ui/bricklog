@@ -10,6 +10,8 @@ import {
   GREEN_CTA_SOLID,
 } from "@/lib/ui/actionButtonStyles";
 
+const CHANNEL_PILLS = ["이야기", "플레이스", "인스타"];
+
 export default function HeroSection({
   greeting,
   seasonCopy,
@@ -32,16 +34,27 @@ export default function HeroSection({
       className="relative overflow-hidden px-5 pb-10 pt-8 md:px-8 md:pb-16 md:pt-12"
       style={{ background: heroTheme.heroGradient }}
     >
+      <div
+        className="pointer-events-none absolute -right-16 top-8 h-56 w-56 rounded-full blur-3xl"
+        style={{ backgroundColor: heroTheme.blobPrimary }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -left-20 bottom-0 h-48 w-48 rounded-full blur-3xl"
+        style={{ backgroundColor: heroTheme.blobSecondary }}
+        aria-hidden
+      />
+
       <div className="relative mx-auto max-w-2xl text-center">
         <p className="text-[12px] font-semibold tracking-[0.08em] text-[#03A94D]">
           브릭로그
         </p>
 
-        <ul className="mx-auto mt-4 flex justify-center gap-2">
+        <ul className="mx-auto mt-4 flex max-w-md flex-wrap justify-center gap-2">
           {LANDING_HERO_MOBILE_TRUST.map((line) => (
             <li
               key={line}
-              className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold text-[#4E5968] ring-1 ring-[#E8EBED]"
+              className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-[#4E5968] shadow-[0_1px_4px_rgba(25,31,40,0.04)] ring-1 ring-[#E8EBED]/90 backdrop-blur-sm"
             >
               {line}
             </li>
@@ -67,12 +80,19 @@ export default function HeroSection({
           <p className="mt-3 text-[12px] text-[#8B95A1]">{seasonBadge}</p>
         ) : null}
 
-        <p className="mt-5 text-[13px] font-medium tracking-wide text-[#8B95A1]">
-          이야기 · 플레이스 · 인스타
-        </p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          {CHANNEL_PILLS.map((label) => (
+            <span
+              key={label}
+              className="rounded-full bg-white/85 px-3 py-1 text-[12px] font-semibold text-[#03A94D] ring-1 ring-[#03C75A]/15 backdrop-blur-sm"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
 
         <div
-          className="mx-auto mt-5 max-w-sm rounded-2xl border border-[#E8EBED]/80 bg-white/95 px-4 py-3.5 text-left shadow-[0_2px_16px_rgba(0,0,0,0.04)] backdrop-blur-sm"
+          className="mx-auto mt-5 max-w-sm rounded-2xl border border-[#E8EBED]/80 bg-white/95 px-4 py-3.5 text-left shadow-[0_4px_24px_rgba(25,31,40,0.05)] backdrop-blur-sm"
           suppressHydrationWarning
         >
           <p className="text-[12px] font-semibold text-[#03A94D]">
@@ -89,7 +109,7 @@ export default function HeroSection({
             type="button"
             data-briclog-cta="test"
             onClick={onTest || onStart}
-            className={`w-full sm:w-auto sm:min-w-[260px] ${GREEN_CTA_SOLID} min-h-[52px]! text-[16px]! shadow-[0_4px_20px_rgba(3,199,90,0.25)]`}
+            className={`w-full sm:w-auto sm:min-w-[260px] ${GREEN_CTA_SOLID} min-h-[52px]! text-[16px]! shadow-[0_4px_20px_rgba(3,199,90,0.22)]`}
           >
             <span>내 브랜드 테스트하기</span>
           </button>

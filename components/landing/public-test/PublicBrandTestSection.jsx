@@ -207,7 +207,7 @@ export default function PublicBrandTestSection({ onSignup }) {
           ) : null}
           <form
             onSubmit={handleSubmit}
-            className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] p-5 md:p-6"
+            className="rounded-2xl border border-[#E8EBED] bg-white p-5 shadow-[0_8px_32px_rgba(25,31,40,0.05)] md:p-6"
           >
             <label className="block">
               <span className="text-[12px] font-semibold text-[#4E5968]">
@@ -218,7 +218,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
                 placeholder={activeSample.brandName}
-                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
+                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none transition focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/12"
               />
             </label>
             <label className="mt-4 block">
@@ -230,7 +230,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
                 placeholder={activeSample.region}
-                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
+                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none transition focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/12"
               />
             </label>
             <label className="mt-4 block">
@@ -242,7 +242,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder={activeSample.topic}
-                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none focus:border-[#03C75A]/50"
+                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none transition focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/12"
               />
               <p className="mt-1.5 text-[11px] leading-relaxed text-[#8B95A1]">
                 {PUBLIC_TEST_TOPIC_HINT}

@@ -32,7 +32,7 @@ function AnimatedStatCard({
 }) {
   const target = metric?.value ?? 0;
   const from = useMemo(() => tickerStart(target, index), [target, index]);
-  const { value, done } = useCountUp(target, {
+  const { value } = useCountUp(target, {
     from,
     duration: COUNT_DURATION_MS,
     delay: index * STAGGER_MS,
@@ -41,7 +41,7 @@ function AnimatedStatCard({
 
   const waiting = !loading && !reduceMotion && !animationActive;
   const display = loading
-    ? "···"
+    ? null
     : reduceMotion
       ? metric?.display ?? formatRolling(target)
       : waiting
@@ -64,27 +64,30 @@ function AnimatedStatCard({
         {metric?.label ?? "—"}
       </p>
       <div className="mt-2 flex items-baseline gap-2">
-        <p
-          className={`text-[28px] font-bold tabular-nums tracking-tight md:text-[32px] ${
-            loading
-              ? "animate-pulse text-[#C5CAD0]"
-              : rising
+        {loading ? (
+          <span
+            className="inline-block h-8 w-[4.5rem] animate-pulse rounded-lg bg-[#E8EBED]"
+            aria-hidden
+          />
+        ) : (
+          <p
+            className={`text-[28px] font-bold tabular-nums tracking-tight md:text-[32px] ${
+              rising
                 ? "text-[#03C75A]"
                 : waiting
                   ? "text-[#8B95A1]"
                   : "text-[#191F28]"
-          }`}
-          aria-live="polite"
-        >
-          {display}
-        </p>
-        {!loading && animationActive && !reduceMotion && (rising || done) && (
-          <span
-            className="animate-ticker-up text-[14px] font-bold text-[#03C75A]"
-            aria-hidden
+            }`}
+            aria-live="polite"
           >
-            ▲
-          </span>
+            {display}
+          </p>
+        )}
+        {!loading && animationActive && !reduceMotion && rising && (
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-[#03C75A]"
+            aria-hidden
+          />
         )}
       </div>
     </div>
