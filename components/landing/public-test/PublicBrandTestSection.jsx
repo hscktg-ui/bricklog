@@ -152,7 +152,7 @@ export default function PublicBrandTestSection({ onSignup }) {
     >
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-start lg:gap-14">
         <div className="max-w-lg">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#03A94D]">
+          <p className="text-[12px] font-semibold text-[#03A94D]">
             가입 전 무료 테스트
           </p>
           <h2 className="mt-3 text-[26px] font-bold leading-[1.25] text-[#191F28] md:text-[32px]">

@@ -7,11 +7,6 @@ import {
   INTRO_BRAND_REVEAL_DELAY_MS,
   INTRO_BRAND_REVEAL_DELAY_MS_MOBILE,
 } from "@/lib/landing/introTiming";
-import {
-  disposeIntroTypeSound,
-  playIntroTypeTick,
-  unlockIntroTypeSound,
-} from "@/lib/landing/introTypeSound";
 import { BRICLOG_CTA_PILL } from "@/lib/ui/actionButtonStyles";
 import {
   useIntroRevealTypewriter,
@@ -19,20 +14,9 @@ import {
 } from "@/lib/landing/useIntroTypewriter";
 
 const BRAND_LINE_CLASS = [
-  "font-mono text-[28px] font-bold tracking-[0.14em] text-[#5BC77A] sm:text-[38px]",
+  "text-[28px] font-bold tracking-tight text-[#03A94D] sm:text-[36px]",
   "text-[21px] font-bold tracking-tight text-[#191F28] sm:text-[28px]",
 ];
-
-function IntroCursor({ reduceMotion }) {
-  return (
-    <span
-      className={`ml-0.5 inline-block h-[1.05em] w-[3px] translate-y-[2px] rounded-[1px] bg-[#03C75A] align-middle ${
-        reduceMotion ? "opacity-100" : "briclog-intro-cursor"
-      }`}
-      aria-hidden
-    />
-  );
-}
 
 function IntroProgress({ total, current }) {
   return (
@@ -57,7 +41,7 @@ function IntroProgress({ total, current }) {
 }
 
 /**
- * 메모 1~4줄(타자 소리) → 브랜드 → 「지금 시작하기」
+ * 인트로 카피 순차 노출 → 브랜드 → 「지금 시작하기」
  */
 export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   const { isMobile } = useViewport();
@@ -88,27 +72,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  const handleMemoTypeTick = useCallback(() => {
-    if (!reduceMotion) playIntroTypeTick();
-  }, [reduceMotion]);
-
-  const handleBrandTypeTick = useCallback(() => {
-    if (!reduceMotion) playIntroTypeTick();
-  }, [reduceMotion]);
-
-  useEffect(() => {
-    if (!open || reduceMotion) return undefined;
-    const unlock = () => unlockIntroTypeSound();
-    unlockIntroTypeSound();
-    window.addEventListener("pointerdown", unlock, { once: true, passive: true });
-    window.addEventListener("keydown", unlock, { once: true });
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-      disposeIntroTypeSound();
-    };
-  }, [open, reduceMotion]);
-
   const brandRevealDelay = isMobile
     ? INTRO_BRAND_REVEAL_DELAY_MS_MOBILE
     : INTRO_BRAND_REVEAL_DELAY_MS;
@@ -117,13 +80,12 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     schedule(() => setBrandPhase(true), brandRevealDelay);
   }, [schedule, brandRevealDelay]);
 
-  const { lineIndex, display, active: linesActive } = useIntroTypewriter({
+  const { lineIndex, display } = useIntroTypewriter({
     enabled: open && !brandPhase,
     lines: copy.lines,
     reduceMotion,
     loop: false,
     onFinished: handleLinesFinished,
-    onTypeTick: handleMemoTypeTick,
   });
 
   const {
@@ -136,7 +98,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     lines: copy.brandLines,
     reduceMotion,
     startDelayMs: reduceMotion ? 0 : isMobile ? 180 : 260,
-    onTypeTick: handleBrandTypeTick,
   });
 
   const brandLineCount = copy.brandLines.length;
@@ -197,7 +158,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
 
   if (!open) return null;
 
-  const lineNo = String(lineIndex + 1).padStart(2, "0");
   const showCta = brandPhase && (reduceMotion || brandComplete);
 
   return (
@@ -208,7 +168,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
       role="dialog"
       aria-modal="true"
       aria-label="BRICLOG 소개"
-      onPointerDown={() => unlockIntroTypeSound()}
       onClick={() => canStart && !exiting && finish()}
       tabIndex={canStart ? 0 : -1}
       onKeyDown={(e) => {
@@ -229,33 +188,15 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="briclog-intro-card w-full overflow-hidden">
-          <div className="flex items-center gap-2 border-b border-[#E8EBED]/80 bg-[#F7F8FA] px-3 py-2 sm:px-4 sm:py-2.5">
-            {!isMobile && (
-              <>
-                <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" aria-hidden />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" aria-hidden />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#28CA41]" aria-hidden />
-              </>
-            )}
-            <span className="truncate font-mono text-[11px] text-[#6B7684] sm:text-[12px]">
-              {copy.editorTitle}
-            </span>
-          </div>
-
-          <div className="px-4 py-6 sm:min-h-[200px] sm:px-6 sm:py-8">
+        <div className="briclog-intro-card w-full px-5 py-8 text-center sm:px-8 sm:py-10">
             {!brandPhase ? (
               <>
-                <div className="flex gap-2.5 font-mono text-[15px] leading-[1.65] sm:gap-3 sm:text-[19px]">
-                  <span className="select-none pt-0.5 text-[11px] tabular-nums text-[#B0B8C1] sm:text-[12px]">
-                    {lineNo}
-                  </span>
+                <div className="text-[17px] leading-[1.75] sm:text-[21px]">
                   <p
-                    className="min-h-[1.65em] min-w-0 flex-1 font-medium text-[#191F28]"
+                    className="min-h-[1.75em] font-medium text-[#191F28]"
                     aria-live="polite"
                   >
                     {display}
-                    {linesActive && <IntroCursor reduceMotion={reduceMotion} />}
                   </p>
                 </div>
                 <IntroProgress total={lineCount} current={lineIndex} />
@@ -280,12 +221,10 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                     }`}
                   >
                     {brandDisplay}
-                    <IntroCursor reduceMotion={reduceMotion} />
                   </p>
                 ) : null}
               </div>
             )}
-          </div>
         </div>
 
         <div className="mt-6 flex flex-col items-center gap-3 sm:mt-7">

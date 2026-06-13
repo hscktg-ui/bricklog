@@ -19,8 +19,8 @@ export default function WhyBriclog() {
               key={item.title}
               className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] p-6"
             >
-              <span className="text-[32px] font-bold text-[#03C75A]/30">
-                {String(i + 1).padStart(2, "0")}
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#E8F9EF] text-[13px] font-bold text-[#03A94D]">
+                {i + 1}
               </span>
               <h3 className="mt-2 text-[17px] font-bold text-[#191F28]">
                 {item.title}

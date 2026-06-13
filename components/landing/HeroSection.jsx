@@ -32,11 +32,6 @@ export default function HeroSection({
       className="relative overflow-hidden px-5 pb-10 pt-8 md:px-8 md:pb-16 md:pt-12"
       style={{ background: heroTheme.heroGradient }}
     >
-      <div
-        className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-3xl"
-        style={{ backgroundColor: heroTheme.blobPrimary }}
-      />
-
       <div className="relative mx-auto max-w-2xl text-center">
         <p className="text-[12px] font-semibold tracking-[0.08em] text-[#03A94D]">
           브릭로그
@@ -80,7 +75,7 @@ export default function HeroSection({
           className="mx-auto mt-5 max-w-sm rounded-2xl border border-[#E8EBED]/80 bg-white/95 px-4 py-3.5 text-left shadow-[0_2px_16px_rgba(0,0,0,0.04)] backdrop-blur-sm"
           suppressHydrationWarning
         >
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[#03A94D]">
+          <p className="text-[12px] font-semibold text-[#03A94D]">
             오늘의 한 줄
           </p>
           <p className="mt-1.5 text-[15px] font-medium leading-snug text-[#191F28] line-clamp-2">

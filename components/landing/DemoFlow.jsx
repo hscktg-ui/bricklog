@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LandingPanelHeader from "@/components/landing/LandingPanelHeader";
 import { DEMO_FLOW_STEPS, LANDING_SAMPLE } from "@/lib/landing/sampleContent";
 
 const STEP_MS = 2200;
@@ -29,19 +30,12 @@ export default function DemoFlow({ sample, previewDevice = "desktop" }) {
         </p>
 
         <div className="mt-8 overflow-hidden rounded-2xl border border-[#E8EBED] bg-white shadow-[0_8px_40px_rgba(0,0,0,0.06)]">
-          <div className="flex gap-1 border-b border-[#E8EBED] bg-[#FAFBFC] px-4 py-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#28CA41]" />
-            <span className="ml-2 text-[10px] text-[#8B95A1]">
-              브릭로그 · 글쓰기
-            </span>
-          </div>
+          <LandingPanelHeader title="브릭로그 · 글쓰기" />
 
           <div className="grid min-h-[180px] grid-cols-1 gap-0 @min-[640px]:min-h-[220px] @min-[640px]:grid-cols-[1fr_1.2fr]">
             <div className="border-b border-[#E8EBED] p-5 md:border-b-0 md:border-r">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#8B95A1]">
-                단계 {step + 1} / {DEMO_FLOW_STEPS.length}
+              <p className="text-[12px] font-medium text-[#8B95A1]">
+                {step + 1}단계 · {DEMO_FLOW_STEPS.length}단계 중
               </p>
               <p
                 key={step}

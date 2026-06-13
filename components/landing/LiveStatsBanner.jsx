@@ -65,7 +65,7 @@ function AnimatedStatCard({
       </p>
       <div className="mt-2 flex items-baseline gap-2">
         <p
-          className={`font-mono text-[28px] font-bold tabular-nums tracking-tight md:text-[32px] ${
+          className={`text-[28px] font-bold tabular-nums tracking-tight md:text-[32px] ${
             loading
               ? "animate-pulse text-[#C5CAD0]"
               : rising

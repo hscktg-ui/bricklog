@@ -436,7 +436,7 @@ button:enabled,
   font-weight: 600;
 }
 
-/* 랜딩 풀스크린 인트로 — PC 에디터 */
+/* 랜딩 풀스크린 인트로 */
 @keyframes briclog-intro-desk-in {
   from {
     opacity: 0;
@@ -448,16 +448,6 @@ button:enabled,
   }
 }
 
-@keyframes briclog-intro-cursor {
-  0%,
-  42% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
 
 @keyframes briclog-intro-cta-blink {
   0%,
@@ -512,9 +502,6 @@ button:enabled,
   animation: briclog-intro-desk-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.briclog-intro-cursor {
-  animation: briclog-intro-cursor 1.15s step-end infinite;
-}
 
 .briclog-intro-cta-blink {
   animation: briclog-intro-cta-blink 4.2s ease-in-out infinite;

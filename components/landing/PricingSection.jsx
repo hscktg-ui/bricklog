@@ -15,7 +15,7 @@ export default function PricingSection({ onStart }) {
       className="border-t border-[#E8EBED] bg-white px-4 py-16 md:px-8"
     >
       <div className="mx-auto max-w-6xl">
-        <p className="text-center text-[11px] font-bold uppercase tracking-wider text-[#03A94D]">
+        <p className="text-center text-[12px] font-semibold text-[#03A94D]">
           요금제
         </p>
         <h2 className="mt-2 text-center text-[22px] font-bold text-[#191F28] md:text-[26px]">

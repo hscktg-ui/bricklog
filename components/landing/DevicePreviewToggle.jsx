@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SketchDeviceIcon from "@/components/icons/SketchDeviceIcon";
+import LandingPanelHeader from "@/components/landing/LandingPanelHeader";
 import {
   DEVICE_EMOJI,
   DEVICE_TAB_SHORT,
@@ -135,14 +136,10 @@ export function DevicePreviewFrame({ device, children, className = "" }) {
       style={{ maxWidth }}
     >
       <div className="overflow-hidden rounded-2xl border border-[#D1D6DB] bg-[#F7F8FA] shadow-[0_16px_48px_rgba(0,0,0,0.07)] ring-1 ring-black/[0.03]">
-        <div className="flex flex-wrap items-center gap-2 border-b border-[#E8EBED] bg-white px-4 py-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" aria-hidden />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" aria-hidden />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#28CA41]" aria-hidden />
-          <span className="ml-1 text-[11px] font-semibold text-[#4E5968]">
-            {DEVICE_EMOJI[device]} {DEVICE_TAB_SHORT[device]} · 브릭로그
-          </span>
-        </div>
+        <LandingPanelHeader
+          title={`${DEVICE_EMOJI[device]} ${DEVICE_TAB_SHORT[device]} · 브릭로그`}
+          className="bg-white"
+        />
         <div className="bg-white p-4 sm:p-5">{children}</div>
       </div>
     </div>
