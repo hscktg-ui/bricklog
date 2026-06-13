@@ -1,19 +1,19 @@
 {
-  "startedAt": "2026-06-13T11:17:49.566Z",
+  "startedAt": "2026-06-13T12:52:52.113Z",
   "total": 234,
-  "pass": 59,
-  "fail": 175,
-  "passRate": 25.2,
+  "pass": 82,
+  "fail": 152,
+  "passRate": 35,
   "byChannel": {
     "blog": {
       "total": 78,
-      "pass": 12,
-      "passRate": 15.4
+      "pass": 11,
+      "passRate": 14.1
     },
     "place": {
       "total": 78,
-      "pass": 3,
-      "passRate": 3.8
+      "pass": 27,
+      "passRate": 34.6
     },
     "instagram": {
       "total": 78,
@@ -22,25 +22,32 @@
     }
   },
   "failReasons": {
-    "first_delivery_channel_editor": 107,
-    "first_delivery_human_belief": 89,
-    "first_delivery_channel_format": 84,
-    "human_belief_low": 93,
-    "information_yield_low": 60,
-    "length_tier_under": 23,
+    "information_yield_low": 62,
+    "first_delivery_channel_editor": 74,
+    "first_delivery_human_belief": 90,
+    "first_delivery_channel_format": 35,
+    "human_belief_low": 97,
+    "length_tier_under": 12,
     "not_publishable": 1,
-    "grounded_specificity_low": 7,
-    "first_delivery_human_editor": 7,
-    "first_delivery_editor_v95": 7,
-    "first_delivery_persona": 2,
-    "coverage_slot_dump": 1,
-    "grounded_facts_low": 3,
+    "grounded_specificity_low": 9,
+    "first_delivery_human_editor": 9,
+    "first_delivery_editor_v95": 9,
+    "first_delivery_persona": 3,
+    "grounded_facts_low": 4,
     "insufficient_verified_brand_facts": 3,
+    "deep_learning_below_min": 4,
     "checklist_voice": 2,
-    "research_facts_thin": 1,
-    "deep_learning_below_min": 1
+    "research_facts_thin": 1
   },
   "failedSamples": [
+    {
+      "id": "카페_0_blog",
+      "channel": "blog",
+      "label": "카페 · 강남 · blog",
+      "failReasons": [],
+      "belief": 72,
+      "chars": 1620
+    },
     {
       "id": "카페_0_instagram",
       "channel": "instagram",
@@ -70,7 +77,7 @@
         "first_delivery_human_belief"
       ],
       "belief": 54,
-      "chars": 233
+      "chars": 160
     },
     {
       "id": "카페_1_instagram",
@@ -85,23 +92,12 @@
       "chars": 214
     },
     {
-      "id": "카페_2_place",
-      "channel": "place",
-      "label": "카페 · 부산 해운대 · place",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_channel_format"
-      ],
-      "belief": 66,
-      "chars": 108
-    },
-    {
       "id": "카페_3_blog",
       "channel": "blog",
       "label": "카페 · 대구 수성 · blog",
       "failReasons": [],
-      "belief": 66,
-      "chars": 1412
+      "belief": 58,
+      "chars": 1435
     },
     {
       "id": "카페_3_place",
@@ -109,31 +105,28 @@
       "label": "카페 · 대구 수성 · place",
       "failReasons": [
         "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_belief"
       ],
       "belief": 46,
-      "chars": 117
+      "chars": 149
     },
     {
       "id": "카페_4_blog",
       "channel": "blog",
       "label": "카페 · 인천 송도 · blog",
       "failReasons": [],
-      "belief": 66,
-      "chars": 1438
+      "belief": 60,
+      "chars": 1445
     },
     {
       "id": "카페_4_place",
       "channel": "place",
       "label": "카페 · 인천 송도 · place",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_belief"
       ],
       "belief": 52,
-      "chars": 106
+      "chars": 135
     },
     {
       "id": "꽃집_0_blog",
@@ -152,7 +145,7 @@
         "first_delivery_human_belief"
       ],
       "belief": 54,
-      "chars": 254
+      "chars": 160
     },
     {
       "id": "꽃집_0_instagram",
@@ -170,27 +163,16 @@
       "channel": "blog",
       "label": "꽃집 · 부산 해운대 · blog",
       "failReasons": [],
-      "belief": 72,
-      "chars": 942
-    },
-    {
-      "id": "꽃집_1_place",
-      "channel": "place",
-      "label": "꽃집 · 부산 해운대 · place",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_channel_format"
-      ],
       "belief": 66,
-      "chars": 108
+      "chars": 1019
     },
     {
       "id": "꽃집_2_blog",
       "channel": "blog",
       "label": "꽃집 · 대구 수성 · blog",
       "failReasons": [],
-      "belief": 60,
-      "chars": 1648
+      "belief": 72,
+      "chars": 2015
     },
     {
       "id": "꽃집_2_place",
@@ -198,39 +180,28 @@
       "label": "꽃집 · 대구 수성 · place",
       "failReasons": [
         "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_belief"
       ],
       "belief": 46,
-      "chars": 117
+      "chars": 149
     },
     {
       "id": "꽃집_3_blog",
       "channel": "blog",
       "label": "꽃집 · 인천 송도 · blog",
       "failReasons": [],
-      "belief": 72,
-      "chars": 1550
+      "belief": 66,
+      "chars": 1423
     },
     {
       "id": "꽃집_3_place",
       "channel": "place",
       "label": "꽃집 · 인천 송도 · place",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_belief"
       ],
       "belief": 52,
-      "chars": 106
-    },
-    {
-      "id": "꽃집_4_blog",
-      "channel": "blog",
-      "label": "꽃집 · 제주 연동 · blog",
-      "failReasons": [],
-      "belief": 100,
-      "chars": 1408
+      "chars": 135
     },
     {
       "id": "꽃집_4_place",
@@ -238,11 +209,30 @@
       "label": "꽃집 · 제주 연동 · place",
       "failReasons": [
         "first_delivery_channel_editor",
+        "first_delivery_human_belief"
+      ],
+      "belief": 54,
+      "chars": 172
+    },
+    {
+      "id": "꽃집_4_instagram",
+      "channel": "instagram",
+      "label": "꽃집 · 제주 연동 · instagram",
+      "failReasons": [
+        "first_delivery_channel_editor",
         "first_delivery_human_belief",
         "first_delivery_channel_format"
       ],
-      "belief": 54,
-      "chars": 104
+      "belief": 50,
+      "chars": 220
+    },
+    {
+      "id": "음식점_1_blog",
+      "channel": "blog",
+      "label": "음식점 · 대구 수성 · blog",
+      "failReasons": [],
+      "belief": 58,
+      "chars": 1009
     }
   ]
 }

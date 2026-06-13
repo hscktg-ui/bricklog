@@ -28,6 +28,11 @@ import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js
 import { resolveBlogLengthTier } from "../lib/constants.js";
 import { GENERAL_CATEGORIES, SENSITIVE_CATEGORIES, REGIONS, TRAINING_PERSONAS } from "../lib/quality/training/constants.js";
 import { applyBatchEvolutionFromReport } from "../lib/evolution/batchEvolutionFromReport.js";
+import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
+import {
+  applySpeakerVoiceLockPack,
+  repairThinSectionsAfterVoiceLock,
+} from "../lib/persona/speakerVoiceLock.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -92,11 +97,16 @@ function buildScenarios() {
 }
 
 function runBlog(scenario) {
-  const input = scenario.input;
+  const input = {
+    ...scenario.input,
+    personaEngineProfile: resolvePersonaEngineProfile({ input: scenario.input, ...scenario.input }),
+  };
   const ctx = { input, ...input };
   let pack = buildMissionProseFallbackPack(input);
   pack = applyV17PostWritePack(pack, ctx, "blog");
   pack = applyHumanityFinishPass(pack, ctx, "blog");
+  pack = applySpeakerVoiceLockPack(pack, input);
+  pack = repairThinSectionsAfterVoiceLock(pack, input);
   pack = finalizeContentQualityForDelivery(pack, input, "blog");
   if ((pack.sections?.length || 0) < 3) {
     pack = ensureMinBlogSections(pack, { input }, input, 3);
@@ -136,7 +146,10 @@ function runBlog(scenario) {
 }
 
 function runChannel(scenario) {
-  const input = scenario.input;
+  const input = {
+    ...scenario.input,
+    personaEngineProfile: resolvePersonaEngineProfile({ input: scenario.input, ...scenario.input }),
+  };
   const channel = scenario.channel === "instagram" ? "instagram" : "place";
   let pack =
     channel === "place"

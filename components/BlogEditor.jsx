@@ -718,7 +718,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   {RESULT_VIEW.completeBannerBody}
                 </p>
               </div>
-            ) : blogContent?._meta?.deliveryPreview ? (
+            ) : blogContent?._meta?.deliveryPreview || blogContent?._meta?.softPass ? (
               <div className="mb-4 rounded-xl border border-[#E8EBED] bg-white px-4 py-3">
                 <p className="text-[13px] font-semibold text-[#191F28]">
                   {RESULT_VIEW.draftBannerTitle}

@@ -164,6 +164,8 @@ import {
   hasSubstantiveLlmBody,
   isLlmOriginatedPack,
 } from "@/lib/product/contentQualityDelivery";
+import { isHumanDeliveryGrade } from "@/lib/product/deliveryGrade";
+import { SOFT_PREVIEW_HINT } from "@/lib/product/deliverySoftPass";
 
 function allowBlogUiRescue() {
   return true;
@@ -1294,21 +1296,24 @@ export function ContentProvider({
                 pipelineInput
               );
               if (forced?.sections?.length) {
+                const publishReady = isHumanDeliveryGrade(forced, pipelineInput);
                 delivery = {
                   ok: true,
                   pack: {
                     ...forced,
                     _meta: {
                       ...(forced._meta || {}),
-                      deliveryPreview: false,
-                      passOutput: true,
-                      softPass: false,
-                      completeDraft: true,
+                      deliveryPreview: !publishReady,
+                      deliveryPreviewMessage: publishReady ? undefined : SOFT_PREVIEW_HINT,
+                      passOutput: publishReady,
+                      softPass: !publishReady,
+                      completeDraft: publishReady,
                       displayReady: true,
+                      deliveryRescue: !publishReady,
                     },
                   },
-                  preview: false,
-                  userMessage: null,
+                  preview: !publishReady,
+                  userMessage: publishReady ? null : SOFT_PREVIEW_HINT,
                 };
               }
             }
@@ -1316,22 +1321,25 @@ export function ContentProvider({
           if (!delivery.ok && allowBlogUiRescue()) {
             const fallbackPack = missionProseFallbackForUi(pipelineInput);
             if (fallbackPack) {
+              const publishReady = isHumanDeliveryGrade(fallbackPack, pipelineInput);
               delivery = {
                 ok: true,
                 pack: {
                   ...fallbackPack,
                   _meta: {
                     ...(fallbackPack._meta || {}),
-                    deliveryPreview: false,
-                    passOutput: true,
-                    softPass: false,
-                    completeDraft: true,
+                    deliveryPreview: !publishReady,
+                    deliveryPreviewMessage: publishReady ? undefined : SOFT_PREVIEW_HINT,
+                    passOutput: publishReady,
+                    softPass: !publishReady,
+                    completeDraft: publishReady,
                     displayReady: true,
                     missionFallbackUi: true,
+                    deliveryRescue: true,
                   },
                 },
-                preview: true,
-                userMessage: null,
+                preview: !publishReady,
+                userMessage: publishReady ? null : SOFT_PREVIEW_HINT,
               };
             } else {
               const failMsg =

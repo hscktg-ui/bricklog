@@ -158,6 +158,8 @@ export default function BlogResultView({
   ].filter(Boolean);
   const showV4Hint =
     draft._meta?.softPass ||
+    draft._meta?.deliveryPreview ||
+    draft._meta?.deliveryRescue ||
     qualityHint ||
     (v4Suggestions.length > 0 && !draft._meta?.passOutput);
   const complianceBanner =
