@@ -1,137 +1,144 @@
 {
-  "startedAt": "2026-06-13T11:17:49.980Z",
+  "startedAt": "2026-06-13T22:04:57.469Z",
   "total": 115,
-  "pass": 60,
-  "fail": 55,
-  "errors": 0,
-  "passRate": 52.2,
-  "beliefAvg": 76.7,
+  "pass": 50,
+  "fail": 60,
+  "errors": 5,
+  "passRate": 43.5,
+  "beliefAvg": 68.5,
   "failReasons": {
-    "human_belief_low": 41,
-    "checklist_voice": 16,
-    "sections_thin": 34,
-    "delivery_blocked": 34
+    "checklist_voice": 52,
+    "human_belief_low": 40,
+    "error": 5,
+    "delivery_blocked": 6
   },
   "failedSamples": [
     {
-      "id": "cat_0_0",
-      "label": "카페 · 강남",
-      "beliefAfter": 46,
+      "id": "cat_0_4",
+      "label": "카페 · 인천 송도",
+      "beliefAfter": 84,
       "issues": [
-        "persona_voice_weak",
-        "persona_misaligned"
-      ]
-    },
-    {
-      "id": "cat_1_1",
-      "label": "꽃집 · 부산 해운대",
-      "beliefAfter": 69,
-      "issues": [
-        "checklist_template_high"
+        "checklist_voice"
       ]
     },
     {
       "id": "cat_1_2",
       "label": "꽃집 · 대구 수성",
-      "beliefAfter": 66,
+      "beliefAfter": 61,
       "issues": [
-        "persona_misaligned"
-      ]
-    },
-    {
-      "id": "cat_2_0",
-      "label": "음식점 · 부산 해운대",
-      "beliefAfter": 69,
-      "issues": [
+        "persona_misaligned",
         "checklist_template_high"
       ]
     },
     {
-      "id": "cat_2_2",
-      "label": "음식점 · 인천 송도",
+      "id": "cat_1_3",
+      "label": "꽃집 · 인천 송도",
       "beliefAfter": 84,
-      "issues": []
+      "issues": [
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "cat_2_2",
+      "label": "음식점 · 인천 송도"
     },
     {
       "id": "cat_2_4",
-      "label": "음식점 · 광주 상무",
-      "beliefAfter": 46,
-      "issues": [
-        "persona_voice_weak",
-        "persona_misaligned"
-      ]
+      "label": "음식점 · 광주 상무"
     },
     {
       "id": "cat_3_0",
       "label": "미용실 · 대구 수성",
-      "beliefAfter": 46,
+      "beliefAfter": 53,
       "issues": [
-        "persona_voice_weak",
-        "persona_misaligned"
+        "checklist_template_high",
+        "checklist_voice",
+        "checklist_voice"
       ]
     },
     {
-      "id": "cat_3_3",
-      "label": "미용실 · 광주 상무",
-      "beliefAfter": 46,
+      "id": "cat_3_1",
+      "label": "미용실 · 인천 송도",
+      "beliefAfter": 53,
       "issues": [
-        "persona_voice_weak",
-        "persona_misaligned"
+        "checklist_template_high",
+        "checklist_voice",
+        "coverage_slot_dump",
+        "checklist_voice"
       ]
     },
     {
       "id": "cat_3_4",
       "label": "미용실 · 대전 둔산",
-      "beliefAfter": 73,
+      "beliefAfter": 54,
       "issues": [
-        "checklist_template_high"
+        "field_smell_low"
       ]
     },
     {
       "id": "cat_4_0",
       "label": "학원 · 인천 송도",
-      "beliefAfter": 69,
+      "beliefAfter": 50,
       "issues": [
-        "checklist_template_high"
+        "checklist_template_high",
+        "checklist_voice",
+        "checklist_voice"
       ]
     },
     {
       "id": "cat_4_1",
       "label": "학원 · 제주 연동",
-      "beliefAfter": 79,
+      "beliefAfter": 84,
       "issues": [
         "checklist_template_high"
       ]
     },
     {
-      "id": "cat_4_2",
-      "label": "학원 · 광주 상무",
-      "beliefAfter": 46,
+      "id": "cat_4_3",
+      "label": "학원 · 대전 둔산",
+      "beliefAfter": 54,
       "issues": [
-        "persona_voice_weak",
-        "persona_misaligned"
+        "field_smell_low"
       ]
     },
     {
       "id": "cat_4_4",
       "label": "학원 · 강남",
-      "beliefAfter": 84,
-      "issues": []
+      "beliefAfter": 53,
+      "issues": [
+        "checklist_template_high",
+        "checklist_voice",
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "cat_5_0",
+      "label": "가구점 · 제주 연동",
+      "beliefAfter": 83,
+      "issues": [
+        "checklist_voice"
+      ]
     },
     {
       "id": "cat_5_1",
       "label": "가구점 · 광주 상무",
-      "beliefAfter": 46,
+      "beliefAfter": 48,
       "issues": [
-        "persona_voice_weak",
-        "persona_misaligned"
+        "checklist_template_high",
+        "checklist_voice",
+        "coverage_slot_dump",
+        "checklist_voice"
       ]
     },
     {
       "id": "cat_5_3",
       "label": "가구점 · 강남",
-      "beliefAfter": 84,
-      "issues": []
+      "beliefAfter": 57,
+      "issues": [
+        "checklist_template_high",
+        "checklist_voice",
+        "checklist_voice"
+      ]
     }
   ]
 }
