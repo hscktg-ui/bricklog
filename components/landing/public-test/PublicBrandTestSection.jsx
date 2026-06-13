@@ -24,6 +24,7 @@ import {
 } from "@/lib/publicTest/publicTestQuotaClient";
 import { GREEN_CTA_SOLID } from "@/lib/ui/actionButtonStyles";
 import PublicTestContextScore from "@/components/landing/public-test/PublicTestContextScore";
+import PublicTestLoadingProgress from "@/components/landing/public-test/PublicTestLoadingProgress";
 
 export default function PublicBrandTestSection({ onSignup }) {
   const [brandName, setBrandName] = useState("");
@@ -280,10 +281,10 @@ export default function PublicBrandTestSection({ onSignup }) {
             ) : null}
 
             {loading ? (
-              <div className="mt-4 space-y-1">
-                <p className="text-[13px] text-[#4E5968]">{stepLabel}</p>
-                <p className="text-[12px] text-[#8B95A1]">{PUBLIC_TEST_TIME_HINT}</p>
-              </div>
+              <PublicTestLoadingProgress
+                active={loading}
+                message={stepLabel || PUBLIC_TEST_LOADING_MESSAGE}
+              />
             ) : (
               <p className="mt-4 text-[12px] text-[#8B95A1]">{PUBLIC_TEST_TIME_HINT}</p>
             )}

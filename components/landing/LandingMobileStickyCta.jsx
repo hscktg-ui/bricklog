@@ -58,7 +58,7 @@ export default function LandingMobileStickyCta({ onStart, introOpen = false }) {
           onClick={onStart}
           className="shrink-0 rounded-xl bg-[#03C75A] px-4 py-2.5 text-[13px] font-bold text-white shadow-sm active:brightness-95"
         >
-          샘플 보기
+          무료 테스트
         </button>
       </div>
     </div>
