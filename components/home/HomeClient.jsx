@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Dashboard from "@/components/Dashboard";
+import dynamic from "next/dynamic";
 import AuthForm from "@/components/AuthForm";
 import LandingPage from "@/components/landing/LandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
@@ -25,6 +25,13 @@ import LoggedInDebugTools from "@/components/dev/LoggedInDebugTools";
 import PageLoadingState from "@/components/ui/PageLoadingState";
 import { LOADING } from "@/lib/product/craft";
 import { isFastOnboarding } from "@/lib/config/productFlags";
+
+const Dashboard = dynamic(() => import("@/components/Dashboard"), {
+  ssr: false,
+  loading: () => (
+    <PageLoadingState message="작업실을 여는 중…" />
+  ),
+});
 
 export default function HomeClient() {
   const [user, setUser] = useState(null);

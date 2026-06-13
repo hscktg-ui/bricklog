@@ -3,7 +3,7 @@
 import {
   buildManuscriptStatusLines,
   resolvePublishGrade,
-} from "@/lib/product/publishGradeDisplay";
+} from "@/lib/product/publishUiDisplay";
 
 /**
  * 원고 상태 카드 — 점수보다 상태·행동 가이드 우선

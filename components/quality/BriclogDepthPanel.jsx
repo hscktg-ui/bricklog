@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import ManuscriptStatusCard from "@/components/quality/ManuscriptStatusCard";
 import ChannelRoadmapStrip from "@/components/product/ChannelRoadmapStrip";
-import { resolvePublishGrade } from "@/lib/product/publishGradeDisplay";
+import { resolvePublishGrade } from "@/lib/product/publishUiDisplay";
 
 /**
  * 브릭로그 맥락·발행 준비도 — 등급·상태 우선, 숫자는 접기

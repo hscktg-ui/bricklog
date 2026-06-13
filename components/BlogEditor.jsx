@@ -55,7 +55,7 @@ import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlace
 import ChannelExpandCard from "@/components/product/ChannelExpandCard";
 import ChannelRoadmapStrip from "@/components/product/ChannelRoadmapStrip";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
-import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay";
+import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";

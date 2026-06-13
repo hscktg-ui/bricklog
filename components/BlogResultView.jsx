@@ -30,7 +30,7 @@ import { isPaidPlan } from "@/lib/billing/plans";
 import BriclogStrengthChips from "@/components/BriclogStrengthChips";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
-import { resolvePublishReadiness } from "@/lib/product/publishReadinessDisplay";
+import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
 
 export default function BlogResultView({
   blog,
