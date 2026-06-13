@@ -106,6 +106,16 @@ const grabInput = {
 };
 assert.equal(isInformationalTopicInput(grabInput), false, "flower retail uses visit tone");
 
+assert.equal(
+  resolveBriclogIndustryKey({
+    brandName: "모카하우스",
+    region: "성수동",
+    industry: "카페",
+    topic: "침실 인테리어 감성 라떼",
+  }),
+  "cafe"
+);
+
 for (const c of cases) {
   const expectedKey = c.industryKey || c.id;
   assert.equal(resolveBriclogIndustryKey(c.input), expectedKey);
