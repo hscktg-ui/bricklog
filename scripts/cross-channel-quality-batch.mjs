@@ -147,18 +147,26 @@ function runChannel(scenario) {
   const delivery = assessChannelFirstDeliveryQuality(pack, channel, input);
   const full = getChannelFullText(pack, channel);
   const belief = scoreHumanBelief(full, input, pack);
+  const sqv = pack._meta?.sqv?.score ?? pack._meta?.contentQualityValue ?? 0;
 
   const ok =
-    delivery.displayReady ||
+    (typeof pack._meta?.sqv?.score === "number" &&
+      pack._meta?.sqv?.grade &&
+      sqv >= 50) &&
+    (delivery.displayReady ||
     ((delivery.reasons?.length || 0) <= 3 &&
       belief.score >= BATCH_CHANNEL_BELIEF_FLOOR &&
-      full.replace(/\s/g, "").length >= BATCH_CHANNEL_CHAR_MIN);
+      full.replace(/\s/g, "").length >= BATCH_CHANNEL_CHAR_MIN));
 
   return {
     ok,
     chars: full.replace(/\s/g, "").length,
     belief: belief.score,
-    failReasons: delivery.reasons || [],
+    sqv,
+    failReasons: [
+      ...(typeof pack._meta?.sqv?.score !== "number" ? ["channel_sqv_missing"] : []),
+      ...(delivery.reasons || []),
+    ],
     displayReady: delivery.displayReady,
   };
 }

@@ -44,6 +44,9 @@ const delivered = finishChannelPackForDelivery("place", place, { input });
 assert.equal(delivered._meta?.deliveryChannelFinish, true);
 assert.equal(delivered._meta?.channelPackFinished, true);
 assert.ok((delivered.detailBody || "").trim().length >= 40);
+assert.ok(typeof delivered._meta?.sqv?.score === "number", "place SQV score");
+assert.ok(delivered._meta?.sqv?.grade, "place SQV grade");
+assert.equal(delivered._meta?.contentQualityValue, delivered._meta?.sqv?.score);
 
 const placeQ = scoreChannelContentQuality(place, "place", { input }, input);
 assert.ok(placeQ.score >= 0, placeQ);

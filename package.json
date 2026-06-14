@@ -181,6 +181,7 @@
     "test:slim-blog-api-payload": "node --import ./scripts/register-alias.mjs scripts/test-slim-blog-api-payload.mjs",
     "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",
+    "test:channel-sqv-delivery": "node --import ./scripts/register-alias.mjs scripts/test-channel-sqv-delivery.mjs",
     "test:blog-delivery-finish": "node --import ./scripts/register-alias.mjs scripts/test-blog-delivery-finish.mjs",
     "test:briclog-core-engine": "node --import ./scripts/register-alias.mjs scripts/test-briclog-core-engine.mjs",
     "test:korean-orthography-engine": "node --import ./scripts/register-alias.mjs scripts/test-korean-orthography-engine.mjs",
