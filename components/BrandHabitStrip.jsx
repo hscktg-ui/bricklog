@@ -1,78 +1,56 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
-import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
-import { BRICLOG_FEEDBACK_SAVED_EVENT } from "@/lib/feedback/constants";
+import { useBrandHabitMemory } from "@/lib/hooks/useBrandHabitMemory";
 import {
-  BRICLOG_DIRECTOR_LINE,
-  BRAND_LEARNING_SECOND_GEN_LINE,
-  FEEDBACK_NEXT_DRAFT_TOAST,
-} from "@/lib/product/briclogPerspectiveCopy";
+  BRAND_HABIT_HEADLINE,
+  formatBrandHabitActivityMeta,
+  resolveBrandHabitStatusLine,
+} from "@/lib/brands/brandHabitUx";
 
 export default function BrandHabitStrip({ className = "" }) {
-  const { activeBrand, activeBrandId } = useBrandWorkspace();
-  const [learned, setLearned] = useState(null);
-  const [pendingNote, setPendingNote] = useState("");
-
-  const loadLearned = useCallback(async () => {
-    if (!activeBrandId) {
-      setLearned(null);
-      return;
-    }
-    try {
-      const data = await fetchWithAuth(
-        `/api/memory/brand-learning?brandId=${encodeURIComponent(activeBrandId)}`
-      );
-      setLearned(data);
-    } catch {
-      setLearned(null);
-    }
-  }, [activeBrandId]);
-
-  useEffect(() => {
-    loadLearned();
-  }, [loadLearned]);
-
-  useEffect(() => {
-    const onSaved = (e) => {
-      if (e.detail?.brandId && e.detail.brandId !== activeBrandId) return;
-      setPendingNote(FEEDBACK_NEXT_DRAFT_TOAST);
-      loadLearned();
-    };
-    window.addEventListener(BRICLOG_FEEDBACK_SAVED_EVENT, onSaved);
-    return () => window.removeEventListener(BRICLOG_FEEDBACK_SAVED_EVENT, onSaved);
-  }, [activeBrandId, loadLearned]);
+  const {
+    activeBrand,
+    learned,
+    pendingNote,
+    saveLabel,
+    learningActive,
+    counts,
+  } = useBrandHabitMemory();
 
   if (!activeBrand) return null;
 
   const habits = formatBrandHabitsBrief(activeBrand);
-  const serverBrief = learned?.brief;
-  const generationCount = learned?.assetCounts?.generations || 0;
-  const feedbackCount = learned?.assetCounts?.feedback || 0;
-  const learningActive = generationCount >= 2 || feedbackCount >= 1;
-  const line =
-    pendingNote ||
-    (learningActive && !serverBrief ? BRAND_LEARNING_SECOND_GEN_LINE : null) ||
-    serverBrief ||
-    habits ||
-    BRICLOG_DIRECTOR_LINE;
+  const line = resolveBrandHabitStatusLine({
+    habitsBrief: habits,
+    serverBrief: learned?.brief,
+    learningActive,
+    pendingNote,
+  });
+  const activityMeta = formatBrandHabitActivityMeta(counts);
+  const footnote = [saveLabel, activityMeta, learningActive ? "자동 반영" : ""]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div
-      className={`rounded-xl border border-[#E8EBED] bg-white px-3 py-2.5 ${className}`}
+      className={`rounded-xl border border-[#E8EBED] bg-gradient-to-br from-white to-[#F7FBF8] px-3 py-2.5 ${className}`}
       role="status"
+      aria-live="polite"
     >
-      <p className="text-[11px] font-semibold text-[#4E5968]">브랜드 기억</p>
-      <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">{line}</p>
-      {feedbackCount > 0 || generationCount > 0 ? (
-        <p className="mt-1 text-[10px] text-[#8B95A1]">
-          {feedbackCount > 0 ? `누적 피드백 ${feedbackCount}건` : null}
-          {feedbackCount > 0 && generationCount > 0 ? " · " : null}
-          {generationCount > 0 ? `생성 ${generationCount}편` : null}
-          {learningActive ? " · 학습 반영 중" : null}
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[11px] font-semibold text-[#191F28]">
+          {BRAND_HABIT_HEADLINE}
         </p>
+        {learningActive ? (
+          <span className="shrink-0 rounded-full bg-[#E8F9EF] px-2 py-0.5 text-[10px] font-semibold text-[#03A94D]">
+            ON
+          </span>
+        ) : null}
+      </div>
+      <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">{line}</p>
+      {footnote ? (
+        <p className="mt-1 text-[10px] text-[#8B95A1]">{footnote}</p>
       ) : null}
     </div>
   );

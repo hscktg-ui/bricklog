@@ -293,7 +293,7 @@ export default function GrowthStudio({
         <h2 className="text-[18px] font-bold text-[#191F28]">브랜드 작업실</h2>
         <p className="mt-1 text-[12px] text-[#8B95A1]">
           {brandName
-            ? `${brandName} — 톤·습관 학습용입니다. 지난 초안은 사이드바 「초안 기록」에서도 볼 수 있어요.`
+            ? `${brandName} — 톤·금지어는 바꾸면 자동 저장되고, 다음 글에 반영됩니다.`
             : "사이드바에서 브랜드를 선택해 주세요."}
         </p>
         {usingArchiveFallback && (
