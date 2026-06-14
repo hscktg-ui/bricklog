@@ -13,9 +13,12 @@ import {
 } from "@/lib/publicTest/publicTestConfig";
 import {
   getNextPublicTestSampleIndex,
-  pickPublicTestSampleForSession,
 } from "@/lib/publicTest/pickPublicTestSample";
 import { getPublicTestSampleByIndex } from "@/lib/publicTest/publicTestSamples";
+import {
+  resolvePublicTestFormPrefill,
+} from "@/lib/publicTest/resolvePublicTestFormPrefill";
+import { savePublicTestFormCache } from "@/lib/publicTest/publicTestFormCache";
 import {
   bumpLocalPublicTestQuota,
   getLocalPublicTestQuota,
@@ -45,6 +48,7 @@ export default function PublicBrandTestSection({ onSignup }) {
   const [quota, setQuota] = useState({ remaining: 3, used: 0 });
   const [sampleIdx, setSampleIdx] = useState(0);
   const [sampleReady, setSampleReady] = useState(false);
+  const [prefillSource, setPrefillSource] = useState("rotation");
   const activeSample = getPublicTestSampleByIndex(sampleIdx);
 
   const applySampleToForm = useCallback((sample) => {
@@ -55,19 +59,42 @@ export default function PublicBrandTestSection({ onSignup }) {
   }, []);
 
   useLayoutEffect(() => {
-    const picked = pickPublicTestSampleForSession();
-    setSampleIdx(picked.index ?? 0);
-    applySampleToForm(picked);
+    const prefill = resolvePublicTestFormPrefill();
+    setSampleIdx(prefill.index ?? 0);
+    setBrandName(prefill.brandName);
+    setRegion(prefill.region);
+    setTopic(prefill.topic);
+    setPrefillSource(prefill.source);
     setSampleReady(true);
-  }, [applySampleToForm]);
+  }, []);
 
   useEffect(() => {
     if (!sampleReady) return;
-    applySampleToForm(getPublicTestSampleByIndex(sampleIdx));
-  }, [sampleIdx, sampleReady, applySampleToForm]);
+    const timer = window.setTimeout(() => {
+      savePublicTestFormCache({
+        brandName,
+        region,
+        topic,
+        sampleId: activeSample?.id,
+      });
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [brandName, region, topic, sampleReady, activeSample?.id]);
 
   const cycleSample = () => {
-    setSampleIdx((idx) => getNextPublicTestSampleIndex(idx));
+    setSampleIdx((idx) => {
+      const next = getNextPublicTestSampleIndex(idx);
+      const sample = getPublicTestSampleByIndex(next);
+      applySampleToForm(sample);
+      savePublicTestFormCache({
+        brandName: sample.brandName,
+        region: sample.region,
+        topic: sample.topic,
+        sampleId: sample.id,
+      });
+      setPrefillSource("rotation");
+      return next;
+    });
     setError(null);
     setResult(null);
   };
@@ -139,6 +166,12 @@ export default function PublicBrandTestSection({ onSignup }) {
         bumpLocalPublicTestQuota();
       }
       stashPublicTestDraftForSignup({ brandName, region, topic });
+      savePublicTestFormCache({
+        brandName,
+        region,
+        topic,
+        sampleId: activeSample?.id,
+      });
       setResult(data);
     } catch {
       setError("잠시 후 다시 시도해 주세요.");
@@ -193,7 +226,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 <span className="text-[var(--vision-muted)]"> · </span>
                 {activeSample.topic}
               </p>
-              <span className="shrink-0 rounded-full border border-[rgba(48,209,88,0.25)] bg-[rgba(48,209,88,0.12)] px-3 py-1.5 text-[11px] font-bold text-[var(--vision-accent)]">
+              <span className="shrink-0 rounded-full border border-[var(--vision-accent-ring,rgba(3,199,90,0.25))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] px-3 py-1.5 text-[11px] font-bold text-[var(--vision-accent)]">
                 {PUBLIC_TEST_SAMPLE_BADGE}
               </span>
             </div>
@@ -201,7 +234,9 @@ export default function PublicBrandTestSection({ onSignup }) {
           {sampleReady ? (
             <div className="mb-3 flex items-center justify-between gap-2">
               <p className="text-[11px] text-[var(--vision-muted)]">
-                접속할 때마다 다른 가상 브랜드 예시가 보입니다
+                {prefillSource === "cache"
+                  ? "이 브라우저에 저장된 마지막 입력을 불러왔어요"
+                  : "접속할 때마다 다른 가상 브랜드 예시가 보입니다"}
               </p>
               <button
                 type="button"

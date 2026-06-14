@@ -43,7 +43,7 @@ export default function HeroSection({
       />
 
       <div className="relative mx-auto max-w-3xl text-center briclog-vision-reveal">
-        <p className={VISION_EYEBROW}>Brand Content OS</p>
+        <p className={VISION_EYEBROW}>브릭로그 · 브랜드 글쓰기</p>
 
         <h1
           className={`${VISION_HEADLINE} mt-6`}

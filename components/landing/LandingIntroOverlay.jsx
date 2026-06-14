@@ -4,19 +4,49 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useViewport } from "@/hooks/useViewport";
 import { getLandingIntroCopy } from "@/lib/landing/introCopy";
 import {
+  BRICLOG_INTRO_CHANNELS,
+  BRICLOG_INTRO_EYEBROW,
+} from "@/lib/landing/briclogColorPhilosophy";
+import {
   INTRO_BRAND_REVEAL_DELAY_MS,
   INTRO_BRAND_REVEAL_DELAY_MS_MOBILE,
 } from "@/lib/landing/introTiming";
-import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
+import {
+  VISION_CTA_ACCENT,
+  VISION_EYEBROW,
+} from "@/lib/landing/vision2030Styles";
 import {
   useIntroRevealTypewriter,
   useIntroTypewriter,
 } from "@/lib/landing/useIntroTypewriter";
 
 const BRAND_LINE_CLASS = [
-  "text-[32px] font-semibold tracking-[-0.04em] text-[#30D158] sm:text-[40px]",
-  "text-[17px] font-medium tracking-[-0.01em] text-white/72 sm:text-[19px]",
+  "text-[clamp(1.75rem,5vw,2.5rem)] font-semibold tracking-[-0.04em] text-[var(--vision-accent)]",
+  "text-[17px] font-medium tracking-[-0.01em] text-[var(--vision-muted)] sm:text-[19px]",
+  "text-[14px] font-medium tracking-[0.02em] text-[var(--vision-muted)] sm:text-[15px]",
 ];
+
+function IntroStackVisual() {
+  return (
+    <div className="briclog-intro-stack" aria-hidden>
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
+function IntroChannelPills() {
+  return (
+    <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+      {BRICLOG_INTRO_CHANNELS.map((label) => (
+        <span key={label} className="briclog-intro-channel-pill">
+          {label}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 function IntroProgress({ total, current }) {
   return (
@@ -26,10 +56,10 @@ function IntroProgress({ total, current }) {
           key={i}
           className={`h-[3px] rounded-full transition-all duration-500 ${
             i === current
-              ? "w-8 bg-[#30D158]"
+              ? "w-8 bg-[var(--vision-accent)]"
               : i < current
-                ? "w-2 bg-[#30D158]/50"
-                : "w-2 bg-white/15"
+                ? "w-2 bg-[var(--vision-accent)]/50"
+                : "w-2 bg-[var(--vision-line)]"
           }`}
         />
       ))}
@@ -138,9 +168,9 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
 
   useEffect(() => {
     if (!open || brandPhase) return undefined;
-    const id = window.setTimeout(() => setCanStart(true), 5_500);
+    const id = window.setTimeout(() => setCanStart(true), 7_200);
     return () => window.clearTimeout(id);
-  }, [open, brandPhase]);
+  }, [open, brandPhase, lineCount]);
 
   const finish = useCallback(() => {
     if (exiting || !canStart) return;
@@ -170,45 +200,49 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
       }}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(48,209,88,0.12),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,var(--vision-accent-soft),transparent_62%)]"
         aria-hidden
       />
 
       <div
-        className={`relative z-10 flex w-full max-w-md flex-col items-center sm:max-w-lg ${
+        className={`relative z-10 flex w-full max-w-lg flex-col items-center sm:max-w-xl ${
           reduceMotion ? "" : "briclog-intro-desk-in"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="briclog-vision-intro-card w-full px-6 py-10 text-center sm:px-10 sm:py-12">
+          <p className={`${VISION_EYEBROW} mb-4`}>{BRICLOG_INTRO_EYEBROW}</p>
+          <IntroStackVisual />
+
           <div
             key={brandPhase ? "brand" : "lines"}
-            className={`min-h-[140px] sm:min-h-[160px] ${
+            className={`min-h-[148px] sm:min-h-[168px] ${
               reduceMotion ? "" : "briclog-intro-phase-in"
             }`}
           >
             {!brandPhase ? (
               <>
-                <div className="text-[20px] leading-[1.65] sm:text-[24px]">
+                <div className="text-[19px] leading-[1.65] sm:text-[22px]">
                   <p
-                    className="min-h-[1.65em] font-medium text-white/92"
+                    className="min-h-[1.65em] font-medium text-[var(--vision-ink)]"
                     aria-live="polite"
                   >
                     {display}
                   </p>
                 </div>
                 <IntroProgress total={lineCount} current={lineIndex} />
+                <IntroChannelPills />
               </>
             ) : (
               <div
-                className="flex min-h-[140px] flex-col items-center justify-center py-1 text-center sm:min-h-[160px]"
+                className="flex min-h-[148px] flex-col items-center justify-center py-1 text-center sm:min-h-[168px]"
                 aria-live="polite"
               >
                 {brandDone.map((line, i) => (
                   <p
                     key={`done-${i}`}
-                    className={`${BRAND_LINE_CLASS[i] ?? ""} briclog-intro-brand-fade ${
-                      i === 1 ? "mt-3" : ""
+                    className={`${BRAND_LINE_CLASS[i] ?? BRAND_LINE_CLASS[1]} briclog-intro-brand-fade ${
+                      i >= 1 ? "mt-2 sm:mt-3" : ""
                     }`}
                   >
                     {line}
@@ -216,12 +250,15 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                 ))}
                 {brandTyping ? (
                   <p
-                    className={`${BRAND_LINE_CLASS[brandLineIndex] ?? ""} ${
-                      brandLineIndex === 1 ? "mt-3" : ""
+                    className={`${BRAND_LINE_CLASS[brandLineIndex] ?? BRAND_LINE_CLASS[1]} ${
+                      brandLineIndex >= 1 ? "mt-2 sm:mt-3" : ""
                     }`}
                   >
                     {brandDisplay}
                   </p>
+                ) : null}
+                {brandComplete ? (
+                  <IntroChannelPills />
                 ) : null}
               </div>
             )}
@@ -239,8 +276,8 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
             className={
               showCta
                 ? canStart
-                  ? `${VISION_CTA_ACCENT} !min-w-[200px]`
-                  : `${VISION_CTA_ACCENT} pointer-events-none opacity-50 !min-w-[200px]`
+                  ? `${VISION_CTA_ACCENT} !min-w-[220px]`
+                  : `${VISION_CTA_ACCENT} pointer-events-none opacity-50 !min-w-[220px]`
                 : "pointer-events-none opacity-0"
             }
             aria-label={copy.dismissLabel}
@@ -248,7 +285,9 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
             {copy.startLabel}
           </button>
           {canStart && showCta && (
-            <p className="text-[12px] text-white/40">화면을 눌러 시작할 수 있어요</p>
+            <p className="text-[12px] text-[var(--vision-muted)]">
+              화면을 눌러 시작할 수 있어요
+            </p>
           )}
           {onSkip && (
             <button
@@ -258,7 +297,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                 e.stopPropagation();
                 onSkip();
               }}
-              className="briclog-no-slab text-[13px] font-medium text-white/35 underline-offset-4 hover:text-white/60 hover:underline"
+              className="briclog-no-slab text-[13px] font-medium text-[var(--vision-muted)] underline-offset-4 hover:text-[var(--vision-ink)] hover:underline"
             >
               건너뛰기
             </button>

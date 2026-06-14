@@ -50,7 +50,7 @@ export default function DemoPreviewSection({ sample }) {
             <span className="text-[var(--vision-muted)]"> · </span>
             {s.topic}
           </p>
-          <span className="shrink-0 rounded-full bg-[var(--vision-accent)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#041208] lg:bg-[var(--vision-ink)] lg:text-white">
+          <span className="shrink-0 rounded-full bg-[var(--vision-accent)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white lg:bg-[var(--vision-accent-deep,#03a94d)] lg:text-white">
             {CUSTOMER_SAMPLE_BADGE}
           </span>
         </div>
@@ -63,7 +63,7 @@ export default function DemoPreviewSection({ sample }) {
               onClick={() => setTab(t.id)}
               className={`min-h-[40px] rounded-full px-5 text-[13px] font-semibold transition ${
                 tab === t.id
-                  ? "bg-[var(--vision-accent)] text-[#041208] shadow-sm lg:bg-[var(--vision-ink)] lg:text-white"
+                  ? "bg-[var(--vision-accent)] text-white shadow-sm lg:bg-[var(--vision-accent-deep,#03a94d)] lg:text-white"
                   : "text-[var(--vision-muted)] hover:text-[var(--vision-ink)]"
               }`}
             >

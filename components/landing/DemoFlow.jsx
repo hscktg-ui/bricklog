@@ -138,7 +138,7 @@ function MockChannels() {
       {["이야기", "플레이스", "인스타"].map((c) => (
         <div
           key={c}
-          className="rounded-xl bg-[rgba(48,209,88,0.12)] px-2 py-3 text-center font-semibold text-[var(--vision-ink)]"
+          className="rounded-xl bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] px-2 py-3 text-center font-semibold text-[var(--vision-ink)]"
         >
           {c}
         </div>
@@ -149,7 +149,7 @@ function MockChannels() {
 
 function MockCopy() {
   return (
-    <div className="rounded-2xl border border-[rgba(48,209,88,0.25)] bg-[var(--vision-panel-bg,#fff)] p-3 text-center text-[12px] shadow-[var(--vision-shadow-soft)]">
+    <div className="rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.25))] bg-[var(--vision-panel-bg,#fff)] p-3 text-center text-[12px] shadow-[var(--vision-shadow-soft)]">
       <p className="font-semibold text-[var(--vision-ink)]">복사 완료</p>
       <p className="mt-1 text-[var(--vision-muted)]">복사 완료 · 발행 전 확인 OK</p>
     </div>

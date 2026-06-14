@@ -596,55 +596,61 @@ button:enabled,
   animation: briclog-intro-chevron 1.6s ease-in-out infinite;
 }
 
-/* ── Vision 2030 Landing (editorial · spatial · one-thing-first) ── */
+/* ── Vision 2030 Landing — BRICLOG color philosophy (editorial · spatial) ── */
 .briclog-vision-page {
-  --vision-ink: #050506;
-  --vision-paper: #f5f5f7;
-  --vision-muted: #6e6e73;
-  --vision-accent: #30d158;
-  --vision-line: rgba(5, 5, 6, 0.08);
-  --vision-line-strong: rgba(5, 5, 6, 0.14);
-  --vision-glass: rgba(255, 255, 255, 0.72);
-  --vision-glass-strong: rgba(255, 255, 255, 0.88);
+  --briclog-green: #03a94d;
+  --briclog-green-bright: #03c75a;
+  --briclog-green-deep: #026b38;
+  --briclog-brick: #c9a66b;
+  --briclog-brick-soft: rgba(201, 166, 107, 0.14);
+  --vision-accent: var(--briclog-green-bright);
+  --vision-accent-deep: var(--briclog-green);
+  --vision-accent-soft: rgba(3, 199, 90, 0.12);
+  --vision-accent-ring: rgba(3, 199, 90, 0.18);
+  --vision-ink: #0f1a14;
+  --vision-paper: #f7faf8;
+  --vision-muted: #5a6b62;
+  --vision-line: rgba(15, 26, 20, 0.08);
+  --vision-line-strong: rgba(15, 26, 20, 0.14);
+  --vision-glass: rgba(247, 250, 248, 0.82);
+  --vision-glass-strong: rgba(255, 255, 255, 0.92);
   --vision-panel-bg: #ffffff;
-  --vision-shadow-soft: 0 8px 32px rgba(5, 5, 6, 0.06);
-  --vision-shadow-panel: 0 24px 80px rgba(5, 5, 6, 0.08);
-  --vision-hero-mesh: radial-gradient(
-      120% 80% at 50% -20%,
-      rgba(48, 209, 88, 0.14),
-      transparent 55%
-    ),
-    radial-gradient(80% 60% at 100% 0%, rgba(94, 92, 230, 0.08), transparent 50%),
-    linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+  --vision-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
+  --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+  --vision-hero-mesh:
+    radial-gradient(120% 80% at 50% -20%, rgba(3, 169, 77, 0.16), transparent 55%),
+    radial-gradient(70% 50% at 100% 10%, var(--briclog-brick-soft), transparent 50%),
+    radial-gradient(60% 40% at 0% 90%, rgba(232, 249, 239, 0.9), transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, var(--vision-paper) 100%);
   background: var(--vision-paper);
   color: var(--vision-ink);
 }
 
 @media (max-width: 1023px) {
   .briclog-vision-page {
-    --vision-ink: #f5f5f7;
-    --vision-paper: #000000;
-    --vision-muted: rgba(245, 245, 247, 0.58);
-    --vision-line: rgba(255, 255, 255, 0.1);
-    --vision-line-strong: rgba(255, 255, 255, 0.16);
-    --vision-glass: rgba(18, 18, 19, 0.88);
-    --vision-glass-strong: rgba(28, 28, 30, 0.94);
-    --vision-panel-bg: rgba(255, 255, 255, 0.06);
-    --vision-shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.45);
-    --vision-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.55);
-    --vision-hero-mesh: radial-gradient(
-        120% 80% at 50% -20%,
-        rgba(48, 209, 88, 0.14),
-        transparent 55%
-      ),
-      linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
-    background: #000000;
+    --vision-ink: #eef7f1;
+    --vision-paper: #071510;
+    --vision-muted: rgba(196, 220, 205, 0.62);
+    --vision-line: rgba(196, 220, 205, 0.12);
+    --vision-line-strong: rgba(196, 220, 205, 0.18);
+    --vision-glass: rgba(15, 31, 24, 0.88);
+    --vision-glass-strong: rgba(15, 31, 24, 0.94);
+    --vision-panel-bg: rgba(255, 255, 255, 0.05);
+    --vision-shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.42);
+    --vision-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.52);
+    --vision-accent-soft: rgba(3, 199, 90, 0.14);
+    --vision-hero-mesh:
+      radial-gradient(120% 80% at 50% -15%, rgba(3, 199, 90, 0.18), transparent 55%),
+      radial-gradient(80% 60% at 100% 0%, rgba(3, 169, 77, 0.1), transparent 50%),
+      radial-gradient(50% 40% at 0% 100%, var(--briclog-brick-soft), transparent 45%),
+      linear-gradient(180deg, #0a1510 0%, var(--vision-paper) 100%);
+    background: var(--vision-paper);
     color: var(--vision-ink);
   }
 
   .briclog-vision-page .briclog-vision-footer-cta {
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: #0a0a0a;
+    border-top: 1px solid rgba(196, 220, 205, 0.1);
+    background: #0a1510;
   }
 }
 
@@ -653,22 +659,105 @@ button:enabled,
 }
 
 .briclog-vision-intro {
-  background: #000000;
-  color: #f5f5f7;
+  background: var(--vision-paper);
+  color: var(--vision-ink);
+}
+
+@media (min-width: 1024px) {
+  .briclog-vision-intro {
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(3, 169, 77, 0.12), transparent 58%),
+      radial-gradient(60% 50% at 100% 100%, var(--briclog-brick-soft), transparent 50%),
+      linear-gradient(165deg, #ffffff 0%, var(--vision-paper) 48%, #eef7f1 100%);
+    color: var(--vision-ink);
+  }
 }
 
 .briclog-vision-intro-card {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--vision-line-strong);
   border-radius: 1.75rem;
   background: linear-gradient(
     165deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.02) 100%
+    var(--vision-glass-strong) 0%,
+    var(--vision-panel-bg) 100%
   );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 40px 120px rgba(0, 0, 0, 0.55);
+    0 0 0 1px rgba(255, 255, 255, 0.65) inset,
+    0 24px 80px rgba(15, 26, 20, 0.1);
   backdrop-filter: blur(24px);
+}
+
+@media (max-width: 1023px) {
+  .briclog-vision-intro-card {
+    border-color: rgba(196, 220, 205, 0.14);
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.07) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 40px 120px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.briclog-intro-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 1.25rem;
+}
+
+.briclog-intro-stack span {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--briclog-green-deep), var(--briclog-green-bright));
+  opacity: 0;
+  transform: translateY(6px);
+  animation: briclog-intro-stack-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.briclog-intro-stack span:nth-child(1) {
+  width: 2.5rem;
+  animation-delay: 0.05s;
+}
+
+.briclog-intro-stack span:nth-child(2) {
+  width: 3.25rem;
+  animation-delay: 0.15s;
+}
+
+.briclog-intro-stack span:nth-child(3) {
+  width: 4rem;
+  animation-delay: 0.25s;
+}
+
+@keyframes briclog-intro-stack-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.briclog-intro-channel-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--vision-line);
+  background: var(--vision-accent-soft);
+  padding: 0.35rem 0.75rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--vision-muted);
+}
+
+@media (max-width: 1023px) {
+  .briclog-intro-channel-pill {
+    color: rgba(196, 220, 205, 0.78);
+  }
 }
 
 .briclog-vision-reveal {
@@ -698,24 +787,27 @@ button:enabled,
 }
 
 .briclog-vision-stat-active {
-  border-color: rgba(48, 209, 88, 0.35);
-  box-shadow: 0 16px 48px rgba(48, 209, 88, 0.12);
+  border-color: rgba(3, 199, 90, 0.35);
+  box-shadow: 0 16px 48px rgba(3, 169, 77, 0.14);
   transform: translateY(-2px);
 }
 
 /* Vision 2030 — logged-in workspace shell */
 .briclog-vision-workspace {
-  --vision-ink: #050506;
-  --vision-paper: #f5f5f7;
-  --vision-muted: #6e6e73;
-  --vision-accent: #30d158;
-  --vision-line: rgba(5, 5, 6, 0.08);
-  --vision-line-strong: rgba(5, 5, 6, 0.14);
-  --vision-glass: rgba(255, 255, 255, 0.72);
-  --vision-glass-strong: rgba(255, 255, 255, 0.88);
+  --briclog-green: #03a94d;
+  --briclog-green-bright: #03c75a;
+  --vision-accent: var(--briclog-green-bright);
+  --vision-accent-deep: var(--briclog-green);
+  --vision-ink: #0f1a14;
+  --vision-paper: #f7faf8;
+  --vision-muted: #5a6b62;
+  --vision-line: rgba(15, 26, 20, 0.08);
+  --vision-line-strong: rgba(15, 26, 20, 0.14);
+  --vision-glass: rgba(247, 250, 248, 0.82);
+  --vision-glass-strong: rgba(255, 255, 255, 0.92);
   --vision-panel-bg: #ffffff;
-  --vision-shadow-soft: 0 8px 32px rgba(5, 5, 6, 0.06);
-  --vision-shadow-panel: 0 24px 80px rgba(5, 5, 6, 0.08);
+  --vision-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
+  --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
   background: var(--vision-paper);
   color: var(--vision-ink);
 }
@@ -741,11 +833,11 @@ button:enabled,
 }
 
 .briclog-vision-workspace .briclog-btn-primary:not(:disabled)::before {
-  box-shadow: 0 12px 40px rgba(5, 5, 6, 0.18);
+  box-shadow: 0 12px 40px rgba(3, 169, 77, 0.2);
 }
 
 .briclog-vision-workspace .briclog-btn-primary:hover:not(:disabled) {
-  background: #1d1d1f;
+  background: var(--vision-accent-deep);
 }
 
 .briclog-vision-workspace .briclog-btn-secondary {

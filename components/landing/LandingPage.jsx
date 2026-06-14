@@ -24,6 +24,7 @@ import DemoPreviewSection from "./DemoPreviewSection";
 import ChannelPreview from "./ChannelPreview";
 import WorkflowSection from "./WorkflowSection";
 import WhyBriclog from "./WhyBriclog";
+import CoreEngineSection from "./CoreEngineSection";
 import PricingSection from "./PricingSection";
 import {
   LANDING_CTA_FOOTNOTE,
@@ -142,7 +143,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               type="button"
               data-briclog-cta="start"
               onClick={withLandingCta(scrollToPublicTest)}
-              className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-[#041208] shadow-[0_8px_24px_rgba(48,209,88,0.28)] sm:inline-flex sm:text-[13px]"
+              className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-white shadow-[0_8px_24px_rgba(3,199,90,0.28)] sm:inline-flex sm:text-[13px]"
             >
               <span>무료 샘플</span>
             </button>
@@ -191,6 +192,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               <DemoFlow sample={sample} />
               <ChannelPreview sample={sample} />
               <WorkflowSection />
+              <CoreEngineSection />
               <WhyBriclog />
             </div>
           </details>
@@ -217,7 +219,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               type="button"
               data-briclog-cta="start"
               onClick={withLandingCta(scrollToPublicTest)}
-              className={`${VISION_CTA_ACCENT} mt-10 !text-[#041208]`}
+              className={`${VISION_CTA_ACCENT} mt-10`}
             >
               <span>발행 샘플 먼저 보기</span>
             </button>
