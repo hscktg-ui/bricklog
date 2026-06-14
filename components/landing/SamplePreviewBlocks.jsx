@@ -14,7 +14,7 @@ function Paragraphs({ text, className = "" }) {
       {parts.map((p, i) => (
         <p
           key={i}
-          className="text-[13px] leading-[1.8] text-[#4E5968] sm:text-[14px]"
+          className="text-[13px] leading-[1.8] text-[var(--vision-muted)] sm:text-[14px]"
         >
           {p}
         </p>
@@ -29,11 +29,11 @@ export function SampleBlogPreview({ blog }) {
 
   return (
     <article className="sample-preview-blog">
-      <h3 className="border-b border-[#E8EBED] pb-3 text-[17px] font-bold leading-snug text-[#191F28] sm:text-[18px]">
+      <h3 className="border-b border-[var(--vision-line)] pb-3 text-[17px] font-bold leading-snug text-[var(--vision-ink)] sm:text-[18px]">
         {blog.title}
       </h3>
       {blog.excerpt ? (
-        <p className="mt-4 text-[14px] font-medium leading-relaxed text-[#4E5968] sm:text-[15px]">
+        <p className="mt-4 text-[14px] font-medium leading-relaxed text-[var(--vision-muted)] sm:text-[15px]">
           {blog.excerpt}
         </p>
       ) : null}
@@ -42,7 +42,7 @@ export function SampleBlogPreview({ blog }) {
         <div className="mt-6 space-y-7">
           {blog.sections.map((sec, i) => (
             <section key={i}>
-              <h4 className="text-[14px] font-bold text-[#191F28] sm:text-[15px]">
+              <h4 className="text-[14px] font-bold text-[var(--vision-ink)] sm:text-[15px]">
                 {sec.heading}
               </h4>
               <div className="mt-2.5">
@@ -58,13 +58,13 @@ export function SampleBlogPreview({ blog }) {
       )}
 
       {blog.conclusion ? (
-        <p className="mt-7 border-t border-[#E8EBED] pt-4 text-[13px] font-semibold leading-relaxed text-[#191F28] sm:text-[14px]">
+        <p className="mt-7 border-t border-[var(--vision-line)] pt-4 text-[13px] font-semibold leading-relaxed text-[var(--vision-ink)] sm:text-[14px]">
           {blog.conclusion}
         </p>
       ) : null}
 
       {blog.charHint ? (
-        <p className="mt-4 text-[11px] text-[#8B95A1]">{blog.charHint}</p>
+        <p className="mt-4 text-[11px] text-[var(--vision-muted)]">{blog.charHint}</p>
       ) : null}
     </article>
   );
@@ -76,23 +76,23 @@ export function SamplePlacePreview({ place }) {
 
   return (
     <article>
-      <p className="text-[12px] font-semibold uppercase tracking-wide text-[#03A94D]">
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-accent)]">
         플레이스
       </p>
-      <h3 className="mt-2 text-[16px] font-bold text-[#191F28] sm:text-[17px]">
+      <h3 className="mt-2 text-[16px] font-bold text-[var(--vision-ink)] sm:text-[17px]">
         {place.title}
       </h3>
-      <p className="mt-3 text-[14px] font-medium leading-relaxed text-[#191F28]">
+      <p className="mt-3 text-[14px] font-medium leading-relaxed text-[var(--vision-ink)]">
         {place.short}
       </p>
       {lines.length > 0 ? (
-        <ul className="mt-4 space-y-2 border-t border-[#E8EBED] pt-4">
+        <ul className="mt-4 space-y-2 border-t border-[var(--vision-line)] pt-4">
           {lines.map((line, i) => (
             <li
               key={i}
-              className="flex gap-2 text-[13px] leading-relaxed text-[#4E5968] sm:text-[14px]"
+              className="flex gap-2 text-[13px] leading-relaxed text-[var(--vision-muted)] sm:text-[14px]"
             >
-              <span className="shrink-0 font-bold text-[#03C75A]">
+              <span className="shrink-0 font-bold text-[var(--vision-accent)]">
                 {line.startsWith("·") ? "·" : "—"}
               </span>
               <span className="min-w-0 flex-1">
@@ -112,21 +112,21 @@ export function SampleInstaPreview({ body }) {
 
   return (
     <article>
-      <p className="text-[12px] font-semibold uppercase tracking-wide text-[#E67700]">
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-[#ff9500]">
         인스타 캡션
       </p>
       <div className="mt-3 space-y-2.5">
         {paragraphs.map((p, i) => (
           <p
             key={i}
-            className="whitespace-pre-line text-[14px] leading-[1.65] text-[#191F28] sm:text-[15px]"
+            className="whitespace-pre-line text-[14px] leading-[1.65] text-[var(--vision-ink)] sm:text-[15px]"
           >
             {p}
           </p>
         ))}
       </div>
       {hashtags ? (
-        <p className="mt-4 border-t border-[#E8EBED] pt-3 text-[12px] leading-relaxed text-[#8B95A1]">
+        <p className="mt-4 border-t border-[var(--vision-line)] pt-3 text-[12px] leading-relaxed text-[var(--vision-muted)]">
           {hashtags}
         </p>
       ) : null}

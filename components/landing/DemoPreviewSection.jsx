@@ -39,7 +39,7 @@ export default function DemoPreviewSection({ sample }) {
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <p className="flex-1 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3 text-[14px] text-[var(--vision-muted)]">
+          <p className="flex-1 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-4 py-3 text-[14px] text-[var(--vision-muted)]">
             <span className="font-semibold text-[var(--vision-ink)]">{s.brand.name}</span>
             {s.brand.region ? (
               <>
@@ -50,12 +50,12 @@ export default function DemoPreviewSection({ sample }) {
             <span className="text-[var(--vision-muted)]"> · </span>
             {s.topic}
           </p>
-          <span className="shrink-0 rounded-full bg-[var(--vision-ink)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white">
+          <span className="shrink-0 rounded-full bg-[var(--vision-accent)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#041208] lg:bg-[var(--vision-ink)] lg:text-white">
             {CUSTOMER_SAMPLE_BADGE}
           </span>
         </div>
 
-        <div className="mt-6 inline-flex rounded-full border border-[var(--vision-line)] bg-white p-1 shadow-[var(--vision-shadow-soft)]">
+        <div className="mt-6 inline-flex rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-1 shadow-[var(--vision-shadow-soft)]">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -63,7 +63,7 @@ export default function DemoPreviewSection({ sample }) {
               onClick={() => setTab(t.id)}
               className={`min-h-[40px] rounded-full px-5 text-[13px] font-semibold transition ${
                 tab === t.id
-                  ? "bg-[var(--vision-ink)] text-white shadow-sm"
+                  ? "bg-[var(--vision-accent)] text-[#041208] shadow-sm lg:bg-[var(--vision-ink)] lg:text-white"
                   : "text-[var(--vision-muted)] hover:text-[var(--vision-ink)]"
               }`}
             >

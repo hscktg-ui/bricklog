@@ -410,14 +410,14 @@ export default function AuthForm({
             className="flex flex-col items-center gap-1 rounded-xl px-2 py-1 transition active:brightness-[0.97] hover:bg-[#F7F8FA]"
             aria-label="랜딩으로"
           >
-            <Logo iconSize={32} className="max-w-[200px]!" />
+            <Logo className="max-w-[200px]!" />
             <p className="text-center text-[12px] leading-snug text-[#8B95A1]">
               {BRICLOG_SLOGAN_SHORT}
             </p>
           </button>
         ) : (
           <>
-            <Logo iconSize={32} className="max-w-[200px]!" />
+            <Logo className="max-w-[200px]!" />
             <p className="mt-1 text-center text-[12px] leading-snug text-[#8B95A1]">
               {BRICLOG_SLOGAN_SHORT}
             </p>

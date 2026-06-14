@@ -136,12 +136,7 @@ export default function Sidebar({
       >
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between px-3 pt-3 pb-1">
-          <Logo
-            iconSize={26}
-            showWordmark
-            onClick={onHome}
-            className="hidden lg:flex"
-          />
+          <Logo showIcon={false} onClick={onHome} className="hidden lg:flex" />
           <p className="text-[13px] font-bold tracking-[-0.01em] text-[var(--vision-ink)] lg:hidden">메뉴</p>
           <button
             type="button"

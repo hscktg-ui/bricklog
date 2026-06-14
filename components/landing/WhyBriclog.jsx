@@ -19,7 +19,7 @@ export default function WhyBriclog() {
           {WHY_BRICLOG.map((item, i) => (
             <article
               key={item.title}
-              className="group rounded-[1.5rem] border border-[var(--vision-line)] bg-white p-7 shadow-[var(--vision-shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--vision-shadow-panel)]"
+              className="group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--vision-shadow-panel)]"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--vision-ink)] text-[12px] font-bold text-white">
                 {String(i + 1).padStart(2, "0")}

@@ -1,22 +1,28 @@
 import BrandIcon from "./BrandIcon";
 
-/** 아이콘 + 영문 BRICLOG (한글 워드마크 없음) */
+/** 브랜드 워드마크 — 기본은 「브릭로그」 텍스트만 (아이콘 선택) */
 export default function Logo({
   showWordmark = true,
+  showIcon = false,
+  wordmark = "브릭로그",
   iconSize = 32,
   className = "",
   onClick,
 }) {
   const inner = (
     <>
-      <BrandIcon size={iconSize} />
-      {showWordmark && (
-        <span className="text-[15px] font-bold tracking-[0.12em] text-[#5BC77A]">
-          BRICLOG
+      {showIcon ? <BrandIcon size={iconSize} /> : null}
+      {showWordmark ? (
+        <span className="text-[17px] font-semibold tracking-[-0.03em] text-[var(--vision-ink,#191F28)]">
+          {wordmark}
         </span>
-      )}
+      ) : null}
     </>
   );
+
+  const layoutClass = showIcon
+    ? "flex items-center gap-2.5"
+    : "flex items-center";
 
   if (onClick) {
     return (
@@ -24,12 +30,12 @@ export default function Logo({
         type="button"
         onClick={onClick}
         aria-label="홈으로"
-        className={`flex items-center gap-2.5 rounded-lg text-left transition hover:opacity-85 active:brightness-[0.97] ${className}`}
+        className={`${layoutClass} rounded-lg text-left transition hover:opacity-85 active:brightness-[0.97] ${className}`}
       >
-        <span className="inline-flex items-center gap-2.5">{inner}</span>
+        {inner}
       </button>
     );
   }
 
-  return <div className={`flex items-center gap-2.5 ${className}`}>{inner}</div>;
+  return <div className={`${layoutClass} ${className}`}>{inner}</div>;
 }

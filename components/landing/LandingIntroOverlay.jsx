@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import BrandIcon from "@/components/BrandIcon";
 import { useViewport } from "@/hooks/useViewport";
 import { getLandingIntroCopy } from "@/lib/landing/introCopy";
 import {
@@ -15,8 +14,8 @@ import {
 } from "@/lib/landing/useIntroTypewriter";
 
 const BRAND_LINE_CLASS = [
-  "text-[32px] font-semibold tracking-[-0.03em] text-[#30D158] sm:text-[40px]",
-  "text-[24px] font-semibold tracking-[-0.02em] text-white sm:text-[30px]",
+  "text-[32px] font-semibold tracking-[-0.04em] text-[#30D158] sm:text-[40px]",
+  "text-[17px] font-medium tracking-[-0.01em] text-white/72 sm:text-[19px]",
 ];
 
 function IntroProgress({ total, current }) {
@@ -160,7 +159,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
       } ${canStart && !exiting ? "cursor-pointer" : ""}`}
       role="dialog"
       aria-modal="true"
-      aria-label="BRICLOG 소개"
+      aria-label="브릭로그 소개"
       onClick={() => canStart && !exiting && finish()}
       tabIndex={canStart ? 0 : -1}
       onKeyDown={(e) => {
@@ -181,13 +180,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-6 flex flex-col items-center gap-3">
-          <BrandIcon size={isMobile ? 36 : 40} />
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/40">
-            BRICLOG
-          </p>
-        </div>
-
         <div className="briclog-vision-intro-card w-full px-6 py-10 text-center sm:px-10 sm:py-12">
           <div
             key={brandPhase ? "brand" : "lines"}

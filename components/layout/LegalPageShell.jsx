@@ -6,7 +6,7 @@ export default function LegalPageShell({ title, children }) {
     <div className="min-h-0 flex-1 bg-[var(--background)] text-[var(--foreground)]">
       <header className="border-b border-[var(--border)]">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 md:px-6">
-          <Logo iconSize={24} />
+          <Logo iconSize={24} showIcon={false} />
           <Link
             href="/"
             className="text-[13px] font-medium text-[var(--muted)] transition-colors hover:text-[var(--brand)] hover:underline underline-offset-4"

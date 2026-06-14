@@ -13,7 +13,6 @@ import {
 } from "./ChannelResultViews";
 import ContentForm from "./ContentForm";
 import GenerateButton from "./GenerateButton";
-import Logo from "./Logo";
 import MatrixBanner from "./MatrixBanner";
 import QualityPanel from "./QualityPanel";
 import ResultToolbar from "./ResultToolbar";
@@ -27,7 +26,9 @@ function EmptyState() {
   return (
     <div className="flex min-h-[320px] flex-col items-center justify-center px-6 text-center">
       <div className="mb-4 flex justify-center">
-        <Logo size="lg" className="max-w-[200px]!" />
+        <p className="text-[22px] font-semibold tracking-[-0.04em] text-[var(--vision-ink)]">
+          브릭로그
+        </p>
       </div>
       <p className="text-[17px] font-bold tracking-[-0.01em] text-[var(--vision-ink)]">{EMPTY_STATE.title}</p>
       <p className="mt-1 text-[12px] font-medium text-[var(--vision-accent)]">{BRAND_TAGLINE}</p>

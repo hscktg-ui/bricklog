@@ -5,6 +5,11 @@ import {
   PUBLIC_TEST_LOADING_STEP_MS,
   PUBLIC_TEST_LOADING_STEPS,
 } from "@/lib/publicTest/publicTestLoadingSteps";
+import {
+  VISION_PROGRESS_FILL,
+  VISION_PROGRESS_TRACK,
+  VISION_WORKSPACE_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 export default function PublicTestLoadingProgress({ active, message }) {
   const [stepIndex, setStepIndex] = useState(0);
@@ -23,16 +28,16 @@ export default function PublicTestLoadingProgress({ active, message }) {
   if (!active) return null;
 
   return (
-    <div className="mt-4 space-y-3 rounded-xl border border-[#E8EBED] bg-white px-4 py-3">
+    <div className={`${VISION_WORKSPACE_PANEL} mt-4 space-y-3 px-4 py-3`}>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[13px] font-medium text-[#191F28]">{message}</p>
-        <span className="text-[11px] tabular-nums text-[#8B95A1]">
+        <p className="text-[13px] font-medium text-[var(--vision-ink)]">{message}</p>
+        <span className="text-[11px] tabular-nums text-[var(--vision-muted)]">
           {stepIndex + 1}/{PUBLIC_TEST_LOADING_STEPS.length}
         </span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-[#E8EBED]">
+      <div className={VISION_PROGRESS_TRACK}>
         <div
-          className="h-full rounded-full bg-[#03C75A] transition-all duration-500 ease-out"
+          className={VISION_PROGRESS_FILL}
           style={{
             width: `${((stepIndex + 1) / PUBLIC_TEST_LOADING_STEPS.length) * 100}%`,
           }}
@@ -44,15 +49,17 @@ export default function PublicTestLoadingProgress({ active, message }) {
             key={step.id}
             className={`flex items-center gap-2 text-[12px] ${
               i === stepIndex
-                ? "font-semibold text-[#03A94D]"
+                ? "font-semibold text-[var(--vision-accent)]"
                 : i < stepIndex
-                  ? "text-[#4E5968]"
-                  : "text-[#B0B8C1]"
+                  ? "text-[var(--vision-muted)]"
+                  : "text-[var(--vision-line-strong)]"
             }`}
           >
             <span
               className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                i <= stepIndex ? "bg-[#03C75A]" : "bg-[#E8EBED]"
+                i <= stepIndex
+                  ? "bg-[var(--vision-accent)]"
+                  : "bg-[var(--vision-line-strong)]"
               }`}
               aria-hidden
             />

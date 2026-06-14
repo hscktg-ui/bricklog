@@ -81,7 +81,7 @@ export default function HeroSection({
               {CHANNELS.map((label) => (
                 <span
                   key={label}
-                  className="rounded-full bg-[var(--vision-ink)] px-3 py-1 text-[11px] font-semibold text-white"
+                  className="rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,rgba(255,255,255,0.9))] px-3 py-1 text-[11px] font-semibold text-[var(--vision-ink)] lg:bg-[var(--vision-ink)] lg:text-white lg:border-transparent"
                 >
                   {label}
                 </span>

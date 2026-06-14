@@ -98,7 +98,7 @@ function MockStepVisual({ step, sample }) {
 
 function MockBrand({ sample }) {
   return (
-    <div className="rounded-2xl border border-[var(--vision-line)] bg-white p-3 text-[12px] shadow-[var(--vision-shadow-soft)]">
+    <div className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-3 text-[12px] shadow-[var(--vision-shadow-soft)]">
       <p className="text-[var(--vision-muted)]">브랜드명</p>
       <p className="mt-1 font-semibold text-[var(--vision-ink)]">{sample.brand.name}</p>
     </div>
@@ -107,7 +107,7 @@ function MockBrand({ sample }) {
 
 function MockTopic({ sample }) {
   return (
-    <div className="rounded-2xl border border-[var(--vision-line)] bg-white p-3 text-[12px] shadow-[var(--vision-shadow-soft)]">
+    <div className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-3 text-[12px] shadow-[var(--vision-shadow-soft)]">
       <p className="text-[var(--vision-muted)]">오늘의 주제</p>
       <p className="mt-2 rounded-xl bg-[var(--vision-paper)] px-2 py-2 text-[var(--vision-ink)]">
         {sample.topic}
@@ -122,7 +122,7 @@ function MockContext() {
       {["말투 정리", "채널별 길이", "올리기 전 확인"].map((t) => (
         <div
           key={t}
-          className="flex items-center gap-2 rounded-xl border border-[var(--vision-line)] bg-white px-3 py-2"
+          className="flex items-center gap-2 rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-2"
         >
           <span className="h-2 w-2 rounded-full bg-[var(--vision-accent)]" />
           <span className="text-[var(--vision-muted)]">{t}</span>
@@ -149,7 +149,7 @@ function MockChannels() {
 
 function MockCopy() {
   return (
-    <div className="rounded-2xl border border-[rgba(48,209,88,0.25)] bg-white p-3 text-center text-[12px] shadow-[var(--vision-shadow-soft)]">
+    <div className="rounded-2xl border border-[rgba(48,209,88,0.25)] bg-[var(--vision-panel-bg,#fff)] p-3 text-center text-[12px] shadow-[var(--vision-shadow-soft)]">
       <p className="font-semibold text-[var(--vision-ink)]">복사 완료</p>
       <p className="mt-1 text-[var(--vision-muted)]">복사 완료 · 발행 전 확인 OK</p>
     </div>

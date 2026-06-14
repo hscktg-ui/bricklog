@@ -60,7 +60,7 @@ export default function DevicePreviewToggle({
         type="button"
         onClick={() => onChange(next)}
         aria-label={deviceCycleAriaLabel(device, next)}
-        className={`inline-flex items-center gap-2 rounded-full border border-[var(--vision-line-strong)] bg-white/80 px-4 py-2.5 text-[12px] font-semibold text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)] backdrop-blur-sm transition hover:bg-white sm:text-[13px] ${className}`}
+        className={`inline-flex items-center gap-2 rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,#fff)]/80 px-4 py-2.5 text-[12px] font-semibold text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)] backdrop-blur-sm transition hover:bg-[var(--vision-panel-bg,#fff)] sm:text-[13px] ${className}`}
       >
         <span className="text-[15px] leading-none" aria-hidden>
           {DEVICE_EMOJI[device]}
@@ -139,9 +139,9 @@ export function DevicePreviewFrame({ device, children, className = "" }) {
       <div className={`overflow-hidden ${VISION_PANEL}`}>
         <LandingPanelHeader
           title={`${DEVICE_EMOJI[device]} ${DEVICE_TAB_SHORT[device]} · 브릭로그`}
-          className="bg-white"
+          className="bg-[var(--vision-panel-bg,#fff)]"
         />
-        <div className="bg-white p-4 sm:p-5">{children}</div>
+        <div className="bg-[var(--vision-panel-bg,#fff)] p-4 sm:p-5">{children}</div>
       </div>
     </div>
   );

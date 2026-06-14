@@ -1,6 +1,11 @@
 "use client";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  VISION_STATUS_NEUTRAL,
+  VISION_STATUS_OK,
+  VISION_STATUS_WARN,
+} from "@/lib/landing/vision2030Styles";
 import EmptyStoryPanel from "@/components/product/EmptyStoryPanel";
 import { EMPTY_STORY, MOBILE_STORY, WORKSPACE_BLOG } from "@/lib/product/craft";
 import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
@@ -305,14 +310,14 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         >
           {isMobile && blogGenHint ? (
             <div
-              className={`mb-4 rounded-xl border px-4 py-3 text-[12px] leading-relaxed ${
+              className={`mb-4 px-4 py-3 text-[12px] leading-relaxed ${
                 blogGenHintSoft
-                  ? "border-[#03C75A]/25 bg-[#F0FFF5] text-[#4E5968]"
-                  : "border-[#FFE0B2] bg-[#FFF8E6] text-[#4E5968]"
+                  ? `${VISION_STATUS_OK} text-[var(--vision-muted)]`
+                  : `${VISION_STATUS_WARN} text-[var(--vision-muted)]`
               }`}
               role="status"
             >
-              <p className="font-semibold text-[#191F28]">
+              <p className="font-semibold text-[var(--vision-ink)]">
                 {resolveBlogHintPanelTitle(blogGenHint, blogGenHintSoft)}
               </p>
               <p className="mt-1">{blogGenHint}</p>
@@ -337,20 +342,17 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           />
 
           {signupDraftRestored && formValidNow && !blogContent && !generating.blog ? (
-            <div
-              className="mt-4 rounded-xl border border-[#03C75A]/30 bg-[#F6FDF9] px-4 py-3"
-              role="status"
-            >
-              <p className="text-[13px] font-bold text-[#191F28]">
+            <div className={`${VISION_STATUS_OK} mt-4 px-4 py-3`} role="status">
+              <p className="text-[13px] font-bold text-[var(--vision-ink)]">
                 가입 전 입력이 그대로 채워졌어요
               </p>
-              <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+              <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
                 아래 「{WORKSPACE_BLOG.cta}」만 누르시면 첫 편집본을 받을 수 있어요.
               </p>
               <button
                 type="button"
                 onClick={acknowledgeSignupDraft}
-                className="mt-2 text-[11px] font-semibold text-[#8B95A1] hover:text-[#4E5968]"
+                className="mt-2 text-[11px] font-semibold text-[var(--vision-muted)] hover:text-[var(--vision-ink)]"
               >
                 닫기
               </button>
@@ -496,7 +498,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             <button
               type="button"
               onClick={goHistory}
-              className="mt-3 w-full text-center text-[12px] font-semibold text-[#03A94D] hover:underline"
+              className="mt-3 w-full text-center text-[12px] font-semibold text-[var(--vision-accent)] hover:underline"
             >
               {EMPTY_STORY.historyCta}
               {getRecentBlogTitle(activeBrand)
@@ -719,20 +721,20 @@ const BlogEditorResults = memo(function BlogEditorResults({
         ) : showFullResult ? (
           <>
             {blogContent?._meta?.completeDraft ? (
-              <div className="mb-4 rounded-xl border border-[#03C75A]/25 bg-[#F6FDF9] px-4 py-3">
-                <p className="text-[13px] font-semibold text-[#191F28]">
+              <div className={`${VISION_STATUS_OK} mb-4 px-4 py-3`}>
+                <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
                   {RESULT_VIEW.completeBannerTitle}
                 </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+                <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
                   {RESULT_VIEW.completeBannerBody}
                 </p>
               </div>
             ) : blogContent?._meta?.deliveryPreview || blogContent?._meta?.softPass ? (
-              <div className="mb-4 rounded-xl border border-[#E8EBED] bg-white px-4 py-3">
-                <p className="text-[13px] font-semibold text-[#191F28]">
+              <div className={`${VISION_STATUS_NEUTRAL} mb-4 px-4 py-3`}>
+                <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
                   {RESULT_VIEW.draftBannerTitle}
                 </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+                <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
                   {blogContent._meta?.deliveryPreviewMessage ||
                     RESULT_VIEW.draftBannerBody}
                 </p>
@@ -942,20 +944,18 @@ const BlogEditorResults = memo(function BlogEditorResults({
           <div className="mx-auto flex max-w-lg flex-col justify-center py-16">
             {blogGenHint ? (
               <div
-                className={`rounded-2xl border px-5 py-4 text-center ${
-                  blogGenHintSoft
-                    ? "border-[#03C75A]/25 bg-[#F0FFF5]"
-                    : "border-[#FFE0B2] bg-[#FFF8E6]"
+                className={`rounded-2xl px-5 py-4 text-center ${
+                  blogGenHintSoft ? VISION_STATUS_OK : VISION_STATUS_WARN
                 }`}
               >
-                <p className="text-[14px] font-semibold text-[#191F28]">
+                <p className="text-[14px] font-semibold text-[var(--vision-ink)]">
                   {resolveBlogHintPanelTitle(blogGenHint, blogGenHintSoft)}
                 </p>
-                <p className="mt-2 text-[13px] leading-relaxed text-[#4E5968]">
+                <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
                   {blogGenHint}
                 </p>
                 {!blogGenHintIsAuth ? (
-                  <p className="mt-3 text-[12px] text-[#8B95A1]">
+                  <p className="mt-3 text-[12px] text-[var(--vision-muted)]">
                     왼쪽 폼에서 「조사 후 글 받기」로 이어갈 수 있어요.
                   </p>
                 ) : null}

@@ -125,16 +125,16 @@ export default function LandingPage({ onAuthOpen, onStart }) {
         }`}
       >
         <div className={VISION_NAV_INNER}>
-          <Logo iconSize={26} />
+          <Logo />
           <nav className="flex shrink-0 items-center gap-1 sm:gap-2">
             <BgmToggle
               fullWidth={false}
-              className="hidden shrink-0 !rounded-full !border-[var(--vision-line)] !bg-white/80 sm:flex"
+              className="hidden shrink-0 !rounded-full !border-[var(--vision-line)] !bg-[var(--vision-panel-bg,rgba(255,255,255,0.8))] sm:flex"
             />
             <button
               type="button"
               onClick={() => onAuthOpen("login")}
-              className="rounded-full px-3 py-2 text-[13px] font-semibold text-[var(--vision-muted)] transition hover:bg-black/5 hover:text-[var(--vision-ink)]"
+              className="rounded-full px-3 py-2 text-[13px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)]"
             >
               로그인
             </button>
@@ -142,7 +142,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               type="button"
               data-briclog-cta="start"
               onClick={withLandingCta(scrollToPublicTest)}
-              className="hidden rounded-full bg-[var(--vision-ink)] px-4 py-2 text-[12px] font-semibold text-white shadow-[0_8px_24px_rgba(5,5,6,0.15)] sm:inline-flex sm:text-[13px]"
+              className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-[#041208] shadow-[0_8px_24px_rgba(48,209,88,0.28)] sm:inline-flex sm:text-[13px]"
             >
               <span>무료 샘플</span>
             </button>
@@ -169,7 +169,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           <PublicBrandTestSection onSignup={(mode) => onAuthOpen(mode || "signup")} />
           <LiveStatsBanner introOpen={introOpen} />
           <DemoPreviewSection sample={sample} />
-          <details className="group border-t border-[var(--vision-line)] bg-white">
+          <details className="group border-t border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)]">
             <summary className="mx-auto flex max-w-6xl cursor-pointer list-none items-center justify-between gap-3 px-5 py-6 text-[15px] font-semibold text-[var(--vision-ink)] marker:content-none md:px-8 [&::-webkit-details-marker]:hidden">
               <span>브릭로그가 어떻게 돌아가는지 더 보기</span>
               <svg

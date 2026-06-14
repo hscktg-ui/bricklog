@@ -51,7 +51,7 @@ export default function TermsConsentModal({ onComplete, onToast }) {
       />
       <div className="pointer-events-auto relative z-10 w-full max-w-md rounded-2xl border border-[#E8EBED] bg-white p-8 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
         <div className="mb-6 flex justify-center">
-          <Logo iconSize={32} />
+          <Logo />
         </div>
         <h2
           id="terms-consent-title"

@@ -18,7 +18,7 @@ export default function WorkflowSection() {
           {WORKFLOW_STEPS.map((s) => (
             <li
               key={s.n}
-              className="flex gap-4 rounded-[1.25rem] border border-[var(--vision-line)] bg-white p-5 shadow-[var(--vision-shadow-soft)]"
+              className="flex gap-4 rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-5 shadow-[var(--vision-shadow-soft)]"
             >
               <span className="shrink-0 text-[22px] font-semibold tabular-nums text-[var(--vision-ink)]">
                 {String(s.n).padStart(2, "0")}
