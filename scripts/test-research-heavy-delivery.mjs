@@ -38,6 +38,7 @@ assert.ok(bodyChars >= 850, `body too short: ${bodyChars}`);
 assert.ok((sqv.score ?? 0) >= B_GRADE_MIN_SCORE, `SQV below B: ${sqv.score} grade ${sqv.grade}`);
 assert.notEqual(sqv.grade, "C", `grade must not be C (${sqv.grade})`);
 assert.ok(pack._meta?.researchHeavyDelivery, "missing researchHeavyDelivery meta");
+assert.ok(pack._meta?.researchHeavyDeliveryOk !== false, "researchHeavyDeliveryOk must be true");
 assert.ok((pack.sections?.length || 0) >= 3, "need 3+ sections for research column");
 
 console.log("OK: research-heavy-delivery", {

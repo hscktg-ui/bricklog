@@ -98,6 +98,8 @@ function readThousandSummary() {
       regionColumnOkRate: s.regionColumnOkRate,
       avgRegionMentions: s.avgRegionMentions,
       regionOverCap: s.regionOverCap,
+      flowerPublishReady: s.byIndustry?.flower?.publishReady,
+      flowerTotal: s.byIndustry?.flower?.n,
     };
   } catch {
     return null;
@@ -119,6 +121,7 @@ while (Date.now() - startedAt < DURATION_MS) {
   run("test:mission-prose", "npm", ["run", "test:mission-prose"]);
   run("test:region-column-naturalize", "npm", ["run", "test:region-column-naturalize"]);
   run("test:research-heavy-delivery", "npm", ["run", "test:research-heavy-delivery"]);
+  run("test:flower-persona-publish", "npm", ["run", "test:flower-persona-publish"]);
   run("test:checklist-heading-sanitize", "npm", ["run", "test:checklist-heading-sanitize"]);
   run("test:hard-placeholder-signal", "npm", ["run", "test:hard-placeholder-signal"]);
   run("test:blog-api-delivery-gate", "npm", ["run", "test:blog-api-delivery-gate"]);

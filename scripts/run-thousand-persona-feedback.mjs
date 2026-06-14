@@ -323,6 +323,15 @@ async function main() {
     );
     process.exit(1);
   }
+  const flowerN = summary.byIndustry?.flower?.n ?? 0;
+  const flowerReady = summary.byIndustry?.flower?.publishReady ?? 0;
+  if (flowerN > 0 && flowerReady < flowerN) {
+    console.error(
+      `flower publishReady ${flowerReady}/${flowerN} — samples:`,
+      summary.failedSamples?.filter((s) => s.industry === "flower").slice(0, 4)
+    );
+    process.exit(1);
+  }
 }
 
 main().catch((err) => {
