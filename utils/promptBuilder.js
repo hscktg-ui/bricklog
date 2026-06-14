@@ -28,6 +28,7 @@ import { formatEmojiEngineBrief } from "@/lib/emoji/emojiEngine";
 import { getBrandLearningBrief } from "@/lib/learning/brandLearning";
 import { getExposureBrief } from "@/lib/platforms/exposureHints";
 import { getTrendHintsForChannel } from "@/lib/trends/trendIntelligence";
+import { getPlatformTrendBrief } from "@/lib/trends/platformTrends2026";
 import { getIndustryDNABrief } from "@/lib/prompts/industryDNA";
 import { assemblePromptLayers, layersToBrief } from "@/lib/prompts/promptLayers";
 import { resolveContentPersona } from "@/lib/persona/contentPersona";
@@ -168,6 +169,7 @@ export function createPromptContext(input) {
     trendHintsBlog: getTrendHintsForChannel("blog", input.brandId, flavor.industryKey).join(" · "),
     trendHintsPlace: getTrendHintsForChannel("place", input.brandId, flavor.industryKey).join(" · "),
     trendHintsInstagram: getTrendHintsForChannel("instagram", input.brandId, flavor.industryKey).join(" · "),
+    platformTrendBrief: getPlatformTrendBrief("blog", input.contentDate ? new Date(`${input.contentDate}T12:00:00`) : new Date()),
   };
 
   ctx.channelBriefs = {
