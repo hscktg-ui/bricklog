@@ -33,6 +33,7 @@ import {
 import { applyWriterEngineIfNeeded } from "@/lib/product/briclogWriterEngine";
 import { alignBlogApiDeliveryResponse } from "@/lib/product/blogApiDeliveryGate";
 import { ensureServerAxisResearch } from "@/lib/generation/serverAxisResearch";
+import { attachServerTrendSnapshot } from "@/lib/trends/serverTrendHints";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -124,7 +125,7 @@ export async function POST(request) {
         { status: 422 }
       );
     }
-    const hydratedInput = axisReady.input;
+    const hydratedInput = attachServerTrendSnapshot(axisReady.input);
 
     const rawResult = await generateBlogWithLLMFirst(hydratedInput);
     let result = blockUnverifiedBlogApiResponse(rawResult, hydratedInput);

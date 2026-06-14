@@ -166,9 +166,15 @@ export function createPromptContext(input) {
     exposureBlog: getExposureBrief("blog"),
     exposurePlace: getExposureBrief("place"),
     exposureInstagram: getExposureBrief("instagram"),
-    trendHintsBlog: getTrendHintsForChannel("blog", input.brandId, flavor.industryKey).join(" · "),
-    trendHintsPlace: getTrendHintsForChannel("place", input.brandId, flavor.industryKey).join(" · "),
-    trendHintsInstagram: getTrendHintsForChannel("instagram", input.brandId, flavor.industryKey).join(" · "),
+    trendHintsBlog:
+      String(input.trendHintsBlog || "").trim() ||
+      getTrendHintsForChannel("blog", input.brandId, flavor.industryKey).join(" · "),
+    trendHintsPlace:
+      String(input.trendHintsPlace || "").trim() ||
+      getTrendHintsForChannel("place", input.brandId, flavor.industryKey).join(" · "),
+    trendHintsInstagram:
+      String(input.trendHintsInstagram || "").trim() ||
+      getTrendHintsForChannel("instagram", input.brandId, flavor.industryKey).join(" · "),
     platformTrendBrief: getPlatformTrendBrief("blog", input.contentDate ? new Date(`${input.contentDate}T12:00:00`) : new Date()),
   };
 
