@@ -31,6 +31,11 @@ import BriclogStrengthChips from "@/components/BriclogStrengthChips";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
+import {
+  VISION_STATUS_OK,
+  VISION_STATUS_WARN,
+  VISION_WORKSPACE_PANEL,
+} from "@/lib/landing/vision2030Styles";
 import ResultCopyHero, {
   ResultCopyGhostButton,
 } from "@/components/workspace/ResultCopyHero";
@@ -547,7 +552,7 @@ export default function BlogResultView({
         />
 
         {mobileSimple ? (
-          <p className="text-[11px] leading-relaxed text-[#8B95A1]">
+          <p className="text-[11px] leading-relaxed text-[var(--vision-muted)]">
             브릭로그는 「왜」부터 풀어 쓰고, 피드백·브랜드 습관이 다음 글에 이어집니다.
           </p>
         ) : null}
@@ -555,8 +560,8 @@ export default function BlogResultView({
           <div
             className={`rounded-xl px-3 py-2 text-[11px] font-semibold ${
               meetsMin
-                ? "border border-[#03C75A]/20 bg-[#E8F9EF] text-[#03A94D]"
-                : "border border-[#FFE0B2] bg-[#FFF8E6] text-[#E67700]"
+                ? `${VISION_STATUS_OK} text-[var(--vision-accent)]`
+                : `${VISION_STATUS_WARN} text-[#E67700]`
             }`}
           >
             본문 {charCount.toLocaleString()}자
@@ -565,10 +570,10 @@ export default function BlogResultView({
           </div>
           {showQualityBadge && typeof qualityScore === "number" && (
             <div
-              className={`rounded-xl border px-3 py-2 text-[11px] font-semibold ${
+              className={`rounded-xl px-3 py-2 text-[11px] font-semibold ${
                 draftQualityReady
-                  ? "border-[#03C75A]/20 bg-[#E8F9EF] text-[#03A94D]"
-                  : "border-[#FFE0B2] bg-[#FFF8E6] text-[#E67700]"
+                  ? `${VISION_STATUS_OK} text-[var(--vision-accent)]`
+                  : `${VISION_STATUS_WARN} text-[#E67700]`
               }`}
               title={publishReadiness.hint}
             >
@@ -580,10 +585,10 @@ export default function BlogResultView({
             </div>
           )}
           {draft._meta?.contentPersonaLabel && (
-            <div className="rounded-xl border border-[#E8EBED] bg-white px-3 py-2 text-[11px] text-[#4E5968]">
+            <div className={`${VISION_WORKSPACE_PANEL} px-3 py-2 text-[11px] text-[var(--vision-muted)]`}>
               관점 · {draft._meta.contentPersonaLabel}
               {draft._meta.contentPersonaSource === "auto" && (
-                <span className="text-[#03A94D]"> (자동)</span>
+                <span className="text-[var(--vision-accent)]"> (자동)</span>
               )}
             </div>
           )}

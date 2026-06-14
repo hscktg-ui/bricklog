@@ -171,6 +171,7 @@
     "test:slim-blog-api-payload": "node --import ./scripts/register-alias.mjs scripts/test-slim-blog-api-payload.mjs",
     "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",
+    "test:blog-delivery-finish": "node --import ./scripts/register-alias.mjs scripts/test-blog-delivery-finish.mjs",
     "test:completion-standard": "node --import ./scripts/register-alias.mjs scripts/test-completion-standard.mjs",
     "test:checklist-voice": "node --import ./scripts/register-alias.mjs scripts/test-checklist-voice.mjs",
     "test:human-editor-guard": "node --import ./scripts/register-alias.mjs scripts/test-human-editor-guard.mjs",

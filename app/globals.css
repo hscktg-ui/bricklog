@@ -713,6 +713,7 @@ button:enabled,
   --vision-line-strong: rgba(5, 5, 6, 0.14);
   --vision-glass: rgba(255, 255, 255, 0.72);
   --vision-glass-strong: rgba(255, 255, 255, 0.88);
+  --vision-panel-bg: #ffffff;
   --vision-shadow-soft: 0 8px 32px rgba(5, 5, 6, 0.06);
   --vision-shadow-panel: 0 24px 80px rgba(5, 5, 6, 0.08);
   background: var(--vision-paper);
