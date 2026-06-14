@@ -7,7 +7,7 @@ export default function WhyBriclog() {
   return (
     <section className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}>
       <div className="mx-auto max-w-5xl">
-        <p className={`${VISION_EYEBROW} text-center`}>Why BRICLOG</p>
+        <p className={`${VISION_EYEBROW} text-center`}>왜 브릭로그</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           왜 브릭로그인가
         </h2>

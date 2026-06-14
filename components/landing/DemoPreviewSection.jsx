@@ -9,6 +9,10 @@ import {
   SamplePlacePreview,
 } from "@/components/landing/SamplePreviewBlocks";
 import {
+  LANDING_PRIMARY_CTA,
+} from "@/lib/landing/ctaCopy";
+import {
+  VISION_CTA_ACCENT,
   VISION_EYEBROW,
   VISION_PANEL,
   VISION_SECTION,
@@ -20,7 +24,7 @@ const TABS = [
   { id: "insta", label: "인스타" },
 ];
 
-export default function DemoPreviewSection({ sample }) {
+export default function DemoPreviewSection({ sample, onTest }) {
   const s = sample ?? LANDING_SAMPLE;
   const [tab, setTab] = useState("blog");
 
@@ -30,7 +34,7 @@ export default function DemoPreviewSection({ sample }) {
       className={`${VISION_SECTION} scroll-mt-24 px-5 py-16 md:px-8 md:py-24`}
     >
       <div className="mx-auto max-w-3xl">
-        <p className={VISION_EYEBROW}>Preview</p>
+        <p className={VISION_EYEBROW}>샘플 미리보기</p>
         <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           한 주제, 채널별 초안
         </h2>
@@ -74,7 +78,7 @@ export default function DemoPreviewSection({ sample }) {
 
         <div className={`${VISION_PANEL} mt-6 p-5 sm:p-7`}>
           <span className="rounded-full bg-[var(--vision-paper)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
-            {tab === "blog" ? "Story" : tab === "place" ? "Place" : "Instagram"}
+            {tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"}
           </span>
 
           <div
@@ -87,6 +91,15 @@ export default function DemoPreviewSection({ sample }) {
           </div>
         </div>
 
+        {onTest ? (
+          <button
+            type="button"
+            onClick={onTest}
+            className={`${VISION_CTA_ACCENT} mt-6 w-full min-h-[48px]`}
+          >
+            <span>내 브랜드로 {LANDING_PRIMARY_CTA}</span>
+          </button>
+        ) : null}
         <p className="mt-4 text-center text-[13px] text-[var(--vision-muted)]">
           프롬프트·붙여넣기 검수는 가입 후 메뉴에서 이용할 수 있어요
         </p>

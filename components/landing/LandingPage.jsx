@@ -19,18 +19,19 @@ import { maybeStartBgmAfterGestureUnlock } from "@/lib/audio/briclogBgm";
 import LandingPreviewShell from "./LandingPreviewShell";
 import HeroSection from "./HeroSection";
 import LiveStatsBanner from "./LiveStatsBanner";
-import DemoFlow from "./DemoFlow";
 import DemoPreviewSection from "./DemoPreviewSection";
-import ChannelPreview from "./ChannelPreview";
 import WorkflowSection from "./WorkflowSection";
 import WhyBriclog from "./WhyBriclog";
 import CoreEngineSection from "./CoreEngineSection";
+import LandingFaqSection from "./LandingFaqSection";
+import LandingPageFooter from "./LandingPageFooter";
 import PricingSection from "./PricingSection";
 import {
   LANDING_CTA_FOOTNOTE,
   LANDING_CTA_HEADLINE,
   LANDING_CTA_PHILOSOPHY,
   LANDING_CTA_SUB,
+  LANDING_PRIMARY_CTA,
 } from "@/lib/landing/ctaCopy";
 import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
@@ -42,16 +43,25 @@ import {
   VISION_SECTION_DARK,
 } from "@/lib/landing/vision2030Styles";
 
+const NAV_LINKS = [
+  { id: "public-brand-test", label: "무료 테스트" },
+  { id: "landing-sample", label: "샘플" },
+  { id: "landing-faq", label: "FAQ" },
+  { id: "pricing", label: "요금" },
+];
+
 export default function LandingPage({ onAuthOpen, onStart }) {
   const { greeting, sample, contentIdea, seasonCopy, theme } =
     useLandingVisit();
   const [introOpen, setIntroOpen] = useState(false);
 
-  const scrollToPublicTest = useCallback(() => {
-    document
-      .getElementById("public-brand-test")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollToId = useCallback((id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
+
+  const scrollToPublicTest = useCallback(() => {
+    scrollToId("public-brand-test");
+  }, [scrollToId]);
 
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
@@ -92,11 +102,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
   const handleStart = withLandingCta(onStart);
 
-  const scrollToSample = () => {
-    document
-      .getElementById("landing-sample")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const scrollToSample = () => scrollToId("landing-sample");
 
   const handleIntroDismiss = useCallback(() => {
     markLandingIntroDone();
@@ -126,8 +132,21 @@ export default function LandingPage({ onAuthOpen, onStart }) {
         }`}
       >
         <div className={VISION_NAV_INNER}>
-          <Logo />
-          <nav className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <Logo onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
+          <nav
+            className="flex shrink-0 items-center gap-0.5 sm:gap-1"
+            aria-label="주요 메뉴"
+          >
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link.id}
+                type="button"
+                onClick={withLandingCta(() => scrollToId(link.id))}
+                className="hidden rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] md:inline-flex lg:px-3 lg:text-[13px]"
+              >
+                {link.label}
+              </button>
+            ))}
             <BgmToggle
               fullWidth={false}
               className="hidden shrink-0 !rounded-full !border-[var(--vision-line)] !bg-[var(--vision-panel-bg,rgba(255,255,255,0.8))] sm:flex"
@@ -145,7 +164,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               onClick={withLandingCta(scrollToPublicTest)}
               className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-white shadow-[0_8px_24px_rgba(3,199,90,0.28)] sm:inline-flex sm:text-[13px]"
             >
-              <span>무료 샘플</span>
+              <span>{LANDING_PRIMARY_CTA}</span>
             </button>
           </nav>
         </div>
@@ -167,42 +186,23 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onSample={withLandingCta(scrollToSample)}
             onTest={withLandingCta(scrollToPublicTest)}
           />
-          <PublicBrandTestSection onSignup={(mode) => onAuthOpen(mode || "signup")} />
+          <WhyBriclog />
           <LiveStatsBanner introOpen={introOpen} />
-          <DemoPreviewSection sample={sample} />
-          <details className="group border-t border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)]">
-            <summary className="mx-auto flex max-w-6xl cursor-pointer list-none items-center justify-between gap-3 px-5 py-6 text-[15px] font-semibold text-[var(--vision-ink)] marker:content-none md:px-8 [&::-webkit-details-marker]:hidden">
-              <span>브릭로그가 어떻게 돌아가는지 더 보기</span>
-              <svg
-                className="h-5 w-5 shrink-0 text-[var(--vision-muted)] transition-transform duration-300 group-open:rotate-180"
-                viewBox="0 0 20 20"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M5 7.5L10 12.5L15 7.5"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </summary>
-            <div className="border-t border-[var(--vision-line)] bg-[var(--vision-paper)]">
-              <DemoFlow sample={sample} />
-              <ChannelPreview sample={sample} />
-              <WorkflowSection />
-              <CoreEngineSection />
-              <WhyBriclog />
-            </div>
-          </details>
+          <PublicBrandTestSection onSignup={(mode) => onAuthOpen(mode || "signup")} />
+          <DemoPreviewSection
+            sample={sample}
+            onTest={withLandingCta(scrollToPublicTest)}
+          />
+          <WorkflowSection />
+          <CoreEngineSection />
+          <LandingFaqSection />
           <PricingSection onStart={handleStart} />
 
           <section
             className={`${VISION_SECTION_DARK} px-5 py-20 text-center md:px-8 md:py-28`}
           >
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">
-              Start here
+              시작하기
             </p>
             <p className="mx-auto mt-4 max-w-2xl text-[clamp(1.5rem,4vw,2.25rem)] font-semibold leading-[1.15] tracking-tight text-white">
               {LANDING_CTA_HEADLINE}
@@ -221,7 +221,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               onClick={withLandingCta(scrollToPublicTest)}
               className={`${VISION_CTA_ACCENT} mt-10`}
             >
-              <span>발행 샘플 먼저 보기</span>
+              <span>{LANDING_PRIMARY_CTA}</span>
             </button>
             <button
               type="button"
@@ -232,6 +232,8 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             </button>
             <p className="mt-8 text-[12px] text-white/35">{LANDING_CTA_FOOTNOTE}</p>
           </section>
+
+          <LandingPageFooter />
         </main>
       </LandingPreviewShell>
 

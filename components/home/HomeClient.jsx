@@ -134,7 +134,7 @@ export default function HomeClient() {
   }, [loadProfile]);
 
   useEffect(() => {
-    document.getElementById("briclog-seo-intro")?.setAttribute("hidden", "");
+    document.getElementById("briclog-seo-intro")?.classList.add("sr-only");
   }, []);
 
   useEffect(() => {

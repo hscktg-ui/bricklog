@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { PUBLIC_TEST_HERO } from "@/lib/brand/copy";
+import {
+  PUBLIC_TEST_HERO,
+  PUBLIC_TEST_SIGNUP_UNLOCKS,
+} from "@/lib/brand/copy";
 import {
   PUBLIC_TEST_QUOTA_EXCEEDED,
   PUBLIC_TEST_GATE_FAIL_SIGNUP_HINT,
@@ -28,7 +31,6 @@ import {
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
-  VISION_GHOST_BTN,
   VISION_INPUT,
   VISION_PANEL,
   VISION_SECTION,
@@ -194,7 +196,7 @@ export default function PublicBrandTestSection({ onSignup }) {
     >
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="max-w-lg">
-          <p className={VISION_EYEBROW}>Free test</p>
+          <p className={VISION_EYEBROW}>무료 테스트</p>
           <h2 className="mt-4 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold leading-[1.12] tracking-tight text-[var(--vision-ink)]">
             {PUBLIC_TEST_HERO.headline}
             <span className="block text-[var(--vision-muted)]">
@@ -377,17 +379,21 @@ export default function PublicBrandTestSection({ onSignup }) {
               </div>
 
               <div
-                className="relative border-t border-[var(--vision-line)] px-5 py-8 text-center"
-                aria-hidden
+                className="relative border-t border-[var(--vision-line)] px-5 py-8"
               >
-                <div className="pointer-events-none select-none blur-md">
-                  <p className="text-[14px] text-[var(--vision-muted)]">
-                    전체 본문 · 플레이스 · 인스타 초안 · 브랜드 기록…
-                  </p>
-                </div>
-                <p className="absolute inset-0 flex items-center justify-center px-4 text-[13px] font-medium text-[var(--vision-muted)]">
+                <p className="text-center text-[13px] font-semibold text-[var(--vision-ink)]">
                   {PUBLIC_TEST_BLUR_HINT}
                 </p>
+                <ul className="mx-auto mt-4 max-w-sm space-y-2 text-[13px] text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_SIGNUP_UNLOCKS.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-[var(--vision-accent)]" aria-hidden>
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {result.metrics?.contextScore ? (
@@ -396,25 +402,18 @@ export default function PublicBrandTestSection({ onSignup }) {
                 />
               ) : null}
 
-              <div className="flex flex-col gap-2 border-t border-[var(--vision-line)] px-5 py-4 sm:flex-row">
+              <div className="border-t border-[var(--vision-line)] px-5 py-4">
                 <button
                   type="button"
                   onClick={signup}
-                  className={`${VISION_CTA_ACCENT} min-h-[44px] flex-1`}
+                  className={`${VISION_CTA_ACCENT} min-h-[48px] w-full`}
                 >
-                  <span>무료로 계속하기</span>
+                  <span>브랜드 작업실 만들기 — 무료로 계속</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={signup}
-                  className={`${VISION_GHOST_BTN} min-h-[44px] flex-1`}
-                >
-                  브랜드 작업실 만들기
-                </button>
+                <p className="mt-3 text-center text-[12px] text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_HERO.signupSave}
+                </p>
               </div>
-              <p className="border-t border-[var(--vision-line)] px-5 py-3 text-center text-[12px] text-[var(--vision-muted)]">
-                {PUBLIC_TEST_HERO.signupSave}
-              </p>
             </div>
           ) : null}
         </div>

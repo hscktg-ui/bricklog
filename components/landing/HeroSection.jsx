@@ -3,7 +3,10 @@
 import { DEFAULT_SEASON_THEME } from "@/lib/landing/seasonTheme";
 import {
   LANDING_HERO_DEFAULT,
+  LANDING_PRIMARY_CTA,
+  LANDING_SECONDARY_CTA,
 } from "@/lib/landing/ctaCopy";
+import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
 import {
   VISION_CTA_ACCENT,
   VISION_CTA_GHOST,
@@ -77,20 +80,24 @@ export default function HeroSection({
             >
               {ideaText}
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <ul
+              className="mt-4 flex flex-wrap gap-2"
+              aria-label="지원 채널"
+            >
               {CHANNELS.map((label) => (
-                <span
-                  key={label}
-                  className="rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,rgba(255,255,255,0.9))] px-3 py-1 text-[11px] font-semibold text-[var(--vision-ink)] lg:bg-[var(--vision-ink)] lg:text-white lg:border-transparent"
-                >
-                  {label}
-                </span>
+                <li key={label}>
+                  <span className="inline-block rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,rgba(255,255,255,0.9))] px-3 py-1 text-[11px] font-semibold text-[var(--vision-ink)] lg:bg-[var(--vision-ink)] lg:text-white lg:border-transparent">
+                    {label}
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
+        <LandingTrustStrip className="mt-8" />
+
+        <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
           <button
             id="landing-hero-cta"
             type="button"
@@ -98,14 +105,14 @@ export default function HeroSection({
             onClick={onTest || onStart}
             className={VISION_CTA_ACCENT}
           >
-            <span>내 브랜드 테스트하기</span>
+            <span>{LANDING_PRIMARY_CTA}</span>
           </button>
           <button
             type="button"
             onClick={onSample}
             className={VISION_CTA_GHOST}
           >
-            <span>샘플 보기</span>
+            <span>{LANDING_SECONDARY_CTA}</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LANDING_PRIMARY_CTA } from "@/lib/landing/ctaCopy";
+import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
 import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 
 export default function LandingMobileStickyCta({ onStart, introOpen = false }) {
@@ -31,23 +33,26 @@ export default function LandingMobileStickyCta({ onStart, introOpen = false }) {
       role="region"
       aria-label="빠른 시작"
     >
-      <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[12px] font-semibold text-[var(--vision-ink)]">
-            한 주제, 채널별 초안
-          </p>
-          <p className="mt-0.5 text-[11px] text-[var(--vision-muted)]">
-            이야기 · 플레이스 · 인스타
-          </p>
+      <div className="mx-auto max-w-lg px-4 py-3">
+        <LandingTrustStrip className="mb-2" />
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[12px] font-semibold text-[var(--vision-ink)]">
+              한 주제, 채널별 초안
+            </p>
+            <p className="mt-0.5 text-[11px] text-[var(--vision-muted)]">
+              이야기 · 플레이스 · 인스타
+            </p>
+          </div>
+          <button
+            type="button"
+            data-briclog-cta="start"
+            onClick={onStart}
+            className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto !px-4 !py-2.5 !text-[12px]`}
+          >
+            {LANDING_PRIMARY_CTA}
+          </button>
         </div>
-        <button
-          type="button"
-          data-briclog-cta="start"
-          onClick={onStart}
-          className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto !px-5 !py-2.5 !text-[13px]`}
-        >
-          무료 테스트
-        </button>
       </div>
     </div>
   );

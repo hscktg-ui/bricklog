@@ -16,6 +16,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#03C75A" },
+    { media: "(prefers-color-scheme: dark)", color: "#071510" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
+
 export async function generateMetadata() {
   return buildRootMetadata();
 }
@@ -27,6 +36,12 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-dvh flex-col font-sans antialiased">
+        <a
+          href="#landing-main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[var(--vision-accent,#03C75A)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+        >
+          본문 바로가기
+        </a>
         <JsonLdScript />
         <CrawlableBrandIntro />
         <SessionTelemetry />

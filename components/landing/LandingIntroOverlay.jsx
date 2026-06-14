@@ -168,7 +168,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
 
   useEffect(() => {
     if (!open || brandPhase) return undefined;
-    const id = window.setTimeout(() => setCanStart(true), 7_200);
+    const id = window.setTimeout(() => setCanStart(true), 3_200);
     return () => window.clearTimeout(id);
   }, [open, brandPhase, lineCount]);
 

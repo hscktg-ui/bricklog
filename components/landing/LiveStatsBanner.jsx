@@ -5,6 +5,7 @@ import { useCountUp } from "@/hooks/useCountUp";
 import { computeSeedStats, dayKeyKst } from "@/lib/landing/statsSeed";
 import { LANDING_STATS_ANIM_DELAY_MS } from "@/lib/landing/introTiming";
 import {
+  LANDING_STATS_MODE_LABEL,
   LANDING_STATS_SUB,
   LANDING_STATS_TITLE,
 } from "@/lib/brand/copy";
@@ -99,6 +100,7 @@ export default function LiveStatsBanner({ introOpen = false }) {
   const sectionRef = useRef(null);
   const [metrics, setMetrics] = useState(null);
   const [statsDateKst, setStatsDateKst] = useState(null);
+  const [statsMode, setStatsMode] = useState("seed");
   const [loading, setLoading] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [inView, setInView] = useState(false);
@@ -143,6 +145,9 @@ export default function LiveStatsBanner({ introOpen = false }) {
     if (data?.ok && Array.isArray(data.metrics)) {
       setMetrics(data.metrics);
       if (data.statsDateKst) setStatsDateKst(data.statsDateKst);
+      if (data.mode) setStatsMode(data.mode);
+      else if (data.fallback) setStatsMode("fallback");
+      else setStatsMode("live");
       return true;
     }
     return false;
@@ -152,6 +157,7 @@ export default function LiveStatsBanner({ introOpen = false }) {
     const seed = computeSeedStats();
     setMetrics(seed.metrics);
     setStatsDateKst(seed.statsDateKst);
+    setStatsMode("seed");
   }, []);
 
   const load = useCallback(async () => {
@@ -199,6 +205,9 @@ export default function LiveStatsBanner({ introOpen = false }) {
     ? statsDateKst.replace(/-/g, ".")
     : null;
 
+  const modeLabel =
+    LANDING_STATS_MODE_LABEL[statsMode] || LANDING_STATS_MODE_LABEL.seed;
+
   return (
     <section
       ref={sectionRef}
@@ -208,13 +217,13 @@ export default function LiveStatsBanner({ introOpen = false }) {
     >
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <p className={VISION_EYEBROW}>Live</p>
+          <p className={VISION_EYEBROW}>이용 현황</p>
           <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
             {LANDING_STATS_TITLE}
           </h2>
-          {LANDING_STATS_SUB || dateLabel ? (
+          {LANDING_STATS_SUB || dateLabel || modeLabel ? (
             <p className="mt-2 text-[14px] text-[var(--vision-muted)]">
-              {[LANDING_STATS_SUB, dateLabel ? `${dateLabel} 갱신` : ""]
+              {[modeLabel, LANDING_STATS_SUB, dateLabel ? `${dateLabel} 갱신` : ""]
                 .filter(Boolean)
                 .join(" · ")}
             </p>
