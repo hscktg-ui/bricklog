@@ -131,7 +131,7 @@ async function runPersona(persona) {
     bodyChars: countBlogBodyCharsWithSpaces(pack || {}),
     training: training.total,
     core: core.total,
-    pass: training.total >= TARGET && core.total >= TARGET,
+    pass: training.pass && core.total >= TARGET,
     blockers: training.blockers || [],
   };
 }
