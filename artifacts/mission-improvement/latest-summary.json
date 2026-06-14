@@ -1,102 +1,11 @@
 {
-  "startedAt": "2026-06-13T23:37:07.699Z",
+  "startedAt": "2026-06-14T00:48:30.143Z",
   "total": 115,
-  "pass": 102,
-  "fail": 8,
-  "errors": 5,
-  "passRate": 88.7,
-  "beliefAvg": 79.9,
-  "failReasons": {
-    "checklist_voice": 8,
-    "error": 5,
-    "human_belief_low": 1
-  },
-  "failedSamples": [
-    {
-      "id": "cat_1_3",
-      "label": "꽃집 · 인천 송도",
-      "beliefAfter": 84,
-      "issues": [
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_2_2",
-      "label": "음식점 · 인천 송도"
-    },
-    {
-      "id": "cat_2_4",
-      "label": "음식점 · 광주 상무"
-    },
-    {
-      "id": "cat_3_1",
-      "label": "미용실 · 인천 송도",
-      "beliefAfter": 84,
-      "issues": [
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_7_2",
-      "label": "헬스장 · 홍대",
-      "beliefAfter": 84,
-      "issues": [
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_10_0",
-      "label": "펜션 · 부산 해운대",
-      "beliefAfter": 71,
-      "issues": [
-        "persona_misaligned",
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_15_4",
-      "label": "세무 · 대구 수성",
-      "beliefAfter": 74,
-      "issues": [
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_16_3",
-      "label": "노무 · 대구 수성",
-      "beliefAfter": 74,
-      "issues": [
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_17_2",
-      "label": "부동산 · 대구 수성",
-      "beliefAfter": 58,
-      "issues": [
-        "persona_misaligned",
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_20_4",
-      "label": "건강기능식품 · 강남",
-      "beliefAfter": 78,
-      "issues": [
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "p1_cafe",
-      "label": "강남 카페 사장"
-    },
-    {
-      "id": "p2_salon",
-      "label": "홍대 미용실 원장"
-    },
-    {
-      "id": "p9_restaurant",
-      "label": "음식점 점주"
-    }
-  ]
+  "pass": 115,
+  "fail": 0,
+  "errors": 0,
+  "passRate": 100,
+  "beliefAvg": 83.8,
+  "failReasons": {},
+  "failedSamples": []
 }

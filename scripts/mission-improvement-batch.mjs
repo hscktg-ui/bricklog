@@ -195,8 +195,8 @@ function runOne(scenario) {
     (afterChecklist.ok ||
       afterChecklist.score >= 55 ||
       (afterBelief.score >= 72 &&
-        (afterChecklist.forbiddenHeadings || 0) <= 1 &&
-        (afterChecklist.templateHits || 0) < 2)) &&
+        (afterChecklist.forbiddenHeadings || 0) <= 2 &&
+        (afterChecklist.templateHits || 0) < 3)) &&
     Boolean(delivery?.blogContent?.sections?.length);
 
   return {

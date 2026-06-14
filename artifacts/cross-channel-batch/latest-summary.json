@@ -1,9 +1,9 @@
 {
-  "startedAt": "2026-06-13T23:35:57.989Z",
+  "startedAt": "2026-06-14T00:47:54.324Z",
   "total": 234,
-  "pass": 226,
-  "fail": 8,
-  "passRate": 96.6,
+  "pass": 234,
+  "fail": 0,
+  "passRate": 100,
   "byChannel": {
     "blog": {
       "total": 78,
@@ -17,112 +17,10 @@
     },
     "instagram": {
       "total": 78,
-      "pass": 70,
-      "passRate": 89.7
+      "pass": 78,
+      "passRate": 100
     }
   },
-  "failReasons": {
-    "first_delivery_channel_editor": 8,
-    "first_delivery_human_belief": 8,
-    "first_delivery_channel_format": 8,
-    "human_belief_low": 8
-  },
-  "failedSamples": [
-    {
-      "id": "음식점_4_instagram",
-      "channel": "instagram",
-      "label": "음식점 · 광주 상무 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 31,
-      "chars": 272
-    },
-    {
-      "id": "학원_2_instagram",
-      "channel": "instagram",
-      "label": "학원 · 광주 상무 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 36,
-      "chars": 260
-    },
-    {
-      "id": "인테리어_0_instagram",
-      "channel": "instagram",
-      "label": "인테리어 · 광주 상무 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 36,
-      "chars": 281
-    },
-    {
-      "id": "헬스장_4_instagram",
-      "channel": "instagram",
-      "label": "헬스장 · 대구 수성 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 35,
-      "chars": 272
-    },
-    {
-      "id": "온라인 _2_instagram",
-      "channel": "instagram",
-      "label": "온라인 쇼핑몰 · 대구 수성 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 35,
-      "chars": 293
-    },
-    {
-      "id": "펜션_1_instagram",
-      "channel": "instagram",
-      "label": "펜션 · 대구 수성 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 40,
-      "chars": 260
-    },
-    {
-      "id": "공방_0_instagram",
-      "channel": "instagram",
-      "label": "공방 · 대구 수성 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 35,
-      "chars": 247
-    },
-    {
-      "id": "건강기능_1_instagram",
-      "channel": "instagram",
-      "label": "건강기능식품 · 제주 연동 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 31,
-      "chars": 293
-    }
-  ]
+  "failReasons": {},
+  "failedSamples": []
 }
