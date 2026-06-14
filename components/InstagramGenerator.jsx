@@ -39,6 +39,7 @@ import {
 } from "@/lib/workspace/channelWorkspaceLayout";
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import MobileChannelChrome from "@/components/workspace/MobileChannelChrome";
+import WorkspaceManuscriptStatus from "@/components/quality/WorkspaceManuscriptStatus";
 
 export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }) {
   const { blogInput, setBlogInput } = useContentForm();
@@ -324,6 +325,12 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
                 </button>
               </div>
             )}
+            <WorkspaceManuscriptStatus
+              pack={instagramContent}
+              input={blogInput}
+              channel="instagram"
+              compact
+            />
             <EditableInstaView
               insta={instagramContent}
               onCopy={onCopy}

@@ -88,9 +88,18 @@ export default function ManuscriptStatusCard({
         </p>
       ) : null}
 
-      {showScoreDetails && sqvDiagnostic ? (
-        <p className="mt-2 text-[11px] text-[#8B95A1]">
-          내부 글값(SQV): {sqvDiagnostic.label} — 발행 등급과 별도로 참고용입니다.
+      {sqvDiagnostic ? (
+        <p className="mt-2 rounded-lg border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-2 text-[11px] leading-relaxed text-[var(--vision-muted)]">
+          {sqvDiagnostic.hint || sqvDiagnostic.label}
+        </p>
+      ) : null}
+
+      {showScoreDetails && sqvDiagnostic?.score != null ? (
+        <p className="mt-1 text-[10px] text-[#8B95A1]">
+          글값 {sqvDiagnostic.grade} ({sqvDiagnostic.score})
+          {sqvDiagnostic.tips?.length
+            ? ` · ${sqvDiagnostic.tips.join(" · ")}`
+            : ""}
         </p>
       ) : null}
 

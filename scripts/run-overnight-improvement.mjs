@@ -119,6 +119,7 @@ while (Date.now() - startedAt < DURATION_MS) {
   console.log(`\n========== CYCLE ${cycle} ${new Date().toLocaleString("ko-KR")} ==========`);
 
   run("test:channel-sqv-delivery", "npm", ["run", "test:channel-sqv-delivery"]);
+  run("test:sqv-user-display", "npm", ["run", "test:sqv-user-display"]);
   run("test:core-rules", "npm", ["run", "test:core-rules"]);
   run("test:mission-prose", "npm", ["run", "test:mission-prose"]);
   run("test:region-column-naturalize", "npm", ["run", "test:region-column-naturalize"]);

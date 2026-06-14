@@ -39,6 +39,7 @@ import {
 } from "@/lib/workspace/channelWorkspaceLayout";
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import MobileChannelChrome from "@/components/workspace/MobileChannelChrome";
+import WorkspaceManuscriptStatus from "@/components/quality/WorkspaceManuscriptStatus";
 
 export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
   const { blogInput, setBlogInput } = useContentForm();
@@ -312,6 +313,12 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
                 </button>
               </div>
             )}
+            <WorkspaceManuscriptStatus
+              pack={placeContent}
+              input={blogInput}
+              channel="place"
+              compact
+            />
             <EditablePlaceView
               place={placeContent}
               onCopy={onCopy}
