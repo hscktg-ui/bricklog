@@ -85,6 +85,7 @@ assert.ok(
   delivered?.blogContent?.sections?.length >= 2,
   `client deliver must keep body (ok=${delivered?.ok} withheld=${delivered?.withheld})`
 );
+assert.equal(delivered?.blogContent?._meta?.publishReady, true, "LLM client deliver publishReady");
 
 console.log("OK: llm-ui-delivery-preserve", {
   sections: delivered.blogContent.sections.length,

@@ -1803,20 +1803,27 @@ export function ContentProvider({
     (item) => {
       const channel = item?.channel;
       if (!channel) return false;
-      const content = pipelineContentFromMemoryItem(channel, item);
+      let content = pipelineContentFromMemoryItem(channel, item);
       if (!content) {
         onToast?.("구조 복원이 어려워요. 복사본을 참고해 주세요.", "info");
         return false;
       }
-      if (channel === "blog") setBlogContent(content);
-      else if (channel === "place") setPlaceContent(content);
+      if (channel === "blog") {
+        const pi = item.prompt_input || item.promptInput || {};
+        const restoreInput = normalizePipelineInput({
+          ...blogInput,
+          ...(pi.form_values || pi.formValues || {}),
+        });
+        content = ensureBlogDisplayPack(content, restoreInput);
+        setBlogContent(content);
+      } else if (channel === "place") setPlaceContent(content);
       else if (channel === "instagram") setInstagramContent(content);
       if (item.id) {
         setMemoryContentIds((prev) => ({ ...prev, [channel]: item.id }));
       }
       return true;
     },
-    [onToast]
+    [onToast, blogInput]
   );
 
   const persistChannelHistory = useCallback(
