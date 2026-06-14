@@ -3,14 +3,16 @@
 import { DEFAULT_SEASON_THEME } from "@/lib/landing/seasonTheme";
 import {
   LANDING_HERO_DEFAULT,
-  LANDING_HERO_MOBILE_TRUST,
 } from "@/lib/landing/ctaCopy";
 import {
-  GREEN_CTA_OUTLINE,
-  GREEN_CTA_SOLID,
-} from "@/lib/ui/actionButtonStyles";
+  VISION_CTA_ACCENT,
+  VISION_CTA_GHOST,
+  VISION_EYEBROW,
+  VISION_HEADLINE,
+  VISION_SUB,
+} from "@/lib/landing/vision2030Styles";
 
-const CHANNEL_PILLS = ["이야기", "플레이스", "인스타"];
+const CHANNELS = ["이야기", "플레이스", "인스타"];
 
 export default function HeroSection({
   greeting,
@@ -30,93 +32,78 @@ export default function HeroSection({
   const ideaText = contentIdea?.text ?? LANDING_HERO_DEFAULT.ideaFallback;
 
   return (
-    <section
-      className="relative overflow-hidden px-5 pb-10 pt-8 md:px-8 md:pb-16 md:pt-12"
-      style={{ background: heroTheme.heroGradient }}
-    >
+    <section className="briclog-vision-hero relative overflow-hidden px-5 pb-16 pt-10 md:px-8 md:pb-24 md:pt-16">
       <div
-        className="pointer-events-none absolute -right-16 top-8 h-56 w-56 rounded-full blur-3xl"
-        style={{ backgroundColor: heroTheme.blobPrimary }}
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -left-20 bottom-0 h-48 w-48 rounded-full blur-3xl"
-        style={{ backgroundColor: heroTheme.blobSecondary }}
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          background: `radial-gradient(60% 50% at 80% 20%, ${heroTheme.blobPrimary}, transparent),
+            radial-gradient(50% 40% at 10% 80%, ${heroTheme.blobSecondary}, transparent)`,
+        }}
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-2xl text-center">
-        <p className="text-[12px] font-semibold tracking-[0.08em] text-[#03A94D]">
-          브릭로그
-        </p>
-
-        <ul className="mx-auto mt-4 flex max-w-md flex-wrap justify-center gap-2">
-          {LANDING_HERO_MOBILE_TRUST.map((line) => (
-            <li
-              key={line}
-              className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-[#4E5968] shadow-[0_1px_4px_rgba(25,31,40,0.04)] ring-1 ring-[#E8EBED]/90 backdrop-blur-sm"
-            >
-              {line}
-            </li>
-          ))}
-        </ul>
+      <div className="relative mx-auto max-w-3xl text-center briclog-vision-reveal">
+        <p className={VISION_EYEBROW}>Brand Content OS</p>
 
         <h1
-          className="mt-6 text-[28px] font-bold leading-[1.22] tracking-tight text-[#191F28] sm:text-[34px] md:text-[42px]"
+          className={`${VISION_HEADLINE} mt-6`}
           suppressHydrationWarning
         >
           {headline}
-          <br />
-          {headlineBreak}
+          <span className="block text-[var(--vision-muted)]">{headlineBreak}</span>
         </h1>
+
         <p
-          className="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-[#4E5968] sm:max-w-md sm:text-[16px]"
+          className={`${VISION_SUB} mx-auto mt-6 max-w-xl`}
           suppressHydrationWarning
         >
           {sub}
         </p>
 
         {seasonBadge ? (
-          <p className="mt-3 text-[12px] text-[#8B95A1]">{seasonBadge}</p>
+          <p className="mt-4 text-[13px] font-medium text-[var(--vision-muted)]">
+            {seasonBadge}
+          </p>
         ) : null}
 
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          {CHANNEL_PILLS.map((label) => (
-            <span
-              key={label}
-              className="rounded-full bg-white/85 px-3 py-1 text-[12px] font-semibold text-[#03A94D] ring-1 ring-[#03C75A]/15 backdrop-blur-sm"
+        <div className="mx-auto mt-10 max-w-md text-left">
+          <div className="rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-glass-strong)] p-5 shadow-[var(--vision-shadow-soft)] backdrop-blur-xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
+              오늘의 한 줄
+            </p>
+            <p
+              className="mt-2 text-[18px] font-medium leading-snug tracking-tight text-[var(--vision-ink)] line-clamp-3"
+              suppressHydrationWarning
             >
-              {label}
-            </span>
-          ))}
+              {ideaText}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {CHANNELS.map((label) => (
+                <span
+                  key={label}
+                  className="rounded-full bg-[var(--vision-ink)] px-3 py-1 text-[11px] font-semibold text-white"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div
-          className="mx-auto mt-5 max-w-sm rounded-2xl border border-[#E8EBED]/80 bg-white/95 px-4 py-3.5 text-left shadow-[0_4px_24px_rgba(25,31,40,0.05)] backdrop-blur-sm"
-          suppressHydrationWarning
-        >
-          <p className="text-[12px] font-semibold text-[#03A94D]">
-            오늘의 한 줄
-          </p>
-          <p className="mt-1.5 text-[15px] font-medium leading-snug text-[#191F28] line-clamp-2">
-            {ideaText}
-          </p>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-3">
+        <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
           <button
             id="landing-hero-cta"
             type="button"
             data-briclog-cta="test"
             onClick={onTest || onStart}
-            className={`w-full sm:w-auto sm:min-w-[260px] ${GREEN_CTA_SOLID} min-h-[52px]! text-[16px]! shadow-[0_4px_20px_rgba(3,199,90,0.22)]`}
+            className={VISION_CTA_ACCENT}
           >
             <span>내 브랜드 테스트하기</span>
           </button>
           <button
             type="button"
             onClick={onSample}
-            className={`w-full sm:w-auto ${GREEN_CTA_OUTLINE} min-h-[48px]!`}
+            className={VISION_CTA_GHOST}
           >
             <span>샘플 보기</span>
           </button>

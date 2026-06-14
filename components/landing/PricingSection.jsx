@@ -1,43 +1,47 @@
 "use client";
 
 import PlanComparison from "@/components/billing/PlanComparison";
-import { BRICLOG_CTA_PILL } from "@/lib/ui/actionButtonStyles";
 import {
   LANDING_CTA_FOOTNOTE,
   LANDING_PRICING_INTRO,
   LANDING_PRICING_SUB,
 } from "@/lib/landing/ctaCopy";
+import {
+  VISION_CTA_PRIMARY,
+  VISION_EYEBROW,
+  VISION_SECTION,
+} from "@/lib/landing/vision2030Styles";
 
 export default function PricingSection({ onStart }) {
   return (
     <section
       id="pricing"
-      className="border-t border-[#E8EBED] bg-white px-4 py-16 md:px-8"
+      className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}
     >
       <div className="mx-auto max-w-6xl">
-        <p className="text-center text-[12px] font-semibold text-[#03A94D]">
-          요금제
-        </p>
-        <h2 className="mt-2 text-center text-[22px] font-bold text-[#191F28] md:text-[26px]">
+        <p className={`${VISION_EYEBROW} text-center`}>Pricing</p>
+        <h2 className="mt-3 text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           {LANDING_PRICING_INTRO}
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-[14px] leading-relaxed text-[#4E5968]">
+        <p className="mx-auto mt-4 max-w-xl text-center text-[16px] leading-relaxed text-[var(--vision-muted)]">
           {LANDING_PRICING_SUB}
         </p>
 
-        <div className="mt-10">
+        <div className="mt-12">
           <PlanComparison variant="landing" onStart={onStart} paymentNote="" />
         </div>
 
-        <div className="mt-10 text-center">
+        <div className="mt-12 text-center">
           <button
             type="button"
             onClick={onStart}
-            className={`${BRICLOG_CTA_PILL} min-h-[44px] px-10 text-[15px]`}
+            className={`${VISION_CTA_PRIMARY} min-h-[48px] px-10`}
           >
             무료로 운영 시작
           </button>
-          <p className="mt-4 text-[12px] text-[#8B95A1]">{LANDING_CTA_FOOTNOTE}</p>
+          <p className="mt-4 text-[13px] text-[var(--vision-muted)]">
+            {LANDING_CTA_FOOTNOTE}
+          </p>
         </div>
       </div>
     </section>

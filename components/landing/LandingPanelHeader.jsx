@@ -1,17 +1,21 @@
 /**
- * 랜딩·미리보기 카드 상단 — 브랜드 톴 라벨
+ * 랜딩·미리보기 카드 상단 — Vision 2030 minimal chrome
  */
 export default function LandingPanelHeader({ title, className = "" }) {
   return (
     <div
-      className={`flex items-center gap-2.5 border-b border-[#E8EBED]/70 bg-[#FAFBFC] px-3 py-2.5 sm:px-4 ${className}`}
+      className={`flex items-center justify-between gap-3 border-b border-[var(--vision-line)] bg-[var(--vision-paper)] px-4 py-3 sm:px-5 ${className}`}
     >
-      <span
-        className="h-3.5 w-1 shrink-0 rounded-full bg-gradient-to-b from-[#03C75A] to-[#02A94D]"
-        aria-hidden
-      />
-      <span className="truncate text-[12px] font-semibold tracking-tight text-[#4E5968] sm:text-[13px]">
+      <span className="truncate text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--vision-muted)]">
         {title}
+      </span>
+      <span
+        className="flex gap-1.5"
+        aria-hidden
+      >
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
       </span>
     </div>
   );

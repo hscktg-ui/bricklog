@@ -593,3 +593,87 @@ button:enabled,
 .briclog-intro-chevron {
   animation: briclog-intro-chevron 1.6s ease-in-out infinite;
 }
+
+/* ── Vision 2030 Landing (editorial · spatial · one-thing-first) ── */
+.briclog-vision-page {
+  --vision-ink: #050506;
+  --vision-paper: #f5f5f7;
+  --vision-muted: #6e6e73;
+  --vision-accent: #30d158;
+  --vision-line: rgba(5, 5, 6, 0.08);
+  --vision-line-strong: rgba(5, 5, 6, 0.14);
+  --vision-glass: rgba(255, 255, 255, 0.72);
+  --vision-glass-strong: rgba(255, 255, 255, 0.88);
+  --vision-shadow-soft: 0 8px 32px rgba(5, 5, 6, 0.06);
+  --vision-shadow-panel: 0 24px 80px rgba(5, 5, 6, 0.08);
+  --vision-hero-mesh: radial-gradient(
+      120% 80% at 50% -20%,
+      rgba(48, 209, 88, 0.14),
+      transparent 55%
+    ),
+    radial-gradient(80% 60% at 100% 0%, rgba(94, 92, 230, 0.08), transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+  background: var(--vision-paper);
+  color: var(--vision-ink);
+}
+
+.briclog-vision-hero {
+  background: var(--vision-hero-mesh);
+}
+
+.briclog-vision-intro {
+  background: #000000;
+  color: #f5f5f7;
+}
+
+.briclog-vision-intro-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.75rem;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 40px 120px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(24px);
+}
+
+.briclog-vision-reveal {
+  animation: briclog-vision-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes briclog-vision-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.briclog-vision-stat {
+  border-radius: 1.25rem;
+  border: 1px solid var(--vision-line);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    transform 0.4s ease;
+}
+
+.briclog-vision-stat-active {
+  border-color: rgba(48, 209, 88, 0.35);
+  box-shadow: 0 16px 48px rgba(48, 209, 88, 0.12);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .briclog-vision-reveal {
+    animation: none;
+  }
+}

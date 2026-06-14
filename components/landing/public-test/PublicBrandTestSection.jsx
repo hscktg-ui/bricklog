@@ -22,7 +22,13 @@ import {
   getPublicTestSessionId,
   stashPublicTestDraftForSignup,
 } from "@/lib/publicTest/publicTestQuotaClient";
-import { GREEN_CTA_SOLID } from "@/lib/ui/actionButtonStyles";
+import {
+  VISION_CTA_ACCENT,
+  VISION_EYEBROW,
+  VISION_INPUT,
+  VISION_PANEL,
+  VISION_SECTION,
+} from "@/lib/landing/vision2030Styles";
 import PublicTestContextScore from "@/components/landing/public-test/PublicTestContextScore";
 import PublicTestLoadingProgress from "@/components/landing/public-test/PublicTestLoadingProgress";
 
@@ -149,26 +155,25 @@ export default function PublicBrandTestSection({ onSignup }) {
   return (
     <section
       id="public-brand-test"
-      className="scroll-mt-20 border-t border-[#E8EBED] bg-white px-4 py-12 md:px-8 md:py-16"
+      className={`${VISION_SECTION} scroll-mt-24 px-5 py-16 md:px-8 md:py-24`}
     >
-      <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-start lg:gap-14">
+      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="max-w-lg">
-          <p className="text-[12px] font-semibold text-[#03A94D]">
-            가입 전 무료 테스트
-          </p>
-          <h2 className="mt-3 text-[26px] font-bold leading-[1.25] text-[#191F28] md:text-[32px]">
+          <p className={VISION_EYEBROW}>Free test</p>
+          <h2 className="mt-4 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold leading-[1.12] tracking-tight text-[var(--vision-ink)]">
             {PUBLIC_TEST_HERO.headline}
-            <br />
-            {PUBLIC_TEST_HERO.headlineBreak}
+            <span className="block text-[var(--vision-muted)]">
+              {PUBLIC_TEST_HERO.headlineBreak}
+            </span>
           </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-[#4E5968]">
+          <p className="mt-5 text-[17px] leading-relaxed text-[var(--vision-muted)]">
             {PUBLIC_TEST_HERO.sub}
           </p>
-          <p className="mt-6 text-[13px] leading-relaxed text-[#8B95A1]">
+          <p className="mt-6 text-[14px] leading-relaxed text-[var(--vision-muted)]/80">
             {PUBLIC_TEST_HERO.signupPhilosophy}
           </p>
           {quota.remaining > 0 ? (
-            <p className="mt-3 text-[12px] text-[#8B95A1]">
+            <p className="mt-4 text-[13px] text-[var(--vision-muted)]">
               오늘 남은 무료 테스트 {quota.remaining}회
             </p>
           ) : null}
@@ -208,10 +213,10 @@ export default function PublicBrandTestSection({ onSignup }) {
           ) : null}
           <form
             onSubmit={handleSubmit}
-            className="rounded-2xl border border-[#E8EBED] bg-white p-5 shadow-[0_8px_32px_rgba(25,31,40,0.05)] md:p-6"
+            className={`${VISION_PANEL} p-6 md:p-7`}
           >
             <label className="block">
-              <span className="text-[12px] font-semibold text-[#4E5968]">
+              <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
                 브랜드명
               </span>
               <input
@@ -219,11 +224,11 @@ export default function PublicBrandTestSection({ onSignup }) {
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
                 placeholder={activeSample.brandName}
-                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none transition focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/12"
+                className={VISION_INPUT}
               />
             </label>
-            <label className="mt-4 block">
-              <span className="text-[12px] font-semibold text-[#4E5968]">
+            <label className="mt-5 block">
+              <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
                 지역
               </span>
               <input
@@ -231,11 +236,11 @@ export default function PublicBrandTestSection({ onSignup }) {
                 value={region}
                 onChange={(e) => setRegion(e.target.value)}
                 placeholder={activeSample.region}
-                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none transition focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/12"
+                className={VISION_INPUT}
               />
             </label>
-            <label className="mt-4 block">
-              <span className="text-[12px] font-semibold text-[#4E5968]">
+            <label className="mt-5 block">
+              <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
                 오늘의 주제
               </span>
               <input
@@ -243,7 +248,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder={activeSample.topic}
-                className="mt-1.5 w-full min-h-[48px] rounded-xl border border-[#E8EBED] bg-white px-4 text-[15px] text-[#191F28] outline-none transition focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/12"
+                className={VISION_INPUT}
               />
               <p className="mt-1.5 text-[11px] leading-relaxed text-[#8B95A1]">
                 {PUBLIC_TEST_TOPIC_HINT}
@@ -269,7 +274,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 <button
                   type="button"
                   onClick={signup}
-                  className={`w-full min-h-[44px] ${GREEN_CTA_SOLID}`}
+                  className={`${VISION_CTA_ACCENT} w-full min-h-[48px]`}
                 >
                   <span>
                     {error === PUBLIC_TEST_QUOTA_EXCEEDED
@@ -293,7 +298,7 @@ export default function PublicBrandTestSection({ onSignup }) {
               <button
                 type="button"
                 onClick={signup}
-                className={`mt-5 w-full min-h-[48px] ${GREEN_CTA_SOLID}`}
+                className={`${VISION_CTA_ACCENT} mt-5 w-full min-h-[48px]`}
               >
                 <span>브랜드 작업실 만들기</span>
               </button>
@@ -301,7 +306,7 @@ export default function PublicBrandTestSection({ onSignup }) {
               <button
                 type="submit"
                 disabled={loading}
-                className={`mt-5 w-full min-h-[48px] ${GREEN_CTA_SOLID} disabled:opacity-50`}
+                className={`${VISION_CTA_ACCENT} mt-6 w-full min-h-[52px] disabled:opacity-50`}
               >
                 <span>{PUBLIC_TEST_HERO.cta}</span>
               </button>
@@ -358,7 +363,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 <button
                   type="button"
                   onClick={signup}
-                  className={`min-h-[44px] flex-1 ${GREEN_CTA_SOLID}`}
+                  className={`${VISION_CTA_ACCENT} min-h-[44px] flex-1`}
                 >
                   <span>무료로 계속하기</span>
                 </button>

@@ -8,6 +8,11 @@ import {
   SampleInstaPreview,
   SamplePlacePreview,
 } from "@/components/landing/SamplePreviewBlocks";
+import {
+  VISION_EYEBROW,
+  VISION_PANEL,
+  VISION_SECTION,
+} from "@/lib/landing/vision2030Styles";
 
 const TABS = [
   { id: "blog", label: "이야기" },
@@ -22,46 +27,44 @@ export default function DemoPreviewSection({ sample }) {
   return (
     <section
       id="landing-sample"
-      className="scroll-mt-20 bg-white px-4 py-12 md:px-8 md:py-16"
+      className={`${VISION_SECTION} scroll-mt-24 px-5 py-16 md:px-8 md:py-24`}
     >
       <div className="mx-auto max-w-3xl">
-        <h2 className="text-[20px] font-bold text-[#191F28] md:text-[24px]">
+        <p className={VISION_EYEBROW}>Preview</p>
+        <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           한 주제, 채널별 초안
         </h2>
-        <p className="mt-2 text-[14px] leading-relaxed text-[#8B95A1]">
+        <p className="mt-3 text-[16px] leading-relaxed text-[var(--vision-muted)]">
           실제 화면과 비슷한 예시입니다. 가입 후 같은 흐름으로 씁니다.
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <p className="flex-1 rounded-xl bg-[#F7F8FA] px-3 py-2.5 text-[13px] text-[#4E5968]">
-            <span className="font-semibold text-[#191F28]">{s.brand.name}</span>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <p className="flex-1 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3 text-[14px] text-[var(--vision-muted)]">
+            <span className="font-semibold text-[var(--vision-ink)]">{s.brand.name}</span>
             {s.brand.region ? (
               <>
-                <span className="text-[#8B95A1]"> · </span>
+                <span className="text-[var(--vision-muted)]"> · </span>
                 {s.brand.region}
               </>
             ) : null}
-            <span className="text-[#8B95A1]"> · </span>
+            <span className="text-[var(--vision-muted)]"> · </span>
             {s.topic}
           </p>
-          <span className="shrink-0 rounded-full bg-[#E8F9EF] px-3 py-1.5 text-[12px] font-bold text-[#03A94D]">
+          <span className="shrink-0 rounded-full bg-[var(--vision-ink)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white">
             {CUSTOMER_SAMPLE_BADGE}
           </span>
         </div>
-        <p className="mt-2 text-[11px] text-[#8B95A1]">
-          접속할 때마다 다른 업종 예시가 보입니다 · 스크롤해 본문 전체를 확인할 수 있어요
-        </p>
 
-        <div className="mt-4 flex gap-1 rounded-xl bg-[#F7F8FA] p-1 ring-1 ring-[#E8EBED]/60">
+        <div className="mt-6 inline-flex rounded-full border border-[var(--vision-line)] bg-white p-1 shadow-[var(--vision-shadow-soft)]">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`min-h-[40px] flex-1 rounded-lg text-[13px] font-semibold transition ${
+              className={`min-h-[40px] rounded-full px-5 text-[13px] font-semibold transition ${
                 tab === t.id
-                  ? "bg-white text-[#03A94D] shadow-sm"
-                  : "text-[#6B7684]"
+                  ? "bg-[var(--vision-ink)] text-white shadow-sm"
+                  : "text-[var(--vision-muted)] hover:text-[var(--vision-ink)]"
               }`}
             >
               {t.label}
@@ -69,13 +72,13 @@ export default function DemoPreviewSection({ sample }) {
           ))}
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-2xl border border-[#E8EBED] bg-white shadow-[0_8px_32px_rgba(25,31,40,0.05)] sm:p-6 p-5">
-          <span className="rounded-md bg-[#E8F9EF] px-2 py-0.5 text-[11px] font-semibold text-[#03A94D]">
-            {tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"}
+        <div className={`${VISION_PANEL} mt-6 p-5 sm:p-7`}>
+          <span className="rounded-full bg-[var(--vision-paper)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
+            {tab === "blog" ? "Story" : tab === "place" ? "Place" : "Instagram"}
           </span>
 
           <div
-            className="mt-4 max-h-[min(72vh,640px)] overflow-y-auto pr-1 scroll-smooth"
+            className="mt-5 max-h-[min(72vh,640px)] overflow-y-auto scroll-smooth pr-1"
             suppressHydrationWarning
           >
             {tab === "blog" && <SampleBlogPreview blog={s.blog} />}
@@ -84,7 +87,7 @@ export default function DemoPreviewSection({ sample }) {
           </div>
         </div>
 
-        <p className="mt-3 text-center text-[12px] text-[#8B95A1]">
+        <p className="mt-4 text-center text-[13px] text-[var(--vision-muted)]">
           프롬프트·붙여넣기 검수는 가입 후 메뉴에서 이용할 수 있어요
         </p>
       </div>

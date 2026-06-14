@@ -8,6 +8,7 @@ import {
   LANDING_STATS_SUB,
   LANDING_STATS_TITLE,
 } from "@/lib/brand/copy";
+import { VISION_EYEBROW, VISION_SECTION } from "@/lib/landing/vision2030Styles";
 
 const REFETCH_MS = 60 * 60 * 1000;
 const COUNT_DURATION_MS = 2400;
@@ -48,35 +49,32 @@ function AnimatedStatCard({
         ? formatRolling(from)
         : formatRolling(value);
 
-  const rising = animationActive && !loading && !reduceMotion && !done;
+  const rising =
+    animationActive && !loading && !reduceMotion && value < target;
 
   return (
     <div
-      className={`rounded-2xl border bg-white px-5 py-5 transition-shadow duration-500 ${
-        rising
-          ? "border-[#03C75A]/40 shadow-[0_8px_28px_rgba(3,199,90,0.18)]"
-          : waiting
-            ? "border-[#E8EBED] shadow-[0_4px_16px_rgba(25,31,40,0.04)]"
-            : "border-[#03C75A]/20 shadow-[0_8px_24px_rgba(3,199,90,0.08)]"
+      className={`briclog-vision-stat px-5 py-5 transition-shadow duration-500 ${
+        rising ? "briclog-vision-stat-active" : ""
       }`}
     >
-      <p className="text-[12px] font-semibold leading-snug text-[#03A94D] break-keep">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--vision-muted)] break-keep">
         {metric?.label ?? "—"}
       </p>
-      <div className="mt-2 flex items-baseline gap-2">
+      <div className="mt-3 flex items-baseline gap-2">
         {loading ? (
           <span
-            className="inline-block h-8 w-[4.5rem] animate-pulse rounded-lg bg-[#E8EBED]"
+            className="inline-block h-9 w-[4.5rem] animate-pulse rounded-lg bg-[var(--vision-line)]"
             aria-hidden
           />
         ) : (
           <p
-            className={`text-[28px] font-bold tabular-nums tracking-tight md:text-[32px] ${
+            className={`text-[32px] font-semibold tabular-nums tracking-tight md:text-[36px] ${
               rising
-                ? "text-[#03C75A]"
+                ? "text-[var(--vision-accent)]"
                 : waiting
-                  ? "text-[#8B95A1]"
-                  : "text-[#191F28]"
+                  ? "text-[var(--vision-muted)]"
+                  : "text-[var(--vision-ink)]"
             }`}
             aria-live="polite"
           >
@@ -85,7 +83,7 @@ function AnimatedStatCard({
         )}
         {!loading && animationActive && !reduceMotion && rising && (
           <span
-            className="h-1.5 w-1.5 rounded-full bg-[#03C75A]"
+            className="h-1.5 w-1.5 rounded-full bg-[var(--vision-accent)]"
             aria-hidden
           />
         )}
@@ -205,16 +203,17 @@ export default function LiveStatsBanner({ introOpen = false }) {
     <section
       ref={sectionRef}
       id="landing-stats"
-      className="scroll-mt-20 border-y border-[#E8EBED] bg-gradient-to-b from-[#F0FFF5] to-[#F7F8FA] px-4 py-10 md:px-8 md:py-14"
+      className={`${VISION_SECTION} scroll-mt-24 px-5 py-14 md:px-8 md:py-20`}
       aria-label="브릭로그 이용 현황"
     >
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <h2 className="text-[20px] font-bold text-[#191F28] md:text-[24px]">
+          <p className={VISION_EYEBROW}>Live</p>
+          <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
             {LANDING_STATS_TITLE}
           </h2>
           {LANDING_STATS_SUB || dateLabel ? (
-            <p className="mt-2 text-[13px] text-[#8B95A1]">
+            <p className="mt-2 text-[14px] text-[var(--vision-muted)]">
               {[LANDING_STATS_SUB, dateLabel ? `${dateLabel} 갱신` : ""]
                 .filter(Boolean)
                 .join(" · ")}

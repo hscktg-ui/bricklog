@@ -1,34 +1,36 @@
 "use client";
 
 import { WHY_BRICLOG } from "@/lib/landing/sampleContent";
+import { VISION_EYEBROW, VISION_SECTION } from "@/lib/landing/vision2030Styles";
 
 export default function WhyBriclog() {
   return (
-    <section className="bg-white px-4 py-14 md:px-8 md:py-20">
+    <section className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}>
       <div className="mx-auto max-w-5xl">
-        <h2 className="text-center text-[22px] font-bold text-[#191F28] md:text-[26px]">
+        <p className={`${VISION_EYEBROW} text-center`}>Why BRICLOG</p>
+        <h2 className="mt-3 text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           왜 브릭로그인가
         </h2>
-        <p className="mt-2 text-center text-[14px] leading-relaxed text-[#8B95A1]">
+        <p className="mx-auto mt-3 max-w-xl text-center text-[16px] leading-relaxed text-[var(--vision-muted)]">
           주제 하나로 이야기 · 플레이스 · 인스타 글을 차곡 쌓는 브랜드 글쓰기입니다
         </p>
 
-        <div className="mt-10 grid grid-cols-1 gap-4 @min-[560px]:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-5 @min-[560px]:grid-cols-2">
           {WHY_BRICLOG.map((item, i) => (
-            <div
+            <article
               key={item.title}
-              className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] p-6"
+              className="group rounded-[1.5rem] border border-[var(--vision-line)] bg-white p-7 shadow-[var(--vision-shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--vision-shadow-panel)]"
             >
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#E8F9EF] text-[13px] font-bold text-[#03A94D]">
-                {i + 1}
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--vision-ink)] text-[12px] font-bold text-white">
+                {String(i + 1).padStart(2, "0")}
               </span>
-              <h3 className="mt-2 text-[17px] font-bold text-[#191F28]">
+              <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-[var(--vision-ink)]">
                 {item.title}
               </h3>
-              <p className="mt-2 text-[14px] leading-relaxed text-[#4E5968]">
+              <p className="mt-2 text-[15px] leading-relaxed text-[var(--vision-muted)]">
                 {item.desc}
               </p>
-            </div>
+            </article>
           ))}
         </div>
       </div>
