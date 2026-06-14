@@ -5,7 +5,9 @@
 import { applyV2AxisResearch } from "../lib/content/applyV2AxisResearch.js";
 import { ensureBlogDelivery } from "../lib/generation/ensureBlogDelivery.js";
 import { generateBlogWithLLMFirst } from "../lib/llm/contentOrchestrator.js";
-import { runResearch } from "../lib/research/runResearch.js";
+import { writeFileSync, mkdirSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
 const SAMPLE = {
   brandName: "에이스침대",
@@ -104,9 +106,6 @@ async function main() {
 
 function writeReport(report) {
   try {
-    const { writeFileSync, mkdirSync } = require("fs");
-    const { join, dirname } = require("path");
-    const { fileURLToPath } = require("url");
     const root = join(dirname(fileURLToPath(import.meta.url)), "..");
     mkdirSync(join(root, "config"), { recursive: true });
     writeFileSync(
