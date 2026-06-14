@@ -69,7 +69,7 @@ export default function BlogResultView({
 }) {
   const [draft, setDraft] = useState(blog);
   const [savedFlash, setSavedFlash] = useState(false);
-  const [sectionsOpen, setSectionsOpen] = useState(false);
+  const [sectionsOpen, setSectionsOpen] = useState(true);
   const [expertOpen, setExpertOpen] = useState(false);
   const isStudio = billingPlanId === "studio";
   const isPaid = isPaidPlan(billingPlanId);
@@ -92,6 +92,7 @@ export default function BlogResultView({
       return undefined;
     }
     setContentRevealed(true);
+    setSectionsOpen(true);
     onResultDisplayed?.();
     return undefined;
   }, [blogRevealKey, blog, onResultDisplayed]);
@@ -99,9 +100,8 @@ export default function BlogResultView({
   useEffect(() => {
     setDraft(blog);
     setSavedFlash(false);
-    setSectionsOpen(false);
     setExpertOpen(false);
-    setShowSubheadings(blog?._meta?.includeSubheadings === true);
+    setShowSubheadings(blog?._meta?.includeSubheadings !== false);
   }, [blog, simpleMode]);
 
   const showExpertPanels = isStudio && expertOpen;
@@ -471,6 +471,46 @@ export default function BlogResultView({
         </pre>
       </ResultCopyHero>
 
+      {!isBriefOnly ? (
+        <MobileSecondaryAccordion
+          title="섹션별 보기 · 수정"
+          collapsed={!sectionsOpen}
+          className="rounded-xl border border-[#E8EBED] bg-white"
+        >
+          <div className="space-y-3 border-t border-[#E8EBED] px-4 pb-4 pt-3">
+            {(draft.sections || []).map((section, idx) => (
+              <div key={idx} className="space-y-2">
+                <EditableField
+                  label={`소제목 ${idx + 1}`}
+                  value={section.heading}
+                  rows={1}
+                  onChange={(v) => updateSection(idx, "heading", v)}
+                  onDelete={
+                    (draft.sections?.length || 0) > 3
+                      ? () => removeSection(idx)
+                      : undefined
+                  }
+                />
+                <EditableField
+                  label="본문"
+                  value={section.body}
+                  rows={6}
+                  hint="문단·줄바꿈 유지"
+                  onChange={(v) => updateSection(idx, "body", v)}
+                />
+              </div>
+            ))}
+
+            <EditableField
+              label="마무리"
+              value={draft.conclusion}
+              rows={4}
+              onChange={(v) => patch({ conclusion: v })}
+            />
+          </div>
+        </MobileSecondaryAccordion>
+      ) : null}
+
       <ContentOperatingPlanPanel
         blogInput={blogInput}
         meta={draft._meta}
@@ -603,49 +643,6 @@ export default function BlogResultView({
         {isStudio && expertOpen ? (
           <CoreQualityMetaPanel meta={draft._meta} />
         ) : null}
-
-        <button
-          type="button"
-          onClick={() => setSectionsOpen((o) => !o)}
-          className="flex min-h-[44px] w-full items-center justify-between rounded-xl border border-[#E8EBED] bg-white px-4 py-3 text-[13px] font-semibold text-[#4E5968] hover:bg-[#F9FAFB]"
-        >
-          섹션별 보기 · 수정
-          <span className="text-[#8B95A1]">{sectionsOpen ? "접기" : "펼치기"}</span>
-        </button>
-
-        {sectionsOpen && (
-          <>
-            {(draft.sections || []).map((section, idx) => (
-              <div key={idx} className="space-y-2">
-                <EditableField
-                  label={`소제목 ${idx + 1}`}
-                  value={section.heading}
-                  rows={1}
-                  onChange={(v) => updateSection(idx, "heading", v)}
-                  onDelete={
-                    (draft.sections?.length || 0) > 3
-                      ? () => removeSection(idx)
-                      : undefined
-                  }
-                />
-                <EditableField
-                  label="본문"
-                  value={section.body}
-                  rows={6}
-                  hint="문단·줄바꿈 유지"
-                  onChange={(v) => updateSection(idx, "body", v)}
-                />
-              </div>
-            ))}
-
-            <EditableField
-              label="마무리"
-              value={draft.conclusion}
-              rows={4}
-              onChange={(v) => patch({ conclusion: v })}
-            />
-          </>
-        )}
 
         {editorReport && (
           <EditorAIReport
