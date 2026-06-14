@@ -128,6 +128,7 @@
     "test:quality-trust-kpi": "node --import ./scripts/register-alias.mjs scripts/test-quality-trust-kpi.mjs",
     "test:content-evaluation-engine": "node --import ./scripts/register-alias.mjs scripts/test-content-evaluation-engine.mjs",
     "test:flower-recommendation-prose": "node --import ./scripts/register-alias.mjs scripts/test-flower-recommendation-prose.mjs",
+    "test:flower-persona-publish": "node --import ./scripts/register-alias.mjs scripts/test-flower-persona-publish.mjs",
     "test:furniture-chair-prose": "node --import ./scripts/register-alias.mjs scripts/test-furniture-chair-prose.mjs",
     "test:research-first-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-research-first-pipeline.mjs",
     "test:explain-engine-v3": "node --import ./scripts/register-alias.mjs scripts/test-explain-engine-v3.mjs",
