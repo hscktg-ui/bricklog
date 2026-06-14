@@ -38,6 +38,10 @@ import {
 } from "@/lib/landing/vision2030Styles";
 import PublicTestContextScore from "@/components/landing/public-test/PublicTestContextScore";
 import PublicTestLoadingProgress from "@/components/landing/public-test/PublicTestLoadingProgress";
+import {
+  SampleInstaPreview,
+  SamplePlacePreview,
+} from "@/components/landing/SamplePreviewBlocks";
 
 export default function PublicBrandTestSection({ onSignup }) {
   const [brandName, setBrandName] = useState("");
@@ -51,6 +55,7 @@ export default function PublicBrandTestSection({ onSignup }) {
   const [sampleIdx, setSampleIdx] = useState(0);
   const [sampleReady, setSampleReady] = useState(false);
   const [prefillSource, setPrefillSource] = useState("rotation");
+  const [channelTab, setChannelTab] = useState("blog");
   const activeSample = getPublicTestSampleByIndex(sampleIdx);
 
   const applySampleToForm = useCallback((sample) => {
@@ -69,6 +74,10 @@ export default function PublicBrandTestSection({ onSignup }) {
     setPrefillSource(prefill.source);
     setSampleReady(true);
   }, []);
+
+  useEffect(() => {
+    if (result?.preview) setChannelTab("blog");
+  }, [result]);
 
   useEffect(() => {
     if (!sampleReady) return;
@@ -358,23 +367,63 @@ export default function PublicBrandTestSection({ onSignup }) {
                 <p className="text-[11px] font-semibold text-[var(--vision-accent)]">
                   발행 가능 샘플
                 </p>
-                <h3 className="mt-1 text-[17px] font-bold text-[var(--vision-ink)]">
-                  {result.preview.title}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {[
+                    { id: "blog", label: "이야기" },
+                    ...(result.preview.place ? [{ id: "place", label: "플레이스" }] : []),
+                    ...(result.preview.insta ? [{ id: "insta", label: "인스타" }] : []),
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setChannelTab(tab.id)}
+                      className={`rounded-full px-3 py-1.5 text-[12px] font-semibold transition ${
+                        channelTab === tab.id
+                          ? "bg-[var(--vision-accent)] text-white"
+                          : "bg-[var(--vision-surface)] text-[var(--vision-muted)]"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+                <h3 className="mt-3 text-[17px] font-bold text-[var(--vision-ink)]">
+                  {channelTab === "place"
+                    ? result.preview.place?.title
+                    : channelTab === "insta"
+                      ? "인스타 캡션"
+                      : result.preview.title}
                 </h3>
               </div>
               <div className="space-y-4 px-5 py-4 text-[14px] leading-relaxed text-[var(--vision-ink)]">
-                <p>{result.preview.intro}</p>
-                {result.preview.sections?.map((s) => (
-                  <div key={s.heading}>
-                    <p className="font-semibold">{s.heading}</p>
-                    <p className="mt-1 text-[var(--vision-muted)]">{s.body}</p>
-                  </div>
-                ))}
-                <p className="text-[var(--vision-muted)]">{result.preview.conclusion}</p>
-                {result.preview.hashtags?.length ? (
-                  <p className="text-[12px] text-[var(--vision-muted)]">
-                    {result.preview.hashtags.join(" ")}
-                  </p>
+                {channelTab === "place" && result.preview.place ? (
+                  <SamplePlacePreview
+                    place={{
+                      title: result.preview.place.title,
+                      short: result.preview.place.short,
+                      detail: result.preview.place.detail,
+                    }}
+                  />
+                ) : null}
+                {channelTab === "insta" && result.preview.insta ? (
+                  <SampleInstaPreview body={result.preview.insta.body} />
+                ) : null}
+                {channelTab === "blog" ? (
+                  <>
+                    <p>{result.preview.intro}</p>
+                    {result.preview.sections?.map((s) => (
+                      <div key={s.heading}>
+                        <p className="font-semibold">{s.heading}</p>
+                        <p className="mt-1 text-[var(--vision-muted)]">{s.body}</p>
+                      </div>
+                    ))}
+                    <p className="text-[var(--vision-muted)]">{result.preview.conclusion}</p>
+                    {result.preview.hashtags?.length ? (
+                      <p className="text-[12px] text-[var(--vision-muted)]">
+                        {result.preview.hashtags.join(" ")}
+                      </p>
+                    ) : null}
+                  </>
                 ) : null}
               </div>
 

@@ -1,4 +1,5 @@
 import {
+  BRAND_LATEST_UPDATE,
   BRAND_META_DESCRIPTION,
   BRAND_META_DESCRIPTION_EN,
   BRAND_META_TITLE,
@@ -10,6 +11,10 @@ export default function CrawlableBrandIntro() {
     <div className="sr-only" aria-label={`${BRAND_META_TITLE} 소개`}>
       <p>
         <strong>{BRAND_META_TITLE}</strong> — {BRAND_META_DESCRIPTION}
+      </p>
+      <p>
+        {BRAND_LATEST_UPDATE.label}: {BRAND_LATEST_UPDATE.headline}.{" "}
+        {BRAND_LATEST_UPDATE.bullets.join(" ")}
       </p>
       <p lang="en">{BRAND_META_DESCRIPTION_EN}</p>
     </div>

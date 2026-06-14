@@ -36,6 +36,13 @@ for (const sample of PUBLIC_TEST_SAMPLES) {
   const gate = assertPublicTestSampleGate(input, pack);
   assert.equal(gate.ok, true, `${sample.id}: ${gate.reasons?.join(", ")}`);
   assert.ok(pack._meta.charCount >= 400, sample.id);
+  assert.ok(pack.place?.detailBody, `${sample.id}: place`);
+  assert.ok(
+    pack.instagram?.lineBreakBody || pack.instagram?.body,
+    `${sample.id}: insta`
+  );
+  assert.ok(pack._meta.hasPlace, sample.id);
+  assert.ok(pack._meta.hasInsta, sample.id);
 }
 
 const editedTopic = findMatchingPublicTestSample({
@@ -55,5 +62,9 @@ assert.equal(instant.ok, true, instant.userMessage);
 assert.equal(instant.instant, true);
 assert.ok(instant.preview?.title);
 assert.ok(instant.preview?.intro);
+assert.ok(instant.preview?.place?.short, "place preview");
+assert.ok(instant.preview?.insta?.body, "insta preview");
+assert.equal(instant.metrics?.contextScore?.channels?.find((c) => c.id === "place")?.ready, true);
+assert.equal(instant.metrics?.contextScore?.channels?.find((c) => c.id === "insta")?.ready, true);
 
 console.log("OK public test instant samples", PUBLIC_TEST_SAMPLES.length);

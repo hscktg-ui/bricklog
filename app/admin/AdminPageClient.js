@@ -11,6 +11,7 @@ import HaeshinContentHub from "@/components/admin/HaeshinContentHub";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminAdvisoryPanel from "@/components/admin/AdminAdvisoryPanel";
 import AdminOpsHub from "@/components/admin/AdminOpsHub";
+import AdminProductOverviewPanel from "@/components/admin/AdminProductOverviewPanel";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
 
@@ -46,6 +47,7 @@ export default function AdminPageClient() {
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [advisory, setAdvisory] = useState(null);
   const [advisoryLoading, setAdvisoryLoading] = useState(false);
+  const [productOverview, setProductOverview] = useState(null);
   const [showDetailMetrics, setShowDetailMetrics] = useState(false);
   const pollRef = useRef(null);
 
@@ -180,6 +182,15 @@ export default function AdminPageClient() {
     }
   }, [showToast]);
 
+  const loadProductOverview = useCallback(async () => {
+    try {
+      const data = await fetchWithAuth("/api/admin/product-overview");
+      setProductOverview(data.snapshot || null);
+    } catch {
+      setProductOverview(null);
+    }
+  }, []);
+
   const loadInsights = useCallback(async (refresh = false) => {
     setInsightsLoading(true);
     try {
@@ -230,6 +241,7 @@ export default function AdminPageClient() {
     loadStats();
     loadAdvisory();
     loadInsights();
+    loadProductOverview();
   }, [
     user,
     hasAdminAccess,
@@ -237,6 +249,7 @@ export default function AdminPageClient() {
     loadStats,
     loadAdvisory,
     loadInsights,
+    loadProductOverview,
   ]);
 
   useEffect(() => {
@@ -332,9 +345,9 @@ export default function AdminPageClient() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-[22px] font-bold">BRICLOG 운영 조언</h1>
+            <h1 className="text-[22px] font-bold">BRICLOG 운영 · 제품 개요</h1>
             <p className="mt-1 text-[12px] text-[#8B95A1]">
-              무엇을 먼저 볼지 · 샘플·가입·품질 신호 — 랜딩·가입 설정은 그대로
+              SEO·도움말 AI·품질 KPI · 샘플·가입 신호 — 랜딩·가입 설정은 그대로
             </p>
           </div>
           <Link href="/" className="text-[13px] text-[#03A94D] hover:underline">
@@ -349,6 +362,11 @@ export default function AdminPageClient() {
             ))}
           </ul>
         )}
+
+        <AdminProductOverviewPanel
+          snapshot={productOverview}
+          publicTest={stats?.dashboard?.publicBrandTest || {}}
+        />
 
         <AdminAdvisoryPanel
           advisory={advisory}

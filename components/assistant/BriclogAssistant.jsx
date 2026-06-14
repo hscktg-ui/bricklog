@@ -173,7 +173,7 @@ export default function BriclogAssistant({
               <div className="min-w-0">
                 <p className="text-[15px] font-bold text-[#191F28]">도움말</p>
                 <p className="truncate text-[11px] text-[#8B95A1]">
-                  더 맞추기·채널·플랜·한도 안내
+                  AI FAQ · 채널·조사·발행 준비도·플랜
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
@@ -292,7 +292,7 @@ export default function BriclogAssistant({
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="예: 월 콘텐츠 한도가 궁금해요"
+                  placeholder="예: 무료 샘플이랑 플레이스 글 차이가 뭐예요?"
                   className="min-h-[44px] min-w-0 flex-1 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] px-3.5 py-2.5 text-[14px] outline-none focus:border-[#03C75A] focus:ring-2 focus:ring-[#03C75A]/15"
                   maxLength={1500}
                 />

@@ -15,8 +15,11 @@ export default function LandingPageFooter() {
         </div>
         <nav
           className="flex flex-wrap gap-x-4 gap-y-2 text-[13px] font-medium text-[var(--vision-accent)]"
-          aria-label="법적 안내"
+          aria-label="법적 안내 및 도움말"
         >
+          <Link href="/help" className="hover:underline">
+            FAQ·도움말
+          </Link>
           <Link href="/terms" className="hover:underline">
             이용약관
           </Link>
