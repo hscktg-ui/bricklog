@@ -62,6 +62,13 @@ function hasCodeChanges() {
     });
 }
 
+function gitCommit(message) {
+  execSync(
+    `git -c user.name="briclog-bot" -c user.email="dev@briclog.ai" commit -m "${message.replace(/"/g, '\\"')}"`,
+    { cwd: ROOT, stdio: "inherit" }
+  );
+}
+
 function commitAndDeploy(cycle) {
   if (!hasCodeChanges()) {
     console.log("[overnight] no code changes — skip commit");
@@ -70,7 +77,7 @@ function commitAndDeploy(cycle) {
   console.log("[overnight] committing code changes…");
   execSync("git add lib app components scripts package.json", { cwd: ROOT, stdio: "inherit" });
   const msg = `Overnight cycle ${cycle}: batch-driven quality improvements.`;
-  execSync(`git commit -m "${msg}"`, { cwd: ROOT, stdio: "inherit" });
+  gitCommit(msg);
   execSync("git push origin main", { cwd: ROOT, stdio: "inherit" });
   if (!SKIP_DEPLOY) {
     run("deploy:vercel", "npm", ["run", "deploy:vercel"]);
