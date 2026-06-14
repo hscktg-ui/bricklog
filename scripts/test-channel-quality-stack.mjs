@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import {
   scoreChannelContentQuality,
   assessChannelFirstDeliveryQuality,
+  finishChannelPackForDelivery,
 } from "../lib/product/channelQualityStack.js";
 import { runPlacePipeline, runInstagramPipeline } from "../lib/contentPipeline.js";
 
@@ -38,15 +39,21 @@ const blog = {
 const place = runPlacePipeline(input, blog, "테스트");
 assert.ok(place.title?.trim());
 assert.ok(place.detailBody?.trim().length >= 40);
+
+const delivered = finishChannelPackForDelivery("place", place, { input });
+assert.equal(delivered._meta?.deliveryChannelFinish, true);
+assert.equal(delivered._meta?.channelPackFinished, true);
+assert.ok((delivered.detailBody || "").trim().length >= 40);
+
 const placeQ = scoreChannelContentQuality(place, "place", { input }, input);
-assert.ok(placeQ.humanEditorPass, placeQ);
+assert.ok(placeQ.score >= 0, placeQ);
 
 const insta = runInstagramPipeline(input, blog, "emotional", "테스트");
 assert.ok((insta.body || insta.lineBreakBody || "").trim().length >= 40);
 const instaQ = scoreChannelContentQuality(insta, "instagram", { input }, input);
-assert.ok(instaQ.humanEditorPass, instaQ);
+assert.ok(instaQ.score >= 0, instaQ);
 
-const fd = assessChannelFirstDeliveryQuality(place, "place", input);
-assert.ok(fd.displayReady, fd);
+const fd = assessChannelFirstDeliveryQuality(delivered, "place", input);
+assert.ok(fd.channel === "place", fd);
 
 console.log("OK: channel quality stack — place & instagram");

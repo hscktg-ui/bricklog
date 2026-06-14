@@ -5,6 +5,11 @@ import SkeletonPreview from "@/components/SkeletonPreview";
 import SketchStepIcon from "@/components/icons/SketchStepIcon";
 import { CUSTOMER_BLOG_UI_STEPS } from "@/lib/loading/generationSteps";
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
+import {
+  VISION_LOADING_PANEL,
+  VISION_PROGRESS_FILL,
+  VISION_PROGRESS_TRACK,
+} from "@/lib/landing/vision2030Styles";
 
 function resolveActiveStepIndex(stepLabel, steps) {
   if (!stepLabel) return 0;
@@ -69,27 +74,31 @@ export default function GeneratingResultPlaceholder({
       aria-live="polite"
       aria-label={title}
     >
-      <div className="rounded-2xl border border-[#E8EBED] bg-white px-5 py-6 shadow-sm md:px-7 md:py-8">
+      <div className={`${VISION_LOADING_PANEL} px-5 py-6 md:px-7 md:py-8`}>
         <div className="flex items-center gap-2">
           <span
             className="inline-flex h-5 w-5 items-center justify-center"
             aria-hidden
           >
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#03C75A]" />
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--vision-accent)]" />
           </span>
-          <p className="text-[16px] font-semibold text-[#191F28]">{title}</p>
+          <p className="text-[16px] font-semibold tracking-[-0.02em] text-[var(--vision-ink)]">
+            {title}
+          </p>
         </div>
-        <p className="mt-2 text-[13px] leading-relaxed text-[#4E5968]">{body}</p>
+        <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
+          {body}
+        </p>
 
         <div className="mt-4">
-          <div className="h-1.5 overflow-hidden rounded-full bg-[#EEF1F4]">
+          <div className={VISION_PROGRESS_TRACK}>
             <div
-              className="h-full rounded-full bg-[#03C75A] transition-all duration-700 ease-out"
+              className={VISION_PROGRESS_FILL}
               style={{ width: `${Math.min(progressPct, 100)}%` }}
               aria-hidden
             />
           </div>
-          <p className="mt-1.5 text-[11px] text-[#8B95A1]">
+          <p className="mt-1.5 text-[11px] text-[var(--vision-muted)]">
             {currentStep.text}
             {elapsedSec != null && elapsedSec >= 45
               ? " · 조금 더 걸리고 있어요"
@@ -106,14 +115,14 @@ export default function GeneratingResultPlaceholder({
               return (
                 <li
                   key={step.text}
-                  className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] ${
+                  className={`flex items-center gap-2 rounded-xl px-2.5 py-2 text-[13px] ${
                     active
-                      ? "bg-[#F0FFF5] font-semibold text-[#03A94D]"
+                      ? "bg-[rgba(48,209,88,0.1)] font-semibold text-[var(--vision-accent)]"
                       : done
-                        ? "text-[#4E5968]"
+                        ? "text-[var(--vision-muted)]"
                         : upcoming
-                          ? "text-[#B0B8C1]"
-                          : "text-[#4E5968]"
+                          ? "text-[var(--vision-line-strong)]"
+                          : "text-[var(--vision-muted)]"
                   }`}
                 >
                   <span className="flex w-5 shrink-0 items-center justify-center" aria-hidden>
@@ -131,7 +140,7 @@ export default function GeneratingResultPlaceholder({
                   </span>
                   <span>{step.text}</span>
                   {active ? (
-                    <span className="ml-auto text-[11px] font-normal text-[#03A94D]">
+                    <span className="ml-auto text-[11px] font-normal text-[var(--vision-accent)]">
                       진행 중
                     </span>
                   ) : null}
@@ -142,7 +151,7 @@ export default function GeneratingResultPlaceholder({
         ) : null}
 
         {revealing && previewTitle ? (
-          <p className="mt-4 rounded-lg border border-[#03C75A]/20 bg-[#F7FDF9] px-3 py-2.5 text-[13px] font-medium leading-snug text-[#191F28]">
+          <p className="mt-4 rounded-xl border border-[rgba(48,209,88,0.18)] bg-[rgba(48,209,88,0.06)] px-3 py-2.5 text-[13px] font-medium leading-snug text-[var(--vision-ink)]">
             {previewTitle}
           </p>
         ) : null}
@@ -154,7 +163,7 @@ export default function GeneratingResultPlaceholder({
         ) : null}
       </div>
       {!compact && !mobileSimple ? (
-        <p className="mt-4 text-center text-[12px] text-[#8B95A1]">
+        <p className="mt-4 text-center text-[12px] text-[var(--vision-muted)]">
           {revealing
             ? "곧 아래에 전체 글이 펼쳐집니다"
             : elapsedSec != null && elapsedSec >= 8
@@ -163,7 +172,7 @@ export default function GeneratingResultPlaceholder({
         </p>
       ) : null}
       {mobileSimple && !revealing ? (
-        <p className="mt-4 text-center text-[12px] font-medium text-[#8B95A1]">
+        <p className="mt-4 text-center text-[12px] font-medium text-[var(--vision-muted)]">
           완성되면 「원고」로 전환 · 창을 닫지 마세요
         </p>
       ) : null}

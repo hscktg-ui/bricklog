@@ -12,7 +12,7 @@ function TagList({ tags }) {
       {tags.map((tag, i) => (
         <span
           key={i}
-          className="rounded-lg bg-[#E8F9EF] px-2 py-0.5 text-[11px] font-medium text-[#03A94D]"
+          className="rounded-full border border-[rgba(48,209,88,0.2)] bg-[rgba(48,209,88,0.1)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--vision-ink)]"
         >
           {tag.startsWith("#") ? tag : `#${tag}`}
         </span>
@@ -28,10 +28,10 @@ export function PlaceResultView({ place, onCopy }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-      <p className="text-[12px] text-[#8B95A1]">
+      <p className="text-[12px] text-[var(--vision-muted)]">
         사장님 공지 · 보고 방문
         {meta?.totalChars != null && (
-          <span className="ml-2 text-[#03A94D]">
+          <span className="ml-2 font-medium text-[var(--vision-accent)]">
             {meta.totalChars}자 (공백 제외)
           </span>
         )}
@@ -79,10 +79,10 @@ export function InstaResultView({ insta, onCopy }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-      <p className="text-[12px] text-[#8B95A1]">
+      <p className="text-[12px] text-[var(--vision-muted)]">
         저장형 캡션 · 2025 로컬 감성
         {meta?.bodyChars != null && (
-          <span className="ml-2 text-[#03A94D]">
+          <span className="ml-2 font-medium text-[var(--vision-accent)]">
             {meta.bodyChars}자
           </span>
         )}

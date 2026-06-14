@@ -31,6 +31,10 @@ import BriclogStrengthChips from "@/components/BriclogStrengthChips";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
+import ResultCopyHero, {
+  ResultCopyGhostButton,
+} from "@/components/workspace/ResultCopyHero";
+import { VISION_EYEBROW, VISION_COPY_BTN } from "@/lib/landing/vision2030Styles";
 
 export default function BlogResultView({
   blog,
@@ -360,49 +364,46 @@ export default function BlogResultView({
       ) : null}
 
       {!mobileSimple ? (
-        <p className="text-[11px] font-bold tracking-wide text-[#03A94D]">
-          {RESULT_VIEW.sectionLabel}
-        </p>
+        <p className={VISION_EYEBROW}>{RESULT_VIEW.sectionLabel}</p>
       ) : null}
-      <div className="rounded-xl border-2 border-[#03C75A]/25 bg-[#F6FDF9] p-4 md:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-[13px] font-bold text-[#191F28]">
-              {mobileSimple
-                ? RESULT_VIEW.copyBlockTitleMobile
-                : RESULT_VIEW.copyBlockTitle}
-            </p>
-            {!isBriefOnly ? (
-              <>
-                <p
-                  className={`mt-1 text-[11px] font-semibold ${
-                    publishReadiness.status === "ready"
-                      ? "text-[#03A94D]"
-                      : publishReadiness.status === "polishing"
-                        ? "text-[#E67700]"
-                        : "text-[#4E5968]"
-                  }`}
-                >
-                  {publishReadiness.label}
-                </p>
-                {draft._meta?.blogCharCount ? (
-                  <p className="mt-0.5 text-[10px] font-medium text-[#8B95A1]">
-                    {draft._meta.blogCharCount.toLocaleString("ko-KR")}자
-                    {!draft._meta?.lengthTierMet && draft._meta?.lengthTierMin
-                      ? ` · 목표 ${draft._meta.lengthTierMin.toLocaleString("ko-KR")}자`
-                      : null}
-                  </p>
-                ) : null}
-              </>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
+      <ResultCopyHero
+        title={
+          mobileSimple
+            ? RESULT_VIEW.copyBlockTitleMobile
+            : RESULT_VIEW.copyBlockTitle
+        }
+        statusLabel={!isBriefOnly ? publishReadiness.label : null}
+        statusTone={
+          !isBriefOnly
+            ? publishReadiness.status === "ready"
+              ? "ready"
+              : publishReadiness.status === "polishing"
+                ? "polishing"
+                : "neutral"
+            : "neutral"
+        }
+        metaLine={
+          !isBriefOnly && draft._meta?.blogCharCount
+            ? `${draft._meta.blogCharCount.toLocaleString("ko-KR")}자${
+                !draft._meta?.lengthTierMet && draft._meta?.lengthTierMin
+                  ? ` · 목표 ${draft._meta.lengthTierMin.toLocaleString("ko-KR")}자`
+                  : ""
+              }`
+            : null
+        }
+        hint={
+          !mobileSimple
+            ? "제목·소제목·문단 사이 빈 줄 · 폼 항목 이름(말투·금지어 등)은 포함하지 않음"
+            : null
+        }
+        actions={
+          <>
             {onRegenerate ? (
               <button
                 type="button"
                 onClick={onRegenerate}
                 disabled={regenerateBusy}
-                className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-[#03C75A]/35 bg-white px-3 py-2 text-[12px] font-semibold text-[#03A94D] hover:bg-[#F0FFF5] disabled:opacity-50"
+                className={`${VISION_COPY_BTN} hover:border-[rgba(48,209,88,0.45)] hover:bg-[rgba(48,209,88,0.1)] hover:text-[#047a2a] disabled:opacity-50`}
               >
                 {regenerateBusy ? RETRY.ctaBusy : RETRY.cta}
               </button>
@@ -412,34 +413,47 @@ export default function BlogResultView({
               onCopy={() => onCopy?.(copyText)}
             />
             {!isBriefOnly && goReview ? (
-              <button
-                type="button"
-                onClick={goReview}
-                className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-[#E8EBED] bg-white px-3 py-2 text-[12px] font-semibold text-[#4E5968] hover:bg-[#F9FAFB]"
-              >
+              <ResultCopyGhostButton onClick={goReview}>
                 붙여넣어 점검
-              </button>
+              </ResultCopyGhostButton>
             ) : null}
             {!isBriefOnly && userId && contentItemId ? (
-              <button
-                type="button"
+              <ResultCopyGhostButton
                 onClick={markPublished}
                 disabled={publishedMarked}
-                className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-[#E8EBED] bg-white px-3 py-2 text-[12px] font-semibold text-[#4E5968] hover:bg-[#F9FAFB] disabled:opacity-60"
               >
                 {publishedMarked ? "발행 완료 기록됨" : "네이버에 올렸어요"}
-              </button>
+              </ResultCopyGhostButton>
             ) : null}
-          </div>
-        </div>
-        {!mobileSimple ? (
-          <p className="mt-1 text-[11px] text-[#8B95A1]">
-            제목·소제목·문단 사이 빈 줄 · 폼 항목 이름(말투·금지어 등)은
-            포함하지 않음
-          </p>
-        ) : null}
+          </>
+        }
+        footer={
+          <label className="mt-3 flex items-center gap-2 text-[12px] text-[var(--vision-muted)]">
+            <input
+              type="checkbox"
+              checked={showSubheadings}
+              onChange={(e) => {
+                const on = e.target.checked;
+                setShowSubheadings(on);
+                const nextMeta = {
+                  ...draft._meta,
+                  includeSubheadings: on,
+                };
+                patch({
+                  _meta: nextMeta,
+                  fullCopyText: formatBlogFullCopy(
+                    { ...draft, _meta: nextMeta },
+                    { includeSubheadings: on }
+                  ),
+                });
+              }}
+            />
+            소제목·문단 구분 포함 (권장)
+          </label>
+        }
+      >
         <pre
-          className={`mt-3 overflow-y-auto whitespace-pre-wrap font-sans text-[14px] leading-relaxed text-[#4E5968] ${
+          className={`mt-3 overflow-y-auto whitespace-pre-wrap rounded-xl border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-3 font-sans text-[14px] leading-relaxed text-[var(--vision-ink)] ${
             mobileSimple
               ? "max-h-[min(58dvh,520px)] text-[14px] leading-[1.65]"
               : conciseView
@@ -449,29 +463,7 @@ export default function BlogResultView({
         >
           {copyText}
         </pre>
-        <label className="mt-3 flex items-center gap-2 text-[12px] text-[#4E5968]">
-          <input
-            type="checkbox"
-            checked={showSubheadings}
-            onChange={(e) => {
-              const on = e.target.checked;
-              setShowSubheadings(on);
-              const nextMeta = {
-                ...draft._meta,
-                includeSubheadings: on,
-              };
-              patch({
-                _meta: nextMeta,
-                fullCopyText: formatBlogFullCopy(
-                  { ...draft, _meta: nextMeta },
-                  { includeSubheadings: on }
-                ),
-              });
-            }}
-          />
-          소제목·문단 구분 포함 (권장)
-        </label>
-      </div>
+      </ResultCopyHero>
 
       {userId && (
         <ContentFeedbackPanel

@@ -15,6 +15,10 @@ import {
 } from "@/lib/loading/generationSteps";
 import { LOADING } from "@/lib/product/craft";
 import { formatDurationKo } from "@/lib/loading/estimateGenerationMs";
+import {
+  VISION_LOADING_PANEL,
+  VISION_SPINNER,
+} from "@/lib/landing/vision2030Styles";
 
 function formatElapsedMmSs(totalSeconds) {
   const s = Math.max(0, Math.floor(totalSeconds));
@@ -161,8 +165,8 @@ export default function GenerationLoadingOverlay({
           : getCompleteMessage(channel));
 
   const backdropClass = peekResults
-    ? "absolute inset-0 bg-[#191F28]/10"
-    : "absolute inset-0 bg-[#191F28]/32 backdrop-blur-[2px]";
+    ? "absolute inset-0 bg-[var(--vision-ink)]/10"
+    : "absolute inset-0 bg-[var(--vision-ink)]/28 backdrop-blur-md";
 
   return (
     <div
@@ -171,47 +175,51 @@ export default function GenerationLoadingOverlay({
       }`}
     >
       <div className={backdropClass} aria-hidden />
-      <div className="briclog-surface pointer-events-auto relative z-10 mx-4 w-full max-w-sm px-6 py-8 sm:max-w-md sm:px-8 sm:py-9">
+      <div
+        className={`${VISION_LOADING_PANEL} pointer-events-auto relative z-10 mx-4 w-full max-w-sm px-6 py-8 sm:max-w-md sm:px-8 sm:py-9`}
+      >
         <button
           type="button"
           onClick={dismissOverlay}
-          className="briclog-pressable absolute right-3 top-3 rounded-lg px-2 py-1 text-[12px] font-medium text-[#8B95A1] hover:bg-[#F7F8FA] hover:text-[#4E5968]"
+          className="briclog-pressable absolute right-3 top-3 rounded-full px-3 py-1 text-[12px] font-medium text-[var(--vision-muted)] hover:bg-[var(--vision-paper)] hover:text-[var(--vision-ink)]"
         >
           <span>닫기</span>
         </button>
         {complete ? (
-          <p className="text-center text-[15px] font-semibold leading-relaxed text-[#191F28] sm:text-[16px]">
+          <p className="text-center text-[15px] font-semibold leading-relaxed tracking-[-0.02em] text-[var(--vision-ink)] sm:text-[16px]">
             {doneMsg}
           </p>
         ) : (
           <>
-            <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-[#E8EBED] border-t-[#03C75A]" />
-            <p className="mt-5 text-center text-[14px] font-semibold leading-snug text-[#191F28] sm:mt-6 sm:text-[15px]">
+            <div className={VISION_SPINNER} />
+            <p className="mt-5 text-center text-[14px] font-semibold leading-snug tracking-[-0.01em] text-[var(--vision-ink)] sm:mt-6 sm:text-[15px]">
               {step.text}
             </p>
-            <p className="mt-2 text-center text-[11px] tabular-nums text-[#8B95A1]">
+            <p className="mt-2 text-center text-[11px] tabular-nums text-[var(--vision-muted)]">
               {LOADING.generationElapsed(elapsedLabel)}
               {remainingLabel
                 ? ` · ${LOADING.generationRemaining(remainingLabel)}`
                 : null}
             </p>
             {!stepLabel && steps.length > 1 ? (
-              <p className="mt-1.5 text-center text-[10px] font-semibold tabular-nums text-[#03A94D]">
+              <p className="mt-1.5 text-center text-[10px] font-semibold tabular-nums text-[var(--vision-accent)]">
                 {stepIndex + 1} / {steps.length}
               </p>
             ) : null}
-            <p className="mt-1 text-center text-[11px] text-[#B0B8C1]">
+            <p className="mt-1 text-center text-[11px] text-[var(--vision-muted)]">
               {!remainingLabel
                 ? LOADING.generationOverEstimate
                 : LOADING.generationSub}
             </p>
             {!stepLabel && (
-              <div className="mt-4 flex justify-center gap-1">
+              <div className="mt-4 flex justify-center gap-1.5">
                 {steps.map((_, i) => (
                   <span
                     key={i}
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      i === stepIndex ? "bg-[#03C75A]" : "bg-[#E8EBED]"
+                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                      i === stepIndex
+                        ? "bg-[var(--vision-accent)]"
+                        : "bg-[var(--vision-line-strong)]"
                     }`}
                   />
                 ))}
