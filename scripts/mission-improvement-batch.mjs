@@ -15,7 +15,7 @@ import { deliverBlogDespiteGate } from "../lib/product/deliverySoftPass.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import { ensureMinBlogSections } from "../lib/content/blogLengthControl.js";
 import { applySpeakerVoiceLockPack } from "../lib/persona/speakerVoiceLock.js";
-import { finishLocalBlogPackForBatch, batchBlogCharsOk, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR } from "../lib/product/localBatchFinish.js";
+import { finishLocalBlogPackForBatch, batchBlogCharsOk, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR } from "../lib/product/localBatchFinish.js";
 import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
 import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.js";
 import {
@@ -157,7 +157,8 @@ function runOne(scenario) {
 
     function packScore(pack) {
       const full = getBlogFullText(pack);
-      const belief = scoreHumanBelief(full, input, pack).score;
+      const beliefInput = resolveBatchFinishInput(input, pack);
+      const belief = scoreHumanBelief(full, beliefInput, pack).score;
       const checklist = scoreChecklistVoice(full, pack);
       return (
         belief +
@@ -180,7 +181,8 @@ function runOne(scenario) {
   }
 
   const afterFull = getBlogFullText(improved);
-  const afterBelief = scoreHumanBelief(afterFull, input, improved);
+  const afterBeliefInput = resolveBatchFinishInput(input, improved);
+  const afterBelief = scoreHumanBelief(afterFull, afterBeliefInput, improved);
   const afterChecklist = scoreChecklistVoice(afterFull, improved);
   const delivery = deliverBlogDespiteGate(input, improved, { reasons: [] }, { mode: "batch" });
   const metaLeak = hasMetaLeak(afterFull);

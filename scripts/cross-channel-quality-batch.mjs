@@ -24,7 +24,7 @@ import { resolveBlogLengthTier } from "../lib/constants.js";
 import { GENERAL_CATEGORIES, SENSITIVE_CATEGORIES, REGIONS, TRAINING_PERSONAS } from "../lib/quality/training/constants.js";
 import { applyBatchEvolutionFromReport } from "../lib/evolution/batchEvolutionFromReport.js";
 import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
-import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogCharsOk, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
+import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogCharsOk, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
 import { assessFirstDeliveryQuality } from "../lib/product/firstDeliveryQuality.js";
 import { resolveLocalBatchBlogMinChars } from "../lib/content/missionProseGate.js";
 
@@ -98,10 +98,11 @@ function runBlog(scenario) {
   let pack = buildMissionProseFallbackPack(input);
   pack = finishLocalBlogPackForBatch(pack, input);
 
+  const beliefInput = resolveBatchFinishInput(input, pack);
   const full = getBlogFullText(pack);
   const chars = countBlogBodyCharsWithSpaces(pack);
-  const belief = scoreHumanBelief(full, input, pack);
-  const info = scoreInformationYield(full, { input }, "blog");
+  const belief = scoreHumanBelief(full, beliefInput, pack);
+  const info = scoreInformationYield(full, { input: beliefInput }, "blog");
   const sqv = pack._meta?.sqv?.score ?? pack._meta?.contentQualityValue ?? 0;
   const first = assessFirstDeliveryQuality(pack, input);
   const failReasons = [

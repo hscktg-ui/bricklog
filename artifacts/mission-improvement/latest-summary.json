@@ -1,15 +1,15 @@
 {
-  "startedAt": "2026-06-13T22:46:16.410Z",
+  "startedAt": "2026-06-13T23:37:07.699Z",
   "total": 115,
-  "pass": 92,
-  "fail": 18,
+  "pass": 102,
+  "fail": 8,
   "errors": 5,
-  "passRate": 80,
-  "beliefAvg": 75.9,
+  "passRate": 88.7,
+  "beliefAvg": 79.9,
   "failReasons": {
-    "checklist_voice": 10,
+    "checklist_voice": 8,
     "error": 5,
-    "human_belief_low": 11
+    "human_belief_low": 1
   },
   "failedSamples": [
     {
@@ -37,53 +37,10 @@
       ]
     },
     {
-      "id": "cat_3_4",
-      "label": "미용실 · 대전 둔산",
-      "beliefAfter": 54,
-      "issues": [
-        "field_smell_low"
-      ]
-    },
-    {
-      "id": "cat_4_3",
-      "label": "학원 · 대전 둔산",
-      "beliefAfter": 54,
-      "issues": [
-        "field_smell_low"
-      ]
-    },
-    {
-      "id": "cat_5_4",
-      "label": "가구점 · 홍대",
-      "beliefAfter": 60,
-      "issues": [
-        "persona_misaligned",
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_6_1",
-      "label": "인테리어 · 대전 둔산",
-      "beliefAfter": 54,
-      "issues": [
-        "field_smell_low"
-      ]
-    },
-    {
       "id": "cat_7_2",
       "label": "헬스장 · 홍대",
-      "beliefAfter": 72,
+      "beliefAfter": 84,
       "issues": [
-        "persona_misaligned",
-        "checklist_voice"
-      ]
-    },
-    {
-      "id": "cat_8_1",
-      "label": "광고대행사 · 홍대",
-      "beliefAfter": 60,
-      "issues": [
-        "persona_misaligned",
         "checklist_voice"
       ]
     },
@@ -97,37 +54,49 @@
       ]
     },
     {
-      "id": "cat_13_4",
-      "label": "약국 · 홍대",
-      "beliefAfter": 54,
-      "issues": [
-        "field_smell_low"
-      ]
-    },
-    {
-      "id": "cat_14_3",
-      "label": "법률 · 홍대",
-      "beliefAfter": 54,
-      "issues": [
-        "field_smell_low"
-      ]
-    },
-    {
-      "id": "cat_15_2",
-      "label": "세무 · 홍대",
-      "beliefAfter": 54,
-      "issues": [
-        "field_smell_low"
-      ]
-    },
-    {
       "id": "cat_15_4",
       "label": "세무 · 대구 수성",
-      "beliefAfter": 54,
+      "beliefAfter": 74,
       "issues": [
-        "field_smell_low",
         "checklist_voice"
       ]
+    },
+    {
+      "id": "cat_16_3",
+      "label": "노무 · 대구 수성",
+      "beliefAfter": 74,
+      "issues": [
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "cat_17_2",
+      "label": "부동산 · 대구 수성",
+      "beliefAfter": 58,
+      "issues": [
+        "persona_misaligned",
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "cat_20_4",
+      "label": "건강기능식품 · 강남",
+      "beliefAfter": 78,
+      "issues": [
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "p1_cafe",
+      "label": "강남 카페 사장"
+    },
+    {
+      "id": "p2_salon",
+      "label": "홍대 미용실 원장"
+    },
+    {
+      "id": "p9_restaurant",
+      "label": "음식점 점주"
     }
   ]
 }
