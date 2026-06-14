@@ -688,16 +688,23 @@ button:enabled,
 }
 
 @media (max-width: 1023px) {
+  .briclog-vision-intro {
+    background:
+      radial-gradient(120% 80% at 50% -15%, rgba(3, 199, 90, 0.2), transparent 55%),
+      radial-gradient(60% 45% at 100% 100%, var(--briclog-brick-soft), transparent 48%),
+      linear-gradient(180deg, #0a1510 0%, var(--vision-paper) 100%);
+  }
+
   .briclog-vision-intro-card {
-    border-color: rgba(196, 220, 205, 0.14);
+    border-color: rgba(196, 220, 205, 0.16);
     background: linear-gradient(
       165deg,
-      rgba(255, 255, 255, 0.07) 0%,
-      rgba(255, 255, 255, 0.02) 100%
+      rgba(15, 31, 24, 0.96) 0%,
+      rgba(7, 21, 16, 0.92) 100%
     );
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-      0 40px 120px rgba(0, 0, 0, 0.45);
+      0 0 0 1px rgba(3, 199, 90, 0.08) inset,
+      0 24px 80px rgba(0, 0, 0, 0.48);
   }
 }
 
@@ -738,6 +745,33 @@ button:enabled,
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .briclog-intro-stack {
+    gap: 6px;
+    margin-bottom: 1.35rem;
+  }
+
+  .briclog-intro-stack span {
+    height: 5px;
+    background: linear-gradient(90deg, #03a94d 0%, #03c75a 55%, #5eead4 100%);
+    box-shadow:
+      0 0 14px rgba(3, 199, 90, 0.55),
+      0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .briclog-intro-stack span:nth-child(1) {
+    width: 2.75rem;
+  }
+
+  .briclog-intro-stack span:nth-child(2) {
+    width: 3.5rem;
+  }
+
+  .briclog-intro-stack span:nth-child(3) {
+    width: 4.25rem;
   }
 }
 
@@ -790,6 +824,25 @@ button:enabled,
   border-color: rgba(3, 199, 90, 0.35);
   box-shadow: 0 16px 48px rgba(3, 169, 77, 0.14);
   transform: translateY(-2px);
+}
+
+@media (max-width: 1023px) {
+  .briclog-vision-stat {
+    border-color: rgba(196, 220, 205, 0.16);
+    background: linear-gradient(
+      165deg,
+      rgba(15, 31, 24, 0.94) 0%,
+      rgba(7, 21, 16, 0.9) 100%
+    );
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .briclog-vision-stat-active {
+    border-color: rgba(3, 199, 90, 0.42);
+    box-shadow:
+      0 0 0 1px rgba(3, 199, 90, 0.12) inset,
+      0 16px 48px rgba(3, 169, 77, 0.22);
+  }
 }
 
 /* Vision 2030 — logged-in workspace shell */

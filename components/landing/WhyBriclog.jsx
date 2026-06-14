@@ -21,7 +21,7 @@ export default function WhyBriclog() {
               key={item.title}
               className="group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--vision-shadow-panel)]"
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--vision-ink)] text-[12px] font-bold text-white">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--vision-accent)] text-[12px] font-bold text-[#071510] lg:bg-[var(--vision-ink)] lg:text-white">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-[var(--vision-ink)]">

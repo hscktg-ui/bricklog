@@ -72,9 +72,9 @@ function AnimatedStatCard({
           <p
             className={`text-[32px] font-semibold tabular-nums tracking-tight md:text-[36px] ${
               rising
-                ? "text-[var(--vision-accent)]"
+                ? "text-[var(--vision-accent)] drop-shadow-[0_0_18px_rgba(3,199,90,0.35)]"
                 : waiting
-                  ? "text-[var(--vision-muted)]"
+                  ? "text-[var(--vision-muted)] max-lg:text-[rgba(196,220,205,0.82)]"
                   : "text-[var(--vision-ink)]"
             }`}
             aria-live="polite"
