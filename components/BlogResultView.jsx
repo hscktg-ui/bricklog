@@ -18,6 +18,7 @@ import {
 } from "@/lib/rewrite/rewriteVersions";
 import EditorAIReport from "./EditorAIReport";
 import CoreQualityMetaPanel from "./CoreQualityMetaPanel";
+import ContentOperatingPlanPanel from "./ContentOperatingPlanPanel";
 import ContentQualityReviewPanel from "@/components/quality/ContentQualityReviewPanel";
 import StudioAdvancedAuditNote from "@/components/billing/StudioAdvancedAuditNote";
 import MobileSecondaryAccordion from "./MobileSecondaryAccordion";
@@ -469,6 +470,11 @@ export default function BlogResultView({
           {copyText}
         </pre>
       </ResultCopyHero>
+
+      <ContentOperatingPlanPanel
+        blogInput={blogInput}
+        meta={draft._meta}
+      />
 
       {userId && (
         <ContentFeedbackPanel

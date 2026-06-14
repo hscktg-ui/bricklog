@@ -22,6 +22,14 @@ const BREAKDOWN_LABELS = {
   length: "분량",
 };
 
+const PHASE_KPI = {
+  planning: { label: "기획", max: 30 },
+  research: { label: "조사", max: 30 },
+  explain: { label: "설명", max: 20 },
+  writing: { label: "글쓰기", max: 10 },
+  review: { label: "검수", max: 10 },
+};
+
 const FAIL_LABELS = {
   placeholder_detected: "미완성 표현",
   ai_cliche_detected: "뻔한 표현",
@@ -47,6 +55,7 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
   const failReasons = meta?.failReasons || meta?.coreQuality?.failReasons || [];
   const suggestions = meta?.improvementSuggestions || [];
   const v2Axis = meta?.qualityScore?.v2Axis;
+  const phaseBreakdown = meta?.coreEngine?.phaseBreakdown || {};
   const passed =
     typeof score === "number" && score >= USER_QUALITY_GOAL;
 
@@ -62,6 +71,34 @@ export default function CoreQualityMetaPanel({ meta = {} }) {
       </button>
       {open && (
         <div className="space-y-3 border-t border-[#E8EBED] px-4 py-3 text-[12px] text-[#4E5968]">
+          {Object.keys(phaseBreakdown).length > 0 && (
+            <div className="space-y-2">
+              <p className="text-[11px] font-semibold text-[#4E5968]">
+                Brand Content OS · 5단계 KPI
+              </p>
+              {Object.entries(PHASE_KPI).map(([key, { label, max }]) => {
+                const value = phaseBreakdown[key];
+                if (typeof value !== "number") return null;
+                const pct = Math.min(100, Math.round((value / max) * 100));
+                return (
+                  <div key={key}>
+                    <div className="mb-0.5 flex justify-between text-[11px] text-[#8B95A1]">
+                      <span>{label}</span>
+                      <span>
+                        {value}/{max}
+                      </span>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-[#E8EBED]">
+                      <div
+                        className="h-full rounded-full bg-[#03A94D]"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           {v2Axis?.scores && (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {(
