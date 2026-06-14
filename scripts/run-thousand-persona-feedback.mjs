@@ -95,7 +95,9 @@ async function runPersona(persona) {
 
   if (pack?.sections?.length) {
     try {
-      pack = finalizeContentQualityForDelivery(pack, input, "blog");
+      pack = finalizeContentQualityForDelivery(pack, input, "blog", {
+        forceRedelivery: Boolean(pack._meta?.humanityFinishPass?.applied),
+      });
       publishReady = pack._meta?.publishReady === true;
       goldenScore = pack._meta?.goldenGate?.score ?? null;
       humanVoiceMet = pack._meta?.humanVoiceMet === true;
