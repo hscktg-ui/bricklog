@@ -15,6 +15,7 @@ import {
   isSimulatedPreview,
   nativeDeviceFromViewport,
   nextPreviewDevice,
+  canUseDevicePreviewSimulation,
 } from "@/lib/workspace/devicePreviewCycle";
 
 /** @typedef {import('@/lib/workspace/devicePreviewCycle').DeviceId} DeviceId */
@@ -32,18 +33,28 @@ export function WorkspacePreviewProvider({ children }) {
   const [userPicked, setUserPicked] = useState(false);
 
   useEffect(() => {
+    if (native === "mobile") {
+      setPreviewState("mobile");
+      setUserPicked(false);
+      return;
+    }
     if (!userPicked) setPreviewState(native);
   }, [native, userPicked]);
 
-  const setPreview = useCallback((id) => {
-    setUserPicked(true);
-    setPreviewState(id);
-  }, []);
+  const setPreview = useCallback(
+    (id) => {
+      if (!canUseDevicePreviewSimulation(native)) return;
+      setUserPicked(true);
+      setPreviewState(id);
+    },
+    [native]
+  );
 
   const cycle = useCallback(() => {
+    if (!canUseDevicePreviewSimulation(native)) return;
     setUserPicked(true);
     setPreviewState((prev) => nextPreviewDevice(prev));
-  }, []);
+  }, [native]);
 
   const simulating = isSimulatedPreview(preview, native);
 

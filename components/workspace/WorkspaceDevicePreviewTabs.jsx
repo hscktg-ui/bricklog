@@ -1,39 +1,9 @@
-"use client";
-
-import DevicePreviewToggle from "@/components/landing/DevicePreviewToggle";
-import { useWorkspacePreview } from "@/context/WorkspacePreviewContext";
-import { devicePreviewCaption } from "@/lib/workspace/devicePreviewCopy";
-
-/**
- * 로그인 작업실 — 모바일 하단, 폰·패드·PC 탭
- */
-export default function WorkspaceDevicePreviewTabs({ className = "" }) {
-  const { preview, native, simulating, setPreview } = useWorkspacePreview();
-  const caption = devicePreviewCaption({
-    device: preview,
-    native,
-    simulating,
-  });
-
-  return (
-    <div
-      className={`pointer-events-none fixed inset-x-0 z-[44] px-4 bottom-[calc(var(--workspace-mobile-nav-h,3.5rem)+0.35rem+env(safe-area-inset-bottom,0px))] sm:hidden ${className}`}
-      aria-label="화면 크기"
-    >
-      <div className="pointer-events-auto mx-auto max-w-md rounded-2xl border border-[#E8EBED]/70 bg-white/98 px-3 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl">
-        <p className="mb-1.5 text-center text-[11px] font-medium text-[#8B95A1]">
-          {caption}
-        </p>
-        <DevicePreviewToggle
-          device={preview}
-          onChange={setPreview}
-          variant="tabs"
-          showLabels
-          compact
-          className="w-full"
-        />
-      </div>
-    </div>
-  );
-}
-
+"use client";
+
+/**
+ * 로그인 작업실 — 실제 모바일에서는 PC·태블릿 미리보기 바 미표시
+ * (태블릿·PC viewport에서만 WorkspaceDevicePreviewToggle 사용)
+ */
+export default function WorkspaceDevicePreviewTabs() {
+  return null;
+}

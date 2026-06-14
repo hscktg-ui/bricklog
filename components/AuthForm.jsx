@@ -427,7 +427,9 @@ export default function AuthForm({
 
       <h1 className="text-center text-lg font-bold text-[#191F28]">{title}</h1>
 
-      {showDevicePreview && setPreviewDevice && (
+      {showDevicePreview &&
+        setPreviewDevice &&
+        landingPreview?.native !== "mobile" && (
         <div className="mt-4 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] p-3">
           <LandingDeviceBar
             device={previewDevice}
@@ -653,7 +655,10 @@ export default function AuthForm({
     </div>
   );
 
-  const wrapped = showDevicePreview && landingPreview ? (
+  const wrapped =
+    showDevicePreview &&
+    landingPreview &&
+    landingPreview.native !== "mobile" ? (
     <LandingWidthShell>{shell}</LandingWidthShell>
   ) : (
     shell

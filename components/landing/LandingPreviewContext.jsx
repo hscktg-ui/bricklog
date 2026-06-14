@@ -15,6 +15,7 @@ import {
   isSimulatedPreview,
   nativeDeviceFromViewport,
   nextPreviewDevice,
+  canUseDevicePreviewSimulation,
 } from "@/lib/workspace/devicePreviewCycle";
 
 const LandingPreviewContext = createContext(null);
@@ -26,18 +27,28 @@ export function LandingPreviewProvider({ children }) {
   const [userPicked, setUserPicked] = useState(false);
 
   useEffect(() => {
+    if (native === "mobile") {
+      setPreviewState("mobile");
+      setUserPicked(false);
+      return;
+    }
     if (!userPicked) setPreviewState(native);
   }, [native, userPicked]);
 
-  const setPreview = useCallback((id) => {
-    setUserPicked(true);
-    setPreviewState(id);
-  }, []);
+  const setPreview = useCallback(
+    (id) => {
+      if (!canUseDevicePreviewSimulation(native)) return;
+      setUserPicked(true);
+      setPreviewState(id);
+    },
+    [native]
+  );
 
   const cyclePreview = useCallback(() => {
+    if (!canUseDevicePreviewSimulation(native)) return;
     setUserPicked(true);
     setPreviewState((prev) => nextPreviewDevice(prev));
-  }, []);
+  }, [native]);
 
   const simulating = isSimulatedPreview(preview, native);
 
