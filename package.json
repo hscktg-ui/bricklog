@@ -95,6 +95,7 @@
     "test:brand-wiki": "node --import ./scripts/register-alias.mjs scripts/test-brand-wiki.mjs",
     "test:editorial-quality": "node --import ./scripts/register-alias.mjs scripts/test-editorial-quality-standard.mjs",
     "test:editor-writer-delivery": "node --import ./scripts/register-alias.mjs scripts/test-editor-writer-delivery-pass.mjs",
+    "test:region-column-naturalize": "node --import ./scripts/register-alias.mjs scripts/test-region-column-naturalize.mjs",
     "test:industry-scoped-rules": "node --import ./scripts/register-alias.mjs scripts/test-industry-scoped-rules.mjs",
     "test:golden-dataset": "node --import ./scripts/register-alias.mjs scripts/test-golden-dataset-gate.mjs",
     "test:haeshin-dna": "node --import ./scripts/register-alias.mjs scripts/test-haeshin-dna-gate.mjs",
