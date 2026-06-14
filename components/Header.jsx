@@ -26,13 +26,13 @@ export default function Header({
           <button
             type="button"
             onClick={onOpenSidebar}
-            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border-2 border-[#03C75A]/40 bg-[#F8FDF9] text-[#03A94D] hover:bg-[#E8F9EF] sm:h-10 sm:w-10 lg:hidden"
+            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--vision-line-strong)] bg-white/80 text-[var(--vision-ink)] backdrop-blur-sm hover:bg-white sm:h-10 sm:w-10 lg:hidden"
             aria-label="메뉴 열기"
           >
             <Icon name="menu" className="h-5 w-5" />
           </button>
         ) : null}
-        <h1 className="truncate text-[13px] font-semibold leading-tight text-[#191F28] sm:text-[15px] md:text-[16px]">
+        <h1 className="truncate text-[13px] font-semibold leading-tight tracking-[-0.01em] text-[var(--vision-ink)] sm:text-[15px] md:text-[16px]">
           {title}
         </h1>
       </div>

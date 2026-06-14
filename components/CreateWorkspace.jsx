@@ -18,6 +18,10 @@ import MatrixBanner from "./MatrixBanner";
 import QualityPanel from "./QualityPanel";
 import ResultToolbar from "./ResultToolbar";
 import SkeletonPreview from "./SkeletonPreview";
+import {
+  VISION_WORKSPACE_CANVAS,
+  VISION_WORKSPACE_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 function EmptyState() {
   return (
@@ -25,12 +29,12 @@ function EmptyState() {
       <div className="mb-4 flex justify-center">
         <Logo size="lg" className="max-w-[200px]!" />
       </div>
-      <p className="text-[17px] font-bold text-[#191F28]">{EMPTY_STATE.title}</p>
-      <p className="mt-1 text-[12px] font-medium text-[#03A94D]">{BRAND_TAGLINE}</p>
-      <p className="mt-2 max-w-sm whitespace-pre-line text-[14px] leading-relaxed text-[#8B95A1]">
+      <p className="text-[17px] font-bold tracking-[-0.01em] text-[var(--vision-ink)]">{EMPTY_STATE.title}</p>
+      <p className="mt-1 text-[12px] font-medium text-[var(--vision-accent)]">{BRAND_TAGLINE}</p>
+      <p className="mt-2 max-w-sm whitespace-pre-line text-[14px] leading-relaxed text-[var(--vision-muted)]">
         {EMPTY_STATE.description}
       </p>
-      <ul className="mt-4 space-y-1 text-left text-[12px] text-[#8B95A1]">
+      <ul className="mt-4 space-y-1 text-left text-[12px] text-[var(--vision-muted)]">
         <li>· {WORKSPACE_BLOG.tagline}</li>
         <li>· 짧은·중간·긴 분량 — 고객과의 약속</li>
         <li>· 이야기 · 플레이스 · 인스타 한번에</li>
@@ -99,7 +103,7 @@ export default function CreateWorkspace({
         channelReady={channelReady}
       />
 
-      <div className="relative min-h-0 flex-1 overflow-y-auto bg-[#F7F8FA]">
+      <div className={`relative min-h-0 flex-1 overflow-y-auto ${VISION_WORKSPACE_CANVAS}`}>
         <div className="mx-auto max-w-3xl p-4 pb-6">
           {hasGenerated && !isGenerating && (
             <>
@@ -117,7 +121,7 @@ export default function CreateWorkspace({
               />
             </>
           )}
-          <div className="min-h-[280px] rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#E8EBED] md:p-5">
+          <div className={`min-h-[280px] p-4 md:p-5 ${VISION_WORKSPACE_PANEL}`}>
             {isGenerating ? (
               <SkeletonPreview />
             ) : !hasGenerated ? (
@@ -129,7 +133,7 @@ export default function CreateWorkspace({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-[#E8EBED] bg-[#F7F8FA] px-4 py-4 md:px-6">
+      <div className={`shrink-0 border-t border-[var(--vision-line)] px-4 py-4 md:px-6 ${VISION_WORKSPACE_CANVAS}`}>
         <ContentForm
           values={formValues}
           errors={formErrors}

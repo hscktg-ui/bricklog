@@ -672,6 +672,60 @@ button:enabled,
   transform: translateY(-2px);
 }
 
+/* Vision 2030 — logged-in workspace shell */
+.briclog-vision-workspace {
+  --vision-ink: #050506;
+  --vision-paper: #f5f5f7;
+  --vision-muted: #6e6e73;
+  --vision-accent: #30d158;
+  --vision-line: rgba(5, 5, 6, 0.08);
+  --vision-line-strong: rgba(5, 5, 6, 0.14);
+  --vision-glass: rgba(255, 255, 255, 0.72);
+  --vision-glass-strong: rgba(255, 255, 255, 0.88);
+  --vision-shadow-soft: 0 8px 32px rgba(5, 5, 6, 0.06);
+  --vision-shadow-panel: 0 24px 80px rgba(5, 5, 6, 0.08);
+  background: var(--vision-paper);
+  color: var(--vision-ink);
+}
+
+.briclog-vision-workspace .briclog-workspace-header {
+  border-bottom: 1px solid var(--vision-line);
+  background: var(--vision-glass-strong);
+  backdrop-filter: blur(16px);
+  box-shadow: none;
+}
+
+.briclog-vision-workspace .briclog-surface {
+  border: 1px solid var(--vision-line);
+  border-radius: 1.25rem;
+  box-shadow: var(--vision-shadow-soft);
+}
+
+.briclog-vision-workspace .briclog-btn-primary {
+  border-radius: 9999px;
+  background: var(--vision-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.briclog-vision-workspace .briclog-btn-primary:not(:disabled)::before {
+  box-shadow: 0 12px 40px rgba(5, 5, 6, 0.18);
+}
+
+.briclog-vision-workspace .briclog-btn-primary:hover:not(:disabled) {
+  background: #1d1d1f;
+}
+
+.briclog-vision-workspace .briclog-btn-secondary {
+  border-radius: 9999px;
+  border-color: var(--vision-line-strong);
+}
+
+.briclog-vision-workspace .briclog-btn-secondary:hover:not(:disabled) {
+  background: #ffffff;
+  border-color: var(--vision-line-strong);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .briclog-vision-reveal {
     animation: none;

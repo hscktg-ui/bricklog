@@ -26,6 +26,10 @@ import {
   DEFAULT_USER_PREFERENCES,
   getSidebarMenuOrder,
 } from "@/lib/user/userPreferences";
+import {
+  VISION_NAV_ITEM_ACTIVE,
+  VISION_NAV_ITEM_IDLE,
+} from "@/lib/landing/vision2030Styles";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 
 function menuSectionsForMode(demoMode, menuOrder, simpleMode) {
@@ -128,7 +132,7 @@ export default function Sidebar({
         role={mobileOpen ? "dialog" : undefined}
         aria-modal={mobileOpen ? true : undefined}
         aria-label={mobileOpen ? "작업 메뉴" : undefined}
-        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(240px,92vw)] max-w-[260px] flex-col border-r border-[#E8EBED] bg-white shadow-[4px_0_24px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-out lg:static lg:h-auto lg:w-[200px] lg:max-w-none lg:translate-x-0 lg:shadow-none ${asideMotionClass}`}
+        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(240px,92vw)] max-w-[260px] flex-col border-r border-[var(--vision-line)] bg-[var(--vision-glass-strong)] shadow-[var(--vision-shadow-panel)] backdrop-blur-xl transition-transform duration-300 ease-out lg:static lg:h-auto lg:w-[200px] lg:max-w-none lg:translate-x-0 lg:shadow-none lg:backdrop-filter-none lg:bg-white ${asideMotionClass}`}
       >
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between px-3 pt-3 pb-1">
@@ -138,11 +142,11 @@ export default function Sidebar({
             onClick={onHome}
             className="hidden lg:flex"
           />
-          <p className="text-[13px] font-bold text-[#191F28] lg:hidden">메뉴</p>
+          <p className="text-[13px] font-bold tracking-[-0.01em] text-[var(--vision-ink)] lg:hidden">메뉴</p>
           <button
             type="button"
             onClick={onMobileClose}
-            className="rounded-lg p-1.5 text-[#8B95A1] lg:hidden"
+            className="rounded-lg p-1.5 text-[var(--vision-muted)] lg:hidden"
             aria-label="닫기"
           >
             <Icon name="x" className="h-5 w-5" />
@@ -157,7 +161,7 @@ export default function Sidebar({
         />
 
         {!demoMode && (
-          <div className="shrink-0 border-b border-[#E8EBED]/80 px-2.5 py-2">
+          <div className="shrink-0 border-b border-[var(--vision-line)] px-2.5 py-2">
             <UsageMeter onUpgradeClick={onUpgradeClick} compact />
           </div>
         )}
@@ -180,7 +184,7 @@ export default function Sidebar({
           aria-label="작업 메뉴"
         >
           {showChannelWelcome && (
-            <p className="mx-2 mb-2 rounded-lg border border-[#03C75A]/30 bg-[#F0FFF5] px-2.5 py-2 text-[11px] leading-relaxed text-[#03A94D]">
+            <p className="mx-2 mb-2 rounded-xl border border-[rgba(48,209,88,0.25)] bg-[rgba(48,209,88,0.08)] px-2.5 py-2 text-[11px] leading-relaxed text-[var(--vision-ink)]">
               추천은 이야기예요. 아래 메뉴에서 바꿀 수 있어요.
             </p>
           )}
@@ -190,7 +194,7 @@ export default function Sidebar({
             simpleMode
           ).map((section) => (
             <div key={section.id} className="mb-2 last:mb-0.5">
-              <p className="px-2.5 pb-1 pt-2 text-[10px] font-semibold tracking-wide text-[#8B95A1]">
+              <p className="px-2.5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)]">
                 {section.label}
               </p>
               <ul className="space-y-0.5">
@@ -210,17 +214,15 @@ export default function Sidebar({
                           onMenuChange(item.id);
                           onMobileClose?.();
                         }}
-                        className={`flex min-h-[38px] w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-medium transition-colors active:brightness-[0.97] lg:min-h-[40px] lg:py-2 lg:text-[13px] ${
-                          isActive
-                            ? "bg-[#03C75A] text-white shadow-sm"
-                            : "text-[#4E5968] hover:bg-[#F7F8FA]"
+                        className={`flex min-h-[38px] w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-[12px] font-medium transition-colors active:brightness-[0.97] lg:min-h-[40px] lg:py-2 lg:text-[13px] ${
+                          isActive ? VISION_NAV_ITEM_ACTIVE : VISION_NAV_ITEM_IDLE
                         }`}
                       >
                         <span className="inline-flex min-w-0 flex-1 items-center gap-2">
                           <Icon
                             name={item.icon}
                             className={`h-[17px] w-[17px] shrink-0 ${
-                              isActive ? "text-white" : "text-[#8B95A1]"
+                              isActive ? "text-white" : "text-[var(--vision-muted)]"
                             }`}
                           />
                           <span className="flex-1 truncate">{item.label}</span>

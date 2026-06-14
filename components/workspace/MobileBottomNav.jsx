@@ -24,7 +24,7 @@ export default function MobileBottomNav({
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-[45] flex h-14 shrink-0 items-stretch border-t border-[#E8EBED] bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-[45] flex h-14 shrink-0 items-stretch border-t border-[var(--vision-line)] bg-[var(--vision-glass-strong)] pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
       aria-label="채널 바로가기"
     >
       {MAIN_CHANNEL_IDS.map((id) => {
@@ -39,7 +39,7 @@ export default function MobileBottomNav({
               trySelect(id);
             }}
             className={`flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 ${
-              isActive ? "text-[#03C75A]" : "text-[#8B95A1]"
+              isActive ? "text-[var(--vision-accent)]" : "text-[var(--vision-muted)]"
             }`}
             aria-current={isActive ? "page" : undefined}
           >
@@ -60,7 +60,7 @@ export default function MobileBottomNav({
           onOpenDrawer();
         }}
         className={`flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 ${
-          moreActive ? "text-[#03C75A]" : "text-[#8B95A1]"
+          moreActive ? "text-[var(--vision-accent)]" : "text-[var(--vision-muted)]"
         }`}
         aria-expanded={drawerOpen}
         aria-label="전체 메뉴 · 검수 · 기록"

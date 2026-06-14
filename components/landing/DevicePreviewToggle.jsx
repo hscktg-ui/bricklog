@@ -14,9 +14,10 @@ import {
   nextPreviewDevice,
 } from "@/lib/workspace/devicePreviewCycle";
 import {
-  DEVICE_TAB_ACTIVE,
-  DEVICE_TAB_IDLE,
-} from "@/lib/ui/actionButtonStyles";
+  VISION_DEVICE_TAB_ACTIVE,
+  VISION_DEVICE_TAB_IDLE,
+  VISION_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 /** @typedef {'mobile'|'tablet'|'desktop'} DevicePreviewId */
 
@@ -59,13 +60,13 @@ export default function DevicePreviewToggle({
         type="button"
         onClick={() => onChange(next)}
         aria-label={deviceCycleAriaLabel(device, next)}
-        className={`inline-flex items-center gap-2 rounded-xl border-2 border-[#03C75A]/35 bg-white px-4 py-2.5 text-[12px] font-semibold text-[#03A94D] shadow-[0_2px_12px_rgba(3,199,90,0.12)] transition hover:border-[#03C75A] hover:bg-[#F0FFF5] sm:text-[13px] ${className}`}
+        className={`inline-flex items-center gap-2 rounded-full border border-[var(--vision-line-strong)] bg-white/80 px-4 py-2.5 text-[12px] font-semibold text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)] backdrop-blur-sm transition hover:bg-white sm:text-[13px] ${className}`}
       >
         <span className="text-[15px] leading-none" aria-hidden>
           {DEVICE_EMOJI[device]}
         </span>
         <SketchDeviceIcon device={device} active className="h-5 w-5 sm:h-6 sm:w-6" />
-        <span className="text-[12px] font-bold text-[#191F28]">
+        <span className="text-[12px] font-bold text-[var(--vision-ink)]">
           {DEVICE_TAB_SHORT[device]}
         </span>
       </button>
@@ -74,7 +75,7 @@ export default function DevicePreviewToggle({
 
   return (
     <div
-      className={`inline-flex rounded-2xl border border-[#E8EBED]/80 bg-[#F7F8FA] p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] ${compact ? "w-full justify-between gap-0.5" : ""} ${className}`}
+      className={`inline-flex rounded-full border border-[var(--vision-line)] bg-[var(--vision-paper)] p-1 shadow-[inset_0_1px_2px_rgba(5,5,6,0.04)] ${compact ? "w-full justify-between gap-0.5" : ""} ${className}`}
       role="tablist"
       aria-label="화면 크기"
     >
@@ -93,7 +94,7 @@ export default function DevicePreviewToggle({
                   ? "min-h-[44px] flex-1 flex-col gap-0.5 rounded-xl px-1 py-1.5 sm:flex-row sm:gap-1.5 sm:rounded-lg"
                   : "min-h-[44px] gap-1.5 rounded-lg px-3 py-2 sm:px-3.5"
                 : "h-11 w-11 rounded-lg sm:h-12 sm:w-12"
-            } ${active ? `${DEVICE_TAB_ACTIVE} scale-[1.02]` : DEVICE_TAB_IDLE}`}
+            } ${active ? `${VISION_DEVICE_TAB_ACTIVE} scale-[1.02]` : VISION_DEVICE_TAB_IDLE}`}
             title={`${DEVICE_LABELS[id]} · ${label}`}
             aria-label={deviceTabAriaLabel(id)}
           >
@@ -135,7 +136,7 @@ export function DevicePreviewFrame({ device, children, className = "" }) {
       className={`mx-auto w-full transition-[max-width] duration-300 ease-out ${className}`}
       style={{ maxWidth }}
     >
-      <div className="overflow-hidden rounded-2xl border border-[#D1D6DB] bg-[#F7F8FA] shadow-[0_16px_48px_rgba(0,0,0,0.07)] ring-1 ring-black/[0.03]">
+      <div className={`overflow-hidden ${VISION_PANEL}`}>
         <LandingPanelHeader
           title={`${DEVICE_EMOJI[device]} ${DEVICE_TAB_SHORT[device]} · 브릭로그`}
           className="bg-white"

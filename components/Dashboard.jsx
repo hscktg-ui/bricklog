@@ -678,7 +678,7 @@ function DashboardLayout({
   }, [showChannelWelcome]);
 
   return (
-    <div className="relative flex h-full min-h-0 flex-1 overflow-hidden bg-[#F7F8FA] text-[#191F28]">
+    <div className="briclog-vision-workspace relative flex h-full min-h-0 flex-1 overflow-hidden">
       <GenerationLoadingOverlayHost />
       {welcomeOpen && !showChannelWelcome ? (
         <WelcomeOverlay
@@ -961,7 +961,7 @@ function ImageEnginePanel({ onNavigate, onCopy, brandId, onToast }) {
 
   if (!imagePrompts) {
     return (
-      <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-[#F7F8FA] p-4 md:p-8">
+      <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-[var(--vision-paper)] p-4 md:p-8">
         <div className="mx-auto w-full max-w-lg space-y-6">
           <ChannelStartScreen
             channel="image"
