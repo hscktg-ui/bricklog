@@ -26,6 +26,8 @@ import PipelineQuickActions from "@/components/PipelineQuickActions";
 import ResearchSummaryStrip from "@/components/research/ResearchSummaryStrip";
 import BriclogPerspectiveNote from "@/components/BriclogPerspectiveNote";
 import BrandHabitStrip from "@/components/BrandHabitStrip";
+import ContentOperatingPlanPanel from "@/components/ContentOperatingPlanPanel";
+import PasteReviewEntryCard from "@/components/review/PasteReviewEntryCard";
 import Icon from "@/components/Icon";
 import {
   useContentForm,
@@ -61,6 +63,7 @@ import ChannelExpandCard from "@/components/product/ChannelExpandCard";
 import ChannelRoadmapStrip from "@/components/product/ChannelRoadmapStrip";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
+import { isSensitiveIndustryInput } from "@/lib/compliance/sensitiveCategories";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
@@ -273,6 +276,25 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   const generationCount = countBrandBlogGenerations(activeBrand);
   const showQuickDemo = shouldShowQuickDemo({ generationCount, demoMode });
 
+  const showPreGenOperatingPlan =
+    !blogContent &&
+    !generating.blog &&
+    Boolean(draftForm.brandName?.trim() || draftForm.topic?.trim());
+
+  const showPasteReviewEntry = useMemo(() => {
+    if (blogContent || generating.blog) return false;
+    const ctx = {
+      ...draftForm,
+      industry: draftForm.industry || activeBrand?.industry,
+      sensitiveCategory: draftForm.sensitiveCategory || activeBrand?.sensitiveCategory,
+    };
+    return isSensitiveIndustryInput(ctx);
+  }, [blogContent, generating.blog, draftForm, activeBrand]);
+
+  const openPasteReview = useCallback(() => {
+    if (typeof onNavigate === "function") onNavigate("review");
+  }, [onNavigate]);
+
   const applyScene = (scene) => {
     const base = formApiRef.current?.getValues?.() ?? draftForm;
     const cur = base.includePhrases?.trim();
@@ -398,9 +420,27 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
           {storyBusy && (
             <div className={`${compact ? "mt-3" : "mt-4"}`}>
-              <GenerationStayBanner variant="form" />
+              <GenerationStayBanner
+                variant="form"
+                channel={loadingOverlay?.channel || "blog"}
+                sensitiveIndustry={Boolean(loadingOverlay?.sensitiveIndustry)}
+                stepLabel={loadingOverlay?.stepLabel}
+              />
             </div>
           )}
+
+          {showPreGenOperatingPlan && !storyBusy ? (
+            <div className={compact ? "mt-3" : "mt-4"}>
+              <ContentOperatingPlanPanel blogInput={draftForm} compact />
+            </div>
+          ) : null}
+
+          {showPasteReviewEntry && !storyBusy ? (
+            <PasteReviewEntryCard
+              onOpenReview={openPasteReview}
+              className={compact ? "mt-3" : "mt-4"}
+            />
+          ) : null}
 
           <div
             className={`${compact ? "mt-3" : "mt-5"} ${

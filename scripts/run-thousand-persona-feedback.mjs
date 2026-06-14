@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import {
   THOUSAND_USER_PERSONAS,
   THOUSAND_PERSONA_COUNT,
+  selectStratifiedPersonaBatch,
 } from "../lib/qa/thousandUserPersonas.js";
 import { normalizePipelineInput } from "../lib/contentPipeline.js";
 import { resolvePersonaBlogPack } from "../lib/qa/resolvePersonaBlogPack.js";
@@ -177,9 +178,11 @@ function aggregate(runs) {
     byTier[r.blogLengthTier] = byTier[r.blogLengthTier] || {
       n: 0,
       deliveryOk: 0,
+      publishReady: 0,
     };
     byTier[r.blogLengthTier].n += 1;
     if (r.deliveryOk) byTier[r.blogLengthTier].deliveryOk += 1;
+    if (r.publishReady) byTier[r.blogLengthTier].publishReady += 1;
 
     modes[r.mode] = (modes[r.mode] || 0) + 1;
   }
@@ -244,7 +247,7 @@ async function main() {
     process.exit(1);
   }
 
-  const personas = THOUSAND_USER_PERSONAS.slice(0, LIMIT);
+  const personas = selectStratifiedPersonaBatch(LIMIT);
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(REPORT_JSONL, "", "utf8");
 

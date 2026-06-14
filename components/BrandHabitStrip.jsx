@@ -7,6 +7,7 @@ import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
 import { BRICLOG_FEEDBACK_SAVED_EVENT } from "@/lib/feedback/constants";
 import {
   BRICLOG_DIRECTOR_LINE,
+  BRAND_LEARNING_SECOND_GEN_LINE,
   FEEDBACK_NEXT_DRAFT_TOAST,
 } from "@/lib/product/briclogPerspectiveCopy";
 
@@ -48,8 +49,12 @@ export default function BrandHabitStrip({ className = "" }) {
 
   const habits = formatBrandHabitsBrief(activeBrand);
   const serverBrief = learned?.brief;
+  const generationCount = learned?.assetCounts?.generations || 0;
+  const feedbackCount = learned?.assetCounts?.feedback || 0;
+  const learningActive = generationCount >= 2 || feedbackCount >= 1;
   const line =
     pendingNote ||
+    (learningActive && !serverBrief ? BRAND_LEARNING_SECOND_GEN_LINE : null) ||
     serverBrief ||
     habits ||
     BRICLOG_DIRECTOR_LINE;
@@ -61,10 +66,12 @@ export default function BrandHabitStrip({ className = "" }) {
     >
       <p className="text-[11px] font-semibold text-[#4E5968]">브랜드 기억</p>
       <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">{line}</p>
-      {learned?.assetCounts?.feedback > 0 ? (
+      {feedbackCount > 0 || generationCount > 0 ? (
         <p className="mt-1 text-[10px] text-[#8B95A1]">
-          누적 피드백 {learned.assetCounts.feedback}건 · 생성{" "}
-          {learned.assetCounts.generations || 0}편
+          {feedbackCount > 0 ? `누적 피드백 ${feedbackCount}건` : null}
+          {feedbackCount > 0 && generationCount > 0 ? " · " : null}
+          {generationCount > 0 ? `생성 ${generationCount}편` : null}
+          {learningActive ? " · 학습 반영 중" : null}
         </p>
       ) : null}
     </div>
