@@ -32,6 +32,7 @@ import {
 } from "@/lib/product/contentQualityDelivery";
 import { applyWriterEngineIfNeeded } from "@/lib/product/briclogWriterEngine";
 import { alignBlogApiDeliveryResponse } from "@/lib/product/blogApiDeliveryGate";
+import { ensureServerAxisResearch } from "@/lib/generation/serverAxisResearch";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -109,16 +110,32 @@ export async function POST(request) {
     requestInput.v2PipelineEnforced = true;
     requestInput.v3EngineEnforced = true;
     requestInput.betaTestGuardEnforced = true;
-    const rawResult = await generateBlogWithLLMFirst(requestInput);
-    let result = blockUnverifiedBlogApiResponse(rawResult, requestInput);
+
+    const axisReady = await ensureServerAxisResearch(requestInput);
+    if (!axisReady.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          mode: "research_gate",
+          withheld: true,
+          userMessage: axisReady.userMessage,
+          meta: { failReasons: axisReady.reasons || [] },
+        },
+        { status: 422 }
+      );
+    }
+    const hydratedInput = axisReady.input;
+
+    const rawResult = await generateBlogWithLLMFirst(hydratedInput);
+    let result = blockUnverifiedBlogApiResponse(rawResult, hydratedInput);
     if (
       !result?.blogContent?.sections?.length &&
-      hasSubstantiveLlmBody(rawResult?.blogContent, requestInput) &&
+      hasSubstantiveLlmBody(rawResult?.blogContent, hydratedInput) &&
       isLlmOriginatedPack(rawResult?.blogContent, rawResult)
     ) {
       let rescued = await applyWriterEngineIfNeeded(
         rawResult.blogContent,
-        requestInput
+        hydratedInput
       );
       result = {
         ...rawResult,
@@ -128,7 +145,7 @@ export async function POST(request) {
         userMessage: null,
         blogContent: finalizeContentQualityForDelivery(
           rescued,
-          requestInput,
+          hydratedInput,
           "blog"
         ),
         meta: attachContentQualityToApiMeta(
@@ -144,11 +161,11 @@ export async function POST(request) {
     if (result.blogContent?.sections?.length && !result.withheld) {
       let blog = await applyWriterEngineIfNeeded(
         result.blogContent,
-        requestInput
+        hydratedInput
       );
       blog = finalizeContentQualityForDelivery(
         blog,
-        requestInput,
+        hydratedInput,
         "blog",
         { afterWriterEngine: true }
       );
@@ -167,7 +184,7 @@ export async function POST(request) {
       await incrementContentUsage(auth.supabase, auth.user.id);
     }
 
-    result = alignBlogApiDeliveryResponse(result, requestInput);
+    result = alignBlogApiDeliveryResponse(result, hydratedInput);
 
     const usageAfter = await getUsageSummary(
       auth.supabase,
