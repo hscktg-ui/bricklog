@@ -12,6 +12,20 @@ import {
 assert.equal(resolvePublishGrade({ publishScore: 90 }).id, PUBLISH_GRADE_A.id);
 assert.equal(resolvePublishGrade({ publishScore: 75 }).id, "B");
 assert.equal(resolvePublishGrade({ publishScore: 55 }).id, PUBLISH_GRADE_C.id);
+assert.equal(
+  resolvePublishGrade({
+    publishScore: 52,
+    readiness: { status: "review" },
+    contentQualityDelivered: true,
+  }).id,
+  "B",
+  "delivered engine should not show regen grade"
+);
+assert.equal(
+  resolvePublishGrade({ publishScore: 55, readiness: { status: "ready" } }).id,
+  "A",
+  "ready status wins over low score"
+);
 assert.equal(axisQualityLabel(85), "우수");
 assert.equal(axisQualityLabel(70), "보통");
 

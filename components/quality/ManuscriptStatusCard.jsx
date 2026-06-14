@@ -4,6 +4,7 @@ import {
   buildManuscriptStatusLines,
   resolvePublishGrade,
 } from "@/lib/product/publishUiDisplay";
+import { VISION_EYEBROW, VISION_WORKSPACE_PANEL } from "@/lib/landing/vision2030Styles";
 
 /**
  * 원고 상태 카드 — 점수보다 상태·행동 가이드 우선
@@ -22,38 +23,36 @@ export default function ManuscriptStatusCard({
 
   return (
     <div
-      className={`rounded-xl border border-[#E8EBED] bg-white ${
+      className={`${VISION_WORKSPACE_PANEL} ${
         compact ? "px-4 py-3" : "px-5 py-4"
       }`}
       role="status"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8B95A1]">
-            발행 등급
-          </p>
+          <p className={VISION_EYEBROW}>발행 등급</p>
           <p
-            className={`mt-1 font-bold text-[#191F28] ${
+            className={`mt-1 font-semibold tracking-[-0.02em] text-[var(--vision-ink)] ${
               compact ? "text-[17px]" : "text-[19px]"
             }`}
           >
             <span aria-hidden>{grade.dot}</span> {grade.label}
           </p>
-          <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+          <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
             {readiness?.hint || grade.action}
           </p>
         </div>
         <div
-          className={`shrink-0 rounded-lg border px-3 py-2 text-center ${
+          className={`shrink-0 rounded-xl border px-3 py-2 text-center ${
             grade.tone === "ready"
-              ? "border-[#03C75A]/30 bg-[#E8F9EF]"
+              ? "border-[rgba(48,209,88,0.25)] bg-[rgba(48,209,88,0.1)]"
               : grade.tone === "review"
-                ? "border-[#FFE0B2] bg-[#FFF8E6]"
-                : "border-[#FFD6D6] bg-[#FFF5F5]"
+                ? "border-[var(--vision-line-strong)] bg-white/80"
+                : "border-[rgba(255,59,48,0.2)] bg-[rgba(255,59,48,0.06)]"
           }`}
         >
-          <p className="text-[10px] font-semibold text-[#8B95A1]">등급</p>
-          <p className="text-[22px] font-bold leading-none text-[#191F28]">
+          <p className="text-[10px] font-semibold text-[var(--vision-muted)]">등급</p>
+          <p className="text-[22px] font-bold leading-none text-[var(--vision-ink)]">
             {grade.id}
           </p>
         </div>
@@ -67,12 +66,12 @@ export default function ManuscriptStatusCard({
         {lines.map((row) => (
           <li
             key={row.id}
-            className="rounded-lg border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2"
+            className="rounded-xl border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-2"
           >
-            <p className="text-[10px] font-semibold text-[#8B95A1]">
+            <p className="text-[10px] font-semibold text-[var(--vision-muted)]">
               {row.label}
             </p>
-            <p className="mt-0.5 text-[13px] font-semibold text-[#191F28]">
+            <p className="mt-0.5 text-[13px] font-semibold text-[var(--vision-ink)]">
               {row.quality}
             </p>
           </li>

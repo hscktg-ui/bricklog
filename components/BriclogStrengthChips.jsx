@@ -12,11 +12,11 @@ import BriclogDepthPanel from "@/components/quality/BriclogDepthPanel";
 
 function DetailChip({ warn, children }) {
   const cls = warn
-    ? "border-[#FFE0B2] bg-[#FFF8E6] text-[#E67700]"
-    : "border-[#E8EBED] bg-white text-[#4E5968]";
+    ? "border-[rgba(255,149,0,0.25)] bg-[rgba(255,149,0,0.08)] text-[var(--vision-ink)]"
+    : "border-[var(--vision-line)] bg-white/80 text-[var(--vision-muted)]";
   return (
     <span
-      className={`rounded-xl border px-3 py-2 text-[11px] font-semibold ${cls}`}
+      className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${cls}`}
     >
       {children}
     </span>
@@ -73,7 +73,7 @@ export default function BriclogStrengthChips({
           {reflectionChips.map((chip) => (
             <span
               key={chip.id}
-              className="rounded-full border border-[#C8F0D8] bg-[#F0FFF5] px-2.5 py-1 text-[10px] font-semibold text-[#027A48]"
+              className="rounded-full border border-[rgba(48,209,88,0.2)] bg-[rgba(48,209,88,0.08)] px-2.5 py-1 text-[10px] font-semibold text-[var(--vision-ink)]"
             >
               {chip.label}
             </span>
