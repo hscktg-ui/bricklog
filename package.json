@@ -221,6 +221,7 @@
     "mission:e2e-llm": "node --import ./scripts/register-alias.mjs --import ./scripts/load-env-local.mjs scripts/mission-e2e-llm.mjs",
     "test:briclog-engine-score": "node --import ./scripts/register-alias.mjs scripts/test-briclog-engine-score.mjs",
     "mission:overnight": "node --import ./scripts/register-alias.mjs scripts/run-mission-overnight.mjs",
+    "overnight:improvement": "node --import ./scripts/register-alias.mjs scripts/run-overnight-improvement.mjs",
     "check:gemini": "node --import ./scripts/register-alias.mjs scripts/check-gemini.mjs",
     "test:delivery-soft-pass": "node --import ./scripts/register-alias.mjs scripts/test-delivery-soft-pass.mjs",
     "test:ensure-blog-withhold": "node --import ./scripts/register-alias.mjs scripts/test-ensure-blog-withhold-integration.mjs",
