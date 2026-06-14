@@ -110,3 +110,20 @@ FAIL: 조사 없음 · 업종 정보 부족 · 브랜드 없음 · placeholder (
 - `BRICLOG_DEV_FREEZE=true` — 기능 동결 (기본: RESET 품질 모드와 연동)
 - `BRICLOG_RESET_PAYMENT_PAUSED=true` / `BRICLOG_RESET_SIGNUP_LIMIT=true`
 <!-- END:briclog-reset -->
+
+<!-- BEGIN:briclog-core-rules — 내부 SSOT, 공개 선언 아님 -->
+## BRICLOG 코어 룰 (엔진·배치·에이전트)
+
+`lib/product/briclogCoreRules.js` — 모든 생성·송출 조정의 내부 기준.
+
+| 코어 | 정의 | SSOT·측정 |
+|------|------|-----------|
+| **Core1** | 사람이 쓴 것 같은, 잘 쓰인 글 | `humanBeliefEngine` · SQV(`contentQualityValue`) · `humanVoiceMet` · `assertCore1DeliveryStamped` |
+| **Core2** | 브랜드별 사용자 피드백·습관 기억 | `brandLearningProfile` · `personalizationBrief` · `brandFirstPrewriteGate` · `stampCoreRulesOnInput` |
+
+- **송출**: `stampCoreEngineDeliveryMeta` → `stampCoreRulesOnDelivery` (blog·place·instagram 공통)
+- **입력**: `stampCoreRulesOnInput` — `brandFirstPrewriteGate` · `contentPipeline.normalizePipelineInput` · `stampCoreEngineOnInput`
+- **#1 버그**: 어떤 채널이든 `sqv`·`contentQualityValue` 누락 → 즉시 수정 (`test:channel-sqv-delivery`)
+- **회귀**: `npm run test:core-rules` · `npm run test:channel-sqv-delivery`
+- **비활성**: `BRICLOG_CORE_RULES=false` (mission off와 별도)
+<!-- END:briclog-core-rules -->
