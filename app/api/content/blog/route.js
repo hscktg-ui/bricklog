@@ -176,16 +176,17 @@ export async function POST(request) {
       };
     }
 
+    result = alignBlogApiDeliveryResponse(result, hydratedInput);
+
     if (
-      result.blogContent &&
+      result.ok !== false &&
       !result.withheld &&
+      result.blogContent &&
       result.mode === "llm" &&
       (result.meta?.v2PipelineVerified || result.meta?.v3PipelineVerified)
     ) {
       await incrementContentUsage(auth.supabase, auth.user.id);
     }
-
-    result = alignBlogApiDeliveryResponse(result, hydratedInput);
 
     const usageAfter = await getUsageSummary(
       auth.supabase,
