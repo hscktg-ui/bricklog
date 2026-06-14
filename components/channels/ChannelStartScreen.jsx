@@ -159,7 +159,7 @@ export default function ChannelStartScreen({
 
   return (
     <div
-      className={`workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-[#F7F8FA] ${
+      className={`workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-[var(--vision-paper)] ${
         compact ? "p-3" : "p-4 md:p-6"
       }`}
     >

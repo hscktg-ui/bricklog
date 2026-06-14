@@ -64,6 +64,13 @@ import { useBillingUsage } from "@/hooks/useBillingUsage";
 import { isContentQuotaExhausted } from "@/lib/billing/planUx";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import {
+  CHANNEL_WORKSPACE_SHELL,
+  channelFormPaneClass,
+  channelFormScrollClass,
+  channelResultPaneClass,
+  CHANNEL_MOBILE_CTA_FOOTER,
+} from "@/lib/workspace/channelWorkspaceLayout";
+import {
   countBrandBlogGenerations,
   getRecentBlogTitle,
   shouldShowHistoryShortcut,
@@ -288,12 +295,13 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   return (
     <>
       <div
-        className={`flex min-h-0 w-full shrink-0 flex-col border-[#E8EBED] bg-white lg:block lg:w-[min(320px,30vw)] lg:max-w-[360px] lg:border-r ${
-          hideFormPanel ? "max-lg:hidden" : ""
-        } ${mobileIdleFull ? "max-lg:min-h-0 max-lg:flex-1" : "max-lg:max-h-[min(46dvh,420px)] max-lg:border-b"}`}
+        className={channelFormPaneClass({
+          hide: hideFormPanel,
+          mobileIdleFull,
+        })}
       >
         <div
-          className={`min-h-0 flex-1 overflow-y-auto ${formScrollPadClass} ${compact ? "p-3" : "p-4"} md:p-6`}
+          className={channelFormScrollClass(formScrollPadClass, compact)}
         >
           {isMobile && blogGenHint ? (
             <div
@@ -530,7 +538,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         </div>
 
         {isMobile ? (
-          <div className="shrink-0 border-t border-[#E8EBED] bg-white/95 px-4 py-3 backdrop-blur-md">
+          <div className={CHANNEL_MOBILE_CTA_FOOTER}>
             {!demoMode && !quotaExhausted ? (
               <GenerationQuotaHint usage={billingUsage} phase={billingPhase} />
             ) : null}
@@ -691,9 +699,10 @@ const BlogEditorResults = memo(function BlogEditorResults({
   return (
       <div
         ref={resultScrollRef}
-        className={`workspace-result-scroll relative min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#F7F8FA] p-4 md:p-6 lg:p-8 ${resultScrollPadClass} ${
-          showStickyCopy ? "has-sticky-copy" : ""
-        } ${hideFormPanel ? "max-lg:min-h-0" : ""}`}
+        className={`${channelResultPaneClass({
+          stickyCopy: showStickyCopy,
+          resultScrollPadClass,
+        })} ${hideFormPanel ? "max-lg:min-h-0" : ""}`}
       >
         {showResultPlaceholder ? (
           <GeneratingResultPlaceholder
@@ -1042,7 +1051,7 @@ export default function BlogEditor({
     blogContent?.representativeTitle || blogContent?.title || null;
 
   return (
-    <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-hidden max-lg:flex-col md:flex-row">
+    <div className={CHANNEL_WORKSPACE_SHELL}>
       {showMobileChrome ? (
         <MobileStoryChrome
           pane={mobilePane}

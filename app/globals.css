@@ -366,9 +366,11 @@ button:enabled,
   -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .workspace-result-scroll.has-sticky-copy {
-    padding-bottom: 5.5rem;
+    padding-bottom: calc(
+      var(--workspace-mobile-nav-h, 3.5rem) + env(safe-area-inset-bottom, 0px) + 4.5rem
+    );
   }
 }
 
