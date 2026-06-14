@@ -155,6 +155,8 @@
     "test:editor-v95": "node --import ./scripts/register-alias.mjs scripts/test-editor-engine-v95.mjs",
     "test:persona-engine": "node --import ./scripts/register-alias.mjs scripts/test-persona-engine-alignment.mjs",
     "test:platform-trends-2026": "node --import ./scripts/register-alias.mjs scripts/test-platform-trends-2026.mjs",
+    "test:trend-intelligence-merge": "node --import ./scripts/register-alias.mjs scripts/test-trend-intelligence-merge.mjs",
+    "test:hard-placeholder-signal": "node --import ./scripts/register-alias.mjs scripts/test-hard-placeholder-signal.mjs",
     "test:research-gate-rescue": "node --import ./scripts/register-alias.mjs scripts/test-research-gate-rescue.mjs",
     "test:sync-speaker": "node --import ./scripts/register-alias.mjs scripts/test-sync-speaker-persona.mjs",
     "test:first-delivery": "node --import ./scripts/register-alias.mjs scripts/test-first-delivery-quality.mjs",
