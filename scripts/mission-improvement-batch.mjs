@@ -13,6 +13,7 @@ import { scoreHumanBelief, HUMAN_BELIEF_MIN_SCORE } from "../lib/product/humanBe
 import { scoreChecklistVoice } from "../lib/product/checklistVoiceEngine.js";
 import { deliverBlogDespiteGate } from "../lib/product/deliverySoftPass.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
+import { scoreRegionColumnNaturalize } from "../lib/content/regionColumnNaturalizeEngine.js";
 import { ensureMinBlogSections } from "../lib/content/blogLengthControl.js";
 import { applySpeakerVoiceLockPack } from "../lib/persona/speakerVoiceLock.js";
 import { finishLocalBlogPackForBatch, batchBlogCharsOk, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR } from "../lib/product/localBatchFinish.js";
@@ -181,6 +182,7 @@ function runOne(scenario) {
   }
 
   const afterFull = getBlogFullText(improved);
+  const regionCol = scoreRegionColumnNaturalize(afterFull, input);
   const afterBeliefInput = resolveBatchFinishInput(input, improved);
   const afterBelief = scoreHumanBelief(afterFull, afterBeliefInput, improved);
   const afterChecklist = scoreChecklistVoice(afterFull, improved);
@@ -197,7 +199,8 @@ function runOne(scenario) {
       (afterBelief.score >= 72 &&
         (afterChecklist.forbiddenHeadings || 0) <= 2 &&
         (afterChecklist.templateHits || 0) < 3)) &&
-    Boolean(delivery?.blogContent?.sections?.length);
+    Boolean(delivery?.blogContent?.sections?.length) &&
+    regionCol.ok;
 
   return {
     id: scenario.id,
@@ -212,6 +215,8 @@ function runOne(scenario) {
     checklistBefore: beforeChecklist.ok,
     checklistAfter: afterChecklist.ok,
     metaLeak,
+    regionMentionCount: regionCol.count,
+    regionColumnOk: regionCol.ok,
     narrativeApplied: Boolean(
       improved?._meta?.narrativeBeliefPass?.applied ||
         improved?._meta?.humanBelief?.narrativeBeliefPass
@@ -254,7 +259,15 @@ export function runMissionImprovementBatch(options = {}) {
     if (!r.checklistAfter) failReasons.checklist_voice = (failReasons.checklist_voice || 0) + 1;
     if ((r.sections || 0) < 3) failReasons.sections_thin = (failReasons.sections_thin || 0) + 1;
     if (!r.delivered) failReasons.delivery_blocked = (failReasons.delivery_blocked || 0) + 1;
+    if (r.regionColumnOk === false) failReasons.region_over_cap = (failReasons.region_over_cap || 0) + 1;
   }
+
+  const regionOk = results.filter((r) => r.regionColumnOk).length;
+  const avgRegionMentions =
+    Math.round(
+      (results.reduce((a, r) => a + (r.regionMentionCount || 0), 0) / Math.max(1, results.length)) *
+        10
+    ) / 10;
 
   const summary = {
     startedAt,
@@ -264,6 +277,9 @@ export function runMissionImprovementBatch(options = {}) {
     errors,
     passRate: Math.round((pass / Math.max(1, results.length)) * 1000) / 10,
     beliefAvg: Math.round(beliefAvg * 10) / 10,
+    regionColumnOk: regionOk,
+    regionColumnOkRate: Math.round((regionOk / Math.max(1, results.length)) * 1000) / 10,
+    avgRegionMentions,
     failReasons,
     failedSamples: results
       .filter((r) => !r.ok)

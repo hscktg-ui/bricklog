@@ -20,6 +20,7 @@ import { getQualityTarget } from "../lib/quality/qualityDefaults.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js";
 import { isOpenAIConfigured, getLLMMode } from "../lib/llm/llmProvider.js";
+import { scoreRegionColumnNaturalize } from "../lib/content/regionColumnNaturalizeEngine.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -108,6 +109,7 @@ async function runPersona(persona) {
 
   const blogText = getBlogFullText(pack || {});
   const chars = blogText.replace(/\s/g, "").length;
+  const regionScore = scoreRegionColumnNaturalize(blogText, input);
   const training = scoreTrainingContent(pack || { sections: [] }, ctx, "blog");
   const core = scoreCoreContent(pack || { sections: [] }, ctx, "blog");
   const withheld = mode === "withheld" || !pack?.sections?.length;
@@ -129,6 +131,10 @@ async function runPersona(persona) {
     sections: pack?.sections?.length || 0,
     chars,
     bodyChars: countBlogBodyCharsWithSpaces(pack || {}),
+    regionMentionCount:
+      pack?._meta?.regionMentionCount ?? regionScore.count,
+    regionColumnOk:
+      pack?._meta?.regionColumnNaturalizeOk ?? regionScore.ok,
     training: training.total,
     core: core.total,
     pass: training.pass && core.total >= TARGET,
@@ -215,6 +221,14 @@ function aggregate(runs) {
       goldenScores.length > 0
         ? Math.round(goldenScores.reduce((a, s) => a + s, 0) / goldenScores.length)
         : null,
+    regionColumnOk: runs.filter((r) => r.regionColumnOk).length,
+    regionColumnOkRate: Math.round(
+      (runs.filter((r) => r.regionColumnOk).length / runs.length) * 1000
+    ) / 10,
+    avgRegionMentions: Math.round(
+      runs.reduce((a, r) => a + (r.regionMentionCount || 0), 0) / runs.length * 10
+    ) / 10,
+    regionOverCap: runs.filter((r) => r.deliveryOk && !r.regionColumnOk).length,
     modes,
     byIndustry,
     bySpeaker,
@@ -233,7 +247,17 @@ function aggregate(runs) {
         mode: r.mode,
         chars: r.chars,
         goldenScore: r.goldenScore,
+        regionMentionCount: r.regionMentionCount,
+        regionColumnOk: r.regionColumnOk,
         blockers: r.blockers.slice(0, 4),
+      })),
+    regionOverCapSamples: runs
+      .filter((r) => r.deliveryOk && !r.regionColumnOk)
+      .slice(0, 10)
+      .map((r) => ({
+        id: r.id,
+        industry: r.industry,
+        regionMentionCount: r.regionMentionCount,
       })),
   };
 }
@@ -290,6 +314,13 @@ async function main() {
   console.log(JSON.stringify(summary, null, 2));
 
   if (summary.deliveryRate < 95) {
+    process.exit(1);
+  }
+  if (summary.regionOverCap > Math.max(2, Math.round(summary.total * 0.05))) {
+    console.error(
+      `region over-cap too high: ${summary.regionOverCap}/${summary.total} (samples:`,
+      summary.regionOverCapSamples?.slice(0, 3)
+    );
     process.exit(1);
   }
 }

@@ -95,6 +95,9 @@ function readThousandSummary() {
       total: s.total,
       humanVoiceMet: s.humanVoiceMet,
       avgChars: s.avgChars,
+      regionColumnOkRate: s.regionColumnOkRate,
+      avgRegionMentions: s.avgRegionMentions,
+      regionOverCap: s.regionOverCap,
     };
   } catch {
     return null;
@@ -114,6 +117,7 @@ while (Date.now() - startedAt < DURATION_MS) {
   console.log(`\n========== CYCLE ${cycle} ${new Date().toLocaleString("ko-KR")} ==========`);
 
   run("test:mission-prose", "npm", ["run", "test:mission-prose"]);
+  run("test:region-column-naturalize", "npm", ["run", "test:region-column-naturalize"]);
   run("test:checklist-heading-sanitize", "npm", ["run", "test:checklist-heading-sanitize"]);
   run("test:hard-placeholder-signal", "npm", ["run", "test:hard-placeholder-signal"]);
   run("test:blog-api-delivery-gate", "npm", ["run", "test:blog-api-delivery-gate"]);

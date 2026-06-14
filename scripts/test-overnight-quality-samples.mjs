@@ -109,6 +109,7 @@ for (const sample of SAMPLES) {
   assert.ok(!/전시\s*소식|좋은내용|undefined/.test(full), `${sample.id} no contamination`);
   assert.ok(eval_.score >= sample.minEval, `${sample.id} eval >= ${sample.minEval} (${eval_.score})`);
   assert.equal(overnight.checks.noPlaceholder, true, `${sample.id} placeholder clean`);
+  assert.equal(overnight.checks.regionColumnOk, true, `${sample.id} region column ok`);
 }
 
 const avgOvernight =
