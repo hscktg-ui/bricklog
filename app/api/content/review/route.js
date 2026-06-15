@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/api/auth";
 import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
-import { getUsageSummary } from "@/lib/billing/usageLedger";
+import { checkContentGeneration } from "@/lib/billing/checkEntitlement";
+import {
+  incrementContentUsage,
+  getUsageSummary,
+} from "@/lib/billing/usageLedger";
 import { auditPastedDraft } from "@/lib/review/auditPastedDraft";
+import { improvePastedDraft } from "@/lib/review/improvePastedDraft";
 import {
   buildPasteReviewText,
   getPasteReviewChannel,
 } from "@/lib/review/pasteChannelConfig";
 import { logError } from "@/lib/api/logEvent";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
+import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
+import { applySignatureResearchServer } from "@/lib/content/applySignatureResearchServer";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -57,9 +64,10 @@ export async function POST(request) {
             instaTags: body.instaTags,
           });
 
-    const minChars = body.improve === true
-      ? channelConfig.improveMinChars
-      : channelConfig.auditMinChars;
+    const minChars =
+      body.improve === true
+        ? channelConfig.improveMinChars
+        : channelConfig.auditMinChars;
 
     if (text.length < minChars) {
       return NextResponse.json({
@@ -72,6 +80,7 @@ export async function POST(request) {
       brandName: body.brandName,
       region: body.region,
       mainKeyword: body.mainKeyword,
+      topic: body.topic,
       excludePhrases: body.excludePhrases,
       speechStyle: body.speechStyle,
       placeTitle: body.placeTitle ?? body.title,
@@ -79,34 +88,132 @@ export async function POST(request) {
       placeDetail: body.placeDetail,
       blogLengthTier: body.blogLengthTier,
       emojiDensity: body.emojiDensity,
+      instaEmojiLevel: body.instaEmojiLevel,
     };
 
-    const audit = auditPastedDraft(text, ctx, channelId);
-    const usage = await getUsageSummary(
-      auth.supabase,
-      auth.user.id,
-      auth.user.email
-    );
-
-    if (body.improve === true) {
+    const auditOnly = body.improve !== true;
+    if (auditOnly) {
+      const audit = auditPastedDraft(text, ctx, channelId);
       return NextResponse.json({
         ok: true,
         mode: "audit",
         channel: channelId,
         audit,
-        improvementSuggestions: audit.suggestions || [],
-        userMessage:
-          "검수는 문제점과 개선점만 제공합니다. 수정은 직접 하시거나 「이야기 쓰기」에서 새로 만들 수 있습니다.",
-        usage,
+        usage: await getUsageSummary(
+          auth.supabase,
+          auth.user.id,
+          auth.user.email
+        ),
       });
     }
 
+    const entitlement = await checkContentGeneration(
+      auth.supabase,
+      auth.user.id,
+      auth.user.email
+    );
+    if (!entitlement.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          userMessage: entitlement.userMessage,
+          usage: entitlement.usage,
+        },
+        { status: 429 }
+      );
+    }
+
+    const audit = auditPastedDraft(text, ctx, channelId);
+    const extraHints = [];
+    if (Array.isArray(body.issueHints)) {
+      extraHints.push(...body.issueHints.map((h) => String(h)));
+    }
+    if (body.feedback) {
+      extraHints.push(String(body.feedback).trim());
+    }
+
+    let personalizationAddon = "";
+    if (body.brandId || body.brandMemory) {
+      const personalization = await loadBrandMemoryBundle(
+        auth.supabase,
+        auth.user.id,
+        body.brandId,
+        { localBrandMemory: body.brandMemory }
+      );
+      personalizationAddon = personalization.combinedPromptAddon || "";
+    }
+
+    let signatureBrief = "";
+    const topic =
+      String(body.topic || "").trim() ||
+      String(body.mainKeyword || "").trim();
+    if (body.brandName?.trim() && body.region?.trim() && topic) {
+      const sig = await applySignatureResearchServer(
+        {
+          brandName: body.brandName,
+          region: body.region,
+          topic,
+          mainKeyword: body.mainKeyword,
+          industry: body.industry,
+          brandDescription: body.brandDescription,
+          brandMemory: body.brandMemory,
+        },
+        channelId === "instagram"
+          ? "instagram"
+          : channelId === "place"
+            ? "place"
+            : "blog"
+      );
+      if (sig.ok) {
+        signatureBrief = sig.input?.v3MasterBrief || sig.input?.v2AxisBrief || "";
+      }
+    }
+
+    const improved = await improvePastedDraft({
+      text,
+      channel: channelId,
+      ...ctx,
+      topic,
+      personalizationAddon,
+      signatureBrief,
+      v3MasterBrief: signatureBrief,
+      issueHints: [
+        ...audit.issues.map((i) => i.message),
+        ...extraHints.filter(Boolean),
+      ],
+    });
+
+    if (!improved.ok) {
+      return NextResponse.json({
+        ok: false,
+        userMessage: improved.userMessage,
+        audit,
+        usage: entitlement.usage,
+      });
+    }
+
+    await incrementContentUsage(
+      auth.supabase,
+      auth.user.id,
+      "draft_review_improve"
+    );
+
+    const usageAfter = await getUsageSummary(
+      auth.supabase,
+      auth.user.id,
+      auth.user.email
+    );
+
     return NextResponse.json({
       ok: true,
-      mode: "audit",
+      mode: "improve",
       channel: channelId,
       audit,
-      usage,
+      improvedText: improved.improvedText,
+      auditAfter: improved.auditAfter,
+      personalizationApplied: Boolean(personalizationAddon),
+      usageWarning: usageAfter.usageWarning,
+      usage: usageAfter,
     });
   } catch (err) {
     console.error("[api/content/review]", err);

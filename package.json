@@ -183,6 +183,7 @@
     "test:slim-blog-api-payload": "node --import ./scripts/register-alias.mjs scripts/test-slim-blog-api-payload.mjs",
     "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",
+    "test:instagram-caption-quality": "node --import ./scripts/register-alias.mjs scripts/test-instagram-caption-quality.mjs",
     "test:channel-sqv-delivery": "node --import ./scripts/register-alias.mjs scripts/test-channel-sqv-delivery.mjs",
     "test:core-rules": "node --import ./scripts/register-alias.mjs scripts/test-core-rules.mjs",
     "test:sqv-user-display": "node --import ./scripts/register-alias.mjs scripts/test-sqv-user-display.mjs",

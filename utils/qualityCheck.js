@@ -166,7 +166,10 @@ export function checkPlaceQuality(place, ctx) {
 
 export function checkInstaQuality(insta, ctx) {
   const text = [insta.hook, insta.body, insta.ending, insta.lineBreakBody].join("\n");
-  const bodyChars = countChars(insta.body || insta.lineBreakBody);
+  const captionCore =
+    insta.lineBreakBody?.replace(/(?:#\S+\s*)+$/, "").trim() ||
+    [insta.hook, insta.body, insta.ending].filter(Boolean).join("\n\n");
+  const bodyChars = countChars(captionCore);
   const forbidden = buildForbiddenList(ctx);
   const hasLineBreaks = (insta.lineBreakBody || "").split("\n").length >= 3;
 
@@ -175,6 +178,11 @@ export function checkInstaQuality(insta, ctx) {
     insta._meta?.blogAdapted ?? instaUsesBlogDerivation(insta, insights);
   const emojiCount = (text.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu) || [])
     .length;
+  const topicBlob = `${ctx.topic || ""} ${ctx.mainKeyword || ""} ${ctx.main || ""}`.trim();
+  const topicTokens = topicBlob.split(/\s+/).filter((t) => t.length >= 2).slice(0, 4);
+  const topicAligned =
+    !topicTokens.length ||
+    topicTokens.some((t) => text.replace(/\s/g, "").includes(t.replace(/\s/g, "")));
 
   const badges = [
     { id: "undefined", label: "undefined 없음", ok: !hasJunkOutput(text) },
@@ -191,8 +199,13 @@ export function checkInstaQuality(insta, ctx) {
     },
     {
       id: "emoji",
-      label: "이모지 2개 이상",
-      ok: emojiCount >= 2 || ctx.emojiDensity === "none",
+      label: "이모지 3개 이상",
+      ok: emojiCount >= 3 || ctx.emojiDensity === "none" || ctx.instaEmojiLevel === "none",
+    },
+    {
+      id: "topic",
+      label: "주제 반영",
+      ok: topicAligned,
     },
   ];
 

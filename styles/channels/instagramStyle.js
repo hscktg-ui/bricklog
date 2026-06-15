@@ -156,14 +156,25 @@ function pickHook(ctx, toneKey, usedPhrases, insights) {
       return clampByChars(cleanOutputText(o), 12, INSTAGRAM_CHANNEL.hookMax);
     }
   }
+  const topicCtx = deriveTopicWritingContext(ctx);
+  const topicFacet = topicCtx.topic || ctx.topic || ctx.main;
+  if (topicFacet && topicFacet.length >= 3) {
+    const regionBit = ctx.region ? `${ctx.region} ` : "";
+    const brandBit = ctx.brandName || "";
+    const topicHooks = compact([
+      `${topicFacet} — ${brandBit || regionBit || "오늘"}에 맞는 순간`,
+      brandBit ? `${brandBit} · ${topicFacet}` : `${regionBit}${topicFacet}`,
+      `${regionBit}${topicFacet}, 한 컷으로 남기고 싶은 날`,
+    ]);
+    const topicHook =
+      topicHooks[(countChars(ctx.main) + countChars(topicFacet)) % topicHooks.length];
+    if (topicHook && !containsOverused(topicHook)) {
+      return clampByChars(cleanOutputText(topicHook), 12, INSTAGRAM_CHANNEL.hookMax);
+    }
+  }
   const scene = insights?.sceneLines?.[0];
   if (scene && scene.length >= 12 && scene.length <= INSTAGRAM_CHANNEL.hookMax) {
     return clampByChars(cleanOutputText(scene), 12, INSTAGRAM_CHANNEL.hookMax);
-  }
-  const seed = countChars(ctx.main) + countChars(ctx.region) + (ctx.feedbackSeed || 0);
-  const scroll = SCROLL_STOP_HOOKS[seed % SCROLL_STOP_HOOKS.length];
-  if (scroll && !containsOverused(scroll)) {
-    return clampByChars(cleanOutputText(scroll), 12, INSTAGRAM_CHANNEL.hookMax);
   }
   const sceneHook = pickSceneHook(ctx, ctx.flavor);
   if (sceneHook && !containsOverused(sceneHook)) {
@@ -172,6 +183,11 @@ function pickHook(ctx, toneKey, usedPhrases, insights) {
   const sit = pickSituation(ctx, usedPhrases);
   if (sit.hook && !containsOverused(sit.hook)) {
     return clampByChars(cleanOutputText(sit.hook), 12, INSTAGRAM_CHANNEL.hookMax);
+  }
+  const seed = countChars(ctx.main) + countChars(ctx.region) + (ctx.feedbackSeed || 0);
+  const scroll = SCROLL_STOP_HOOKS[seed % SCROLL_STOP_HOOKS.length];
+  if (scroll && !containsOverused(scroll)) {
+    return clampByChars(cleanOutputText(scroll), 12, INSTAGRAM_CHANNEL.hookMax);
   }
   const key = industryKey(ctx, ctx.flavor);
   const pool = HOOKS[key]?.[toneKey] || HOOKS.default[toneKey] || HOOKS.default.emotional;
@@ -192,7 +208,7 @@ function ensureMediumBodyQuality(body, ctx, insights) {
     .split(/\n+/)
     .map((l) => l.trim())
     .filter(Boolean).length;
-  if (countChars(text) >= INSTA_BODY_LENGTH.medium.min && lineCount >= 3) {
+  if (countChars(text) >= INSTA_BODY_LENGTH.medium.min && lineCount >= 4) {
     return text;
   }
   const p = deriveTopicWritingContext(ctx);
@@ -246,6 +262,15 @@ function buildBodyLines(ctx, flavor, toneKey, insights, usedPhrases) {
       : sceneLine;
 
   const voice = ctx.brandResearch?.searchVoices?.[0];
+  const topicCtx = deriveTopicWritingContext(ctx);
+  const sceneLines = buildStoryTargetSceneLines(ctx, lenSpec.blogLines + 2, "instagram");
+  const topicAnchors = compact([
+    sceneLines[0],
+    sceneLines[1],
+    topicCtx.topic && ctx.brandName ? `${ctx.brandName} · ${topicCtx.topic}` : topicCtx.topic,
+    ctx.main && ctx.main !== topicCtx.topic ? ctx.main : null,
+    insights?.practicalTips?.[0]?.slice(0, 64),
+  ]);
   const lines =
     key === "flower"
       ? compact([
@@ -268,9 +293,10 @@ function buildBodyLines(ctx, flavor, toneKey, insights, usedPhrases) {
             inc,
             sit.line || "말 길게 안 할게요. 사진만 봐도 느낌이 전해질 거예요.",
           ]);
+  const mergedLines = [...new Set([...topicAnchors, ...lines])].filter(Boolean);
 
   let body = adaptInstaLinesFromBlog(
-    lines.slice(0, lenSpec.blogLines),
+    mergedLines.slice(0, Math.max(lenSpec.blogLines + 1, 4)),
     insights,
     toneKey
   ).join("\n");
