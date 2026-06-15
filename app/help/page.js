@@ -10,6 +10,7 @@ import {
   LANDING_FAQ_CATEGORIES,
   LANDING_FAQ_ITEMS,
 } from "@/lib/landing/landingFaq";
+import { GUIDE_PAGES } from "@/lib/seo/guidePages";
 
 export const metadata = buildLegalPageMetadata({
   title: `자주 묻는 질문 · ${BRAND_META_TITLE}`,
@@ -38,6 +39,35 @@ export default function HelpPage() {
           <p className="mt-2 text-[14px] font-medium text-[#191F28]">
             {BRAND_LATEST_UPDATE.headline}
           </p>
+
+          <nav
+            className="mt-8 rounded-2xl border border-[#E8EBED] bg-white px-5 py-4"
+            aria-label="콘텐츠 가이드"
+          >
+            <h2 className="text-[15px] font-bold text-[#191F28]">
+              업종별 콘텐츠 가이드
+            </h2>
+            <p className="mt-1 text-[13px] text-[#4E5968]">
+              네이버·플레이스·인스타 작성 팁 — 검색에도 노출되는 무료 가이드
+            </p>
+            <ul className="mt-3 space-y-2">
+              {GUIDE_PAGES.slice(0, 4).map((page) => (
+                <li key={page.slug}>
+                  <Link
+                    href={`/guides/${page.slug}`}
+                    className="text-[13px] text-[#4E5968] hover:text-[#03A94D] hover:underline"
+                  >
+                    {page.title}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href="/guides" className="text-[13px] font-semibold text-[#03A94D] hover:underline">
+                  가이드 전체 보기 →
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
           <div className="mt-10 space-y-10">
             {LANDING_FAQ_CATEGORIES.map((cat) => {

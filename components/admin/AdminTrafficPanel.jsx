@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { StatCard } from "@/components/admin/AdminCharts";
+import { UTM_CAMPAIGN_PRESETS } from "@/lib/seo/utmCampaignLinks";
 
 function ChannelBars({ channels = [] }) {
   if (!channels.length) {
@@ -176,12 +177,19 @@ export default function AdminTrafficPanel({ onToast }) {
         </ul>
       )}
 
-      <p className="mt-3 text-[11px] text-[#4E5968]">
-        공지·카페 링크 예:{" "}
-        <code className="rounded bg-[#F2F4F6] px-1">
-          ?utm_source=naver_cafe&utm_medium=social&utm_campaign=beta_notice
-        </code>
-      </p>
+      <div className="mt-3 rounded-xl border border-[#E8EBED] bg-white p-4">
+        <p className="text-[12px] font-bold text-[#191F28]">공지용 UTM 링크 (복사)</p>
+        <ul className="mt-2 space-y-2">
+          {UTM_CAMPAIGN_PRESETS.map((preset) => (
+            <li key={preset.id} className="text-[11px] text-[#4E5968]">
+              <span className="font-semibold text-[#191F28]">{preset.label}</span>
+              <code className="mt-0.5 block break-all rounded bg-[#F2F4F6] px-2 py-1">
+                {preset.url}
+              </code>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
