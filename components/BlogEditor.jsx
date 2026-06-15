@@ -690,8 +690,13 @@ const BlogEditorResults = memo(function BlogEditorResults({
     (isMobile || (isTablet && concise));
 
   const handleRegenerate = useCallback(() => {
-    generateBlog(blogInput, { blogOnly: loadBlogOnlyPref() });
-  }, [generateBlog, blogInput]);
+    generateBlog(blogInput, {
+      blogOnly: loadBlogOnlyPref(),
+      regen: true,
+      regenVariation: Date.now(),
+      priorRewriteCount: blogContent?._meta?.rewriteCount || 0,
+    });
+  }, [generateBlog, blogInput, blogContent]);
 
   const regenerateBusy =
     generating.blog ||

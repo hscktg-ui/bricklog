@@ -18,6 +18,7 @@ import {
   adaptPlaceLineFromBlog,
   placeUsesBlogDerivation,
 } from "@/lib/content/blogDerive";
+import { scrubVisitorReviewPhrases } from "@/lib/content/channelDerivationVoice";
 
 const PLACE_TYPE_SPECS = {
   notice: {
@@ -373,14 +374,23 @@ function buildPlacePackOnce({ ctx, flavor, purpose, tone, insights }) {
   const cta = buildCta(ctx, purpose);
   const hashtags = buildHashtags(ctx, flavor, season);
 
+  let finalTitle = title;
+  let finalShort = shortBody;
+  let finalDetail = detailBody;
+  if (ctx.channelDeriveVoice === "smartplace_notice") {
+    finalTitle = scrubVisitorReviewPhrases(finalTitle) || finalTitle;
+    finalShort = scrubVisitorReviewPhrases(finalShort) || finalShort;
+    finalDetail = scrubVisitorReviewPhrases(finalDetail) || finalDetail;
+  }
+
   let pack = {
-    title,
-    shortNotice: shortBody,
-    shortBody,
-    detailBody,
+    title: finalTitle,
+    shortNotice: finalShort,
+    shortBody: finalShort,
+    detailBody: finalDetail,
     cta,
     hashtags,
-    body: `${shortBody}\n\n${detailBody}`.trim(),
+    body: `${finalShort}\n\n${finalDetail}`.trim(),
     _meta: {
       channel: "smartplace",
       style: "place-structured-notice",
@@ -394,9 +404,10 @@ function buildPlacePackOnce({ ctx, flavor, purpose, tone, insights }) {
       totalChars: countChars(shortBody) + countChars(detailBody),
       hashtagCount: hashtags.length,
       blogAdapted: placeUsesBlogDerivation(
-        { title, shortBody, detailBody },
+        { title: finalTitle, shortBody: finalShort, detailBody: finalDetail },
         insights
       ),
+      channelDeriveVoice: ctx.channelDeriveVoice || null,
     },
   };
 

@@ -30,6 +30,7 @@ import {
   adaptInstaLinesFromBlog,
   instaUsesBlogDerivation,
 } from "@/lib/content/blogDerive";
+import { scrubVisitorReviewPhrases } from "@/lib/content/channelDerivationVoice";
 
 export const INSTAGRAM_CHANNEL = {
   id: "instagram",
@@ -381,10 +382,21 @@ function buildInstagramPackOnce({ ctx, flavor, purpose, tone, toneKey, insights 
     hook = clampByChars(hook, 12, 48);
   }
   const body = buildBodyLines(ctx, flavor, key, insights, usedPhrases);
-  const ending = buildEnding(key, ctx);
+  let ending = buildEnding(key, ctx);
+  let finalHook = hook;
+  let finalBody = body;
+  if (ctx.channelDeriveVoice === "instagram_promo") {
+    finalHook =
+      scrubVisitorReviewPhrases(finalHook) ||
+      finalHook.replace(/^오늘\s*다녀왔는데\s*[-—]?\s*/i, "");
+    finalBody = scrubVisitorReviewPhrases(finalBody) || finalBody;
+    ending =
+      scrubVisitorReviewPhrases(ending) ||
+      ending.replace(/다시\s*올\s*것\s*같아요\.?/i, "");
+  }
   const blocks = isShortForm
-    ? [hook, body, ending]
-    : compact([hook, body, ending]);
+    ? [finalHook, finalBody, ending]
+    : compact([finalHook, finalBody, ending]);
   const lineBreakBody = toInstaLineBreaks(
     blocks.filter(Boolean).join("\n\n")
   );
@@ -392,8 +404,8 @@ function buildInstagramPackOnce({ ctx, flavor, purpose, tone, toneKey, insights 
   const ctxForEmoji = { ...ctx, emojiDensity: instaEmojiDensity(ctx) };
 
   let pack = {
-    hook,
-    body,
+    hook: finalHook,
+    body: finalBody,
     lineBreakBody,
     ending,
     hashtags,
@@ -402,13 +414,14 @@ function buildInstagramPackOnce({ ctx, flavor, purpose, tone, toneKey, insights 
       channel: "instagram",
       style: "insta-scene-caption",
       styleHints: INSTA_STYLE_HINTS,
-      bodyChars: countChars(body),
+      bodyChars: countChars(finalBody),
       hashtagCount: hashtags.length,
       instaTone: key,
       instaFormat: ctx.instaFormat || "feed",
       instaBodyLength: ctx.instaBodyLength || "medium",
       instaHashtagMode: ctx.instaHashtagMode || "auto",
-      blogAdapted: instaUsesBlogDerivation({ hook, body }, insights),
+      blogAdapted: instaUsesBlogDerivation({ hook: finalHook, body: finalBody }, insights),
+      channelDeriveVoice: ctx.channelDeriveVoice || null,
     },
   };
 

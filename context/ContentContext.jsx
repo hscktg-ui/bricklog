@@ -957,6 +957,33 @@ export function ContentProvider({
       genOpts.blogOnly === false ||
       (genOpts.blogOnly !== true && isAutoPipelineAfterBlog());
 
+    if (genOpts.regen) {
+      const variation = Number(genOpts.regenVariation) || Date.now();
+      const prior = Number(genOpts.priorRewriteCount) || 0;
+      const nextCount = prior + 1;
+      input = {
+        ...input,
+        regenVariation: variation,
+        rewriteCount: nextCount,
+        feedbackSeed:
+          ((Number(input.feedbackSeed) || 0) + (variation % 11) + nextCount) % 97,
+        brandFeedbackBrief: [
+          input.brandFeedbackBrief,
+          `【다시 받기 ${nextCount}회차】이전 글과 다른 섹션 구성·도입·사례 각도. 동일 문장·소제목 반복 금지.`,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        feedbackRegenDirective: "regen_variation_required",
+        feedbackIntentDriven: true,
+        feedbackHints: [
+          ...(Array.isArray(input.feedbackHints) ? input.feedbackHints : []),
+          "restructure_sections",
+          "add_information_units",
+          "expand_explanations",
+        ],
+      };
+    }
+
     blogGenLock.current = true;
     setBlogGenHint(null);
     setBlogGenHintIsAuth(false);
