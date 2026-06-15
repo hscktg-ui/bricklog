@@ -4,7 +4,10 @@
 import { finalizeContentQualityForDelivery, attachContentQualityToApiMeta } from "../lib/product/contentQualityDelivery.js";
 import { computeContentQualityValue } from "../lib/product/contentQualityValue.js";
 import { resolvePublishReadiness } from "../lib/product/publishReadinessDisplay.js";
-import { detectOutlineLeak } from "../lib/content/outlinePackGuard.js";
+import { detectOutlineLeak, isPublishableChannelPack } from "../lib/content/outlinePackGuard.js";
+import { buildResearchGroundedPlacePack } from "../lib/content/researchGroundedHumanPack.js";
+import { finishLocalChannelPackForBatch } from "../lib/product/localBatchFinish.js";
+import { isChannelPackDeliverable } from "../lib/content/channelPack.js";
 import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js";
 import { resolveBlogLengthTier } from "../lib/constants.js";
 
@@ -95,3 +98,28 @@ if (chars < 120) {
 
 console.log("OK: content quality delivery — sqv v2, finalize, api meta, publish readiness");
 console.log("  score:", sqv.score, "grade:", sqv.grade, "publishReady:", sqv.publishReady, "chars:", chars);
+
+const placeInput = {
+  brandName: "강남카페",
+  region: "강남",
+  topic: "시즌 프로모션 카페",
+  industry: "카페",
+};
+const placePack = finishLocalChannelPackForBatch(
+  buildResearchGroundedPlacePack(placeInput),
+  "place",
+  placeInput
+);
+if (!isPublishableChannelPack("place", placePack)) {
+  console.error("FAIL: place bullet notice flagged as outline", detectOutlineLeak(placePack, "place"));
+  process.exit(1);
+}
+if (!isChannelPackDeliverable("place", placePack)) {
+  console.error("FAIL: place pack not deliverable after batch finish");
+  process.exit(1);
+}
+if ((placePack._meta?.sqv?.score ?? 0) < 50) {
+  console.error("FAIL: place sqv below batch floor", placePack._meta?.sqv);
+  process.exit(1);
+}
+console.log("OK: place bullet notice — publishable, deliverable, sqv", placePack._meta?.sqv?.score);
