@@ -1,6 +1,7 @@
 "use client";
 
 import { BRICLOG_METHOD_STEPS } from "@/lib/product/craft";
+import { BRICLOG_BLOG_TAB_TAGLINE } from "@/lib/product/briclogPerspectiveCopy";
 import { VISION_WORKSPACE_PANEL } from "@/lib/landing/vision2030Styles";
 
 export default function BriclogPerspectiveNote({ compact = false }) {
@@ -14,6 +15,9 @@ export default function BriclogPerspectiveNote({ compact = false }) {
     >
       <p className="text-[11px] font-semibold text-[var(--vision-accent)]">
         브릭로그 방식
+      </p>
+      <p className="mt-1 text-[11px] leading-snug text-[var(--vision-muted)]">
+        {BRICLOG_BLOG_TAB_TAGLINE}
       </p>
       <ol className="mt-2 flex items-center justify-between gap-1">
         {BRICLOG_METHOD_STEPS.map((step, index) => (

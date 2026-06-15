@@ -29,6 +29,7 @@ import {
 import { USER_QUALITY_GOAL } from "@/lib/quality/qualityTargets";
 import { isPaidPlan } from "@/lib/billing/plans";
 import BriclogStrengthChips from "@/components/BriclogStrengthChips";
+import BrandHabitStrip from "@/components/BrandHabitStrip";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
@@ -183,6 +184,32 @@ export default function BlogResultView({
   const versionContentId = `blog-${brandId || "x"}-${draft.representativeTitle || "draft"}`;
   const feedbackRound = draft._meta?.rewriteCount || 0;
   const publishReadiness = resolvePublishReadiness(draft);
+  const blogTitle = String(
+    draft.representativeTitle || draft.title || ""
+  ).trim();
+  const copyMetaParts = [];
+  if (!isBriefOnly && blogTitle) {
+    copyMetaParts.push(`제목: ${blogTitle}`);
+  }
+  if (!isBriefOnly && draft._meta?.blogCharCount) {
+    copyMetaParts.push(
+      `${draft._meta.blogCharCount.toLocaleString("ko-KR")}자${
+        !draft._meta?.lengthTierMet && draft._meta?.lengthTierMin
+          ? ` · 목표 ${draft._meta.lengthTierMin.toLocaleString("ko-KR")}자`
+          : ""
+      }`
+    );
+  }
+  const copyMetaLine = copyMetaParts.length ? copyMetaParts.join(" · ") : null;
+  const copyHintLine = isBriefOnly
+    ? null
+    : mobileSimple
+      ? RESULT_VIEW.copyHintMobile
+      : RESULT_VIEW.copyHint;
+  const copyButtonLabel =
+    !isBriefOnly && publishReadiness.status === "ready"
+      ? "네이버에 붙여넣기"
+      : "전체 복사하기";
   const goReview =
     typeof onNavigate === "function" ? () => onNavigate("review") : null;
   const dwellRef = useRef({ started: Date.now(), sent: 0 });
@@ -352,12 +379,15 @@ export default function BlogResultView({
       )}
 
       {!isBriefOnly ? (
-        <BriclogStrengthChips
-          draft={draft}
-          blogInput={blogInput}
-          hasPlace={hasPlace}
-          hasInsta={hasInsta}
-        />
+        <>
+          <BriclogStrengthChips
+            draft={draft}
+            blogInput={blogInput}
+            hasPlace={hasPlace}
+            hasInsta={hasInsta}
+          />
+          <BrandHabitStrip className="mt-1" />
+        </>
       ) : null}
 
       {simWarn && (simpleMode || !showExpertPanels) ? (
@@ -388,20 +418,8 @@ export default function BlogResultView({
                 : "neutral"
             : "neutral"
         }
-        metaLine={
-          !isBriefOnly && draft._meta?.blogCharCount
-            ? `${draft._meta.blogCharCount.toLocaleString("ko-KR")}자${
-                !draft._meta?.lengthTierMet && draft._meta?.lengthTierMin
-                  ? ` · 목표 ${draft._meta.lengthTierMin.toLocaleString("ko-KR")}자`
-                  : ""
-              }`
-            : null
-        }
-        hint={
-          !mobileSimple
-            ? "제목·소제목·문단 사이 빈 줄 · 폼 항목 이름(말투·금지어 등)은 포함하지 않음"
-            : null
-        }
+        metaLine={copyMetaLine}
+        hint={copyHintLine}
         actions={
           <>
             {onRegenerate ? (
@@ -416,6 +434,7 @@ export default function BlogResultView({
             ) : null}
             <FullCopyButton
               text={copyText}
+              label={copyButtonLabel}
               onCopy={() => onCopy?.(copyText)}
             />
             {!isBriefOnly && goReview ? (

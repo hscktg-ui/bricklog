@@ -1,6 +1,7 @@
 "use client";
 
 import { buildContentOperatingPlan } from "@/lib/product/briclogBrandContentOS";
+import { WORKSPACE_BLOG } from "@/lib/product/craft";
 import { VISION_EYEBROW, VISION_PANEL } from "@/lib/landing/vision2030Styles";
 
 /**
@@ -38,7 +39,7 @@ export default function ContentOperatingPlanPanel({
       ) : null}
       {compact ? (
         <p className="mt-1 text-[11px] text-[var(--vision-muted)]">
-          아래 「AI 조사 시작」 전에 이번 달에 쓸 주제·채널 방향을 확인하세요.
+          아래 「{WORKSPACE_BLOG.cta}」 전에 이번 달에 쓸 주제·채널 방향을 확인하세요.
         </p>
       ) : null}
       <ul className={`${compact ? "mt-2" : "mt-3"} space-y-2`}>
