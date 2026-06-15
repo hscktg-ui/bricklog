@@ -2,36 +2,16 @@
  * E2E용 테스트 계정 확보 (Supabase service role)
  * Env: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
-import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
+import { loadEnvLocal } from "./lib/loadEnvLocal.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
 const DEFAULT_EMAIL = "hundred-ux-smoke@briclog.ai";
 const DEFAULT_PASSWORD = "BriclogUxSmoke9!";
-
-function loadEnvLocal() {
-  try {
-    const raw = readFileSync(join(root, ".env.local"), "utf8");
-    for (const line of raw.split("\n")) {
-      const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (!m) continue;
-      let val = m[2].trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[m[1]]) process.env[m[1]] = val;
-    }
-  } catch {
-    /* optional */
-  }
-}
 
 async function ensureE2eProfile(admin, userId, email, nickname) {
   const now = new Date().toISOString();
@@ -57,7 +37,7 @@ async function ensureE2eProfile(admin, userId, email, nickname) {
  * @returns {Promise<{ ok: boolean, email?: string, password?: string, reason?: string }>}
  */
 export async function ensureE2eTestUser(options = {}) {
-  loadEnvLocal();
+  loadEnvLocal(root);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const email = options.email || process.env.BRICLOG_TEST_EMAIL || DEFAULT_EMAIL;

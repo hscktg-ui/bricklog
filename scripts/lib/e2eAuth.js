@@ -1,7 +1,6 @@
 /**
  * Playwright E2E — Supabase 세션 주입 공통
  */
-import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
@@ -10,29 +9,10 @@ import {
   buildSupabasePlaywrightStorage,
   applySupabaseSessionToContext,
 } from "../ensure-e2e-test-user.mjs";
+import { loadEnvLocal } from "./loadEnvLocal.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..", "..");
-
-function loadEnvLocal() {
-  try {
-    const raw = readFileSync(join(root, ".env.local"), "utf8");
-    for (const line of raw.split("\n")) {
-      const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (!m) continue;
-      let val = m[2].trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[m[1]]) process.env[m[1]] = val;
-    }
-  } catch {
-    /* ignore */
-  }
-}
 
 export async function prepareE2eAuth(baseUrl) {
   const ensured = await ensureE2eTestUser();
@@ -145,7 +125,7 @@ export async function dismissWorkspaceModals(page) {
 
 /** @returns {Promise<{ ok: boolean, token?: string, email?: string, reason?: string }>} */
 export async function getE2eBearerToken() {
-  loadEnvLocal();
+  loadEnvLocal(root);
   const ensured = await ensureE2eTestUser();
   if (!ensured.ok) return { ok: false, reason: ensured.reason };
 

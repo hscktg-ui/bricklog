@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import { CHANNEL_SLA_MS, CHANNEL_SLA_PERSONAS } from "../lib/qa/channelSlaPersonas.js";
 import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
 import { getE2eBearerToken } from "./lib/e2eAuth.js";
+import { loadEnvLocal } from "./lib/loadEnvLocal.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -38,24 +39,8 @@ const SAMPLE = {
   skipAutoPipeline: true,
 };
 
-function loadEnvLocal() {
-  try {
-    const raw = readFileSync(join(root, ".env.local"), "utf8");
-    for (const line of raw.split("\n")) {
-      const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (!m) continue;
-      let val = m[2].trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[m[1]]) process.env[m[1]] = val;
-    }
-  } catch {
-    /* ignore */
-  }
+function loadEnvLocalAndCredentials() {
+  loadEnvLocal(root);
   applyE2eTestCredentialsToEnv(process.env);
 }
 
@@ -243,7 +228,7 @@ function printSummary(report) {
 }
 
 async function main() {
-  loadEnvLocal();
+  loadEnvLocalAndCredentials();
   const probe = await fetch(BASE, { signal: AbortSignal.timeout(8000) }).catch(
     () => null
   );

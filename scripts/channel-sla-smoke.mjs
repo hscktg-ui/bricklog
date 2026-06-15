@@ -27,25 +27,10 @@ import {
   syncE2eSessionToPage,
   waitForWorkspaceReady,
 } from "./lib/e2eAuth.js";
+import { loadEnvLocal } from "./lib/loadEnvLocal.mjs";
 
-function loadEnvLocal() {
-  try {
-    const raw = readFileSync(join(root, ".env.local"), "utf8");
-    for (const line of raw.split("\n")) {
-      const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (!m) continue;
-      let val = m[2].trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[m[1]]) process.env[m[1]] = val;
-    }
-  } catch {
-    /* ignore */
-  }
+function loadEnvLocalAndCredentials() {
+  loadEnvLocal(root);
   applyE2eTestCredentialsToEnv(process.env);
 }
 
@@ -500,7 +485,7 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
 }
 
 async function main() {
-  loadEnvLocal();
+  loadEnvLocalAndCredentials();
 
   const probe = await fetch(BASE, { signal: AbortSignal.timeout(5000) }).catch(
     () => null
