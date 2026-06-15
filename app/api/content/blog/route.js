@@ -32,6 +32,8 @@ import {
 } from "@/lib/product/contentQualityDelivery";
 import { applyWriterEngineIfNeeded } from "@/lib/product/briclogWriterEngine";
 import { alignBlogApiDeliveryResponse } from "@/lib/product/blogApiDeliveryGate";
+import { buildMissionRescueApiDelivery } from "@/lib/generation/missionRescueDelivery";
+import { hasFilledBlogAxes } from "@/lib/product/deliverySoftPass";
 import { ensureServerAxisResearch } from "@/lib/generation/serverAxisResearch";
 import { attachServerTrendSnapshot } from "@/lib/trends/serverTrendHints";
 
@@ -174,6 +176,20 @@ export async function POST(request) {
         ...result,
         blogContent: blog,
       };
+    }
+
+    if (
+      hasFilledBlogAxes(hydratedInput) &&
+      (!result?.blogContent?.sections?.length || result.withheld)
+    ) {
+      const rescued = buildMissionRescueApiDelivery(
+        hydratedInput,
+        { reasons: result.meta?.failReasons || ["api_inbound_rescue"] },
+        { mode: "mission_rescue_delivery" }
+      );
+      if (rescued?.blogContent?.sections?.length) {
+        result = rescued;
+      }
     }
 
     result = alignBlogApiDeliveryResponse(result, hydratedInput);

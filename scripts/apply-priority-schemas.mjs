@@ -8,10 +8,11 @@
  *
  * SUPABASE_ACCESS_TOKEN 또는 SUPABASE_DB_URL 필요 (.env.local)
  */
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
+import { loadEnvLocal } from "./lib/loadEnvLocal.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -27,18 +28,6 @@ const SCHEMA_ORDER = [
   "supabase/schema-v5d-subscription-management.sql",
   "supabase/schema-v12-data-assets.sql",
 ];
-
-function loadEnvLocal() {
-  const path = resolve(root, ".env.local");
-  if (!existsSync(path)) return {};
-  const out = {};
-  for (const line of readFileSync(path, "utf8").split("\n")) {
-    const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-    if (!m) continue;
-    out[m[1]] = m[2].trim().replace(/^["']|["']$/g, "");
-  }
-  return out;
-}
 
 function projectRefFromUrl(url) {
   try {
@@ -86,7 +75,13 @@ async function runViaPg(dbUrl, sql) {
 async function probe(db) {
   const checks = [
     { id: "last_seen_at", table: "profiles", select: "last_seen_at" },
+    {
+      id: "acquisition_source",
+      table: "profiles",
+      select: "acquisition_source_channel",
+    },
     { id: "site_visits", table: "site_visits", select: "id" },
+    { id: "site_visits_user", table: "site_visits", select: "user_id" },
     { id: "feedback_intents", table: "content_feedback", select: "intents,rewrite_round" },
     { id: "public_test_runs", table: "public_test_runs", select: "id" },
     { id: "user_subscriptions", table: "user_subscriptions", select: "user_id" },
@@ -103,7 +98,8 @@ async function probe(db) {
 }
 
 async function main() {
-  const env = { ...loadEnvLocal(), ...process.env };
+  loadEnvLocal(root);
+  const env = { ...process.env };
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
   const accessToken = env.SUPABASE_ACCESS_TOKEN?.trim();
@@ -129,6 +125,10 @@ async function main() {
     "supabase/schema-v17-admin-ops.sql": before.last_seen_at && before.site_visits,
     "supabase/schema-v18-feedback-loop.sql": before.feedback_intents,
     "supabase/schema-v19-public-test.sql": before.public_test_runs,
+    "supabase/schema-v20-traffic-attribution.sql":
+      before.site_visits && before.last_seen_at,
+    "supabase/schema-v21-user-acquisition.sql":
+      before.acquisition_source && before.site_visits_user,
     "supabase/schema-v5-billing.sql":
       before.user_subscriptions && before.usage_monthly,
     "supabase/schema-v5b-plans-brand-studio.sql":

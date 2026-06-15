@@ -39,6 +39,25 @@ try {
   assert.equal(draftAligned.ok, false);
   assert.equal(draftAligned.withheld, true);
 
+  const rescueAligned = alignBlogApiDeliveryResponse(
+    {
+      ok: true,
+      withheld: false,
+      mode: "mission_rescue_delivery",
+      meta: { generationMode: "mission_rescue_delivery" },
+      blogContent: {
+        ...pack,
+        _meta: {
+          ...pack._meta,
+          contentEvaluation: { pass: true, shouldWithhold: false, score: 92 },
+        },
+      },
+    },
+    { brandName: "테스트샵", region: "서울", industry: "카페" }
+  );
+  assert.equal(rescueAligned.ok, true);
+  assert.equal(rescueAligned.withheld, false);
+
   console.log("test-blog-api-delivery-gate: PASS");
 } finally {
   if (prev === undefined) delete process.env.BRICLOG_RESET_QUALITY;
