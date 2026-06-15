@@ -184,6 +184,7 @@
     "test:channel-sqv-delivery": "node --import ./scripts/register-alias.mjs scripts/test-channel-sqv-delivery.mjs",
     "test:core-rules": "node --import ./scripts/register-alias.mjs scripts/test-core-rules.mjs",
     "test:sqv-user-display": "node --import ./scripts/register-alias.mjs scripts/test-sqv-user-display.mjs",
+    "test:blog-context-axes": "node --import ./scripts/register-alias.mjs scripts/test-blog-context-axes.mjs",
     "test:blog-delivery-finish": "node --import ./scripts/register-alias.mjs scripts/test-blog-delivery-finish.mjs",
     "test:briclog-core-engine": "node --import ./scripts/register-alias.mjs scripts/test-briclog-core-engine.mjs",
     "test:korean-orthography-engine": "node --import ./scripts/register-alias.mjs scripts/test-korean-orthography-engine.mjs",
