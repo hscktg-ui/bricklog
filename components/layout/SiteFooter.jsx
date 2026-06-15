@@ -7,6 +7,8 @@ import {
 } from "@/lib/brand/copy";
 
 const LEGAL_LINKS = [
+  { href: "/guides", label: "콘텐츠 가이드" },
+  { href: "/help", label: "도움말·FAQ" },
   { href: "/terms", label: "이용약관" },
   { href: "/privacy", label: "개인정보처리방침" },
   { href: "/refund", label: "환불정책" },

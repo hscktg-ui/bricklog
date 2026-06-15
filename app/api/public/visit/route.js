@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
+import {
+  classifyVisitSource,
+  pickUtmFromQuery,
+} from "@/lib/analytics/visitSource";
 
 export const runtime = "nodejs";
 
@@ -29,13 +33,36 @@ export async function POST(request) {
     return NextResponse.json({ ok: false, userMessage: "sessionId required" }, { status: 400 });
   }
 
-  const { error } = await service.from("site_visits").insert({
+  const referrer = String(body.referrer || "").slice(0, 500);
+  const utm = pickUtmFromQuery(body);
+  const sourceChannel = classifyVisitSource({
+    referrer,
+    utmSource: utm.utmSource,
+    utmMedium: utm.utmMedium,
+  });
+
+  const row = {
     session_id: sessionId,
     path: String(body.path || "/").slice(0, 300),
-    referrer: String(body.referrer || "").slice(0, 500),
+    referrer,
     user_agent: String(body.userAgent || request.headers.get("user-agent") || "")
       .slice(0, 300),
-  });
+    utm_source: utm.utmSource || null,
+    utm_medium: utm.utmMedium || null,
+    utm_campaign: utm.utmCampaign || null,
+    source_channel: sourceChannel,
+  };
+
+  let { error } = await service.from("site_visits").insert(row);
+
+  if (error && /utm_|source_channel|column/i.test(error.message)) {
+    ({ error } = await service.from("site_visits").insert({
+      session_id: row.session_id,
+      path: row.path,
+      referrer: row.referrer,
+      user_agent: row.user_agent,
+    }));
+  }
 
   if (error) {
     if (/site_visits|relation|does not exist/i.test(error.message)) {

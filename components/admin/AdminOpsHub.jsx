@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { StatCard } from "@/components/admin/AdminCharts";
 import AdminFeedbackPanel from "@/components/admin/AdminFeedbackPanel";
+import AdminTrafficPanel from "@/components/admin/AdminTrafficPanel";
 
 function formatKst(iso) {
   if (!iso) return "—";
@@ -400,6 +401,7 @@ export default function AdminOpsHub({ onToast }) {
   return (
     <div className="mb-8 space-y-4">
       <LiveStatsBar live={live} onRefresh={() => void loadLive()} refreshing={refreshing} />
+      <AdminTrafficPanel onToast={onToast} />
 
       <div className="flex flex-wrap gap-2 border-b border-[#E8EBED] pb-2">
         {TABS.map((t) => (

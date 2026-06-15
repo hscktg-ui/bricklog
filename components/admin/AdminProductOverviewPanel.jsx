@@ -79,8 +79,21 @@ export default function AdminProductOverviewPanel({ snapshot, publicTest = {} })
             <strong className="text-[#191F28]">설명</strong> — {product.description}…
           </p>
           <p className="mt-3 text-[12px] text-[#4E5968]">
-            사이트맵: {seo.sitemapPaths?.join(", ")}
+            사이트맵: {seo.sitemapPaths?.slice(0, 6).join(", ")}
+            {(seo.sitemapPaths?.length || 0) > 6 ? " …" : ""}
           </p>
+          {seo.guidesUrl ? (
+            <p className="mt-2 text-[12px]">
+              <a
+                href={seo.guidesUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#03A94D] hover:underline"
+              >
+                SEO 가이드 {seo.indexablePages ?? 0}페이지 ↗
+              </a>
+            </p>
+          ) : null}
           <p className="mt-2 text-[12px]">
             Search Console — Google{" "}
             <span className={ver.google ? "text-[#03A94D]" : "text-amber-700"}>

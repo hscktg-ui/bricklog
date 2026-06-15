@@ -19,6 +19,7 @@ const SCHEMA_ORDER = [
   "supabase/schema-v17-admin-ops.sql",
   "supabase/schema-v18-feedback-loop.sql",
   "supabase/schema-v19-public-test.sql",
+  "supabase/schema-v20-traffic-attribution.sql",
   "supabase/schema-v5-billing.sql",
   "supabase/schema-v5b-plans-brand-studio.sql",
   "supabase/schema-v5c-toss-billing.sql",
