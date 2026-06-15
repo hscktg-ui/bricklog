@@ -10,20 +10,22 @@ import { createClient } from "@supabase/supabase-js";
 import { computeProductReadinessScore } from "../lib/qa/productReadinessRubric.js";
 import { CHANNEL_SLA_PERSONAS } from "../lib/qa/channelSlaPersonas.js";
 import { getDefaultPublicTestSample } from "../lib/publicTest/publicTestSamples.js";
+import { loadEnvLocal } from "./lib/loadEnvLocal.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
 const OUT = join(root, "config", "product-readiness-score.json");
 
-function loadEnvLocal() {
-  const path = join(root, ".env.local");
-  if (!existsSync(path)) return {};
+function loadEnv() {
+  loadEnvLocal(root);
   const out = {};
-  for (const line of readFileSync(path, "utf8").split("\n")) {
+  if (!existsSync(join(root, ".env.local"))) return out;
+  for (const line of readFileSync(join(root, ".env.local"), "utf8").split(/\r?\n/)) {
     const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
     if (!m) continue;
     out[m[1]] = m[2].trim().replace(/^["']|["']$/g, "");
+    if (!process.env[m[1]]) process.env[m[1]] = out[m[1]];
   }
   return out;
 }
@@ -121,7 +123,7 @@ function summarizeUx(report) {
 }
 
 async function main() {
-  const env = { ...loadEnvLocal(), ...process.env };
+  const env = { ...loadEnv(), ...process.env };
   const channelSla = readJson(join(root, "config", "channel-sla-report.json"));
   const hundredUx = readJson(join(root, "config", "hundred-user-ux-report.json"));
   const engine = await fetchEngineStatus();

@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/api/auth";
-import {
-  getBrandLearningBrief,
-  recomputeBrandLearningProfile,
-  brandLearningProfileForUI,
-} from "@/lib/feedback/brandLearningProfile";
+import { getBrandLearningBrief, recomputeBrandLearningProfile, brandLearningProfileForUI } from "@/lib/feedback/brandLearningProfile";
 import { isMissingFeedbackTable } from "@/lib/feedback/db";
 import { getBrandAssetSummary } from "@/lib/dataAsset/getBrandAssetSummary";
+import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
+import { rowToBrand } from "@/lib/brands/brandMapper";
 
 export const runtime = "nodejs";
 
@@ -35,15 +33,27 @@ export async function GET(request) {
       .eq("user_id", auth.user.id)
       .maybeSingle();
 
-    const [brief, assetSummary] = await Promise.all([
+    const [brief, assetSummary, brandRowRes] = await Promise.all([
       getBrandLearningBrief(brandId, auth.supabase, auth.user.id),
       getBrandAssetSummary(auth.supabase, auth.user.id, brandId),
+      auth.supabase
+        .from("brands")
+        .select("*")
+        .eq("id", brandId)
+        .eq("user_id", auth.user.id)
+        .maybeSingle(),
     ]);
+
+    const brandHabitsBrief = brandRowRes.data
+      ? formatBrandHabitsBrief(rowToBrand(brandRowRes.data))
+      : "";
+    const mergedBrief = brief || brandHabitsBrief;
 
     return NextResponse.json({
       ok: true,
       profile: brandLearningProfileForUI(data?.profile),
-      brief,
+      brief: mergedBrief,
+      habitsBrief: brandHabitsBrief,
       assetCounts: assetSummary.counts,
       continuityCopy: assetSummary.continuityCopy,
       updatedAt: data?.updated_at || null,

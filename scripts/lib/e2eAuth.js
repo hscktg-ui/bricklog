@@ -240,7 +240,8 @@ export async function ensureSmokeBrand(page, baseUrl, form) {
   return { ok: true, brandId: brand.id, brandName: form.brandName };
 }
 
-export async function fillBlogFormViaDom(page, form) {
+/** 브랜드 → 지역 → 주제 순서형(SteppedWriteFields) 폼 채우기 */
+export async function fillBlogSteppedFormViaDom(page, form) {
   return page.evaluate((f) => {
     const fire = (el, value) => {
       if (!el) return false;
@@ -252,13 +253,79 @@ export async function fillBlogFormViaDom(page, form) {
       setter?.call(el, value);
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
+      el.dispatchEvent(new Event("blur", { bubbles: true }));
+      return true;
+    };
+    const stepButtons = [
+      ...document.querySelectorAll('ol[aria-label="작성 단계"] button'),
+    ];
+    const clickStep = (index) => {
+      if (stepButtons[index]) {
+        stepButtons[index].click();
+        return true;
+      }
+      return false;
+    };
+    const fillByPlaceholder = (re, value) => {
+      if (!value) return false;
+      for (const el of document.querySelectorAll("input, textarea")) {
+        const ph = el.placeholder || "";
+        if (!re.test(ph)) continue;
+        return fire(el, value);
+      }
+      return false;
+    };
+
+    clickStep(0);
+    const brandOk = fillByPlaceholder(/매장·브랜드|팀 이름/i, f.brandName || "");
+    clickStep(1);
+    const regionOk =
+      fillByPlaceholder(/서울 마포|용인|지역/i, f.region || "") ||
+      fillByPlaceholder(/예:/i, f.region || "");
+    clickStep(2);
+    const topicOk = fillByPlaceholder(/오늘 전하고|이야기|장면/i, f.topic || "");
+
+    if (f.industry) {
+      for (const btn of document.querySelectorAll("button")) {
+        if (btn.textContent?.trim() === f.industry) {
+          btn.click();
+          break;
+        }
+      }
+    }
+
+    const done = [f.brandName, f.region, f.topic].filter(Boolean).length;
+    const filled = [brandOk, regionOk, topicOk].filter(Boolean).length;
+    return { brandOk, regionOk, topicOk, filled, done };
+  }, form);
+}
+
+export async function fillBlogFormViaDom(page, form) {
+  const stepped = await fillBlogSteppedFormViaDom(page, form);
+  if (stepped.filled >= stepped.done) return stepped;
+
+  return page.evaluate((f) => {
+    const fire = (el, value) => {
+      if (!el) return false;
+      const proto =
+        el.tagName === "TEXTAREA"
+          ? window.HTMLTextAreaElement.prototype
+          : window.HTMLInputElement.prototype;
+      const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+      setter?.call(el, value);
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+      el.dispatchEvent(new Event("blur", { bubbles: true }));
       return true;
     };
 
     const byLabel = (text) => {
       for (const label of document.querySelectorAll("label")) {
-        const head = label.querySelector("span")?.textContent?.trim() || "";
-        if (!head.startsWith(text)) continue;
+        const head =
+          label.querySelector("span")?.textContent?.trim() ||
+          label.textContent?.trim() ||
+          "";
+        if (!head.includes(text)) continue;
         const input = label.querySelector("input, textarea");
         if (input) return input;
       }
@@ -275,14 +342,14 @@ export async function fillBlogFormViaDom(page, form) {
       return false;
     };
 
-    const results = {
+    return {
       brand: fire(byLabel("브랜드명"), f.brandName || ""),
       region: fire(byLabel("지역"), f.region || ""),
       topic: fire(byLabel("오늘의 주제"), f.topic || ""),
       industry: f.industry ? clickChip(f.industry) : false,
+      stepped: f.stepped,
     };
-    return results;
-  }, form);
+  }, { ...form, stepped });
 }
 
 export async function isWorkspaceReady(page) {

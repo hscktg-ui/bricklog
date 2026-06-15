@@ -21,6 +21,7 @@ import {
   createAuthenticatedContext,
   dismissWorkspaceModals,
   fillBlogFormViaDom,
+  fillBlogSteppedFormViaDom,
   fillChannelFormViaDom,
   ensureSmokeBrand,
   installE2eAuthRequestBridge,
@@ -138,23 +139,51 @@ async function fillCommonFields(page, form, channel) {
     filled ||
     (await fillIfPresent(page, /파주|지역|예: 서울/i, form.region || ""));
 
-  const topicFilled =
-    (await fillLabeledField(page, /^오늘의 주제$/, form.topic || "")) ||
-    (await fillIfPresent(page, /오늘 전하고|주제|이야기/i, form.topic || ""));
-
-  if (!(topicFilled || filled)) {
-    await fillBlogFormViaDom(page, form);
-  } else {
-    await page.waitForTimeout(400);
-    await fillBlogFormViaDom(page, form);
-  }
+  await fillBlogSteppedFormViaDom(page, form);
+  await page.waitForTimeout(400);
+  await fillBlogFormViaDom(page, form);
   await page.waitForTimeout(600);
+
+  const ready = await page
+    .waitForFunction(
+      () => {
+        const btn = document.querySelector('[data-briclog-generate="blog"]');
+        return Boolean(btn && !btn.disabled);
+      },
+      undefined,
+      { timeout: 8000 }
+    )
+    .then(() => true)
+    .catch(() => false);
+  if (!ready && channel === "blog") {
+    await fillBlogSteppedFormViaDom(page, form);
+    await page.waitForTimeout(600);
+  }
 }
 
 async function waitForGenerateEnabled(page, timeoutMs = 15_000, pattern) {
+  const dataAttr =
+    pattern && /블로그|이야기/.test(String(pattern))
+      ? "blog"
+      : pattern && /플레이스/.test(String(pattern))
+        ? "place"
+        : pattern && /인스타/.test(String(pattern))
+          ? "insta"
+          : pattern && /썸네일|이미지/.test(String(pattern))
+            ? "image"
+            : null;
+  if (dataAttr) {
+    const attrBtn = page.locator(`[data-briclog-generate="${dataAttr}"]:not([disabled])`).first();
+    try {
+      await attrBtn.waitFor({ state: "visible", timeout: timeoutMs });
+      return attrBtn;
+    } catch {
+      /* fall through */
+    }
+  }
   const re =
     pattern ||
-    /조사 후 블로그 받기|조사 후 글 받기|구성안 만들기|이야기 쓰기|플레이스 소개글|인스타 초안|썸네일 문구|이미지 프롬프트/i;
+    /조사 후 블로그 받기|조사 후 글 받기|구성안 만들기|이야기 쓰기|플레이스 소개글|인스타 캡션|썸네일 문구|이미지 프롬프트/i;
   const btn = page.locator("button:not([disabled])").filter({ hasText: re }).first();
   await btn.waitFor({ state: "visible", timeout: timeoutMs });
   return btn;
