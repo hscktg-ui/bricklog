@@ -101,9 +101,6 @@ export default function BriclogStrengthChips({
             {meta.writerEngineExpanded ? "GPT 분량 확장" : "Writer Engine"}
           </DetailChip>
         ) : null}
-        {typeof meta.haeshinScore === "number" ? (
-          <DetailChip>해신 {meta.haeshinScore}</DetailChip>
-        ) : null}
         {meta.adaptiveQualityModeLabel ? (
           <DetailChip>{meta.adaptiveQualityModeLabel}</DetailChip>
         ) : null}
