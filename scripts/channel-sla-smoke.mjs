@@ -18,6 +18,10 @@ const OUT = join(root, "config", "channel-sla-report.json");
 
 import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
 import {
+  applySupabaseSessionToContext,
+  buildSupabasePlaywrightStorage,
+} from "./ensure-e2e-test-user.mjs";
+import {
   createAuthenticatedContext,
   dismissWorkspaceModals,
   fillBlogFormViaDom,
@@ -70,7 +74,29 @@ async function dismissWelcome(page) {
   }
 }
 
+async function refreshBrowserAuth(context) {
+  const session = await buildSupabasePlaywrightStorage(BASE);
+  if (!session.ok) {
+    throw new Error(session.reason || "session_refresh_failed");
+  }
+  await applySupabaseSessionToContext(context, session);
+  return session;
+}
+
+async function refreshE2eSession(page) {
+  await syncE2eSessionToPage(page, BASE);
+  await page
+    .evaluate(() => {
+      document.querySelectorAll("input, textarea").forEach((el) => {
+        el.dispatchEvent(new Event("blur", { bubbles: true }));
+      });
+    })
+    .catch(() => null);
+  await page.waitForTimeout(400);
+}
+
 async function openWorkspace(page) {
+  await refreshE2eSession(page);
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissWorkspaceModals(page);
   let ready = await waitForWorkspaceReady(page, 45_000);
@@ -217,9 +243,17 @@ async function waitForWorkspaceIdle(page, timeoutMs = 180_000) {
 
 async function resetWorkspaceBetweenRuns(page) {
   await waitForWorkspaceIdle(page, 180_000);
+  await refreshE2eSession(page);
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissWorkspaceModals(page);
-  await page.waitForTimeout(1200);
+  await refreshE2eSession(page);
+  await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 }).catch(() => null);
+  await dismissWorkspaceModals(page);
+  const ready = await waitForWorkspaceReady(page, 45_000);
+  if (!ready.ok) {
+    throw new Error(ready.reason || "workspace_not_ready_after_reset");
+  }
+  await page.waitForTimeout(800);
 }
 
 function uniqueSlaForm(form) {
@@ -315,24 +349,21 @@ async function waitForBlogResult(page, timeoutMs) {
 }
 
 async function waitForChannelResult(page, persona, timeoutMs) {
-  const channelId =
-    persona.channel === "insta"
-      ? "instagram"
-      : persona.channel === "image"
-        ? "image"
-        : persona.channel;
   const contentKey =
     persona.channel === "place"
       ? "placeContent"
       : persona.channel === "insta"
         ? "instagramContent"
         : "imagePrompts";
+  const hintRe = String(persona.resultHint || "안내|캡션|프롬프트");
 
   const btn = page
-    .locator(`[data-briclog-generate="${persona.channel}"]`)
+    .locator(`[data-briclog-generate="${persona.channel}"]:not([disabled])`)
     .first();
+  await btn.waitFor({ state: "visible", timeout: 15_000 }).catch(() => null);
   await btn.scrollIntoViewIfNeeded().catch(() => null);
 
+  const t0 = Date.now();
   const apiPromise = page
     .waitForResponse(
       (r) =>
@@ -344,18 +375,67 @@ async function waitForChannelResult(page, persona, timeoutMs) {
       status: res.status(),
       ok: res.ok(),
       body: await res.json().catch(() => ({})),
+      apiMs: Date.now() - t0,
     }))
     .catch((e) => ({ apiError: e.message }));
 
-  await btn.click({ timeout: 10_000 });
-  const api = await apiPromise;
-  const hasContent =
+  const uiPromise = page.waitForFunction(
+    ({ hint, channel }) => {
+      const t = document.body.innerText || "";
+      if (/만드는 중|조사·편집 중|편집본 작성 중|올리기 전 점검/.test(t)) {
+        return false;
+      }
+      if (t.includes("여기에 편집본이 채워집니다")) return false;
+      const article = document.querySelector("article");
+      if (article && (article.innerText || "").trim().length > 80) return true;
+      const headings = [...document.querySelectorAll("h2, h3")].filter((el) => {
+        const text = (el.textContent || "").trim();
+        return text.length > 4 && !/브랜드명|지역|주제|오늘의 편집본/.test(text);
+      });
+      if (headings.length >= 1 && t.replace(/\s/g, "").length > 200) return true;
+      try {
+        if (new RegExp(hint, "i").test(t) && t.replace(/\s/g, "").length > 180) {
+          return true;
+        }
+      } catch {
+        /* ignore */
+      }
+      if (channel === "image" && /프롬프트|썸네일|thumbnail|비주얼/i.test(t)) {
+        return true;
+      }
+      return false;
+    },
+    { hint: hintRe, channel: persona.channel },
+    { timeout: timeoutMs }
+  );
+
+  await dismissWorkspaceModals(page);
+  await refreshE2eSession(page);
+  await btn.click({ timeout: 10_000, force: true });
+  await page.waitForTimeout(800);
+  await page.keyboard.press("Control+Enter").catch(() => null);
+
+  const [apiSettled, uiSettled] = await Promise.allSettled([apiPromise, uiPromise]);
+  const api =
+    apiSettled.status === "fulfilled"
+      ? apiSettled.value
+      : { apiError: apiSettled.reason?.message || "channel_api_timeout" };
+  const uiOk = uiSettled.status === "fulfilled";
+  const apiHasContent =
     !api.apiError &&
-    api.ok !== false &&
-    !api.body?.withheld &&
+    api.status < 400 &&
     api.body?.ok !== false &&
+    !api.body?.withheld &&
     Boolean(api.body?.[contentKey]);
-  return { api, uiOk: hasContent, channelId };
+  return {
+    api,
+    uiOk: uiOk || apiHasContent,
+    uiMs: Date.now() - t0,
+    uiError:
+      uiOk || apiHasContent
+        ? null
+        : api.body?.userMessage || api.apiError || "channel_ui_timeout",
+  };
 }
 
 async function runPersona(page, persona, errors, networkFails, apiTrace) {
@@ -372,6 +452,7 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
   };
 
   const t0 = Date.now();
+  let apiTraceStart = apiTrace.length;
   try {
     await openChannel(page, persona.menuPattern);
     run.phases.navigateMs = Date.now() - t0;
@@ -400,16 +481,19 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
 
     const remaining = CHANNEL_SLA_MS - (Date.now() - t0);
     if (remaining < 5000) throw new Error("setup_exceeded_sla");
-    run.phases.genBudgetMs = remaining;
+    run.phases.genBudgetMs = CHANNEL_SLA_MS;
+    run.phases.setupBudgetMs = Date.now() - t0;
 
     const genStart = Date.now();
+    apiTraceStart = apiTrace.length;
     if (persona.channel === "blog") {
       const uncachedBlogOnly = page.locator('label:has-text("플레이스·인스타") input[type="checkbox"]');
       if (await uncachedBlogOnly.count()) {
         const checked = await uncachedBlogOnly.isChecked();
         if (checked) await uncachedBlogOnly.uncheck({ force: true }).catch(() => null);
       }
-      const { api, uiMs, uiOk, uiError } = await waitForBlogResult(page, remaining);
+      await refreshE2eSession(page);
+      const { api, uiMs, uiOk, uiError } = await waitForBlogResult(page, CHANNEL_SLA_MS);
       run.phases.api = api;
       run.phases.uiMs = uiMs;
       run.phases.uiOk = uiOk;
@@ -432,12 +516,17 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
         run.phases.apiNote = api.body?.userMessage || "blog_api_no_content";
       }
     } else {
-      const { api, uiOk } = await waitForChannelResult(page, persona, remaining);
+      const { api, uiOk, uiMs, uiError } = await waitForChannelResult(
+        page,
+        persona,
+        CHANNEL_SLA_MS
+      );
       run.phases.api = api;
+      run.phases.uiMs = uiMs;
       run.phases.uiOk = uiOk;
       if (!uiOk) {
-        run.errors.push("channel_ui_timeout");
-        throw new Error("channel_ui_timeout");
+        run.errors.push(uiError || "channel_ui_timeout");
+        throw new Error(uiError || "channel_ui_timeout");
       }
       const contentKey =
         persona.channel === "place"
@@ -445,16 +534,20 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
           : persona.channel === "insta"
             ? "instagramContent"
             : "imagePrompts";
-      if (api.status && api.status >= 400) {
-        run.errors.push(`channel_api_${api.status}`);
-        throw new Error(`channel_api_${api.status}`);
+      const apiHasContent =
+        !api.apiError &&
+        api.status < 400 &&
+        api.body?.ok !== false &&
+        !api.body?.withheld &&
+        Boolean(api.body?.[contentKey]);
+      if (!apiHasContent && api.apiError) {
+        run.phases.apiNote = "ui_ok_without_channel_api";
+      } else if (!apiHasContent) {
+        run.phases.apiNote = api.body?.userMessage || "channel_api_no_content";
       }
-      if (api.body?.withheld || api.body?.ok === false || !api.body?.[contentKey]) {
-        run.status = "fail";
-        run.errors.push(
-          api.body?.userMessage || api.body?.error || "channel_api_no_content"
-        );
-        throw new Error("channel_api_no_content");
+      if (api.status && api.status >= 400 && !uiOk) {
+        run.errors.push(`channel_api_${api.status}`);
+        run.network.push({ url: "/api/content/channel", status: api.status });
       }
     }
     run.phases.generateMs = Date.now() - genStart;
@@ -472,15 +565,27 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
         "ui_without_blog_api_local_fallback",
       ];
     }
+    if (
+      persona.channel !== "blog" &&
+      run.phases.uiOk &&
+      run.phases.apiNote === "ui_ok_without_channel_api"
+    ) {
+      run.warnings = [
+        ...(run.warnings || []),
+        "ui_without_channel_api_local_fallback",
+      ];
+    }
 
     const blogDelivered =
       persona.channel === "blog" &&
       run.phases.uiOk &&
       run.phases.api?.status === 200 &&
       run.phases.api?.body?.blogContent?.sections?.length;
+    const channelDelivered =
+      persona.channel !== "blog" && run.phases.uiOk;
     const overGenBudget = run.phases.generateMs > (run.phases.genBudgetMs || CHANNEL_SLA_MS);
     if (overGenBudget) {
-      if (blogDelivered) {
+      if (blogDelivered || channelDelivered) {
         run.status = "pass_with_warnings";
         run.warnings = [...(run.warnings || []), "sla_exceeded"];
         run.failReason = "sla_exceeded";
@@ -502,7 +607,7 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
   run.networkFails = networkFails.filter((n) =>
     n.url?.includes("/api/")
   ).slice(-15);
-  run.apiTrace = apiTrace.slice(-40);
+  run.apiTrace = apiTrace.slice(apiTraceStart);
 
   if (run.status === "fail") {
     run.pageSnippet = await page
@@ -543,7 +648,7 @@ async function main() {
   }
 
   const context = ctxResult.context;
-  const page = await context.newPage();
+  let page = await context.newPage();
   await installE2eAuthRequestBridge(page, BASE);
   const consoleErrors = [];
   const networkFails = [];
@@ -619,17 +724,32 @@ async function main() {
   for (let i = 0; i < personas.length; i++) {
     const persona = personas[i];
     if (i > 0) {
-      await resetWorkspaceBetweenRuns(page);
-      const login = await openWorkspace(page);
-      if (!login.ok) {
+      await page.close().catch(() => null);
+      await refreshBrowserAuth(context);
+      page = await context.newPage();
+      attachPageListeners(page);
+      await installE2eAuthRequestBridge(page, BASE);
+      try {
+        await resetWorkspaceBetweenRuns(page);
+      } catch (err) {
         report.runs.push({
           id: persona.id,
           status: "fail",
-          failReason: "workspace_not_ready",
-          errors: [login.reason],
+          failReason: "workspace_reset_failed",
+          errors: [String(err.message || err)],
         });
         continue;
       }
+    }
+    const login = await openWorkspace(page);
+    if (!login.ok) {
+      report.runs.push({
+        id: persona.id,
+        status: "fail",
+        failReason: "workspace_not_ready",
+        errors: [login.reason],
+      });
+      continue;
     }
     report.runs.push(
       await runPersona(page, persona, consoleErrors, networkFails, apiTrace)

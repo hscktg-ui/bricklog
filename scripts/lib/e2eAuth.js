@@ -353,28 +353,41 @@ export async function fillBlogFormViaDom(page, form) {
 }
 
 export async function isWorkspaceReady(page) {
-  const brandLabel = await page.getByLabel(/^브랜드명$/).count().catch(() => 0);
-  const brandPh = await page
-    .getByPlaceholder(/매장·브랜드|브랜드|팀 이름/i)
-    .first()
-    .count()
-    .catch(() => 0);
   const generate = await page
     .locator(
       '[data-briclog-generate="blog"], [data-briclog-generate="place"], [data-briclog-generate="insta"], [data-briclog-generate="image"]'
     )
     .count()
     .catch(() => 0);
-  const storyNav = await page
-    .getByRole("button", { name: /이야기/ })
+  if (generate > 0) return true;
+
+  const landingMarker = await page.getByText(/본문 바로가기/).count().catch(() => 0);
+  if (landingMarker > 0) return false;
+
+  const brandLabel = await page.getByLabel(/^브랜드명$/).count().catch(() => 0);
+  const brandPh = await page
+    .getByPlaceholder(/매장·브랜드|브랜드|팀 이름/i)
+    .first()
     .count()
     .catch(() => 0);
-  return brandLabel > 0 || brandPh > 0 || generate > 0 || storyNav > 0;
+  const workspaceNav = await page
+    .locator('nav, [aria-label*="메뉴"], aside')
+    .getByRole("button", { name: /^이야기$|^플레이스$|^인스타$|^썸네일/ })
+    .count()
+    .catch(() => 0);
+  return brandLabel > 0 || brandPh > 0 || workspaceNav > 0;
 }
 
 export async function waitForWorkspaceReady(page, timeoutMs = 45_000) {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
+    await page
+      .waitForFunction(
+        () => !/작업실을 여는 중/.test(document.body?.innerText || ""),
+        undefined,
+        { timeout: 2000 }
+      )
+      .catch(() => null);
     if (await isWorkspaceReady(page)) return { ok: true, reason: "workspace_ready" };
     await page.waitForTimeout(800);
   }
