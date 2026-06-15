@@ -14,6 +14,7 @@ import {
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
+  VISION_GHOST_BTN,
 } from "@/lib/landing/vision2030Styles";
 import {
   useIntroRevealTypewriter,
@@ -199,6 +200,19 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
         }
       }}
     >
+      {onSkip ? (
+        <button
+          type="button"
+          data-briclog-intro-skip="1"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSkip();
+          }}
+          className={`absolute right-4 top-4 z-20 sm:right-6 sm:top-6 ${VISION_GHOST_BTN}`}
+        >
+          건너뛰기
+        </button>
+      ) : null}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,var(--vision-accent-soft),transparent_62%)]"
         aria-hidden

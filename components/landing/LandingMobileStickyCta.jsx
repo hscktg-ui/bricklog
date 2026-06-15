@@ -1,11 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LANDING_PRIMARY_CTA } from "@/lib/landing/ctaCopy";
+import {
+  LANDING_NAV_SIGNUP_CTA,
+  LANDING_PRIMARY_CTA,
+} from "@/lib/landing/ctaCopy";
 import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
-import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
+import {
+  VISION_CTA_ACCENT,
+  VISION_CTA_GHOST,
+} from "@/lib/landing/vision2030Styles";
 
-export default function LandingMobileStickyCta({ onStart, introOpen = false }) {
+export default function LandingMobileStickyCta({
+  onStart,
+  onSignup,
+  introOpen = false,
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -35,7 +45,7 @@ export default function LandingMobileStickyCta({ onStart, introOpen = false }) {
     >
       <div className="mx-auto max-w-lg px-4 py-3">
         <LandingTrustStrip className="mb-2" />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[12px] font-semibold text-[var(--vision-ink)]">
               한 주제, 채널별 초안
@@ -44,11 +54,21 @@ export default function LandingMobileStickyCta({ onStart, introOpen = false }) {
               이야기 · 플레이스 · 인스타
             </p>
           </div>
+          {onSignup ? (
+            <button
+              type="button"
+              data-briclog-cta="signup-mobile-sticky"
+              onClick={onSignup}
+              className={`${VISION_CTA_GHOST} !min-h-[44px] !w-auto shrink-0 !px-3 !py-2.5 !text-[11px]`}
+            >
+              {LANDING_NAV_SIGNUP_CTA}
+            </button>
+          ) : null}
           <button
             type="button"
             data-briclog-cta="start"
             onClick={onStart}
-            className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto !px-4 !py-2.5 !text-[12px]`}
+            className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto shrink-0 !px-3 !py-2.5 !text-[11px]`}
           >
             {LANDING_PRIMARY_CTA}
           </button>

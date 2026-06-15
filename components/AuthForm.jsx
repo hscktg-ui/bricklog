@@ -511,29 +511,59 @@ export default function AuthForm({
 
         {mode === MODES.signup && (
           <>
-            <PhoneSmsVerifyFields
-              purpose="signup"
-              phone={signupPhone}
-              onPhoneChange={(value) => {
-                setSignupPhone(value);
-                setPhoneVerificationId(null);
-                setPhoneSmsVerified(false);
-              }}
-              disabled={loading}
-              onToast={onToast}
-              onAvailabilityChange={({ registered, message, checking }) => {
-                setPhoneRegistered(registered);
-                setPhoneCheckMsg(message);
-                setPhoneChecking(checking);
-              }}
-              onVerified={({ verificationId }) => {
-                setPhoneVerificationId(verificationId);
-                setPhoneSmsVerified(true);
-              }}
-            />
+            {isSignupPhoneOptional() ? (
+              <details className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 open:pb-3">
+                <summary className="cursor-pointer list-none text-[13px] font-semibold text-[#4E5968] [&::-webkit-details-marker]:hidden">
+                  휴대폰 인증 (선택)
+                </summary>
+                <div className="mt-3 border-t border-[#E8EBED] pt-3">
+                  <PhoneSmsVerifyFields
+                    purpose="signup"
+                    phone={signupPhone}
+                    onPhoneChange={(value) => {
+                      setSignupPhone(value);
+                      setPhoneVerificationId(null);
+                      setPhoneSmsVerified(false);
+                    }}
+                    disabled={loading}
+                    onToast={onToast}
+                    onAvailabilityChange={({ registered, message, checking }) => {
+                      setPhoneRegistered(registered);
+                      setPhoneCheckMsg(message);
+                      setPhoneChecking(checking);
+                    }}
+                    onVerified={({ verificationId }) => {
+                      setPhoneVerificationId(verificationId);
+                      setPhoneSmsVerified(true);
+                    }}
+                  />
+                </div>
+              </details>
+            ) : (
+              <PhoneSmsVerifyFields
+                purpose="signup"
+                phone={signupPhone}
+                onPhoneChange={(value) => {
+                  setSignupPhone(value);
+                  setPhoneVerificationId(null);
+                  setPhoneSmsVerified(false);
+                }}
+                disabled={loading}
+                onToast={onToast}
+                onAvailabilityChange={({ registered, message, checking }) => {
+                  setPhoneRegistered(registered);
+                  setPhoneCheckMsg(message);
+                  setPhoneChecking(checking);
+                }}
+                onVerified={({ verificationId }) => {
+                  setPhoneVerificationId(verificationId);
+                  setPhoneSmsVerified(true);
+                }}
+              />
+            )}
             <p className="text-[12px] leading-relaxed text-[#4E5968] sm:text-[11px]">
               {isSignupPhoneOptional()
-                ? "휴대폰 인증은 선택입니다. 인증 없이도 가입할 수 있어요."
+                ? "이메일·비밀번호만으로 가입할 수 있어요."
                 : "휴대폰 번호는 한 계정에 하나만 등록됩니다. 문자 인증만 완료하면 바로 이용할 수 있어요."}{" "}
               닉네임·호칭은 로그인 뒤 안내에서 입력할 수 있어요.
             </p>

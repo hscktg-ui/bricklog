@@ -45,6 +45,7 @@ import {
   SampleInstaPreview,
   SamplePlacePreview,
 } from "@/components/landing/SamplePreviewBlocks";
+import PublicTestSignupStickyBar from "@/components/landing/public-test/PublicTestSignupStickyBar";
 
 export default function PublicBrandTestSection({ onSignup }) {
   const [brandName, setBrandName] = useState("");
@@ -226,9 +227,12 @@ export default function PublicBrandTestSection({ onSignup }) {
     : [];
 
   return (
+    <>
     <section
       id="public-brand-test"
-      className={`${VISION_SECTION} scroll-mt-24 px-5 py-16 md:px-8 md:py-24`}
+      className={`${VISION_SECTION} scroll-mt-24 px-5 py-16 md:px-8 md:py-24 ${
+        result?.preview ? "pb-32 sm:pb-36" : ""
+      }`}
     >
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="max-w-lg">
@@ -512,5 +516,9 @@ export default function PublicBrandTestSection({ onSignup }) {
         </div>
       </div>
     </section>
+    {result?.preview ? (
+      <PublicTestSignupStickyBar brandName={brandName} onSignup={signup} />
+    ) : null}
+    </>
   );
 }

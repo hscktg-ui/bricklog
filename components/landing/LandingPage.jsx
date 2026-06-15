@@ -31,12 +31,15 @@ import {
   LANDING_CTA_HEADLINE,
   LANDING_CTA_PHILOSOPHY,
   LANDING_CTA_SUB,
+  LANDING_FOOTER_SIGNUP_CTA,
+  LANDING_NAV_SIGNUP_CTA,
   LANDING_PRIMARY_CTA,
 } from "@/lib/landing/ctaCopy";
 import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
 import {
   VISION_CTA_ACCENT,
+  VISION_CTA_GHOST,
   VISION_NAV,
   VISION_NAV_INNER,
   VISION_PAGE,
@@ -101,6 +104,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
   );
 
   const handleStart = withLandingCta(onStart);
+  const handleSignup = withLandingCta(() => onAuthOpen("signup"));
 
   const scrollToSample = () => scrollToId("landing-sample");
 
@@ -154,15 +158,23 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               onClick={() => onAuthOpen("login")}
-              className="rounded-full px-3 py-2 text-[13px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)]"
+              className="rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] sm:px-3 sm:text-[13px]"
             >
               로그인
             </button>
             <button
               type="button"
+              data-briclog-cta="signup-nav"
+              onClick={handleSignup}
+              className={`${VISION_CTA_GHOST} !min-h-[36px] !w-auto !px-3 !py-2 !text-[11px] sm:!px-3.5 sm:!text-[13px]`}
+            >
+              <span>{LANDING_NAV_SIGNUP_CTA}</span>
+            </button>
+            <button
+              type="button"
               data-briclog-cta="start"
               onClick={withLandingCta(scrollToPublicTest)}
-              className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-white shadow-[0_8px_24px_rgba(3,199,90,0.28)] sm:inline-flex sm:text-[13px]"
+              className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-white shadow-[0_8px_24px_rgba(3,199,90,0.28)] md:inline-flex md:text-[13px]"
             >
               <span>{LANDING_PRIMARY_CTA}</span>
             </button>
@@ -225,10 +237,11 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             </button>
             <button
               type="button"
-              onClick={handleStart}
-              className="mt-5 block w-full text-[14px] font-medium text-white/45 underline-offset-4 hover:text-white/70 hover:underline sm:mx-auto"
+              data-briclog-cta="signup-footer"
+              onClick={handleSignup}
+              className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-8 text-[14px] font-semibold text-white/85 transition hover:bg-white/10 active:scale-[0.99]"
             >
-              바로 가입하기
+              {LANDING_FOOTER_SIGNUP_CTA}
             </button>
             <p className="mt-8 text-[12px] text-white/35">{LANDING_CTA_FOOTNOTE}</p>
           </section>
@@ -239,6 +252,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
       <LandingMobileStickyCta
         onStart={withLandingCta(scrollToPublicTest)}
+        onSignup={handleSignup}
         introOpen={introOpen}
       />
     </div>
