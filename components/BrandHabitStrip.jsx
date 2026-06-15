@@ -28,7 +28,12 @@ export default function BrandHabitStrip({ className = "" }) {
     pendingNote,
   });
   const activityMeta = formatBrandHabitActivityMeta(counts);
-  const footnote = [saveLabel, activityMeta, learningActive ? "자동 반영" : ""]
+  const continuity = learned?.continuityCopy || "";
+  const footnote = [
+    saveLabel,
+    activityMeta,
+    learningActive ? "자동 반영" : "",
+  ]
     .filter(Boolean)
     .join(" · ");
 
@@ -49,8 +54,18 @@ export default function BrandHabitStrip({ className = "" }) {
         ) : null}
       </div>
       <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">{line}</p>
+      {continuity ? (
+        <p className="mt-1 text-[11px] font-medium text-[#03A94D]">
+          {continuity}
+        </p>
+      ) : null}
       {footnote ? (
         <p className="mt-1 text-[10px] text-[#8B95A1]">{footnote}</p>
+      ) : null}
+      {learned?.feedbackTablesReady === false ? (
+        <p className="mt-1 text-[10px] text-[#8B95A1]">
+          클라우드 학습은 베타 준비 중 · 톤·금지어는 이 기기에 자동 저장됩니다.
+        </p>
       ) : null}
     </div>
   );

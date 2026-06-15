@@ -491,6 +491,17 @@ export default function BlogResultView({
       </ResultCopyHero>
 
       {!isBriefOnly ? (
+        <ContentOperatingPlanPanel
+          blogInput={blogInput}
+          meta={draft._meta}
+          phase="after"
+          hasPlace={hasPlace}
+          hasInsta={hasInsta}
+          blogTopic={blogTitle}
+        />
+      ) : null}
+
+      {!isBriefOnly ? (
         <MobileSecondaryAccordion
           title="섹션별 보기 · 수정"
           collapsed={!sectionsOpen}
@@ -529,11 +540,6 @@ export default function BlogResultView({
           </div>
         </MobileSecondaryAccordion>
       ) : null}
-
-      <ContentOperatingPlanPanel
-        blogInput={blogInput}
-        meta={draft._meta}
-      />
 
       {userId && (
         <ContentFeedbackPanel
