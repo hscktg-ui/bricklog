@@ -16,7 +16,10 @@ function assert(cond, msg) {
 }
 
 assert(isChannelStandaloneFastEnabled(), "channel standalone fast on");
-assert(shouldSkipChannelSupplementalResearch(), "skip supplemental");
+assert(
+  shouldSkipChannelSupplementalResearch({ channelStandaloneFast: true }),
+  "skip supplemental for explicit standalone"
+);
 assert(getChannelLlmLoopBudgetMs() <= 35_000, "channel LLM loop capped");
 assert(
   getChannelClientFetchTimeoutMs({
@@ -34,10 +37,19 @@ assert(
 assert(
   isChannelStandaloneFastInput({
     contentChannel: "place",
-    sourceChannel: "form",
+    channelStandaloneFast: true,
   }),
-  "place standalone"
+  "explicit standalone fast even when max quality"
 );
+process.env.BRICLOG_MAX_QUALITY = "true";
+assert(
+  isChannelStandaloneFastInput({
+    contentChannel: "place",
+    channelStandaloneFast: true,
+  }),
+  "explicit standalone under max quality env"
+);
+delete process.env.BRICLOG_MAX_QUALITY;
 assert(
   !isChannelStandaloneFastInput({
     contentChannel: "place",
