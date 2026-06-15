@@ -10,12 +10,11 @@ import {
 import Logo from "@/components/Logo";
 import LandingIntroOverlay from "@/components/landing/LandingIntroOverlay";
 import { useLandingVisit } from "@/lib/landing/useLandingVisit";
-import BgmToggle from "@/components/audio/BgmToggle";
 import {
-  unlockAudioFromUserGesture,
+  areSoundsEnabled,
   playSignatureSound,
+  unlockAudioFromUserGesture,
 } from "@/lib/audio/briclogSounds";
-import { maybeStartBgmAfterGestureUnlock } from "@/lib/audio/briclogBgm";
 import LandingPreviewShell from "./LandingPreviewShell";
 import HeroSection from "./HeroSection";
 import LiveStatsBanner from "./LiveStatsBanner";
@@ -47,10 +46,10 @@ import {
 } from "@/lib/landing/vision2030Styles";
 
 const NAV_LINKS = [
-  { id: "public-brand-test", label: "무료 테스트" },
-  { id: "landing-sample", label: "샘플" },
-  { id: "landing-faq", label: "FAQ" },
-  { id: "pricing", label: "요금" },
+  { id: "public-brand-test", label: "무료 테스트", show: "hidden md:inline-flex" },
+  { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
+  { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
+  { id: "pricing", label: "요금", show: "hidden lg:inline-flex" },
 ];
 
 export default function LandingPage({ onAuthOpen, onStart }) {
@@ -90,32 +89,19 @@ export default function LandingPage({ onAuthOpen, onStart }) {
     return () => window.clearTimeout(t);
   }, [introOpen, scrollToPublicTest]);
 
-  const withLandingCta = useCallback(
-    (fn) => () => {
-      unlockAudioFromUserGesture();
-      void maybeStartBgmAfterGestureUnlock();
-      if (!hasPlayedLandingSignature()) {
-        markLandingSignaturePlayed();
-        void playSignatureSound();
-      }
-      fn?.();
-    },
-    []
-  );
+  const withLandingCta = useCallback((fn) => () => fn?.(), []);
 
-  const handleStart = withLandingCta(onStart);
-  const handleSignup = withLandingCta(() => onAuthOpen("signup"));
+  const handleStart = useCallback(() => onStart?.(), [onStart]);
+  const handleSignup = useCallback(() => onAuthOpen("signup"), [onAuthOpen]);
 
   const scrollToSample = () => scrollToId("landing-sample");
 
   const handleIntroDismiss = useCallback(() => {
     markLandingIntroDone();
     setIntroOpen(false);
-    unlockAudioFromUserGesture();
-    void maybeStartBgmAfterGestureUnlock();
-    if (!hasPlayedLandingSignature()) {
+    if (areSoundsEnabled() && !hasPlayedLandingSignature()) {
       markLandingSignaturePlayed();
-      void playSignatureSound();
+      void unlockAudioFromUserGesture().then(() => playSignatureSound());
     }
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -135,7 +121,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           introOpen ? "pointer-events-none opacity-0" : "opacity-100 briclog-vision-reveal"
         }`}
       >
-        <div className={VISION_NAV_INNER}>
+        <div className={`${VISION_NAV_INNER} !px-3 !py-1.5 sm:!px-4 md:!px-5 md:!py-2.5`}>
           <Logo onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} />
           <nav
             className="flex shrink-0 items-center gap-0.5 sm:gap-1"
@@ -145,16 +131,12 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               <button
                 key={link.id}
                 type="button"
-                onClick={withLandingCta(() => scrollToId(link.id))}
-                className="hidden rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] md:inline-flex lg:px-3 lg:text-[13px]"
+                onClick={() => scrollToId(link.id)}
+                className={`${link.show} rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] lg:px-3 lg:text-[13px]`}
               >
                 {link.label}
               </button>
             ))}
-            <BgmToggle
-              fullWidth={false}
-              className="hidden shrink-0 !rounded-full !border-[var(--vision-line)] !bg-[var(--vision-panel-bg,rgba(255,255,255,0.8))] sm:flex"
-            />
             <button
               type="button"
               onClick={() => onAuthOpen("login")}

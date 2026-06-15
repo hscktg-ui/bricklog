@@ -14,7 +14,7 @@ import {
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
-  VISION_GHOST_BTN,
+  VISION_INTRO_SKIP,
 } from "@/lib/landing/vision2030Styles";
 import {
   useIntroRevealTypewriter,
@@ -72,6 +72,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   const { isMobile } = useViewport();
   const copy = useMemo(() => getLandingIntroCopy({ isMobile }), [isMobile]);
   const lineCount = copy.lines.length;
+  const dismiss = onSkip || onDismiss;
 
   const [brandPhase, setBrandPhase] = useState(false);
   const [canStart, setCanStart] = useState(false);
@@ -173,11 +174,16 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     return () => window.clearTimeout(id);
   }, [open, brandPhase, lineCount]);
 
-  const finish = useCallback(() => {
-    if (exiting || !canStart) return;
+  const exitIntro = useCallback(() => {
+    if (exiting || !dismiss) return;
     setExiting(true);
-    schedule(() => onDismiss(), reduceMotion ? 140 : 420);
-  }, [exiting, canStart, onDismiss, reduceMotion, schedule]);
+    schedule(() => dismiss(), reduceMotion ? 120 : 360);
+  }, [exiting, dismiss, reduceMotion, schedule]);
+
+  const finish = useCallback(() => {
+    if (!canStart) return;
+    exitIntro();
+  }, [canStart, exitIntro]);
 
   if (!open) return null;
 
@@ -198,21 +204,25 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
           e.preventDefault();
           finish();
         }
+        if (e.key === "Escape" && !exiting) {
+          e.preventDefault();
+          exitIntro();
+        }
       }}
     >
-      {onSkip ? (
-        <button
-          type="button"
-          data-briclog-intro-skip="1"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSkip();
-          }}
-          className={`absolute right-4 top-4 z-20 sm:right-6 sm:top-6 ${VISION_GHOST_BTN}`}
-        >
-          건너뛰기
-        </button>
-      ) : null}
+      <button
+        type="button"
+        data-briclog-intro-skip="1"
+        onClick={(e) => {
+          e.stopPropagation();
+          exitIntro();
+        }}
+        disabled={exiting}
+        className={VISION_INTRO_SKIP}
+        aria-label="인트로 건너뛰기"
+      >
+        건너뛰기
+      </button>
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,var(--vision-accent-soft),transparent_62%)]"
         aria-hidden
@@ -245,7 +255,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                   </p>
                 </div>
                 <IntroProgress total={lineCount} current={lineIndex} />
-                <IntroChannelPills />
+                {!isMobile ? <IntroChannelPills /> : null}
               </>
             ) : (
               <div
@@ -271,15 +281,13 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                     {brandDisplay}
                   </p>
                 ) : null}
-                {brandComplete ? (
-                  <IntroChannelPills />
-                ) : null}
+                {brandComplete && !isMobile ? <IntroChannelPills /> : null}
               </div>
             )}
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10">
+        <div className="mt-8 flex flex-col items-center sm:mt-10">
           <button
             type="button"
             onClick={(e) => {
@@ -298,24 +306,11 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
           >
             {copy.startLabel}
           </button>
-          {canStart && showCta && (
-            <p className="text-[12px] text-[var(--vision-muted)]">
-              화면을 눌러 시작할 수 있어요
+          {canStart && showCta ? (
+            <p className="mt-3 text-[11px] tracking-wide text-[var(--vision-muted)]">
+              탭하여 시작
             </p>
-          )}
-          {onSkip && (
-            <button
-              type="button"
-              data-briclog-intro-skip="1"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSkip();
-              }}
-              className="briclog-no-slab text-[13px] font-medium text-[var(--vision-muted)] underline-offset-4 hover:text-[var(--vision-ink)] hover:underline"
-            >
-              건너뛰기
-            </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

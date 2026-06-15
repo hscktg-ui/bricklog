@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Icon from "@/components/Icon";
 import { WELCOME } from "@/lib/product/craft";
-import { maybeStartBgmAfterGestureUnlock } from "@/lib/audio/briclogBgm";
 import {
+  areSoundsEnabled,
   playConnectSound,
   tryResumeAudioAfterNavigation,
   unlockAudioFromUserGesture,
@@ -55,11 +55,11 @@ export default function WelcomeOverlay({
     }
     let cancelled = false;
     (async () => {
+      if (!areSoundsEnabled()) return;
       const resumed = await tryResumeAudioAfterNavigation();
       if (cancelled || !resumed || connectPlayedRef.current) return;
       connectPlayedRef.current = true;
       await playConnectSound();
-      await maybeStartBgmAfterGestureUnlock();
     })();
     const t = window.setTimeout(dismiss, AUTO_DISMISS_MS);
     return () => {
@@ -157,12 +157,14 @@ export default function WelcomeOverlay({
           <button
             type="button"
             onClick={() => {
-              unlockAudioFromUserGesture().then(() => {
-                if (!connectPlayedRef.current) {
-                  connectPlayedRef.current = true;
-                  playConnectSound();
-                }
-              });
+              if (areSoundsEnabled()) {
+                unlockAudioFromUserGesture().then(() => {
+                  if (!connectPlayedRef.current) {
+                    connectPlayedRef.current = true;
+                    playConnectSound();
+                  }
+                });
+              }
               dismiss();
             }}
             className="shrink-0 cursor-pointer rounded-xl bg-[#03C75A] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#02B350]"
