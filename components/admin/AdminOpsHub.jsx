@@ -37,8 +37,20 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
         </button>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="전체 회원" value={live.totalUsers ?? "—"} />
-        <StatCard label="오늘 가입" value={live.signupsToday ?? "—"} />
+        <StatCard
+          label="전체 회원"
+          value={live.totalUsers ?? "—"}
+          hint="profiles DB 실측"
+        />
+        <StatCard
+          label="오늘 가입"
+          value={live.signupsToday ?? "—"}
+          hint={
+            live.signupConversionTodayPct != null
+              ? `순방문 대비 ${live.signupConversionTodayPct}%`
+              : "profiles · KST 오늘"
+          }
+        />
         <StatCard
           label="현재 접속"
           value={live.onlineNow ?? "—"}
@@ -55,11 +67,25 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
           hint={
             live.visitsTableReady === false
               ? "schema-v17 적용 필요"
-              : `순방문 ${live.uniqueVisitorsToday ?? "—"}`
+              : `순방문 ${live.uniqueVisitorsToday ?? "—"}${
+                  live.uniqueVisitorsTruncated ? " (일부만 집계)" : ""
+                } · 가입과 별개`
           }
         />
         <StatCard label="오늘 오류" value={live.errorsToday ?? "—"} />
       </div>
+      <p className="mt-3 text-[11px] leading-relaxed text-[#8B95A1]">
+        유입(방문·순방문)은 익명·페이지뷰 기준이고, 회원 수는 가입 완료(profiles)만
+        집계합니다. 랜딩 「누적 이용자」 시드 숫자와 관리자 회원 수는 다를 수
+        있습니다.
+      </p>
+      {live.profilesVsAuthGap != null && live.profilesVsAuthGap > 0 && (
+        <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+          auth.users({live.authUsersTotal})와 profiles({live.totalUsers}) 차이{" "}
+          {live.profilesVsAuthGap}건 — schema-v7 트리거·프로필 생성 오류를
+          확인하세요. <code className="text-[10px]">npm run probe:member-counts</code>
+        </p>
+      )}
       {live.onlineUsers?.length > 0 && (
         <div className="mt-4">
           <p className="text-[12px] font-semibold text-[#4E5968]">접속 중 회원</p>

@@ -192,7 +192,8 @@ export default function AdminDashboard({ dashboard, billing }) {
       <section>
         <h2 className="text-[16px] font-bold text-[#191F28]">운영 한눈에 보기</h2>
         <p className="mt-1 text-[12px] text-[#8B95A1]">
-          최근 30일 기준 집계 · 개인 콘텐츠 원문은 표시하지 않습니다.
+          최근 30일 기준 집계 · 개인 콘텐츠 원문은 표시하지 않습니다. 전체 회원은
+          profiles 실측(랜딩 시드 숫자와 무관).
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard label="전체 회원" value={cards.totalUsers ?? "—"} />

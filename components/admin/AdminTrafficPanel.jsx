@@ -95,6 +95,7 @@ export default function AdminTrafficPanel({ onToast }) {
           <h3 className="text-[16px] font-bold text-[#191F28]">유입 경로 · 검색 유입</h3>
           <p className="mt-1 text-[12px] text-[#4E5968]">
             referrer·UTM 기준 집계 — Google/Naver organic은 referrer 패턴으로 추정합니다.
+            방문 수는 페이지뷰·세션 기준이며, 회원 가입 수와 직접 비교하지 마세요.
           </p>
         </div>
         <button
