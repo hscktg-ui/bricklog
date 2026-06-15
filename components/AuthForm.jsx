@@ -30,6 +30,7 @@ import LandingWidthShell from "@/components/landing/LandingWidthShell";
 import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewContext";
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
 import { isObfuscatedDuplicateSignup } from "@/lib/auth/signupResponse";
+import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 
 
 const MODES = {
@@ -99,6 +100,7 @@ export default function AuthForm({
   const [signupLimited, setSignupLimited] = useState(false);
   const [signupLimitMessage, setSignupLimitMessage] = useState("");
   const emailCheckTimer = useRef(null);
+  const [publicTestDraft, setPublicTestDraft] = useState(null);
 
   const hasSocial = getEnabledOAuthProviders().length > 0;
   const showSocial =
@@ -111,6 +113,19 @@ export default function AuthForm({
       setSaveEmail(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (mode !== MODES.signup) {
+      setPublicTestDraft(null);
+      return;
+    }
+    const draft = peekPublicTestSignupDraft();
+    if (draft?.brandName || draft?.topic || draft?.region) {
+      setPublicTestDraft(draft);
+    } else {
+      setPublicTestDraft(null);
+    }
+  }, [mode]);
 
   useEffect(() => {
     let cancelled = false;
@@ -426,6 +441,19 @@ export default function AuthForm({
       </div>
 
       <h1 className="text-center text-lg font-bold text-[#191F28]">{title}</h1>
+
+      {mode === MODES.signup && publicTestDraft?.brandName ? (
+        <div className="mt-4 rounded-2xl border border-[#03C75A]/20 bg-[#03C75A]/8 px-4 py-3 text-center">
+          <p className="text-[12px] font-semibold leading-snug text-[#191F28]">
+            「{publicTestDraft.brandName}」 테스트 그대로 작업실에 이어집니다
+          </p>
+          {publicTestDraft.topic ? (
+            <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-[#4E5968]">
+              {publicTestDraft.topic}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       {showDevicePreview &&
         setPreviewDevice &&

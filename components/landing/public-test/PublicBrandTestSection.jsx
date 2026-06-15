@@ -11,6 +11,7 @@ import {
   PUBLIC_TEST_BLUR_HINT,
   PUBLIC_TEST_TOPIC_HINT,
   PUBLIC_TEST_TIME_HINT,
+  PUBLIC_TEST_TRY_SAMPLE_CTA,
   PUBLIC_TEST_LOADING_MESSAGE,
   PUBLIC_TEST_SAMPLE_BADGE,
   PUBLIC_TEST_CHANNEL_HEADLINE,
@@ -32,6 +33,7 @@ import {
 } from "@/lib/publicTest/publicTestQuotaClient";
 import {
   VISION_CTA_ACCENT,
+  VISION_CTA_GHOST,
   VISION_EYEBROW,
   VISION_INPUT,
   VISION_PANEL,
@@ -46,6 +48,7 @@ import {
   SamplePlacePreview,
 } from "@/components/landing/SamplePreviewBlocks";
 import PublicTestSignupStickyBar from "@/components/landing/public-test/PublicTestSignupStickyBar";
+import { recordSignupIntent } from "@/lib/analytics/signupIntent";
 
 export default function PublicBrandTestSection({ onSignup }) {
   const [brandName, setBrandName] = useState("");
@@ -197,10 +200,22 @@ export default function PublicBrandTestSection({ onSignup }) {
     }
   };
 
-  const signup = () => {
+  const signup = (source = "public_test") => {
     stashPublicTestDraftForSignup({ brandName, region, topic });
+    recordSignupIntent(source);
     onSignup?.("signup");
   };
+
+  const tryVirtualSample = () => {
+    setError(null);
+    setResult(null);
+    cycleSample();
+  };
+
+  const isGateFail =
+    error &&
+    error !== PUBLIC_TEST_QUOTA_EXCEEDED &&
+    (error.includes("구체적") || error.includes("예시") || error.includes("다시"));
 
   const previewChannelReady = result?.preview
     ? {
@@ -352,7 +367,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 ) : null}
                 <button
                   type="button"
-                  onClick={signup}
+                  onClick={() => signup("public_test_error")}
                   className={`${VISION_CTA_ACCENT} w-full min-h-[48px]`}
                 >
                   <span>
@@ -361,6 +376,15 @@ export default function PublicBrandTestSection({ onSignup }) {
                       : "가입 후 전체 생성 이어가기"}
                   </span>
                 </button>
+                {isGateFail ? (
+                  <button
+                    type="button"
+                    onClick={tryVirtualSample}
+                    className={`${VISION_CTA_GHOST} w-full min-h-[44px]`}
+                  >
+                    <span>{PUBLIC_TEST_TRY_SAMPLE_CTA}</span>
+                  </button>
+                ) : null}
               </div>
             ) : null}
 
@@ -376,7 +400,7 @@ export default function PublicBrandTestSection({ onSignup }) {
             {quota.remaining <= 0 ? (
               <button
                 type="button"
-                onClick={signup}
+                onClick={() => signup("public_test_quota")}
                 className={`${VISION_CTA_ACCENT} mt-5 w-full min-h-[48px]`}
               >
                 <span>브랜드 작업실 만들기</span>
@@ -502,7 +526,7 @@ export default function PublicBrandTestSection({ onSignup }) {
               <div className="border-t border-[var(--vision-line)] px-5 py-4">
                 <button
                   type="button"
-                  onClick={signup}
+                  onClick={() => signup("public_test_result")}
                   className={`${VISION_CTA_ACCENT} min-h-[48px] w-full`}
                 >
                   <span>브랜드 작업실 만들기 — 무료로 계속</span>
@@ -517,7 +541,10 @@ export default function PublicBrandTestSection({ onSignup }) {
       </div>
     </section>
     {result?.preview ? (
-      <PublicTestSignupStickyBar brandName={brandName} onSignup={signup} />
+      <PublicTestSignupStickyBar
+        brandName={brandName}
+        onSignup={() => signup("public_test_sticky")}
+      />
     ) : null}
     </>
   );

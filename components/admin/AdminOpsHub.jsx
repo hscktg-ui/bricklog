@@ -36,7 +36,7 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
           {refreshing ? "갱신 중…" : "새로고침"}
         </button>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
         <StatCard
           label="전체 회원"
           value={live.totalUsers ?? "—"}
@@ -46,9 +46,20 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
           label="오늘 가입"
           value={live.signupsToday ?? "—"}
           hint={
-            live.signupConversionTodayPct != null
-              ? `순방문 대비 ${live.signupConversionTodayPct}%`
-              : "profiles · KST 오늘"
+            live.signupIntentConversionPct != null
+              ? `가입 CTA 대비 ${live.signupIntentConversionPct}%`
+              : live.signupConversionTodayPct != null
+                ? `순방문 대비 ${live.signupConversionTodayPct}%`
+                : "profiles · KST 오늘"
+          }
+        />
+        <StatCard
+          label="가입 CTA 클릭"
+          value={live.signupIntentsToday ?? "—"}
+          hint={
+            live.signupIntentConversionPct != null
+              ? `클릭→가입 ${live.signupIntentConversionPct}%`
+              : "랜딩·테스트 CTA intent"
           }
         />
         <StatCard
@@ -76,8 +87,9 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
       </div>
       <p className="mt-3 text-[11px] leading-relaxed text-[#8B95A1]">
         유입(방문·순방문)은 익명·페이지뷰 기준이고, 회원 수는 가입 완료(profiles)만
-        집계합니다. 랜딩 「누적 이용자」 시드 숫자와 관리자 회원 수는 다를 수
-        있습니다.
+        집계합니다. 「가입 CTA 클릭」은 `__intent/signup:*` 경로로 랜딩·테스트
+        버튼 클릭만 집계합니다. 랜딩 「누적 이용자」 시드 숫자와 관리자 회원 수는
+        다를 수 있습니다.
       </p>
       {live.profilesVsAuthGap != null && live.profilesVsAuthGap > 0 && (
         <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">

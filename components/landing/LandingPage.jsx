@@ -15,6 +15,7 @@ import {
   playSignatureSound,
   unlockAudioFromUserGesture,
 } from "@/lib/audio/briclogSounds";
+import { recordSignupIntent } from "@/lib/analytics/signupIntent";
 import LandingPreviewShell from "./LandingPreviewShell";
 import HeroSection from "./HeroSection";
 import LiveStatsBanner from "./LiveStatsBanner";
@@ -92,7 +93,13 @@ export default function LandingPage({ onAuthOpen, onStart }) {
   const withLandingCta = useCallback((fn) => () => fn?.(), []);
 
   const handleStart = useCallback(() => onStart?.(), [onStart]);
-  const handleSignup = useCallback(() => onAuthOpen("signup"), [onAuthOpen]);
+  const openSignup = useCallback(
+    (source = "landing") => {
+      recordSignupIntent(source);
+      onAuthOpen("signup");
+    },
+    [onAuthOpen]
+  );
 
   const scrollToSample = () => scrollToId("landing-sample");
 
@@ -147,7 +154,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               data-briclog-cta="signup-nav"
-              onClick={handleSignup}
+              onClick={() => openSignup("landing_nav")}
               className={`${VISION_CTA_GHOST} !min-h-[36px] !w-auto !px-3 !py-2 !text-[11px] sm:!px-3.5 sm:!text-[13px]`}
             >
               <span>{LANDING_NAV_SIGNUP_CTA}</span>
@@ -220,7 +227,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               data-briclog-cta="signup-footer"
-              onClick={handleSignup}
+              onClick={() => openSignup("landing_footer")}
               className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-8 text-[14px] font-semibold text-white/85 transition hover:bg-white/10 active:scale-[0.99]"
             >
               {LANDING_FOOTER_SIGNUP_CTA}
@@ -234,7 +241,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
       <LandingMobileStickyCta
         onStart={withLandingCta(scrollToPublicTest)}
-        onSignup={handleSignup}
+        onSignup={() => openSignup("landing_mobile_sticky")}
         introOpen={introOpen}
       />
     </div>
