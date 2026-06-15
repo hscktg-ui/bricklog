@@ -190,6 +190,7 @@
     "test:speaker-tone-applied-display": "node --import ./scripts/register-alias.mjs scripts/test-speaker-tone-applied-display.mjs",
     "test:visit-source": "node --import ./scripts/register-alias.mjs scripts/test-visit-source.mjs",
     "test:guide-pages": "node --import ./scripts/register-alias.mjs scripts/test-guide-pages.mjs",
+    "test:blog-speed-research": "node --import ./scripts/register-alias.mjs scripts/test-blog-speed-research.mjs",
     "test:blog-delivery-finish": "node --import ./scripts/register-alias.mjs scripts/test-blog-delivery-finish.mjs",
     "test:briclog-core-engine": "node --import ./scripts/register-alias.mjs scripts/test-briclog-core-engine.mjs",
     "test:korean-orthography-engine": "node --import ./scripts/register-alias.mjs scripts/test-korean-orthography-engine.mjs",
