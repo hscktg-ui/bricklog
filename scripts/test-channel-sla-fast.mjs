@@ -6,6 +6,7 @@
 import {
   isChannelStandaloneFastEnabled,
   isChannelStandaloneFastInput,
+  getChannelClientFetchTimeoutMs,
   getChannelLlmLoopBudgetMs,
   shouldSkipChannelSupplementalResearch,
 } from "../lib/config/briclogFastPipeline.js";
@@ -17,6 +18,18 @@ function assert(cond, msg) {
 assert(isChannelStandaloneFastEnabled(), "channel standalone fast on");
 assert(shouldSkipChannelSupplementalResearch(), "skip supplemental");
 assert(getChannelLlmLoopBudgetMs() <= 35_000, "channel LLM loop capped");
+assert(
+  getChannelClientFetchTimeoutMs({
+    contentChannel: "place",
+    sourceChannel: "form",
+  }) <= 120_000,
+  "standalone client fetch capped"
+);
+assert(
+  getChannelClientFetchTimeoutMs({ contentChannel: "place", sourceChannel: "blog" }) >=
+    200_000,
+  "derived channel keeps long fetch"
+);
 
 assert(
   isChannelStandaloneFastInput({
