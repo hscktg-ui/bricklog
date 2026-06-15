@@ -18,7 +18,7 @@ export default function ManuscriptStatusCard({
 
   const grade = contextScore.publishGrade || resolvePublishGrade(contextScore);
   const lines = buildManuscriptStatusLines(contextScore.axes);
-  const { readiness, publishScore, checks, sqvDiagnostic, humanVoiceMet, catalogProseOk } =
+  const { readiness, publishScore, checks, sqvDiagnostic, humanVoiceMet, catalogProseOk, speakerTone } =
     contextScore;
 
   return (
@@ -85,6 +85,18 @@ export default function ManuscriptStatusCard({
       ) : humanVoiceMet === false ? (
         <p className="mt-2 text-[11px] text-[#8B95A1]">
           사람 칼럼 말투 편집을 마치는 중입니다.
+        </p>
+      ) : null}
+
+      {speakerTone?.displayLine ? (
+        <p
+          className={`mt-2 rounded-lg border px-3 py-2 text-[11px] leading-relaxed ${
+            speakerTone.alignment?.mismatch
+              ? "border-[#FFE0B2] bg-[#FFF8E6] text-[#4E5968]"
+              : "border-[var(--vision-line)] bg-[var(--vision-paper)] text-[var(--vision-muted)]"
+          }`}
+        >
+          {speakerTone.statusHint || speakerTone.displayLine}
         </p>
       ) : null}
 

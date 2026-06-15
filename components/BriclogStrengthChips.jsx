@@ -73,7 +73,11 @@ export default function BriclogStrengthChips({
           {reflectionChips.map((chip) => (
             <span
               key={chip.id}
-              className="rounded-full border border-[rgba(48,209,88,0.2)] bg-[rgba(48,209,88,0.08)] px-2.5 py-1 text-[10px] font-semibold text-[var(--vision-ink)]"
+              className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold ${
+                chip.warn
+                  ? "border-[rgba(255,149,0,0.25)] bg-[rgba(255,149,0,0.08)] text-[var(--vision-ink)]"
+                  : "border-[rgba(48,209,88,0.2)] bg-[rgba(48,209,88,0.08)] text-[var(--vision-ink)]"
+              }`}
             >
               {chip.label}
             </span>
