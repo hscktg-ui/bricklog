@@ -13,6 +13,8 @@ import {
   PUBLIC_TEST_TIME_HINT,
   PUBLIC_TEST_LOADING_MESSAGE,
   PUBLIC_TEST_SAMPLE_BADGE,
+  PUBLIC_TEST_CHANNEL_HEADLINE,
+  PUBLIC_TEST_SIGNUP_GAP_HEADLINE,
 } from "@/lib/publicTest/publicTestConfig";
 import {
   getNextPublicTestSampleIndex,
@@ -37,6 +39,7 @@ import {
   VISION_STATUS_NEUTRAL,
 } from "@/lib/landing/vision2030Styles";
 import PublicTestContextScore from "@/components/landing/public-test/PublicTestContextScore";
+import PublicTestReflectionChips from "@/components/landing/public-test/PublicTestReflectionChips";
 import PublicTestLoadingProgress from "@/components/landing/public-test/PublicTestLoadingProgress";
 import {
   SampleInstaPreview,
@@ -197,6 +200,30 @@ export default function PublicBrandTestSection({ onSignup }) {
     stashPublicTestDraftForSignup({ brandName, region, topic });
     onSignup?.("signup");
   };
+
+  const previewChannelReady = result?.preview
+    ? {
+        blog: true,
+        place: Boolean(result.preview.place),
+        insta: Boolean(result.preview.insta),
+      }
+    : {};
+
+  const channelTabs = result?.preview
+    ? [
+        { id: "blog", label: "이야기", ready: true },
+        {
+          id: "place",
+          label: "플레이스",
+          ready: Boolean(result.preview.place),
+        },
+        {
+          id: "insta",
+          label: "인스타",
+          ready: Boolean(result.preview.insta),
+        },
+      ]
+    : [];
 
   return (
     <section
@@ -367,34 +394,39 @@ export default function PublicBrandTestSection({ onSignup }) {
                 <p className="text-[11px] font-semibold text-[var(--vision-accent)]">
                   발행 가능 샘플
                 </p>
+                <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_CHANNEL_HEADLINE}
+                </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {[
-                    { id: "blog", label: "이야기" },
-                    ...(result.preview.place ? [{ id: "place", label: "플레이스" }] : []),
-                    ...(result.preview.insta ? [{ id: "insta", label: "인스타" }] : []),
-                  ].map((tab) => (
+                  {channelTabs.map((tab) => (
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => setChannelTab(tab.id)}
+                      disabled={!tab.ready}
+                      onClick={() => tab.ready && setChannelTab(tab.id)}
                       className={`rounded-full px-3 py-1.5 text-[12px] font-semibold transition ${
-                        channelTab === tab.id
-                          ? "bg-[var(--vision-accent)] text-white"
-                          : "bg-[var(--vision-surface)] text-[var(--vision-muted)]"
+                        !tab.ready
+                          ? "cursor-not-allowed border border-dashed border-[var(--vision-line)] bg-transparent text-[var(--vision-muted)]/50"
+                          : channelTab === tab.id
+                            ? "bg-[var(--vision-accent)] text-white"
+                            : "bg-[var(--vision-surface)] text-[var(--vision-muted)]"
                       }`}
                     >
                       {tab.label}
+                      {tab.ready ? "" : " · 가입 후"}
                     </button>
                   ))}
                 </div>
                 <h3 className="mt-3 text-[17px] font-bold text-[var(--vision-ink)]">
                   {channelTab === "place"
-                    ? result.preview.place?.title
+                    ? result.preview.place?.title || "플레이스 공지"
                     : channelTab === "insta"
                       ? "인스타 캡션"
                       : result.preview.title}
                 </h3>
               </div>
+
+              <PublicTestReflectionChips chips={result.metrics?.reflectionChips} />
               <div className="space-y-4 px-5 py-4 text-[14px] leading-relaxed text-[var(--vision-ink)]">
                 {channelTab === "place" && result.preview.place ? (
                   <SamplePlacePreview
@@ -425,13 +457,31 @@ export default function PublicBrandTestSection({ onSignup }) {
                     ) : null}
                   </>
                 ) : null}
+                {channelTab === "place" && !result.preview.place ? (
+                  <p className="text-[13px] text-[var(--vision-muted)]">
+                    플레이스 공지는 가입 후 같은 주제로 이어 만들 수 있습니다.
+                  </p>
+                ) : null}
+                {channelTab === "insta" && !result.preview.insta ? (
+                  <p className="text-[13px] text-[var(--vision-muted)]">
+                    인스타 캡션은 가입 후 같은 주제로 이어 만들 수 있습니다.
+                  </p>
+                ) : null}
               </div>
 
-              <div
-                className="relative border-t border-[var(--vision-line)] px-5 py-8"
-              >
+              {result.metrics?.contextScore ? (
+                <PublicTestContextScore
+                  contextScore={result.metrics.contextScore}
+                  channelReady={previewChannelReady}
+                />
+              ) : null}
+
+              <div className="relative border-t border-[var(--vision-line)] px-5 py-8">
                 <p className="text-center text-[13px] font-semibold text-[var(--vision-ink)]">
                   {PUBLIC_TEST_BLUR_HINT}
+                </p>
+                <p className="mt-2 text-center text-[12px] font-medium text-[var(--vision-accent)]">
+                  {PUBLIC_TEST_SIGNUP_GAP_HEADLINE}
                 </p>
                 <ul className="mx-auto mt-4 max-w-sm space-y-2 text-[13px] text-[var(--vision-muted)]">
                   {PUBLIC_TEST_SIGNUP_UNLOCKS.map((item) => (
@@ -444,12 +494,6 @@ export default function PublicBrandTestSection({ onSignup }) {
                   ))}
                 </ul>
               </div>
-
-              {result.metrics?.contextScore ? (
-                <PublicTestContextScore
-                  contextScore={result.metrics.contextScore}
-                />
-              ) : null}
 
               <div className="border-t border-[var(--vision-line)] px-5 py-4">
                 <button
