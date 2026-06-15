@@ -5,6 +5,10 @@ import {
   classifyVisitSource,
   pickUtmFromQuery,
 } from "@/lib/analytics/visitSource";
+import {
+  linkSessionVisitsToUser,
+  resolveOptionalUserFromRequest,
+} from "@/lib/analytics/userAcquisition";
 
 export const runtime = "nodejs";
 
@@ -41,6 +45,8 @@ export async function POST(request) {
     utmMedium: utm.utmMedium,
   });
 
+  const authed = await resolveOptionalUserFromRequest(request);
+
   const row = {
     session_id: sessionId,
     path: String(body.path || "/").slice(0, 300),
@@ -51,6 +57,7 @@ export async function POST(request) {
     utm_medium: utm.utmMedium || null,
     utm_campaign: utm.utmCampaign || null,
     source_channel: sourceChannel,
+    user_id: authed?.userId || null,
   };
 
   let { error } = await service.from("site_visits").insert(row);
@@ -61,7 +68,12 @@ export async function POST(request) {
       path: row.path,
       referrer: row.referrer,
       user_agent: row.user_agent,
+      user_id: authed?.userId || null,
     }));
+  }
+
+  if (!error && authed?.userId) {
+    await linkSessionVisitsToUser(service, sessionId, authed.userId);
   }
 
   if (error) {

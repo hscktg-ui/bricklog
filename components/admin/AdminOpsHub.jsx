@@ -82,6 +82,7 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
 function UsersPanel({ onToast }) {
   const [users, setUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(null);
+  const [acquisitionSchemaReady, setAcquisitionSchemaReady] = useState(true);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ email: "", password: "", nickname: "" });
@@ -92,6 +93,7 @@ function UsersPanel({ onToast }) {
       const data = await fetchWithAuth("/api/admin/users?limit=40");
       setUsers(data.users || []);
       setTotalUsers(data.totalUsers);
+      setAcquisitionSchemaReady(data.acquisitionSchemaReady !== false);
     } catch (err) {
       onToast?.(err.message, "error");
     } finally {
@@ -183,6 +185,11 @@ function UsersPanel({ onToast }) {
             새로고침
           </button>
         </div>
+        {!acquisitionSchemaReady && (
+          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+            회원별 유입 경로는 schema-v21-user-acquisition.sql 적용 후 표시됩니다.
+          </p>
+        )}
         {loading ? (
           <p className="mt-4 text-[12px] text-[#8B95A1]">불러오는 중…</p>
         ) : (
@@ -204,6 +211,17 @@ function UsersPanel({ onToast }) {
                       ? ` · 로그인 ${formatKst(u.last_login_at)}`
                       : ""}
                 </p>
+                {u.acquisition?.label ? (
+                  <p className="mt-1 text-[#3182F6]">
+                    유입 {u.acquisition.channel} · {u.acquisition.path}
+                    {u.acquisition.utm ? ` · ${u.acquisition.utm}` : ""}
+                    {!u.acquisition.utm && u.acquisition.referrer
+                      ? ` · ${u.acquisition.referrer}`
+                      : ""}
+                  </p>
+                ) : acquisitionSchemaReady ? (
+                  <p className="mt-1 text-[#B0B8C1]">유입 경로 미기록</p>
+                ) : null}
               </li>
             ))}
           </ul>

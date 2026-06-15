@@ -3,6 +3,39 @@ import { requireAdminApi } from "@/lib/api/adminGuard";
 import { createServiceSupabase } from "@/lib/supabase/server";
 import { adminCreateUser } from "@/lib/admin/createUser";
 import { startOfTodayKstIso } from "@/lib/admin/kstTime";
+import { formatUserAcquisitionBrief } from "@/lib/analytics/userAcquisition";
+
+const PROFILE_FIELDS_FULL =
+  "id, email, nickname, display_name, created_at, last_login_at, last_seen_at, role, acquisition_source_channel, acquisition_path, acquisition_referrer, acquisition_utm_source, acquisition_utm_medium, acquisition_utm_campaign, acquisition_recorded_at";
+
+const PROFILE_FIELDS_BASE =
+  "id, email, nickname, display_name, created_at, last_login_at, last_seen_at, role";
+
+async function fetchProfileList(db, limit) {
+  let res = await db
+    .from("profiles")
+    .select(PROFILE_FIELDS_FULL)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (res.error && /acquisition_|column/i.test(res.error.message)) {
+    const fallback = await db
+      .from("profiles")
+      .select(PROFILE_FIELDS_BASE)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    return { ...fallback, acquisitionSchemaReady: false };
+  }
+
+  return { ...res, acquisitionSchemaReady: true };
+}
+
+function enrichUsersWithAcquisition(rows = []) {
+  return rows.map((row) => ({
+    ...row,
+    acquisition: formatUserAcquisitionBrief(row),
+  }));
+}
 
 export const runtime = "nodejs";
 
@@ -24,13 +57,7 @@ export async function GET(request) {
   const todayIso = startOfTodayKstIso();
 
   const [listRes, signupsTodayRes, totalRes] = await Promise.all([
-    db
-      .from("profiles")
-      .select(
-        "id, email, nickname, display_name, created_at, last_login_at, last_seen_at, role"
-      )
-      .order("created_at", { ascending: false })
-      .limit(limit),
+    fetchProfileList(db, limit),
     db
       .from("profiles")
       .select("id", { count: "exact", head: true })
@@ -47,7 +74,8 @@ export async function GET(request) {
 
   return NextResponse.json({
     ok: true,
-    users: listRes.data ?? [],
+    users: enrichUsersWithAcquisition(listRes.data ?? []),
+    acquisitionSchemaReady: listRes.acquisitionSchemaReady !== false,
     totalUsers: totalRes.error ? null : totalRes.count ?? 0,
     signupsToday: signupsTodayRes.error ? null : signupsTodayRes.count ?? 0,
   });

@@ -4,6 +4,10 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { parseUtmFromSearch } from "@/lib/analytics/visitSource";
+import {
+  ACQUISITION_SENT_KEY,
+  FIRST_TOUCH_STORAGE_KEY,
+} from "@/lib/analytics/userAcquisition";
 
 const VISIT_KEY = "briclog_visit_sid";
 const VISIT_SENT_KEY = "briclog_visit_sent";
@@ -41,16 +45,54 @@ function persistUtmFromSearch(search) {
   return parsed;
 }
 
+function persistFirstTouch(path, utm = {}) {
+  if (typeof window === "undefined") return;
+  if (sessionStorage.getItem(FIRST_TOUCH_STORAGE_KEY)) return;
+  try {
+    sessionStorage.setItem(
+      FIRST_TOUCH_STORAGE_KEY,
+      JSON.stringify({
+        path,
+        referrer: typeof document !== "undefined" ? document.referrer : "",
+        utmSource: utm.utmSource || "",
+        utmMedium: utm.utmMedium || "",
+        utmCampaign: utm.utmCampaign || "",
+        recordedAt: new Date().toISOString(),
+      })
+    );
+  } catch {
+    /* ignore */
+  }
+}
+
+function readFirstTouch() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(FIRST_TOUCH_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function recordVisit(path, utm = {}) {
   const sid = visitSessionId();
   if (!sid) return;
   const visitKey = `${path}|${utm.utmSource || ""}|${utm.utmMedium || ""}`;
   const sent = sessionStorage.getItem(VISIT_SENT_KEY);
   if (sent === visitKey) return;
+
+  const headers = { "Content-Type": "application/json" };
+  if (isSupabaseConfigured) {
+    const { data } = await supabase.auth.getSession();
+    const token = data?.session?.access_token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+  }
+
   try {
     const res = await fetch("/api/public/visit", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
         sessionId: sid,
         path,
@@ -62,6 +104,42 @@ async function recordVisit(path, utm = {}) {
       }),
     });
     if (res.ok) sessionStorage.setItem(VISIT_SENT_KEY, visitKey);
+  } catch {
+    /* non-blocking */
+  }
+}
+
+async function sendAcquisitionStamp() {
+  if (!isSupabaseConfigured) return;
+  if (sessionStorage.getItem(ACQUISITION_SENT_KEY)) return;
+
+  const { data } = await supabase.auth.getSession();
+  const token = data?.session?.access_token;
+  if (!token) return;
+
+  const sid = visitSessionId();
+  const firstTouch = readFirstTouch();
+  const body = firstTouch
+    ? {
+        sessionId: sid,
+        path: firstTouch.path,
+        referrer: firstTouch.referrer,
+        utmSource: firstTouch.utmSource,
+        utmMedium: firstTouch.utmMedium,
+        utmCampaign: firstTouch.utmCampaign,
+      }
+    : { sessionId: sid };
+
+  try {
+    const res = await fetch("/api/presence/acquisition", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) sessionStorage.setItem(ACQUISITION_SENT_KEY, "1");
   } catch {
     /* non-blocking */
   }
@@ -93,13 +171,18 @@ export default function SessionTelemetry() {
 
   useEffect(() => {
     const utm = persistUtmFromSearch(search);
+    persistFirstTouch(pathname, utm);
     void recordVisit(pathname, utm);
   }, [pathname, search]);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
+    void sendAcquisitionStamp();
     void sendHeartbeat(pathname);
-    const id = setInterval(() => void sendHeartbeat(pathname), 90_000);
+    const id = setInterval(() => {
+      void sendAcquisitionStamp();
+      void sendHeartbeat(pathname);
+    }, 90_000);
     return () => clearInterval(id);
   }, [pathname]);
 
