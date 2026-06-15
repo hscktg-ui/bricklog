@@ -103,4 +103,33 @@ assert.equal(uiTrust.label, "조사·근거");
 assert.ok(ui.checks.infoUnits >= 8);
 assert.ok(uiTrust.score >= thinTrust.score + 10, "rich vs thin trust gap");
 
+const STRESSLESS_INPUT = {
+  brandName: "에이스침대",
+  region: "경기도 용인",
+  topic: "스트레스리스 다이닝체어 STRESSLESS MINT LB D200",
+  mainKeyword: "스트레스리스 다이닝체어 STRESSLESS",
+  industry: "가구",
+  storeFeatures: "프랜차이즈 쇼룸, 스트레스리스 체어 전시",
+  researchFacts: [
+    "스트레스리스 제로지 모드·리클라이닝 각도 조절",
+    "STRESSLESS MINT LB D200 좌판 쿠션 밀도",
+    "프랜차이즈 쇼룸에서 모델별 좌판·등받이 비교",
+  ],
+};
+
+const { buildForcedMissionProsePack } = await import(
+  "../lib/product/missionProseRouteEngine.js"
+);
+process.env.BRICLOG_MISSION = "true";
+const stresslessPack = buildForcedMissionProsePack(STRESSLESS_INPUT);
+const stresslessAxes = buildBlogContextAxes(stresslessPack, STRESSLESS_INPUT, {
+  grounded: { ok: true, rate: 0.72 },
+});
+const stressTopic = stresslessAxes.axes.find((a) => a.id === "topic");
+const stressTrust = stresslessAxes.axes.find((a) => a.id === "trust");
+const stressSpeaker = stresslessAxes.axes.find((a) => a.id === "speaker");
+assert.ok(stressTopic.score >= 72, `stressless topic: ${stressTopic.score}`);
+assert.ok(stressTrust.score >= 68, `stressless trust: ${stressTrust.score}`);
+assert.ok(stressSpeaker.score >= 68, `stressless speaker: ${stressSpeaker.score}`);
+
 console.log("OK: blog context axes — research/topic/speaker from pack analysis");
