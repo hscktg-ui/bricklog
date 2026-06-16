@@ -86,5 +86,14 @@ assert.equal(dynamic?.demoFallback, true);
 assert.equal(dynamic?.templateId, "salon_care");
 assert.ok(dynamic.preview?.place?.short, "dynamic place");
 assert.ok(dynamic.preview?.insta?.body, "dynamic insta");
+assert.ok(dynamic.preview?.intro?.includes("레이어드살롱"), "brand in dynamic intro");
+
+const quotaBypass = tryDynamicPublicTestInstant({
+  brandName: "테스트베이커",
+  region: "대전 유성",
+  topic: "크루아상 오픈 당일 픽업",
+});
+assert.equal(quotaBypass?.demoFallback, true);
+assert.equal(quotaBypass?.templateId, "bakery_open");
 
 console.log("OK public test instant samples", PUBLIC_TEST_SAMPLES.length);

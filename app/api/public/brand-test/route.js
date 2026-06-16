@@ -5,6 +5,7 @@ import {
 } from "@/lib/publicTest/publicTestQuotaServer";
 import {
   runPublicBrandTest,
+  tryDynamicPublicTestInstant,
   tryInstantPublicTestSample,
 } from "@/lib/publicTest/runPublicBrandTest";
 import { PUBLIC_TEST_QUOTA_EXCEEDED } from "@/lib/publicTest/publicTestConfig";
@@ -40,14 +41,17 @@ export async function POST(request) {
   const quota = await assessPublicTestQuota(request, sessionId);
 
   if (!quota.ok) {
-    const instant = tryInstantPublicTestSample(body);
+    const instant =
+      tryInstantPublicTestSample(body) || tryDynamicPublicTestInstant(body);
     if (instant?.ok) {
       return NextResponse.json({
         ok: true,
         preview: instant.preview,
         metrics: instant.metrics,
         publishReady: instant.publishReady === true,
-        instant: true,
+        instant: instant.instant === true,
+        demoFallback: instant.demoFallback === true,
+        templateId: instant.templateId,
         instantQuotaBypass: true,
         quota: {
           remaining: 0,
@@ -94,6 +98,10 @@ export async function POST(request) {
     preview: result.preview,
     metrics: result.metrics,
     publishReady: result.publishReady === true,
+    instant: result.instant === true,
+    demoFallback: result.demoFallback === true,
+    templateId: result.templateId,
+    llmGenerated: result.llmGenerated === true,
     quota: nextQuota,
   });
 }
