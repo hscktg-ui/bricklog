@@ -104,6 +104,7 @@ export default function AuthForm({
   const [signupLimitMessage, setSignupLimitMessage] = useState("");
   const emailCheckTimer = useRef(null);
   const lastCheckedEmailRef = useRef("");
+  const prevEmailTrimRef = useRef("");
   const signupPhoneE164Ref = useRef("");
   const [publicTestDraft, setPublicTestDraft] = useState(null);
 
@@ -162,6 +163,8 @@ export default function AuthForm({
 
   const handleSignupPhoneChange = useCallback((value) => {
     setSignupPhone(value);
+    setPhoneRegistered(false);
+    setPhoneCheckMsg("");
     const norm = normalizeKoreanMobile(value);
     if (!norm.ok) return;
     if (norm.e164 === signupPhoneE164Ref.current) return;
@@ -223,6 +226,13 @@ export default function AuthForm({
 
   useEffect(() => {
     if (mode !== MODES.signup) return undefined;
+    const trimmed = email.trim().toLowerCase();
+    if (trimmed !== prevEmailTrimRef.current) {
+      prevEmailTrimRef.current = trimmed;
+      setEmailRegistered(false);
+      setEmailCheckMsg("");
+      lastCheckedEmailRef.current = "";
+    }
     clearTimeout(emailCheckTimer.current);
     emailCheckTimer.current = setTimeout(() => {
       runEmailAvailabilityCheck(email);
@@ -287,6 +297,16 @@ export default function AuthForm({
           return;
         }
 
+        const useOptionalPhone =
+          isSignupPhoneOptional() &&
+          phoneSmsVerified &&
+          phoneVerificationId &&
+          signupPhone.trim();
+        const contactPhone = useOptionalPhone ? signupPhone.trim() : "";
+        const signupPhoneVerificationId = useOptionalPhone
+          ? phoneVerificationId
+          : null;
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
@@ -298,8 +318,8 @@ export default function AuthForm({
               marketing_agreed: marketingAgreed,
               terms_version: TERMS_VERSION,
               privacy_version: PRIVACY_VERSION,
-              contact_phone: signupPhone.trim(),
-              phone_verification_id: phoneVerificationId,
+              contact_phone: contactPhone,
+              phone_verification_id: signupPhoneVerificationId,
             },
           },
         });
@@ -314,19 +334,14 @@ export default function AuthForm({
           return;
         }
 
-        if (
-          !isSignupPhoneOptional() &&
-          phoneVerificationId &&
-          signupPhone.trim() &&
-          data?.user?.id
-        ) {
+        if (signupPhoneVerificationId && contactPhone && data?.user?.id) {
           const holdRes = await fetch("/api/auth/signup/phone-hold", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               userId: data.user.id,
-              phoneVerificationId,
-              phone: signupPhone.trim(),
+              phoneVerificationId: signupPhoneVerificationId,
+              phone: contactPhone,
             }),
           });
           const holdData = await holdRes.json().catch(() => ({}));
@@ -434,7 +449,7 @@ export default function AuthForm({
       !phoneVerificationId ||
       phoneRegistered);
   const phoneAvailabilityBlocks =
-    signupPhoneFilled && phoneRegistered;
+    !phoneOptional && signupPhoneFilled && phoneRegistered;
   const signupSubmitDisabled =
     loading ||
     signupLimited ||
