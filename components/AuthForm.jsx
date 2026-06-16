@@ -381,6 +381,12 @@ export default function AuthForm({
             "success"
           );
           onAuthSuccess?.();
+        } else {
+          onToast?.(
+            "가입은 완료됐지만 자동 로그인에 실패했습니다. 로그인 화면에서 다시 시도해 주세요.",
+            "error"
+          );
+          setMode(MODES.login);
         }
         return;
       }
@@ -424,18 +430,16 @@ export default function AuthForm({
   const signupPhoneFilled = signupPhone.trim().length > 0;
   const phoneBlocksSignup =
     !phoneOptional &&
-    (!phoneSmsVerified || !phoneVerificationId || phoneRegistered || phoneChecking);
+    (!phoneSmsVerified ||
+      !phoneVerificationId ||
+      phoneRegistered);
   const phoneAvailabilityBlocks =
-    signupPhoneFilled &&
-    (phoneRegistered || (!phoneOptional && phoneChecking));
+    signupPhoneFilled && phoneRegistered;
   const signupSubmitDisabled =
     loading ||
+    signupLimited ||
     (mode === MODES.signup &&
-      (!termsAgreed ||
-        emailRegistered ||
-        emailChecking ||
-        phoneAvailabilityBlocks ||
-        phoneBlocksSignup));
+      (!termsAgreed || emailRegistered || phoneAvailabilityBlocks || phoneBlocksSignup));
 
   const shell = (
     <div
@@ -521,6 +525,13 @@ export default function AuthForm({
         </div>
       )}
 
+      {mode === MODES.signup && signupLimited ? (
+        <p className="mt-3 rounded-lg border border-[#FFE8CC] bg-[#FFF9F0] px-3 py-2 text-center text-[12px] leading-relaxed text-[#8B5A00]">
+          {signupLimitMessage ||
+            "지금은 품질 안정화 기간이라 신규 가입을 잠시 받지 않습니다."}
+        </p>
+      ) : null}
+
       <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 sm:space-y-3">
         <div>
           <label htmlFor="auth-email" className="mb-1.5 block text-[13px] font-semibold text-[#191F28] sm:text-[12px]">
@@ -541,14 +552,18 @@ export default function AuthForm({
                 : ""
             }`}
           />
-          {mode === MODES.signup && emailCheckMsg ? (
+          {mode === MODES.signup && (emailCheckMsg || emailChecking) ? (
             <p
-              className={`mt-1 text-[11px] ${
+              className={`mt-1 min-h-[1.25rem] text-[11px] ${
                 emailRegistered ? "text-[#E42939]" : "text-[#03A94D]"
               }`}
               role="status"
             >
               {emailChecking ? "이메일 확인 중…" : emailCheckMsg}
+            </p>
+          ) : mode === MODES.signup ? (
+            <p className="mt-1 min-h-[1.25rem] text-[11px] text-transparent" aria-hidden>
+              ·
             </p>
           ) : null}
         </div>

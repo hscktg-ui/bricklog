@@ -1,26 +1,15 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
+import { checkRateLimit, getClientIp, rateLimit429 } from "@/lib/api/rateLimit";
 import { confirmSignupEmail } from "@/lib/auth/signupEmailConfirm";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
 const ACTIVATE_MAX_AGE_MS = 30 * 60 * 1000;
+const RATE_LIMIT_MSG = "요청이 많습니다. 잠시 후 다시 시도해 주세요.";
 
 /** 가입 직후 userId로 이메일 확인 처리 (휴대폰 인증 없는 모드) */
 export async function POST(request) {
-  const ip = getClientIp(request);
-  const limit = checkRateLimit(`signup-activate:${ip}`, {
-    max: 15,
-    windowMs: 60_000,
-  });
-  if (!limit.ok) {
-    return NextResponse.json(
-      { ok: false, userMessage: "요청이 많습니다. 잠시 후 다시 시도해 주세요." },
-      { status: 429 }
-    );
-  }
-
   let body;
   try {
     body = await request.json();
@@ -37,6 +26,15 @@ export async function POST(request) {
       { ok: false, userMessage: "가입 정보가 없습니다." },
       { status: 400 }
     );
+  }
+
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`signup-activate:${ip}`, {
+    max: 30,
+    windowMs: 60_000,
+  });
+  if (!limit.ok) {
+    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
   }
 
   const service = createServiceSupabase();

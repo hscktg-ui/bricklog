@@ -334,7 +334,7 @@ export default function PhoneSmsVerifyFields({
             verified ||
             sending ||
             !canResend ||
-            (purpose === "signup" && (phoneTaken || phoneChecking))
+            (purpose === "signup" && phoneTaken)
           }
           onClick={sendOtp}
           className={`min-h-[48px] shrink-0 sm:min-h-0 sm:min-w-[8.5rem] ${GREEN_CTA_OUTLINE} py-3! text-[13px]! sm:py-2.5! sm:text-[12px]!`}

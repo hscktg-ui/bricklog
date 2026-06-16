@@ -114,11 +114,12 @@ button:disabled,
 
 button:disabled::after,
 .briclog-pressable:disabled::after,
+.briclog-btn-primary:disabled::after,
 .briclog-btn-secondary:disabled::after,
 .tab-btn:disabled::after,
 [role="button"][aria-disabled="true"]::after {
-  content: none;
-  display: none;
+  content: "";
+  opacity: 0;
   pointer-events: none;
 }
 
