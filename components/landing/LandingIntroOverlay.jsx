@@ -14,7 +14,7 @@ import {
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
-  VISION_INTRO_SKIP,
+  VISION_INTRO_CTA,
 } from "@/lib/landing/vision2030Styles";
 import {
   useIntroRevealTypewriter,
@@ -69,8 +69,12 @@ function IntroProgress({ total, current }) {
 }
 
 export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
-  const { isMobile } = useViewport();
-  const copy = useMemo(() => getLandingIntroCopy({ isMobile }), [isMobile]);
+  const { isMobile, isDesktop } = useViewport();
+  const isCompact = !isDesktop;
+  const copy = useMemo(
+    () => getLandingIntroCopy({ isMobile, isCompact }),
+    [isMobile, isCompact]
+  );
   const lineCount = copy.lines.length;
   const dismiss = onSkip || onDismiss;
 
@@ -98,7 +102,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  const brandRevealDelay = isMobile
+  const brandRevealDelay = isCompact
     ? INTRO_BRAND_REVEAL_DELAY_MS_MOBILE
     : INTRO_BRAND_REVEAL_DELAY_MS;
 
@@ -123,7 +127,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
     enabled: open && brandPhase,
     lines: copy.brandLines,
     reduceMotion,
-    startDelayMs: reduceMotion ? 0 : isMobile ? 180 : 260,
+    startDelayMs: reduceMotion ? 0 : isCompact ? 180 : 260,
   });
 
   const brandLineCount = copy.brandLines.length;
@@ -188,19 +192,31 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
   if (!open) return null;
 
   const showCta = brandPhase && (reduceMotion || brandComplete);
+  const introReady = canStart && showCta;
+  const primaryLabel = introReady ? copy.startLabel : copy.skipLabel;
+  const primaryHint = introReady
+    ? "탭하여 시작"
+    : isCompact
+      ? "소개를 기다리지 않고 랜딩으로 이동합니다"
+      : "인트로를 보시려면 잠시만 기다려 주세요";
+
+  const handlePrimary = () => {
+    if (introReady) finish();
+    else exitIntro();
+  };
 
   return (
     <div
-      className={`briclog-vision-intro fixed inset-0 z-[100] flex flex-col items-center justify-center px-4 sm:px-6 ${
+      className={`briclog-vision-intro fixed inset-0 z-[100] flex flex-col items-center justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-[max(1rem,env(safe-area-inset-top,0px))] sm:px-6 ${
         exiting ? "pointer-events-none briclog-intro-exit" : ""
-      } ${canStart && !exiting ? "cursor-pointer" : ""}`}
+      } ${introReady && !exiting ? "cursor-pointer" : ""}`}
       role="dialog"
       aria-modal="true"
-      aria-label="브릭로그 소개"
-      onClick={() => canStart && !exiting && finish()}
-      tabIndex={canStart ? 0 : -1}
+      aria-label="BRICLOG 소개"
+      onClick={() => introReady && !exiting && finish()}
+      tabIndex={introReady ? 0 : -1}
       onKeyDown={(e) => {
-        if (canStart && (e.key === "Enter" || e.key === " ")) {
+        if (introReady && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
           finish();
         }
@@ -210,19 +226,6 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
         }
       }}
     >
-      <button
-        type="button"
-        data-briclog-intro-skip="1"
-        onClick={(e) => {
-          e.stopPropagation();
-          exitIntro();
-        }}
-        disabled={exiting}
-        className={VISION_INTRO_SKIP}
-        aria-label="인트로 건너뛰기"
-      >
-        건너뛰기
-      </button>
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_55%_at_50%_0%,var(--vision-accent-soft),transparent_62%)]"
         aria-hidden
@@ -255,7 +258,7 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                   </p>
                 </div>
                 <IntroProgress total={lineCount} current={lineIndex} />
-                {!isMobile ? <IntroChannelPills /> : null}
+                {!isCompact ? <IntroChannelPills /> : null}
               </>
             ) : (
               <div
@@ -281,36 +284,29 @@ export default function LandingIntroOverlay({ open, onDismiss, onSkip }) {
                     {brandDisplay}
                   </p>
                 ) : null}
-                {brandComplete && !isMobile ? <IntroChannelPills /> : null}
+                {brandComplete && !isCompact ? <IntroChannelPills /> : null}
               </div>
             )}
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center sm:mt-10">
+        <div className="mt-8 flex w-full max-w-[280px] flex-col items-center sm:mt-10 sm:max-w-none">
           <button
             type="button"
+            data-briclog-intro-skip="1"
             onClick={(e) => {
               e.stopPropagation();
-              finish();
+              handlePrimary();
             }}
-            disabled={!canStart || exiting}
-            className={
-              showCta
-                ? canStart
-                  ? `${VISION_CTA_ACCENT} !min-w-[220px]`
-                  : `${VISION_CTA_ACCENT} pointer-events-none opacity-50 !min-w-[220px]`
-                : "pointer-events-none opacity-0"
-            }
-            aria-label={copy.dismissLabel}
+            disabled={exiting}
+            className={introReady ? `${VISION_CTA_ACCENT} !min-w-[220px]` : VISION_INTRO_CTA}
+            aria-label={introReady ? copy.dismissLabel : `${copy.skipLabel} — 랜딩으로 이동`}
           >
-            {copy.startLabel}
+            {primaryLabel}
           </button>
-          {canStart && showCta ? (
-            <p className="mt-3 text-[11px] tracking-wide text-[var(--vision-muted)]">
-              탭하여 시작
-            </p>
-          ) : null}
+          <p className="mt-3 max-w-[260px] text-center text-[11px] leading-relaxed tracking-wide text-[var(--vision-muted)] sm:max-w-xs">
+            {primaryHint}
+          </p>
         </div>
       </div>
     </div>

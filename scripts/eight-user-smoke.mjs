@@ -70,7 +70,7 @@ async function dismissIntro(page) {
 
   await page.waitForTimeout(800);
   const startBtn = page.getByRole("button", {
-    name: /지금 시작|시작하기|건너뛰기/i,
+    name: /지금 시작|시작하기|바로 보기|바로 둘러보기|닫기/i,
   });
   if (await startBtn.count()) {
     await startBtn.first().click({ timeout: 5000 }).catch(() => null);

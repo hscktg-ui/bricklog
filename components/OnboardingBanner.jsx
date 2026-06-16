@@ -37,7 +37,7 @@ export default function OnboardingBanner({ visible = true }) {
       <button
         type="button"
         onClick={dismiss}
-        className="shrink-0 rounded-lg p-1 text-[#8B95A1] hover:bg-white/80"
+        className="shrink-0 rounded-lg p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-[#8B95A1] hover:bg-white/80"
         aria-label="안내 닫기"
       >
         <Icon name="x" className="h-4 w-4" />

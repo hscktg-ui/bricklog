@@ -73,7 +73,7 @@ async function dismissIntro(page) {
 }
 
 async function dismissWelcome(page) {
-  const welcome = page.getByRole("button", { name: /건너뛰기|시작하기/i });
+  const welcome = page.getByRole("button", { name: /바로 보기|바로 둘러보기|글쓰기 시작|닫기|시작하기/i });
   if (await welcome.count()) {
     await welcome.first().click({ timeout: 5000 }).catch(() => null);
     await page.waitForTimeout(400);

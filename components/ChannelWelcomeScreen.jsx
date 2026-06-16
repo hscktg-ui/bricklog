@@ -101,9 +101,9 @@ export default function ChannelWelcomeScreen({
           <button
             type="button"
             onClick={onSkip}
-            className="mt-6 w-full py-2 text-center text-[13px] font-medium text-[#8B95A1] underline-offset-2 hover:text-[#03A94D] hover:underline"
+            className="mt-6 w-full min-h-[48px] py-2 text-center text-[14px] font-semibold text-[#6B7684] underline-offset-2 hover:text-[#03A94D] hover:underline"
           >
-            {hero.menuLabel}로 바로 시작 (선택 화면 건너뛰기)
+            {hero.menuLabel}로 바로 시작
           </button>
         ) : null}
       </div>

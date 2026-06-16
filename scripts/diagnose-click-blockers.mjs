@@ -146,10 +146,15 @@ function diagnoseInPage() {
 async function dismissLandingIntro(page) {
   const intro = page.locator('[aria-label="BRICLOG 소개"]');
   if (!(await intro.count())) return "no_intro";
-  await page.waitForTimeout(1500);
-  await intro.click({ timeout: 3000 }).catch(() => null);
-  await page.keyboard.press("Enter").catch(() => null);
-  await page.waitForTimeout(2500);
+  const skip = page.locator('[data-briclog-intro-skip="1"]');
+  if (await skip.count()) {
+    await skip.click({ timeout: 5000 }).catch(() => null);
+  } else {
+    await page.waitForTimeout(800);
+    await intro.click({ timeout: 3000 }).catch(() => null);
+    await page.keyboard.press("Enter").catch(() => null);
+  }
+  await page.waitForTimeout(600);
   const still = await page.locator('[aria-label="BRICLOG 소개"]').count();
   return still ? "still_open" : "dismissed";
 }

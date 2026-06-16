@@ -25,7 +25,7 @@ export function isWelcomeDismissedPermanent() {
 const AUTO_DISMISS_MS = 1800;
 
 /**
- * 로그인 후 환영 — 5초 자동 닫기 또는 「시작하기」
+ * 로그인 후 환영 — 1.8초 자동 닫기 또는 「글쓰기 시작」
  * (배경은 비차단 · 카드만 포인터 수신)
  */
 export default function WelcomeOverlay({
@@ -38,15 +38,20 @@ export default function WelcomeOverlay({
 }) {
   const connectPlayedRef = useRef(false);
 
-  const dismiss = useCallback(() => {
-    try {
-      sessionStorage.setItem(WELCOME_DISMISS_SESSION_KEY, "1");
-      localStorage.setItem(WELCOME_DISMISS_PERMANENT_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-    onDismiss?.();
-  }, [onDismiss]);
+  const dismiss = useCallback(
+    (permanent = false) => {
+      try {
+        sessionStorage.setItem(WELCOME_DISMISS_SESSION_KEY, "1");
+        if (permanent) {
+          localStorage.setItem(WELCOME_DISMISS_PERMANENT_KEY, "1");
+        }
+      } catch {
+        /* ignore */
+      }
+      onDismiss?.();
+    },
+    [onDismiss]
+  );
 
   useEffect(() => {
     if (!open) {
@@ -61,7 +66,7 @@ export default function WelcomeOverlay({
       connectPlayedRef.current = true;
       await playConnectSound();
     })();
-    const t = window.setTimeout(dismiss, AUTO_DISMISS_MS);
+    const t = window.setTimeout(() => dismiss(false), AUTO_DISMISS_MS);
     return () => {
       cancelled = true;
       window.clearTimeout(t);
@@ -106,8 +111,9 @@ export default function WelcomeOverlay({
       <div className="pointer-events-auto relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-[#03C75A]/25 bg-gradient-to-br from-white via-white to-[#E8F9EF] shadow-xl ring-1 ring-black/10 transition-transform duration-200 scale-100">
         <button
           type="button"
-          onClick={dismiss}
-          className="absolute right-3 top-3 z-10 rounded-lg px-2 py-1 text-[12px] font-medium text-[#8B95A1] hover:bg-white/80 hover:text-[#4E5968]"
+          onClick={() => dismiss(false)}
+          className="absolute right-3 top-3 z-10 min-h-[44px] min-w-[44px] rounded-lg px-3 py-2 text-[13px] font-semibold text-[#8B95A1] hover:bg-white/80 hover:text-[#4E5968]"
+          aria-label="환영 안내 닫기"
         >
           {WELCOME.skip}
         </button>
@@ -165,9 +171,9 @@ export default function WelcomeOverlay({
                   }
                 });
               }
-              dismiss();
+              dismiss(true);
             }}
-            className="shrink-0 cursor-pointer rounded-xl bg-[#03C75A] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#02B350]"
+            className="shrink-0 cursor-pointer rounded-xl bg-[#03C75A] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#02B350] min-h-[44px]"
           >
             {WELCOME.start}
           </button>
