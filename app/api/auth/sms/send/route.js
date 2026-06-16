@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
+import { checkRateLimit, getClientIp, rateLimit429 } from "@/lib/api/rateLimit";
 import {
   isMissingPhoneOtpTable,
   sendPhoneOtp,
 } from "@/lib/auth/phoneOtpServer";
 import { formatSmsSenderDisplay } from "@/lib/sms/smsDisplay";
+import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import {
   isBriclogResetSignupLimited,
   RESET_SIGNUP_LIMIT_MESSAGE,
@@ -12,16 +13,9 @@ import {
 
 export const runtime = "nodejs";
 
-export async function POST(request) {
-  const ip = getClientIp(request);
-  const limit = checkRateLimit(`sms-send:${ip}`, { max: 8, windowMs: 60_000 });
-  if (!limit.ok) {
-    return NextResponse.json(
-      { ok: false, userMessage: "요청이 많습니다. 잠시 후 다시 시도해 주세요." },
-      { status: 429 }
-    );
-  }
+const RATE_LIMIT_MSG = "요청이 많습니다. 잠시 후 다시 시도해 주세요.";
 
+export async function POST(request) {
   let body;
   try {
     body = await request.json();
@@ -30,6 +24,20 @@ export async function POST(request) {
       { ok: false, userMessage: "요청 형식이 올바르지 않습니다." },
       { status: 400 }
     );
+  }
+
+  const norm = normalizeKoreanMobile(body?.phone ?? "");
+  if (!norm.ok) {
+    return NextResponse.json(
+      { ok: false, userMessage: norm.message },
+      { status: 400 }
+    );
+  }
+
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`sms-send:${ip}`, { max: 15, windowMs: 60_000 });
+  if (!limit.ok) {
+    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
   }
 
   try {

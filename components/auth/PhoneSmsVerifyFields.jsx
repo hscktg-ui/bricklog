@@ -12,10 +12,13 @@ import { AUTH_FIELD_CLASS } from "@/lib/ui/authFieldStyles";
 const fieldClass = AUTH_FIELD_CLASS;
 
 const RESEND_COOLDOWN_SEC = 60;
+const PHONE_CHECK_DEBOUNCE_MS = 900;
 
-function phoneDigitsKey(raw) {
-  const n = normalizeKoreanMobile(raw);
-  return n.ok ? n.e164 : String(raw || "").replace(/\D/g, "");
+function rateLimitUserMessage(data, fallback) {
+  if (data?.retryAfterSec) {
+    return `요청이 많습니다. ${data.retryAfterSec}초 후 다시 시도해 주세요.`;
+  }
+  return data?.userMessage || fallback;
 }
 
 function maskPhone(display) {
@@ -57,6 +60,7 @@ export default function PhoneSmsVerifyFields({
   const [devHint, setDevHint] = useState(null);
   const [lastError, setLastError] = useState(null);
   const phoneKeyRef = useRef("");
+  const lastCheckedE164Ref = useRef("");
   const timerRef = useRef(null);
   const phoneCheckTimer = useRef(null);
   const [phoneTaken, setPhoneTaken] = useState(false);
@@ -64,9 +68,13 @@ export default function PhoneSmsVerifyFields({
   const [phoneChecking, setPhoneChecking] = useState(false);
 
   useEffect(() => {
-    const key = phoneDigitsKey(phone);
-    if (key === phoneKeyRef.current) return;
-    phoneKeyRef.current = key;
+    const norm = normalizeKoreanMobile(phone);
+    if (!norm.ok) {
+      return;
+    }
+    if (norm.e164 === phoneKeyRef.current) return;
+    phoneKeyRef.current = norm.e164;
+    lastCheckedE164Ref.current = "";
     setVerified(false);
     setVerificationId(null);
     setCode("");
@@ -84,7 +92,11 @@ export default function PhoneSmsVerifyFields({
       if (!norm.ok) {
         setPhoneTaken(false);
         setPhoneCheckMsg("");
+        setPhoneChecking(false);
         onAvailabilityChange?.({ registered: false, message: "", checking: false });
+        return;
+      }
+      if (lastCheckedE164Ref.current === norm.e164) {
         return;
       }
       setPhoneChecking(true);
@@ -95,9 +107,10 @@ export default function PhoneSmsVerifyFields({
         );
         const data = await res.json().catch(() => ({}));
         if (!data.ok) {
-          const msg =
-            data.userMessage ||
-            "휴대폰 번호를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+          const msg = rateLimitUserMessage(
+            data,
+            "휴대폰 번호를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요."
+          );
           setPhoneTaken(false);
           setPhoneCheckMsg(msg);
           onAvailabilityChange?.({ registered: false, message: msg, checking: false });
@@ -111,6 +124,7 @@ export default function PhoneSmsVerifyFields({
           message: data.userMessage || "",
           checking: false,
         });
+        lastCheckedE164Ref.current = norm.e164;
       } catch {
         setPhoneTaken(false);
         setPhoneCheckMsg("");
@@ -127,7 +141,7 @@ export default function PhoneSmsVerifyFields({
     clearTimeout(phoneCheckTimer.current);
     phoneCheckTimer.current = setTimeout(() => {
       runPhoneAvailabilityCheck(phone);
-    }, 450);
+    }, PHONE_CHECK_DEBOUNCE_MS);
     return () => clearTimeout(phoneCheckTimer.current);
   }, [phone, purpose, runPhoneAvailabilityCheck]);
 
@@ -173,7 +187,10 @@ export default function PhoneSmsVerifyFields({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
-        const msg = data.userMessage || "인증번호를 보내지 못했습니다.";
+        const msg = rateLimitUserMessage(
+          data,
+          "인증번호를 보내지 못했습니다."
+        );
         const taken = data.code === "PHONE_TAKEN" || res.status === 409;
         if (taken) {
           setPhoneTaken(true);
@@ -239,7 +256,7 @@ export default function PhoneSmsVerifyFields({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
-        const msg = data.userMessage || "인증번호가 맞지 않습니다.";
+        const msg = rateLimitUserMessage(data, "인증번호가 맞지 않습니다.");
         if (data.code === "PHONE_TAKEN" || res.status === 409) {
           setPhoneTaken(true);
           setPhoneCheckMsg(msg);
@@ -384,17 +401,21 @@ export default function PhoneSmsVerifyFields({
 
       {purpose === "signup" && phoneCheckMsg ? (
         <p
-          className={`text-[11px] ${
+          className={`min-h-[1.25rem] text-[11px] ${
             phoneTaken ? "text-[#E42939]" : "text-[#03A94D]"
           }`}
           role="status"
         >
           {phoneChecking ? "휴대폰 번호 확인 중…" : phoneCheckMsg}
         </p>
+      ) : purpose === "signup" ? (
+        <p className="min-h-[1.25rem] text-[11px] text-transparent" aria-hidden>
+          ·
+        </p>
       ) : null}
 
       {lastError ? (
-        <p className="text-[11px] text-[#E67700]" role="alert">
+        <p className="min-h-[1.25rem] text-[11px] text-[#E67700]" role="alert">
           {lastError}
         </p>
       ) : null}

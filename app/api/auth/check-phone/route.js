@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
+import { checkRateLimit, getClientIp, rateLimit429 } from "@/lib/api/rateLimit";
 import {
   PHONE_ALREADY_REGISTERED_MESSAGE,
   resolvePhoneRegistered,
@@ -8,19 +8,9 @@ import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 
 export const runtime = "nodejs";
 
-export async function GET(request) {
-  const ip = getClientIp(request);
-  const limit = checkRateLimit(`check-phone:${ip}`, {
-    max: 30,
-    windowMs: 60_000,
-  });
-  if (!limit.ok) {
-    return NextResponse.json(
-      { ok: false, userMessage: "요청이 많습니다. 잠시 후 다시 시도해 주세요." },
-      { status: 429 }
-    );
-  }
+const RATE_LIMIT_MSG = "요청이 많습니다. 잠시 후 다시 시도해 주세요.";
 
+export async function GET(request) {
   const phone = request.nextUrl.searchParams.get("phone") ?? "";
   const norm = normalizeKoreanMobile(phone);
   if (!norm.ok) {
@@ -30,6 +20,15 @@ export async function GET(request) {
       valid: false,
       userMessage: norm.message,
     });
+  }
+
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`check-phone:${ip}`, {
+    max: 60,
+    windowMs: 60_000,
+  });
+  if (!limit.ok) {
+    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
   }
 
   try {

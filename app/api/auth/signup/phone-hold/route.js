@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
+import { checkRateLimit, getClientIp, rateLimit429 } from "@/lib/api/rateLimit";
 import { applyPhoneVerificationToProfile } from "@/lib/auth/profileServer";
 import { isMissingPhoneOtpTable } from "@/lib/auth/phoneOtpServer";
 import { isMissingProfilesTable } from "@/lib/auth/profileServer";
@@ -10,22 +10,12 @@ export const runtime = "nodejs";
 
 const SIGNUP_HOLD_MAX_AGE_MS = 30 * 60 * 1000;
 
+const RATE_LIMIT_MSG = "요청이 많습니다. 잠시 후 다시 시도해 주세요.";
+
 /**
  * 가입 직후 휴대폰 인증을 계정에 연결 (OTP 1회 소비 + 중복 번호 차단)
  */
 export async function POST(request) {
-  const ip = getClientIp(request);
-  const limit = checkRateLimit(`signup-phone-hold:${ip}`, {
-    max: 15,
-    windowMs: 60_000,
-  });
-  if (!limit.ok) {
-    return NextResponse.json(
-      { ok: false, userMessage: "요청이 많습니다. 잠시 후 다시 시도해 주세요." },
-      { status: 429 }
-    );
-  }
-
   let body;
   try {
     body = await request.json();
@@ -44,6 +34,15 @@ export async function POST(request) {
       { ok: false, userMessage: "휴대폰 인증 정보가 없습니다." },
       { status: 400 }
     );
+  }
+
+  const ip = getClientIp(request);
+  const limit = checkRateLimit(`signup-phone-hold:${ip}`, {
+    max: 20,
+    windowMs: 60_000,
+  });
+  if (!limit.ok) {
+    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
   }
 
   const service = createServiceSupabase();

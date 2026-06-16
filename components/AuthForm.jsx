@@ -29,6 +29,7 @@ import LandingDeviceBar from "@/components/landing/LandingDeviceBar";
 import LandingWidthShell from "@/components/landing/LandingWidthShell";
 import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewContext";
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
+import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import { isObfuscatedDuplicateSignup } from "@/lib/auth/signupResponse";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 
@@ -38,6 +39,8 @@ const MODES = {
   signup: "signup",
   reset: "reset",
 };
+
+const EMAIL_CHECK_DEBOUNCE_MS = 800;
 
 async function ensureEmailActive(email, password) {
   const res = await fetch("/api/auth/ensure-email-active", {
@@ -100,6 +103,8 @@ export default function AuthForm({
   const [signupLimited, setSignupLimited] = useState(false);
   const [signupLimitMessage, setSignupLimitMessage] = useState("");
   const emailCheckTimer = useRef(null);
+  const lastCheckedEmailRef = useRef("");
+  const signupPhoneE164Ref = useRef("");
   const [publicTestDraft, setPublicTestDraft] = useState(null);
 
   const hasSocial = getEnabledOAuthProviders().length > 0;
@@ -145,13 +150,39 @@ export default function AuthForm({
   useEffect(() => {
     setMode(initialMode);
     setSignupPhone("");
+    signupPhoneE164Ref.current = "";
     setPhoneVerificationId(null);
     setPhoneSmsVerified(false);
     setPhoneRegistered(false);
     setPhoneCheckMsg("");
     setEmailRegistered(false);
     setEmailCheckMsg("");
+    lastCheckedEmailRef.current = "";
   }, [initialMode]);
+
+  const handleSignupPhoneChange = useCallback((value) => {
+    setSignupPhone(value);
+    const norm = normalizeKoreanMobile(value);
+    if (!norm.ok) return;
+    if (norm.e164 === signupPhoneE164Ref.current) return;
+    signupPhoneE164Ref.current = norm.e164;
+    setPhoneVerificationId(null);
+    setPhoneSmsVerified(false);
+  }, []);
+
+  const handlePhoneAvailabilityChange = useCallback(
+    ({ registered, message, checking }) => {
+      setPhoneRegistered(registered);
+      setPhoneCheckMsg(message);
+      setPhoneChecking(checking);
+    },
+    []
+  );
+
+  const handlePhoneVerified = useCallback(({ verificationId }) => {
+    setPhoneVerificationId(verificationId);
+    setPhoneSmsVerified(true);
+  }, []);
 
   const runEmailAvailabilityCheck = useCallback(
     async (value) => {
@@ -160,6 +191,10 @@ export default function AuthForm({
         setEmailRegistered(false);
         setEmailCheckMsg("");
         setEmailChecking(false);
+        lastCheckedEmailRef.current = "";
+        return;
+      }
+      if (lastCheckedEmailRef.current === trimmed.toLowerCase()) {
         return;
       }
       setEmailChecking(true);
@@ -175,6 +210,7 @@ export default function AuthForm({
         }
         setEmailRegistered(Boolean(data.registered));
         setEmailCheckMsg(data.userMessage || "");
+        lastCheckedEmailRef.current = trimmed.toLowerCase();
       } catch {
         setEmailRegistered(false);
         setEmailCheckMsg("");
@@ -190,7 +226,7 @@ export default function AuthForm({
     clearTimeout(emailCheckTimer.current);
     emailCheckTimer.current = setTimeout(() => {
       runEmailAvailabilityCheck(email);
-    }, 450);
+    }, EMAIL_CHECK_DEBOUNCE_MS);
     return () => clearTimeout(emailCheckTimer.current);
   }, [email, mode, runEmailAvailabilityCheck]);
 
@@ -548,22 +584,11 @@ export default function AuthForm({
                   <PhoneSmsVerifyFields
                     purpose="signup"
                     phone={signupPhone}
-                    onPhoneChange={(value) => {
-                      setSignupPhone(value);
-                      setPhoneVerificationId(null);
-                      setPhoneSmsVerified(false);
-                    }}
+                    onPhoneChange={handleSignupPhoneChange}
                     disabled={loading}
                     onToast={onToast}
-                    onAvailabilityChange={({ registered, message, checking }) => {
-                      setPhoneRegistered(registered);
-                      setPhoneCheckMsg(message);
-                      setPhoneChecking(checking);
-                    }}
-                    onVerified={({ verificationId }) => {
-                      setPhoneVerificationId(verificationId);
-                      setPhoneSmsVerified(true);
-                    }}
+                    onAvailabilityChange={handlePhoneAvailabilityChange}
+                    onVerified={handlePhoneVerified}
                   />
                 </div>
               </details>
@@ -571,22 +596,11 @@ export default function AuthForm({
               <PhoneSmsVerifyFields
                 purpose="signup"
                 phone={signupPhone}
-                onPhoneChange={(value) => {
-                  setSignupPhone(value);
-                  setPhoneVerificationId(null);
-                  setPhoneSmsVerified(false);
-                }}
+                onPhoneChange={handleSignupPhoneChange}
                 disabled={loading}
                 onToast={onToast}
-                onAvailabilityChange={({ registered, message, checking }) => {
-                  setPhoneRegistered(registered);
-                  setPhoneCheckMsg(message);
-                  setPhoneChecking(checking);
-                }}
-                onVerified={({ verificationId }) => {
-                  setPhoneVerificationId(verificationId);
-                  setPhoneSmsVerified(true);
-                }}
+                onAvailabilityChange={handlePhoneAvailabilityChange}
+                onVerified={handlePhoneVerified}
               />
             )}
             <p className="text-[12px] leading-relaxed text-[#4E5968] sm:text-[11px]">
