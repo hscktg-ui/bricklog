@@ -90,6 +90,7 @@
     "test:evolution-architecture": "node --import ./scripts/register-alias.mjs scripts/test-evolution-architecture.mjs",
     "test:insight-auto-approve-loop": "node --import ./scripts/register-alias.mjs scripts/test-insight-auto-approve-loop.mjs",
     "test:research-stack-a": "node --import ./scripts/register-alias.mjs scripts/test-research-stack-a.mjs",
+    "test:research-quality-delivery": "node --import ./scripts/register-alias.mjs scripts/test-research-quality-delivery.mjs",
     "test:insight-to-rules": "node --import ./scripts/register-alias.mjs scripts/test-insight-to-rules.mjs",
     "test:mission-soft-delivery": "node --import ./scripts/register-alias.mjs scripts/test-mission-soft-delivery.mjs",
     "demo:ace-opimo": "node --import ./scripts/register-alias.mjs scripts/run-ace-opimo-demo.mjs",
