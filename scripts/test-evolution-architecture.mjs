@@ -35,12 +35,18 @@ const channelPrompt = read("lib/llm/buildChannelPrompt.js");
 assert.match(channelPrompt, /buildBrandMemoryUserSection/);
 assert.match(channelPrompt, /buildStoryTargetChannelBrief/);
 
-// 3) 전역 인사이트 — 자동 엔진 반영 없음 (관리자 승인 대기)
+// 3) 전역 인사이트 — 자동 승인·보류 재시도·관리자 수동 승인
 const globalInsights = read("lib/feedback/globalInsights.js");
-assert.match(globalInsights, /autoApply:\s*false/);
+assert.match(globalInsights, /autoApprovePendingInsights/);
+assert.match(globalInsights, /recordInsightDeferral/);
 assert.match(globalInsights, /global_quality_insights/);
 assert.match(globalInsights, /applyInsightToEvolutionRules/);
-assert.match(globalInsights, /status:\s*"pending"/);
+assert.match(globalInsights, /rollbackAutoApprovalsIfQualityDropped/);
+
+const insightToRules = read("lib/evolution-lab/insightToRules.js");
+assert.match(insightToRules, /brand_voice/);
+assert.match(insightToRules, /search_intent/);
+assert.match(insightToRules, /rollbackEvolutionRulesSnapshot/);
 
 const approveRoute = read("app/api/admin/insights/approve/route.js");
 assert.match(approveRoute, /approveInsight/);
@@ -69,5 +75,5 @@ assert.match(postChannel, /applyChannelStoryGate/);
 
 console.log("OK: evolution architecture");
 console.log("  per-user: feedback → brand_learning_profiles → prompt injection");
-console.log("  global: pending insights → admin approve → evolution-lab rules files");
+console.log("  global: pending insights → auto-approve/defer → evolution rules + rollback");
 console.log("  channel: story gate wired in pipeline + LLM post-process + delivery");

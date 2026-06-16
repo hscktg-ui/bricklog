@@ -88,6 +88,7 @@
     "test:story-target": "node --import ./scripts/register-alias.mjs scripts/test-story-target-engine.mjs",
     "test:channel-story": "node --import ./scripts/register-alias.mjs scripts/test-channel-story-engine.mjs",
     "test:evolution-architecture": "node --import ./scripts/register-alias.mjs scripts/test-evolution-architecture.mjs",
+    "test:insight-auto-approve-loop": "node --import ./scripts/register-alias.mjs scripts/test-insight-auto-approve-loop.mjs",
     "test:insight-to-rules": "node --import ./scripts/register-alias.mjs scripts/test-insight-to-rules.mjs",
     "test:mission-soft-delivery": "node --import ./scripts/register-alias.mjs scripts/test-mission-soft-delivery.mjs",
     "demo:ace-opimo": "node --import ./scripts/register-alias.mjs scripts/run-ace-opimo-demo.mjs",

@@ -149,7 +149,7 @@ export default function AdminAdvisoryPanel({
           </button>
         </div>
         <p className="mt-1 text-[12px] text-[#8B95A1]">
-          승인 시 엔진 규칙에 반영 · 대기 {quality?.pendingInsights ?? 0}건
+          자동 승인·보류 후 야간 재시도 · 대기 {quality?.pendingInsights ?? 0}건
         </p>
         <ul className="mt-3 space-y-2">
           {insights.length === 0 && (
@@ -165,6 +165,14 @@ export default function AdminAdvisoryPanel({
                 <p className="mt-1 text-[#4E5968]">
                   {ins.payload?.message || ins.payload?.suggestedAction || "—"}
                 </p>
+                {ins.payload?.autoDefer?.reason && (
+                  <p className="mt-1.5 rounded bg-amber-50 px-2 py-1 text-[11px] text-amber-900">
+                    자동 보류: {ins.payload.autoDefer.note || ins.payload.autoDefer.reason}
+                    {ins.payload.autoDefer.deferCount > 1
+                      ? ` · 재시도 ${ins.payload.autoDefer.deferCount}회`
+                      : ""}
+                  </p>
+                )}
               </div>
               <button
                 type="button"
