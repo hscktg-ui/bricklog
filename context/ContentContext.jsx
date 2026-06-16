@@ -60,6 +60,7 @@ import {
 import { isClientBetaActive } from "@/lib/billing/betaAccessClient";
 import {
   generateResearchAsync,
+  rescueChannelViaServerApi,
   runPlacePipeline,
   runInstagramPipeline,
   runImagePipeline,
@@ -2803,6 +2804,21 @@ export function ContentProvider({
           sourceLabel: source.baseLabel,
         });
         if (!sig.ok) {
+          if (source.standalone) {
+            const rescued = await rescueChannelViaServerApi("place", formValues);
+            if (rescued.ok) {
+              setPlaceContent(rescued.content);
+              setBaseContentLabel(
+                rescued.baseContentLabel || source.baseLabel
+              );
+              setSourceChannel("place");
+              brandHooks?.onChannelSaved?.("place", rescued.content);
+              persistChannelMemory("place", rescued.content);
+              void persistChannelHistory("place", formValues, rescued.content);
+              finishLoadingOverlay("place", startedAt, { success: true });
+              return;
+            }
+          }
           const fallbackPlace = runPlacePipeline(
             formValues,
             source.blogLike || blogContent,
@@ -2951,6 +2967,23 @@ export function ContentProvider({
           instaTone: tone,
         });
         if (!sig.ok) {
+          if (source.standalone) {
+            const rescued = await rescueChannelViaServerApi("instagram", formValues, {
+              instaTone: tone,
+            });
+            if (rescued.ok) {
+              setInstagramContent(rescued.content);
+              setBaseContentLabel(
+                rescued.baseContentLabel || source.baseLabel
+              );
+              setSourceChannel("instagram");
+              brandHooks?.onChannelSaved?.("instagram", rescued.content);
+              persistChannelMemory("instagram", rescued.content);
+              void persistChannelHistory("instagram", formValues, rescued.content);
+              finishLoadingOverlay("instagram", startedAt, { success: true });
+              return;
+            }
+          }
           const fallbackInsta = runInstagramPipeline(
             formValues,
             source.blogLike || blogContent,
