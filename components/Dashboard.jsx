@@ -41,6 +41,7 @@ import {
 } from "@/context/ContentContext";
 import ClickBlockerDebugPanel from "@/components/dev/ClickBlockerDebugPanel";
 import GenerationLoadingOverlayHost from "@/components/GenerationLoadingOverlayHost";
+import GenerationWakeLockHost from "@/components/GenerationWakeLockHost";
 import BriclogAssistantHost from "@/components/BriclogAssistantHost";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import WorkspaceIdleHint from "@/components/WorkspaceIdleHint";
@@ -670,7 +671,6 @@ function DashboardLayout({
   useEffect(() => {
     if (typeof window === "undefined") return;
     setMobileOpen(false);
-    window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
   }, []);
 
   useEffect(() => {
@@ -680,6 +680,7 @@ function DashboardLayout({
   return (
     <div className="briclog-vision-workspace relative flex h-full min-h-0 flex-1 overflow-hidden">
       <GenerationLoadingOverlayHost />
+      <GenerationWakeLockHost />
       {welcomeOpen && !showChannelWelcome ? (
         <WelcomeOverlay
           open

@@ -134,21 +134,34 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           loadingOverlay.channel === "pipeline")
     );
 
-  /** 이전 생성 실패 후 진행 중 오버레이만 남으면 「이야기 쓰기」 복구 (완료 애니메이션은 유지) */
+  /** 이전 생성 실패 후 고아 오버레이만 정리 (시작 직후 레이스·진행 중에는 유지) */
   useEffect(() => {
-    if (generating.blog || loadingOverlay?.complete) return;
-    if (
-      loadingOverlay?.active &&
-      (loadingOverlay.channel === "blog" ||
-        loadingOverlay.channel === "pipeline")
-    ) {
-      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    if (generating.blog || loadingOverlay?.complete || !loadingOverlay?.active) {
+      return undefined;
     }
+    if (
+      loadingOverlay.channel !== "blog" &&
+      loadingOverlay.channel !== "pipeline"
+    ) {
+      return undefined;
+    }
+    const startedAt = loadingOverlay.startedAt || 0;
+    const ageMs = startedAt ? Date.now() - startedAt : 0;
+    if (ageMs < 4000) return undefined;
+
+    const t = window.setTimeout(() => {
+      if (generating.blog || loadingOverlay?.complete || !loadingOverlay?.active) {
+        return;
+      }
+      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    }, 600);
+    return () => window.clearTimeout(t);
   }, [
     generating.blog,
     loadingOverlay?.active,
     loadingOverlay?.complete,
     loadingOverlay?.channel,
+    loadingOverlay?.startedAt,
   ]);
 
   const { usage: billingUsage, phase: billingPhase } = useBillingUsage();

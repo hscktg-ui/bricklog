@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import SkeletonPreview from "@/components/SkeletonPreview";
 import SketchStepIcon from "@/components/icons/SketchStepIcon";
 import { CUSTOMER_BLOG_UI_STEPS } from "@/lib/loading/generationSteps";
+import { LOADING } from "@/lib/product/craft";
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import {
   VISION_LOADING_PANEL,
@@ -172,8 +173,11 @@ export default function GeneratingResultPlaceholder({
         </p>
       ) : null}
       {mobileSimple && !revealing ? (
-        <p className="mt-4 text-center text-[12px] font-medium text-[var(--vision-muted)]">
+        <p className="mt-4 text-center text-[12px] font-medium leading-relaxed text-[var(--vision-muted)]">
           완성되면 「원고」로 전환 · 창을 닫지 마세요
+          <span className="mt-1 block text-[11px] text-[#8A6D00]">
+            {LOADING.generationMobileWake}
+          </span>
         </p>
       ) : null}
     </div>

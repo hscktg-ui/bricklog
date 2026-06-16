@@ -5,6 +5,9 @@ import {
   PUBLIC_TEST_LOADING_STEP_MS,
   PUBLIC_TEST_LOADING_STEPS,
 } from "@/lib/publicTest/publicTestLoadingSteps";
+import { LOADING } from "@/lib/product/craft";
+import { useScreenWakeLock } from "@/hooks/useScreenWakeLock";
+import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import {
   VISION_PROGRESS_FILL,
   VISION_PROGRESS_TRACK,
@@ -13,6 +16,8 @@ import {
 
 export default function PublicTestLoadingProgress({ active, message }) {
   const [stepIndex, setStepIndex] = useState(0);
+  const { isMobileWrite } = useMobileWriteUx();
+  useScreenWakeLock(active);
 
   useEffect(() => {
     if (!active) {
@@ -67,6 +72,11 @@ export default function PublicTestLoadingProgress({ active, message }) {
           </li>
         ))}
       </ul>
+      {isMobileWrite ? (
+        <p className="text-[11px] font-medium leading-relaxed text-[#8A6D00]">
+          {LOADING.generationMobileWake}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
 } from "@/lib/loading/generationSteps";
 import { LOADING } from "@/lib/product/craft";
 import { formatDurationKo } from "@/lib/loading/estimateGenerationMs";
+import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import {
   VISION_LOADING_PANEL,
   VISION_SPINNER,
@@ -46,6 +47,7 @@ export default function GenerationLoadingOverlay({
   const [fadingOut, setFadingOut] = useState(false);
   const wasActiveRef = useRef(false);
   const wasCompleteRef = useRef(false);
+  const { isMobileWrite } = useMobileWriteUx();
   const steps =
     channel === "feedback" ||
     channel === "place-feedback" ||
@@ -211,6 +213,11 @@ export default function GenerationLoadingOverlay({
                 ? LOADING.generationOverEstimate
                 : LOADING.generationSub}
             </p>
+            {isMobileWrite ? (
+              <p className="mt-3 text-center text-[11px] font-medium leading-relaxed text-[#8A6D00]">
+                {LOADING.generationMobileWake}
+              </p>
+            ) : null}
             {!stepLabel && (
               <div className="mt-4 flex justify-center gap-1.5">
                 {steps.map((_, i) => (
