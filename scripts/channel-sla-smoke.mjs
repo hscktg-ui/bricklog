@@ -16,6 +16,11 @@ const root = join(__dirname, "..");
 const BASE = process.env.BASE_URL || "http://localhost:3005";
 const OUT = join(root, "config", "channel-sla-report.json");
 
+/** Supabase sign-in rate limit — 세션 재사용 */
+let cachedPlaywrightSession = null;
+let lastHardAuthAt = 0;
+const HARD_AUTH_MIN_MS = 45_000;
+
 import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
 import {
   applySupabaseSessionToContext,
@@ -29,6 +34,7 @@ import {
   fillChannelFormViaDom,
   ensureSmokeBrand,
   installE2eAuthRequestBridge,
+  prepareChannelWorkspace,
   syncE2eSessionToPage,
   waitForWorkspaceReady,
 } from "./lib/e2eAuth.js";
@@ -74,17 +80,54 @@ async function dismissWelcome(page) {
   }
 }
 
-async function refreshBrowserAuth(context) {
+async function getOrRefreshPlaywrightSession(force = false) {
+  const freshEnough =
+    cachedPlaywrightSession?.ok &&
+    Date.now() - (cachedPlaywrightSession.fetchedAt || 0) < 25 * 60_000;
+  if (!force && freshEnough) return cachedPlaywrightSession;
+
   const session = await buildSupabasePlaywrightStorage(BASE);
+  if (session.ok) {
+    cachedPlaywrightSession = { ...session, fetchedAt: Date.now() };
+  }
+  return cachedPlaywrightSession || session;
+}
+
+async function applySessionToPage(page, session) {
+  if (!session?.ok) return false;
+  await page.evaluate(
+    ({ key, value }) => {
+      try {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem(key, value);
+      } catch {
+        /* ignore */
+      }
+    },
+    { key: session.storageKey, value: session.tokenValue }
+  );
+  return true;
+}
+
+async function refreshBrowserAuth(context, { force = false } = {}) {
+  const now = Date.now();
+  if (!force && now - lastHardAuthAt < HARD_AUTH_MIN_MS && cachedPlaywrightSession?.ok) {
+    await applySupabaseSessionToContext(context, cachedPlaywrightSession);
+    return cachedPlaywrightSession;
+  }
+  const session = await getOrRefreshPlaywrightSession(true);
   if (!session.ok) {
     throw new Error(session.reason || "session_refresh_failed");
   }
+  lastHardAuthAt = now;
   await applySupabaseSessionToContext(context, session);
   return session;
 }
 
-async function refreshE2eSession(page) {
-  await syncE2eSessionToPage(page, BASE);
+async function refreshE2eSession(page, { forceAuth = false } = {}) {
+  if (forceAuth) cachedPlaywrightSession = null;
+  const session = await getOrRefreshPlaywrightSession(forceAuth);
+  if (session?.ok) await applySessionToPage(page, session);
   await page
     .evaluate(() => {
       document.querySelectorAll("input, textarea").forEach((el) => {
@@ -93,6 +136,19 @@ async function refreshE2eSession(page) {
     })
     .catch(() => null);
   await page.waitForTimeout(400);
+}
+
+async function ensureFreshE2eSession(page, context, { forceAuth = false } = {}) {
+  if (forceAuth) {
+    await refreshBrowserAuth(context, { force: true });
+  }
+  await refreshE2eSession(page, { forceAuth });
+  await page
+    .evaluate(() => {
+      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    })
+    .catch(() => null);
+  await page.waitForTimeout(600);
 }
 
 async function openWorkspace(page) {
@@ -153,6 +209,36 @@ async function fillCommonFields(page, form, channel) {
       await fillLabeledField(page, /주제 \(직접 입력\)/, form.topic || "");
     }
     await page.waitForTimeout(600);
+    return;
+  }
+
+  if (channel === "place") {
+    await fillBlogSteppedFormViaDom(page, form);
+    await fillChannelFormViaDom(page, "place", form);
+    if (form.placeHeadline) {
+      await fillIfPresent(
+        page,
+        /5월|신메뉴|휴무|연휴|한 줄|입고|헤드라인/i,
+        form.placeHeadline
+      );
+      await fillLabeledField(page, /공지 한 줄/, form.placeHeadline);
+    }
+    await page.waitForTimeout(600);
+    const placeReady = await page
+      .waitForFunction(
+        () => {
+          const btn = document.querySelector('[data-briclog-generate="place"]');
+          return Boolean(btn && !btn.disabled);
+        },
+        undefined,
+        { timeout: 12_000 }
+      )
+      .then(() => true)
+      .catch(() => false);
+    if (!placeReady) {
+      await fillBlogSteppedFormViaDom(page, form);
+      await page.waitForTimeout(600);
+    }
     return;
   }
 
@@ -241,9 +327,9 @@ async function waitForWorkspaceIdle(page, timeoutMs = 180_000) {
   await page.waitForTimeout(500);
 }
 
-async function resetWorkspaceBetweenRuns(page) {
+async function resetWorkspaceBetweenRuns(page, context) {
   await waitForWorkspaceIdle(page, 180_000);
-  await refreshE2eSession(page);
+  await ensureFreshE2eSession(page, context, { forceAuth: true });
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissWorkspaceModals(page);
   await refreshE2eSession(page);
@@ -439,7 +525,7 @@ async function waitForChannelResult(page, persona, timeoutMs) {
   };
 }
 
-async function runPersona(page, persona, errors, networkFails, apiTrace) {
+async function runPersona(page, context, persona, errors, networkFails, apiTrace) {
   const run = {
     id: persona.id,
     channel: persona.channel,
@@ -455,7 +541,9 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
   const t0 = Date.now();
   let apiTraceStart = apiTrace.length;
   try {
+    await refreshE2eSession(page);
     await openChannel(page, persona.menuPattern);
+    await prepareChannelWorkspace(page, BASE, persona.channel);
     run.phases.navigateMs = Date.now() - t0;
 
     if (persona.preferStandalone) {
@@ -473,12 +561,28 @@ async function runPersona(page, persona, errors, networkFails, apiTrace) {
     }
     run.phases.fillMs = Date.now() - fillStart;
 
-    try {
-      await waitForGenerateEnabled(page, 12_000, persona.generatePattern);
-    } catch {
-      run.errors.push("generate_button_disabled");
-      throw new Error("generate_button_disabled");
+    let generateBtn = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        generateBtn = await waitForGenerateEnabled(
+          page,
+          persona.channel === "place" ? 25_000 : 15_000,
+          persona.generatePattern
+        );
+        break;
+      } catch {
+        if (attempt >= 2) {
+          run.errors.push("generate_button_disabled");
+          throw new Error("generate_button_disabled");
+        }
+        run.phases.generateRetry = (run.phases.generateRetry || 0) + 1;
+        await ensureFreshE2eSession(page, context, { forceAuth: true });
+        await openChannel(page, persona.menuPattern);
+        await prepareChannelWorkspace(page, BASE, persona.channel);
+        await fillCommonFields(page, form, persona.channel);
+      }
     }
+    void generateBtn;
 
     const remaining = CHANNEL_SLA_MS - (Date.now() - t0);
     if (remaining < 5000) throw new Error("setup_exceeded_sla");
@@ -649,6 +753,12 @@ async function main() {
   }
 
   const context = ctxResult.context;
+  if (ctxResult.auth?.session?.ok) {
+    cachedPlaywrightSession = {
+      ...ctxResult.auth.session,
+      fetchedAt: Date.now(),
+    };
+  }
   let page = await context.newPage();
   await installE2eAuthRequestBridge(page, BASE);
   const consoleErrors = [];
@@ -731,7 +841,7 @@ async function main() {
       attachPageListeners(page);
       await installE2eAuthRequestBridge(page, BASE);
       try {
-        await resetWorkspaceBetweenRuns(page);
+        await resetWorkspaceBetweenRuns(page, context);
       } catch (err) {
         report.runs.push({
           id: persona.id,
@@ -742,6 +852,7 @@ async function main() {
         continue;
       }
     }
+    await refreshE2eSession(page);
     const login = await openWorkspace(page);
     if (!login.ok) {
       report.runs.push({
@@ -753,7 +864,7 @@ async function main() {
       continue;
     }
     report.runs.push(
-      await runPersona(page, persona, consoleErrors, networkFails, apiTrace)
+      await runPersona(page, context, persona, consoleErrors, networkFails, apiTrace)
     );
   }
 

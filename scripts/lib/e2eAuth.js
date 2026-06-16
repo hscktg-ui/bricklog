@@ -186,6 +186,11 @@ export async function fillChannelFormViaDom(page, channel, form) {
       if (ch === "image") {
         return { topic: fire(byLabel("주제 (직접 입력)"), f.topic || "") };
       }
+      if (ch === "place") {
+        return {
+          headline: fire(byLabel("공지 한 줄"), f.placeHeadline || ""),
+        };
+      }
       return {};
     },
     { ch: channel, f: form }
@@ -194,6 +199,7 @@ export async function fillChannelFormViaDom(page, channel, form) {
 
 /** API로 브랜드 확보 후 사이드바에서 선택 — 채널 단독 생성 필수 */
 export async function ensureSmokeBrand(page, baseUrl, form) {
+  await syncE2eSessionToPage(page, baseUrl);
   const tokenRes = await getE2eBearerToken();
   if (!tokenRes.ok) return { ok: false, reason: tokenRes.reason };
 
@@ -237,6 +243,7 @@ export async function ensureSmokeBrand(page, baseUrl, form) {
     }
   }
 
+  await syncE2eSessionToPage(page, baseUrl);
   return { ok: true, brandId: brand.id, brandName: form.brandName };
 }
 
@@ -392,4 +399,48 @@ export async function waitForWorkspaceReady(page, timeoutMs = 45_000) {
     await page.waitForTimeout(800);
   }
   return { ok: false, reason: "workspace_missing" };
+}
+
+/** @param {import('playwright').Page} page */
+export async function dismissLoadingOverlay(page) {
+  await page.evaluate(() => {
+    window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+  });
+  await page.waitForTimeout(400);
+}
+
+/**
+ * @param {import('playwright').Page} page
+ * @param {number} [timeoutMs=120_000]
+ */
+export async function waitForWorkspaceGenerateIdle(page, timeoutMs = 120_000) {
+  await page
+    .waitForFunction(
+      () => {
+        const busy = /만드는 중|편집본 작성 중|조사·편집|생성 중/.test(
+          document.body?.innerText || ""
+        );
+        if (busy) return false;
+        const btns = document.querySelectorAll("[data-briclog-generate]");
+        if (btns.length === 0) return true;
+        return Array.from(btns).some((b) => !b.disabled);
+      },
+      null,
+      { timeout: timeoutMs }
+    )
+    .catch(() => {});
+}
+
+/**
+ * @param {import('playwright').Page} page
+ * @param {string} baseUrl
+ * @param {string} channel
+ */
+export async function prepareChannelWorkspace(page, baseUrl, channel) {
+  await syncE2eSessionToPage(page, baseUrl);
+  await dismissLoadingOverlay(page);
+  await waitForWorkspaceGenerateIdle(page, 90_000);
+  await page
+    .waitForSelector(`[data-briclog-generate="${channel}"]`, { timeout: 45_000 })
+    .catch(() => {});
 }
