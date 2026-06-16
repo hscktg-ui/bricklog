@@ -3,6 +3,7 @@ import { getLlmServiceStatus } from "@/lib/llm/contentOrchestrator";
 import { getOpenAIClientStatus } from "@/lib/llm/openaiSdk";
 import { isGeminiConfigured } from "@/lib/content/contentIntelligenceV12";
 import { useGeminiResearchProvider } from "@/lib/config/briclogFastPipeline";
+import { getResearchStackAStatus } from "@/lib/config/researchStackA";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,7 @@ export async function GET() {
     ...status,
     geminiConfigured: isGeminiConfigured(),
     geminiResearchEnabled: useGeminiResearchProvider(),
+    researchStackA: getResearchStackAStatus(),
     openaiSdk: {
       configured: sdk.configured,
       clientReady: sdk.clientReady,
