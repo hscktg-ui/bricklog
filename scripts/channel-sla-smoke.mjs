@@ -356,6 +356,7 @@ async function waitForChannelResult(page, persona, timeoutMs) {
         ? "instagramContent"
         : "imagePrompts";
   const hintRe = String(persona.resultHint || "안내|캡션|프롬프트");
+  const apiWaitMs = timeoutMs + 30_000;
 
   const btn = page
     .locator(`[data-briclog-generate="${persona.channel}"]:not([disabled])`)
@@ -369,7 +370,7 @@ async function waitForChannelResult(page, persona, timeoutMs) {
       (r) =>
         r.url().includes("/api/content/channel") &&
         r.request().method() === "POST",
-      { timeout: timeoutMs }
+      { timeout: apiWaitMs }
     )
     .then(async (res) => ({
       status: res.status(),

@@ -419,7 +419,10 @@ export default function PublicBrandTestSection({ onSignup }) {
           {result?.preview ? (
             <div className={`${VISION_PANEL} mt-6`}>
               <div className="border-b border-[var(--vision-line)] px-5 py-4">
-                <p className="text-[11px] font-semibold text-[var(--vision-accent)]">
+                <p
+                  className="text-[11px] font-semibold text-[var(--vision-accent)]"
+                  data-briclog-public-test-preview="1"
+                >
                   발행 가능 샘플
                 </p>
                 <p className="mt-1 text-[12px] text-[var(--vision-muted)]">

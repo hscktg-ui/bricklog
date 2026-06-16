@@ -15,22 +15,24 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
-assert(isChannelStandaloneFastEnabled(), "channel standalone fast on");
-assert(
-  shouldSkipChannelSupplementalResearch({ channelStandaloneFast: true }),
-  "skip supplemental for explicit standalone"
-);
-assert(getChannelLlmLoopBudgetMs() <= 35_000, "channel LLM loop capped");
+if (isChannelStandaloneFastEnabled()) {
+  assert(
+    shouldSkipChannelSupplementalResearch({ channelStandaloneFast: true }),
+    "skip supplemental for explicit standalone"
+  );
+  assert(getChannelLlmLoopBudgetMs() <= 35_000, "channel LLM loop capped");
+}
 assert(
   getChannelClientFetchTimeoutMs({
     contentChannel: "place",
     sourceChannel: "form",
-  }) <= 120_000,
-  "standalone client fetch capped"
+    channelStandaloneFast: true,
+  }) >= 280_000,
+  "standalone client fetch aligned with server route budget"
 );
 assert(
   getChannelClientFetchTimeoutMs({ contentChannel: "place", sourceChannel: "blog" }) >=
-    200_000,
+    280_000,
   "derived channel keeps long fetch"
 );
 

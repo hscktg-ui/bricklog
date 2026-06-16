@@ -171,7 +171,7 @@ async function runUiSmoke() {
     await submit.waitFor({ state: "visible", timeout: 15_000 });
     await submit.click();
 
-    const preview = page.getByText("발행 가능 샘플");
+    const preview = page.locator('[data-briclog-public-test-preview="1"]');
     const errorLine = form.locator("p").filter({ hasText: /다시|구체|입력|시도|무료 테스트를 모두/ });
 
     await Promise.race([
