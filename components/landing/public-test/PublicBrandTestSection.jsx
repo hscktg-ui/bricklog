@@ -14,6 +14,7 @@ import {
   PUBLIC_TEST_TRY_SAMPLE_CTA,
   PUBLIC_TEST_LOADING_MESSAGE,
   PUBLIC_TEST_SAMPLE_BADGE,
+  PUBLIC_TEST_DEMO_FALLBACK_BADGE,
   PUBLIC_TEST_CHANNEL_HEADLINE,
   PUBLIC_TEST_SIGNUP_GAP_HEADLINE,
 } from "@/lib/publicTest/publicTestConfig";
@@ -423,7 +424,9 @@ export default function PublicBrandTestSection({ onSignup }) {
                   className="text-[11px] font-semibold text-[var(--vision-accent)]"
                   data-briclog-public-test-preview="1"
                 >
-                  발행 가능 샘플
+                  {result.demoFallback
+                    ? PUBLIC_TEST_DEMO_FALLBACK_BADGE
+                    : "발행 가능 샘플"}
                 </p>
                 <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
                   {PUBLIC_TEST_CHANNEL_HEADLINE}

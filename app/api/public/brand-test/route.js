@@ -10,7 +10,7 @@ import {
 import { PUBLIC_TEST_QUOTA_EXCEEDED } from "@/lib/publicTest/publicTestConfig";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);

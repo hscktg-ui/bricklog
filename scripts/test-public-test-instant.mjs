@@ -9,7 +9,8 @@ import {
 } from "@/lib/publicTest/publicTestInstantSample.js";
 import { assertPublicTestSampleGate } from "@/lib/publicTest/publicTestGate.js";
 import { prepareBriclogPreWriteContext } from "@/lib/content/briclogPreWriteContext.js";
-import { runPublicBrandTest } from "@/lib/publicTest/runPublicBrandTest.js";
+import { runPublicBrandTest, tryDynamicPublicTestInstant } from "@/lib/publicTest/runPublicBrandTest.js";
+import { pickPublicTestTemplateForInput } from "@/lib/publicTest/pickPublicTestTemplate.js";
 
 process.env.BRICLOG_MISSION = "true";
 
@@ -66,5 +67,24 @@ assert.ok(instant.preview?.place?.short, "place preview");
 assert.ok(instant.preview?.insta?.body, "insta preview");
 assert.equal(instant.metrics?.contextScore?.channels?.find((c) => c.id === "place")?.ready, true);
 assert.equal(instant.metrics?.contextScore?.channels?.find((c) => c.id === "insta")?.ready, true);
+
+const template = pickPublicTestTemplateForInput({
+  brandName: "블루포트 카페",
+  region: "부산 해운대",
+  topic: "여름 시즌 수박 스무디·에이드 신메뉴",
+});
+assert.equal(template?.id, "cafe_brunch");
+assert.equal(template?.brandName, "블루포트 카페");
+
+const dynamic = tryDynamicPublicTestInstant({
+  brandName: "레이어드살롱",
+  region: "서울 홍대",
+  topic: "5월 컬러 이벤트 예약 안내·두피 케어 패키지",
+});
+assert.equal(dynamic?.ok, true, dynamic?.userMessage);
+assert.equal(dynamic?.demoFallback, true);
+assert.equal(dynamic?.templateId, "salon_care");
+assert.ok(dynamic.preview?.place?.short, "dynamic place");
+assert.ok(dynamic.preview?.insta?.body, "dynamic insta");
 
 console.log("OK public test instant samples", PUBLIC_TEST_SAMPLES.length);
