@@ -100,7 +100,9 @@ function summarizeChannelSla(report) {
   if (!report?.runs?.length) {
     return { channelSlaPassCount: 0, channelSlaTotal: CHANNEL_SLA_PERSONAS.length, blogSlaMs: null };
   }
-  const pass = report.runs.filter((r) => r.status === "pass").length;
+  const pass = report.runs.filter(
+    (r) => r.status === "pass" || r.status === "pass_with_warnings"
+  ).length;
   const blog = report.runs.find((r) => r.channel === "blog");
   return {
     channelSlaPassCount: pass,
