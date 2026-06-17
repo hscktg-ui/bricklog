@@ -84,6 +84,7 @@
     "test:customer-output": "node --import ./scripts/register-alias.mjs scripts/test-customer-output.mjs",
     "test:blog-cta-copy": "node --import ./scripts/register-alias.mjs scripts/test-blog-cta-copy.mjs",
     "test:admin-quality-ops": "node --import ./scripts/register-alias.mjs scripts/test-admin-quality-ops.mjs",
+    "test:admin-command-center": "node --import ./scripts/register-alias.mjs scripts/test-admin-command-center.mjs",
     "test:customer-question": "node --import ./scripts/register-alias.mjs scripts/test-customer-question-engine.mjs",
     "test:fast-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-fast-pipeline.mjs",
     "test:briclog-mission": "node --import ./scripts/register-alias.mjs scripts/test-briclog-mission.mjs",

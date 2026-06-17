@@ -66,10 +66,34 @@ function SeverityBadge({ severity }) {
   );
 }
 
+function Collapsible({ title, summary, children, defaultOpen = false }) {
+  return (
+    <details
+      className="group mt-4 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] open:bg-white"
+      open={defaultOpen || undefined}
+    >
+      <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-bold text-[#191F28] marker:content-none">
+        <span className="flex items-center justify-between gap-2">
+          <span>{title}</span>
+          <span className="text-[11px] font-normal text-[#8B95A1] group-open:hidden">
+            {summary}
+          </span>
+          <span className="text-[10px] font-normal text-[#8B95A1]">펼치기</span>
+        </span>
+      </summary>
+      <div className="border-t border-[#E8EBED] px-4 pb-4 pt-3">{children}</div>
+    </details>
+  );
+}
+
 /**
- * @param {{ snapshot?: object | null, loading?: boolean }} props
+ * @param {{ snapshot?: object | null, loading?: boolean, showHero?: boolean }} props
  */
-export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
+export default function AdminQualityOpsPanel({
+  snapshot,
+  loading = false,
+  showHero = true,
+}) {
   if (loading && !snapshot) {
     return (
       <section className="mt-6 rounded-2xl border border-[#E8EBED] bg-white p-5">
@@ -92,7 +116,8 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
     snapshot;
 
   return (
-    <section className="mt-6 rounded-2xl border border-[#191F28]/10 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-[#191F28]/10 bg-white p-5 shadow-sm">
+      {showHero ? (
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1B64DA]">
@@ -111,6 +136,11 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
           </div>
         )}
       </div>
+      ) : (
+        <p className="text-[12px] text-[#8B95A1]">
+          배치·루브릭 상세 · {formatKst(snapshot.generatedAt)}
+        </p>
+      )}
 
       {alerts?.length > 0 && (
         <ul className="mt-4 space-y-2">
@@ -232,9 +262,11 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
       </div>
 
       {crossChannel?.failReasons?.length > 0 && (
-        <div className="mt-4 rounded-xl border border-[#E8EBED] p-4">
-          <h3 className="text-[14px] font-bold">배치 실패 사유</h3>
-          <div className="mt-3 overflow-x-auto">
+        <Collapsible
+          title="배치 실패 사유"
+          summary={`${crossChannel.failReasons.length}종`}
+        >
+          <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] text-left text-[11px]">
               <thead>
                 <tr className="text-[#8B95A1]">
@@ -254,14 +286,16 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
               </tbody>
             </table>
           </div>
-        </div>
+        </Collapsible>
       )}
 
       {crossChannel?.failedSamples?.length > 0 && (
-        <div className="mt-4 rounded-xl border border-[#E8EBED] p-4">
-          <h3 className="text-[14px] font-bold">실패 샘플 (상위)</h3>
-          <p className="mt-1 text-[11px] text-[#8B95A1]">
-            평균 belief {crossChannel.failedBeliefAvg ?? "—"} · human_editor·CQ 게이트 확인
+        <Collapsible
+          title="실패 샘플"
+          summary={`${crossChannel.failedSamples.length}건`}
+        >
+          <p className="text-[11px] text-[#8B95A1]">
+            평균 belief {crossChannel.failedBeliefAvg ?? "—"}
           </p>
           <ul className="mt-3 space-y-2">
             {crossChannel.failedSamples.map((s) => (
@@ -279,7 +313,7 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
               </li>
             ))}
           </ul>
-        </div>
+        </Collapsible>
       )}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
@@ -335,9 +369,8 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-[#E8EBED] p-4">
-        <h3 className="text-[14px] font-bold">오늘 배포 모니터링 체크리스트</h3>
-        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+      <Collapsible title="오늘 배포 체크리스트" summary={`${(rollout || []).length}항목`}>
+        <ul className="grid gap-2 sm:grid-cols-2">
           {(rollout || []).map((item) => (
             <li
               key={item.id}
@@ -349,18 +382,20 @@ export default function AdminQualityOpsPanel({ snapshot, loading = false }) {
             </li>
           ))}
         </ul>
-      </div>
+      </Collapsible>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {(commands || []).map((cmd) => (
-          <code
-            key={cmd}
-            className="rounded-lg bg-[#F2F4F6] px-2.5 py-1 text-[10px] text-[#4E5968]"
-          >
-            {cmd}
-          </code>
-        ))}
-      </div>
+      <Collapsible title="실행 명령" summary={`${(commands || []).length}개`}>
+        <div className="flex flex-wrap gap-2">
+          {(commands || []).map((cmd) => (
+            <code
+              key={cmd}
+              className="rounded-lg bg-[#F2F4F6] px-2.5 py-1 text-[10px] text-[#4E5968]"
+            >
+              {cmd}
+            </code>
+          ))}
+        </div>
+      </Collapsible>
 
       {dataSources?.prodNote ? (
         <p className="mt-3 text-[11px] text-[#8B95A1]">{dataSources.prodNote}</p>

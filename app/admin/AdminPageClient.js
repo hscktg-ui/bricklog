@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
@@ -13,6 +13,9 @@ import AdminAdvisoryPanel from "@/components/admin/AdminAdvisoryPanel";
 import AdminOpsHub from "@/components/admin/AdminOpsHub";
 import AdminProductOverviewPanel from "@/components/admin/AdminProductOverviewPanel";
 import AdminQualityOpsPanel from "@/components/admin/AdminQualityOpsPanel";
+import AdminCommandCenter from "@/components/admin/AdminCommandCenter";
+import AdminSectionNav from "@/components/admin/AdminSectionNav";
+import { buildAdminCommandCenter } from "@/lib/admin/buildAdminCommandCenter";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
 
@@ -51,6 +54,7 @@ export default function AdminPageClient() {
   const [productOverview, setProductOverview] = useState(null);
   const [qualityOps, setQualityOps] = useState(null);
   const [qualityOpsLoading, setQualityOpsLoading] = useState(false);
+  const [adminSection, setAdminSection] = useState("now");
   const [showDetailMetrics, setShowDetailMetrics] = useState(false);
   const pollRef = useRef(null);
 
@@ -357,18 +361,38 @@ export default function AdminPageClient() {
 
   const mem = stats?.memory;
 
+  const commandCenter = useMemo(
+    () =>
+      buildAdminCommandCenter({
+        advisory,
+        qualityOps,
+        stats,
+        errors,
+      }),
+    [advisory, qualityOps, stats, errors]
+  );
+
+  const commandLoading =
+    advisoryLoading || qualityOpsLoading || (!stats && !advisory && !qualityOps);
+
   return (
-    <div className="min-h-screen bg-[#F7F8FA] p-6 text-[#191F28]">
+    <div className="min-h-screen bg-[#F7F8FA] p-4 text-[#191F28] md:p-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-[22px] font-bold">BRICLOG 운영 · 제품 개요</h1>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8B95A1]">
+              BRICLOG
+            </p>
+            <h1 className="text-[24px] font-bold tracking-tight md:text-[28px]">관리자</h1>
             <p className="mt-1 text-[12px] text-[#8B95A1]">
-              SEO·품질 관제·배치 KPI · 샘플·가입 신호 — 랜딩·가입 설정은 그대로
+              한눈에 보고, 필요할 때만 깊게
             </p>
           </div>
-          <Link href="/" className="text-[13px] text-[#03A94D] hover:underline">
-            앱으로 돌아가기
+          <Link
+            href="/"
+            className="rounded-xl border border-[#E8EBED] bg-white px-4 py-2 text-[13px] font-medium text-[#03A94D] hover:bg-[#F6FDF9]"
+          >
+            작업실로
           </Link>
         </div>
 
@@ -380,44 +404,74 @@ export default function AdminPageClient() {
           </ul>
         )}
 
-        <AdminProductOverviewPanel
-          snapshot={productOverview}
-          publicTest={stats?.dashboard?.publicBrandTest || {}}
-        />
+        <AdminCommandCenter view={commandCenter} loading={commandLoading} />
 
-        <AdminQualityOpsPanel snapshot={qualityOps} loading={qualityOpsLoading} />
+        <AdminSectionNav active={adminSection} onChange={setAdminSection} />
 
-        <AdminAdvisoryPanel
-          advisory={advisory}
-          loading={advisoryLoading}
-          insights={insights}
-          insightsLoading={insightsLoading}
-          onRefreshInsights={loadInsights}
-          onApproveInsight={approveInsight}
-        />
+        {adminSection === "now" && (
+          <AdminAdvisoryPanel
+            advisory={advisory}
+            loading={advisoryLoading}
+            insights={insights}
+            insightsLoading={insightsLoading}
+            onRefreshInsights={loadInsights}
+            onApproveInsight={approveInsight}
+            compact
+          />
+        )}
 
-        <AdminOpsHub onToast={showToast} />
-
-        {!stats ? (
-          <p className="text-[14px] text-[#8B95A1]">통계를 불러오는 중...</p>
-        ) : (
+        {adminSection === "quality" && (
           <>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-[15px] font-bold text-[#191F28]">상세 지표</h2>
-              <button
-                type="button"
-                onClick={() => setShowDetailMetrics((v) => !v)}
-                className="rounded-lg border border-[#E8EBED] px-3 py-1.5 text-[12px] text-[#4E5968]"
-              >
-                {showDetailMetrics ? "접기" : "펼치기"}
-              </button>
-            </div>
-            {showDetailMetrics && (
+            <AdminQualityOpsPanel
+              snapshot={qualityOps}
+              loading={qualityOpsLoading}
+              showHero={false}
+            />
+            <AutoEvolutionStatusPanel />
+          </>
+        )}
+
+        {adminSection === "growth" && (
+          <>
+            <AdminAdvisoryPanel
+              advisory={advisory}
+              loading={advisoryLoading}
+              insights={[]}
+              insightsLoading={false}
+              onRefreshInsights={loadInsights}
+              onApproveInsight={approveInsight}
+              compact={false}
+            />
+            <AdminProductOverviewPanel
+              snapshot={productOverview}
+              publicTest={stats?.dashboard?.publicBrandTest || {}}
+            />
+            <AdminOpsHub onToast={showToast} />
+          </>
+        )}
+
+        {adminSection === "system" && (
+          <>
+            {!stats ? (
+              <p className="text-[14px] text-[#8B95A1]">통계를 불러오는 중...</p>
+            ) : (
               <>
-              <AdminDashboard
-                dashboard={stats.dashboard}
-                billing={stats.billing}
-              />
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-[15px] font-bold text-[#191F28]">상세 지표</h2>
+                  <button
+                    type="button"
+                    onClick={() => setShowDetailMetrics((v) => !v)}
+                    className="rounded-lg border border-[#E8EBED] bg-white px-3 py-1.5 text-[12px] text-[#4E5968]"
+                  >
+                    {showDetailMetrics ? "접기" : "펼치기"}
+                  </button>
+                </div>
+                {showDetailMetrics && (
+                  <>
+                    <AdminDashboard
+                      dashboard={stats.dashboard}
+                      billing={stats.billing}
+                    />
 
             <section className="mt-8">
               <h2 className="text-[15px] font-bold">레거시 요약</h2>
@@ -529,37 +583,36 @@ export default function AdminPageClient() {
             )}
               </>
             )}
+            <HaeshinContentHub showToast={showToast} />
+
+            <section className="mt-8">
+              <h2 className="text-[16px] font-bold">최근 오류 로그</h2>
+              <ul className="mt-3 space-y-2">
+                {errors.length === 0 && (
+                  <li className="text-[13px] text-[#8B95A1]">오류 없음</li>
+                )}
+                {errors.map((e) => (
+                  <li
+                    key={e.id}
+                    className="rounded-lg border border-[#E8EBED] bg-white p-3 text-[12px]"
+                  >
+                    <span className="font-semibold text-[#E42939]">{e.route}</span>
+                    <p className="mt-1 text-[#4E5968]">{e.message}</p>
+                    <p className="mt-1 text-[#8B95A1]">
+                      {new Date(e.created_at).toLocaleString("ko-KR")}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <p className="mt-4 text-[12px] text-[#8B95A1]">
+              사용자당 일일 한도: {stats?.dailyLimitPerUser ?? 20}회
+            </p>
           </>
         )}
-
-        <p className="mt-4 text-[12px] text-[#8B95A1]">
-          사용자당 일일 한도: {stats?.dailyLimitPerUser ?? 20}회
-        </p>
-
-        <AutoEvolutionStatusPanel />
-
-        <HaeshinContentHub showToast={showToast} />
-
-        <section className="mt-8">
-          <h2 className="text-[16px] font-bold">최근 오류 로그</h2>
-          <ul className="mt-3 space-y-2">
-            {errors.length === 0 && (
-              <li className="text-[13px] text-[#8B95A1]">오류 없음</li>
-            )}
-            {errors.map((e) => (
-              <li
-                key={e.id}
-                className="rounded-lg border border-[#E8EBED] bg-white p-3 text-[12px]"
-              >
-                <span className="font-semibold text-[#E42939]">{e.route}</span>
-                <p className="mt-1 text-[#4E5968]">{e.message}</p>
-                <p className="mt-1 text-[#8B95A1]">
-                  {new Date(e.created_at).toLocaleString("ko-KR")}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
+      </>
+    )}
       </div>
       <Toast
         visible={toast.visible}

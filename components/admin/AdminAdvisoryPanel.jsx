@@ -19,6 +19,7 @@ export default function AdminAdvisoryPanel({
   insightsLoading,
   onRefreshInsights,
   onApproveInsight,
+  compact = false,
 }) {
   if (loading) {
     return (
@@ -39,9 +40,13 @@ export default function AdminAdvisoryPanel({
   }
 
   const { funnel, actions, quality, engineOps, readinessGaps } = advisory;
+  const listActions = compact
+    ? (actions || []).filter((a) => a.priority !== "now")
+    : actions;
 
   return (
     <section className="mb-6 space-y-4">
+      {!compact && (
       <div className="rounded-2xl border border-[#03A94D]/30 bg-gradient-to-br from-[#03C75A]/8 to-white p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -95,12 +100,15 @@ export default function AdminAdvisoryPanel({
           />
         </div>
       </div>
+      )}
 
-      {actions?.length > 0 && (
+      {listActions?.length > 0 && (
         <div className="rounded-2xl border border-[#E8EBED] bg-white p-5">
-          <h3 className="text-[15px] font-bold text-[#191F28]">할 일 · 우선순위</h3>
+          <h3 className="text-[15px] font-bold text-[#191F28]">
+            {compact ? "할 일 · 관찰" : "할 일 · 우선순위"}
+          </h3>
           <ul className="mt-3 space-y-2">
-            {actions.map((item) => (
+            {listActions.map((item) => (
               <li
                 key={item.id}
                 className={`rounded-xl border p-4 ${PRIORITY_STYLES[item.priority] || PRIORITY_STYLES.watch}`}
