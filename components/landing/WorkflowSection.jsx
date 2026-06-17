@@ -1,11 +1,11 @@
 "use client";
 
 import { WORKFLOW_STEPS } from "@/lib/landing/sampleContent";
-import { VISION_EYEBROW } from "@/lib/landing/vision2030Styles";
+import { VISION_EYEBROW, VISION_SECTION } from "@/lib/landing/vision2030Styles";
 
 export default function WorkflowSection() {
   return (
-    <section className="px-5 py-14 md:px-8 md:py-20">
+    <section className={`${VISION_SECTION} px-5 py-14 md:px-8 md:py-20`}>
       <div className="mx-auto max-w-4xl">
         <p className={`${VISION_EYEBROW} text-center`}>Workflow</p>
         <h2 className="mt-3 text-center text-[clamp(1.25rem,3vw,1.5rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
@@ -18,7 +18,7 @@ export default function WorkflowSection() {
           {WORKFLOW_STEPS.map((s) => (
             <li
               key={s.n}
-              className="flex gap-4 rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-5 shadow-[var(--vision-shadow-soft)]"
+              className="flex gap-4 rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] p-5 shadow-[var(--vision-shadow-soft)]"
             >
               <span className="shrink-0 text-[22px] font-semibold tabular-nums text-[var(--vision-ink)]">
                 {String(s.n).padStart(2, "0")}

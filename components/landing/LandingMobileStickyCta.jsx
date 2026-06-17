@@ -15,6 +15,7 @@ export default function LandingMobileStickyCta({
   onStart,
   onSignup,
   introOpen = false,
+  suppressed = false,
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -30,7 +31,7 @@ export default function LandingMobileStickyCta({
     return () => observer.disconnect();
   }, []);
 
-  if (!visible) return null;
+  if (!visible || suppressed) return null;
 
   return (
     <div

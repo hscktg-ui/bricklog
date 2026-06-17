@@ -20,7 +20,7 @@ export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[38] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:px-6"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[38] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:hidden"
       role="region"
       aria-label="작업실 만들기"
     >

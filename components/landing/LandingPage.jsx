@@ -47,7 +47,7 @@ import {
 } from "@/lib/landing/vision2030Styles";
 
 const NAV_LINKS = [
-  { id: "public-brand-test", label: "무료 테스트", show: "hidden md:inline-flex" },
+  { id: "public-brand-test", label: "무료 테스트", show: "inline-flex md:inline-flex" },
   { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
   { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
   { id: "pricing", label: "요금", show: "hidden lg:inline-flex" },
@@ -57,6 +57,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
   const { greeting, sample, contentIdea, seasonCopy, theme } =
     useLandingVisit();
   const [introOpen, setIntroOpen] = useState(false);
+  const [publicTestPreviewActive, setPublicTestPreviewActive] = useState(false);
 
   const scrollToId = useCallback((id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -174,7 +175,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
       <LandingPreviewShell>
         <main
           id="landing-main"
-          className={`pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] sm:pb-0 ${
+          className={`pb-[calc(var(--landing-cta-h,3.75rem)+max(1rem,env(safe-area-inset-bottom,0px)))] sm:pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] ${
             introOpen ? "pointer-events-none opacity-0" : "briclog-vision-reveal"
           }`}
         >
@@ -189,7 +190,10 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           />
           <WhyBriclog />
           <LiveStatsBanner introOpen={introOpen} />
-          <PublicBrandTestSection onSignup={(mode) => onAuthOpen(mode || "signup")} />
+          <PublicBrandTestSection
+            onSignup={(mode) => onAuthOpen(mode || "signup")}
+            onPreviewActiveChange={setPublicTestPreviewActive}
+          />
           <DemoPreviewSection
             sample={sample}
             onTest={withLandingCta(scrollToPublicTest)}
@@ -243,6 +247,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
         onStart={withLandingCta(scrollToPublicTest)}
         onSignup={() => openSignup("landing_mobile_sticky")}
         introOpen={introOpen}
+        suppressed={publicTestPreviewActive}
       />
     </div>
   );

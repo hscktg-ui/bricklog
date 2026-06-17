@@ -51,7 +51,7 @@ import {
 import PublicTestSignupStickyBar from "@/components/landing/public-test/PublicTestSignupStickyBar";
 import { recordSignupIntent } from "@/lib/analytics/signupIntent";
 
-export default function PublicBrandTestSection({ onSignup }) {
+export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange }) {
   const [brandName, setBrandName] = useState("");
   const [region, setRegion] = useState("");
   const [topic, setTopic] = useState("");
@@ -86,6 +86,10 @@ export default function PublicBrandTestSection({ onSignup }) {
   useEffect(() => {
     if (result?.preview) setChannelTab("blog");
   }, [result]);
+
+  useEffect(() => {
+    onPreviewActiveChange?.(Boolean(result?.preview));
+  }, [result?.preview, onPreviewActiveChange]);
 
   useEffect(() => {
     if (!sampleReady) return;
@@ -275,7 +279,7 @@ export default function PublicBrandTestSection({ onSignup }) {
         <div className="w-full max-w-xl justify-self-center lg:justify-self-end">
           {sampleReady ? (
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <p className="flex-1 rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#F7F8FA)] px-3 py-2.5 text-[13px] text-[var(--vision-muted)]">
+              <p className="flex-1 rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] px-3 py-2.5 text-[13px] text-[var(--vision-muted)]">
                 <span className="font-semibold text-[var(--vision-ink)]">
                   {activeSample.brandName}
                 </span>
@@ -438,7 +442,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                       type="button"
                       disabled={!tab.ready}
                       onClick={() => tab.ready && setChannelTab(tab.id)}
-                      className={`rounded-full px-3 py-1.5 text-[12px] font-semibold transition ${
+                      className={`min-h-[44px] rounded-full px-3 py-2 text-[12px] font-semibold transition ${
                         !tab.ready
                           ? "cursor-not-allowed border border-dashed border-[var(--vision-line)] bg-transparent text-[var(--vision-muted)]/50"
                           : channelTab === tab.id
@@ -460,6 +464,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 </h3>
               </div>
 
+              <div className="max-h-[min(72vh,640px)] overflow-y-auto overscroll-y-contain">
               <PublicTestReflectionChips chips={result.metrics?.reflectionChips} />
               <div className="space-y-4 px-5 py-4 text-[14px] leading-relaxed text-[var(--vision-ink)]">
                 {channelTab === "place" && result.preview.place ? (
@@ -509,6 +514,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                   channelReady={previewChannelReady}
                 />
               ) : null}
+              </div>
 
               <div className="relative border-t border-[var(--vision-line)] px-5 py-8">
                 <p className="text-center text-[13px] font-semibold text-[var(--vision-ink)]">
@@ -529,7 +535,7 @@ export default function PublicBrandTestSection({ onSignup }) {
                 </ul>
               </div>
 
-              <div className="border-t border-[var(--vision-line)] px-5 py-4">
+              <div className="hidden border-t border-[var(--vision-line)] px-5 py-4 sm:block">
                 <button
                   type="button"
                   onClick={() => signup("public_test_result")}
