@@ -279,6 +279,20 @@ export default function AdminPageClient() {
     };
   }, []);
 
+  const commandCenter = useMemo(
+    () =>
+      buildAdminCommandCenter({
+        advisory,
+        qualityOps,
+        stats,
+        errors,
+      }),
+    [advisory, qualityOps, stats, errors]
+  );
+
+  const commandLoading =
+    advisoryLoading || qualityOpsLoading || (!stats && !advisory && !qualityOps);
+
   if (loading) {
     return (
       <AdminGateShell title="BRICLOG 관리자">
@@ -360,20 +374,6 @@ export default function AdminPageClient() {
   }
 
   const mem = stats?.memory;
-
-  const commandCenter = useMemo(
-    () =>
-      buildAdminCommandCenter({
-        advisory,
-        qualityOps,
-        stats,
-        errors,
-      }),
-    [advisory, qualityOps, stats, errors]
-  );
-
-  const commandLoading =
-    advisoryLoading || qualityOpsLoading || (!stats && !advisory && !qualityOps);
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] p-4 text-[#191F28] md:p-6">
