@@ -2,8 +2,8 @@
 
 import {
   buildContentOperatingPlan,
-  buildPostPublishOperatingSteps,
 } from "@/lib/product/briclogBrandContentOS";
+import BriclogNextPanel from "@/components/BriclogNextPanel";
 import { WORKSPACE_BLOG } from "@/lib/product/craft";
 import { VISION_EYEBROW, VISION_PANEL } from "@/lib/landing/vision2030Styles";
 
@@ -19,7 +19,22 @@ export default function ContentOperatingPlanPanel({
   hasPlace = false,
   hasInsta = false,
   blogTopic = "",
+  onChannelAction = null,
 }) {
+  if (phase === "after") {
+    return (
+      <BriclogNextPanel
+        blogInput={blogInput}
+        meta={meta}
+        compact={compact}
+        hasPlace={hasPlace}
+        hasInsta={hasInsta}
+        blogTopic={blogTopic}
+        onChannelAction={onChannelAction}
+      />
+    );
+  }
+
   const plan =
     blogInput?.contentOperatingPlan ||
     (blogInput?.brandName || blogInput?.topic
@@ -28,24 +43,7 @@ export default function ContentOperatingPlanPanel({
   const headline =
     meta?.coreEngine?.operatingHeadline || plan?.operatingHeadline;
 
-  const postSteps =
-    phase === "after"
-      ? buildPostPublishOperatingSteps(plan, {
-          hasPlace,
-          hasInsta,
-          blogTopic:
-            blogTopic ||
-            meta?.primaryTopic ||
-            plan?.primaryTopic ||
-            blogInput?.topic ||
-            "",
-        })
-      : [];
-
-  const items =
-    phase === "after"
-      ? postSteps
-      : plan?.whatToWrite?.slice(0, compact ? 3 : 4) || [];
+  const items = plan?.whatToWrite?.slice(0, compact ? 3 : 4) || [];
 
   if (!items.length) return null;
 
@@ -53,12 +51,7 @@ export default function ContentOperatingPlanPanel({
     ? "rounded-xl border border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] px-3 py-3"
     : `${VISION_PANEL} px-4 py-4`;
 
-  const eyebrow =
-    phase === "after"
-      ? "다음 운영 단계"
-      : compact
-        ? "이번 달 운영안 · 생성 전"
-        : "이번 달 운영안";
+  const eyebrow = compact ? "이번 달 운영안 · 생성 전" : "이번 달 운영안";
 
   return (
     <section className={panelClass} aria-label={eyebrow}>
@@ -71,18 +64,14 @@ export default function ContentOperatingPlanPanel({
       >
         {eyebrow}
       </p>
-      {headline && phase !== "after" ? (
+      {headline ? (
         <h3
           className={`${compact ? "mt-0.5 text-[14px]" : "mt-1 text-[15px]"} font-bold text-[var(--vision-ink)]`}
         >
           {headline}
         </h3>
       ) : null}
-      {phase === "after" ? (
-        <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-          네이버에 올린 뒤 같은 조사·브랜드 톤으로 이어갈 채널과 주제입니다.
-        </p>
-      ) : compact ? (
+      {compact ? (
         <p className="mt-1 text-[11px] text-[var(--vision-muted)]">
           아래 「{WORKSPACE_BLOG.cta}」 전에 이번 달에 쓸 주제·채널 방향을
           확인하세요.
@@ -91,24 +80,19 @@ export default function ContentOperatingPlanPanel({
       <ul className={`${compact ? "mt-2" : "mt-3"} space-y-2`}>
         {items.map((item) => (
           <li
-            key={`${phase}-${item.channel}-${item.topic}`}
+            key={`before-${item.channel}-${item.topic}`}
             className="rounded-lg bg-[var(--vision-paper,#F7F8FA)] px-3 py-2 text-[13px] leading-relaxed"
           >
             <span className="font-semibold text-[var(--vision-accent)]">
               {item.channelLabel || item.channel}
             </span>
             <span className="text-[var(--vision-ink)]"> — {item.topic}</span>
-            {phase === "after" && item.actionLabel ? (
-              <p className="mt-0.5 text-[12px] font-medium text-[var(--vision-muted)]">
-                → {item.actionLabel}
-              </p>
-            ) : null}
-            {phase !== "after" && !compact && item.reason ? (
+            {!compact && item.reason ? (
               <p className="mt-0.5 text-[12px] text-[var(--vision-muted)]">
                 {item.reason}
               </p>
             ) : null}
-            {phase !== "after" && item.priority ? (
+            {item.priority ? (
               <p className="mt-0.5 text-[11px] text-[var(--vision-muted)]">
                 {item.priority}
               </p>
@@ -116,7 +100,7 @@ export default function ContentOperatingPlanPanel({
           </li>
         ))}
       </ul>
-      {phase !== "after" && plan.researchMustKnow?.length ? (
+      {plan.researchMustKnow?.length ? (
         <p className="mt-3 text-[12px] text-[var(--vision-muted)]">
           조사 포인트:{" "}
           {plan.researchMustKnow.slice(0, compact ? 2 : 3).join(" · ")}

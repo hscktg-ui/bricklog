@@ -21,6 +21,7 @@ import HeroSection from "./HeroSection";
 import LiveStatsBanner from "./LiveStatsBanner";
 import DemoPreviewSection from "./DemoPreviewSection";
 import WorkflowSection from "./WorkflowSection";
+import BriclogNextSection from "./BriclogNextSection";
 import WhyBriclog from "./WhyBriclog";
 import CoreEngineSection from "./CoreEngineSection";
 import LandingFaqSection from "./LandingFaqSection";
@@ -189,6 +190,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onTest={withLandingCta(scrollToPublicTest)}
           />
           <WhyBriclog />
+          <BriclogNextSection />
           <LiveStatsBanner introOpen={introOpen} />
           <PublicBrandTestSection
             onSignup={(mode) => onAuthOpen(mode || "signup")}

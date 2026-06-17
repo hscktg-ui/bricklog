@@ -507,6 +507,15 @@ export default function BlogResultView({
           hasPlace={hasPlace}
           hasInsta={hasInsta}
           blogTopic={blogTitle}
+          onChannelAction={
+            typeof onNavigate === "function"
+              ? (channel) => {
+                  if (channel === "place") onNavigate("place");
+                  else if (channel === "instagram" || channel === "insta")
+                    onNavigate("insta");
+                }
+              : undefined
+          }
         />
       ) : null}
 
