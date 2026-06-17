@@ -67,7 +67,7 @@ export default function BriclogNextHomeStrip({
       : undefined;
 
   return (
-    <div className="border-b border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] px-4 py-3 md:px-6">
+    <div className="border-b border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] px-4 py-3 sm:px-5 md:px-6">
       <div className="mx-auto max-w-5xl">
         <BriclogNextPanel
           blogInput={blogInput}

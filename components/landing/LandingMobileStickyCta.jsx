@@ -35,7 +35,7 @@ export default function LandingMobileStickyCta({
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--vision-line)] bg-[var(--vision-glass)] shadow-[0_-20px_60px_rgba(5,5,6,0.12)] backdrop-blur-2xl transition-opacity duration-300 sm:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[var(--vision-line)] bg-[var(--vision-glass)] shadow-[0_-20px_60px_rgba(5,5,6,0.12)] backdrop-blur-2xl transition-opacity duration-300 lg:hidden ${
         introOpen ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
       style={{

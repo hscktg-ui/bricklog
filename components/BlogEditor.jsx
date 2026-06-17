@@ -33,10 +33,7 @@ import {
   useContentForm,
   useContentPipelineState,
 } from "@/context/ContentContext";
-import {
-  isBlogGenerationFailureHint,
-  resolveBlogHintPanelTitle,
-} from "@/lib/product/customerOutput";
+import BlogGenHintPanel from "@/components/workspace/BlogGenHintPanel";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import {
   isFormValid as checkFormValid,
@@ -79,6 +76,7 @@ import {
   channelFormPaneClass,
   channelFormScrollClass,
   channelResultPaneClass,
+  resolveChannelMobilePaneState,
   CHANNEL_MOBILE_CTA_FOOTER,
 } from "@/lib/workspace/channelWorkspaceLayout";
 import {
@@ -346,22 +344,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         <div
           className={channelFormScrollClass(formScrollPadClass, compact)}
         >
-          {isMobile && blogGenHint ? (
-            <div
-              className={`mb-4 px-4 py-3 text-[12px] leading-relaxed ${
-                blogGenHintSoft
-                  ? `${VISION_STATUS_OK} text-[var(--vision-muted)]`
-                  : `${VISION_STATUS_WARN} text-[var(--vision-muted)]`
-              }`}
-              role="status"
-            >
-              <p className="font-semibold text-[var(--vision-ink)]">
-                {resolveBlogHintPanelTitle(blogGenHint, blogGenHintSoft)}
-              </p>
-              <p className="mt-1">{blogGenHint}</p>
-            </div>
-          ) : null}
-
           <WorkspaceChannelIntro
             compact={compact}
             title={WORKSPACE_BLOG.title}
@@ -757,6 +739,10 @@ const BlogEditorResults = memo(function BlogEditorResults({
     loadingOverlay?.channel,
   ]);
 
+  const handleHintRetry = useCallback(() => {
+    generateBlog(blogInput, { blogOnly: loadBlogOnlyPref(), regen: true });
+  }, [generateBlog, blogInput]);
+
   if (mobileHidden) return null;
 
   return (
@@ -1002,27 +988,16 @@ const BlogEditorResults = memo(function BlogEditorResults({
             )}
           </>
         ) : (
-          <div className="mx-auto flex max-w-lg flex-col justify-center py-16">
+          <div className="mx-auto flex max-w-lg flex-col justify-center px-2 py-12 sm:px-0 sm:py-16 md:py-20">
             {blogGenHint ? (
-              <div
-                className={`rounded-2xl px-5 py-4 text-center ${
-                  blogGenHintSoft ? VISION_STATUS_OK : VISION_STATUS_WARN
-                }`}
-              >
-                <p className="text-[14px] font-semibold text-[var(--vision-ink)]">
-                  {resolveBlogHintPanelTitle(blogGenHint, blogGenHintSoft)}
-                </p>
-                <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
-                  {blogGenHint}
-                </p>
-                {!blogGenHintIsAuth ? (
-                  <p className="mt-3 text-[12px] text-[var(--vision-muted)]">
-                    {isBlogGenerationFailureHint(blogGenHint)
-                      ? "왼쪽 「조사 후 글 받기」를 다시 눌러 주세요."
-                      : "왼쪽 폼에서 「조사 후 글 받기」로 이어갈 수 있어요."}
-                  </p>
-                ) : null}
-              </div>
+              <BlogGenHintPanel
+                hint={blogGenHint}
+                soft={blogGenHintSoft}
+                isAuth={blogGenHintIsAuth}
+                isMobile={isMobile}
+                isTablet={isTablet}
+                onRetry={handleHintRetry}
+              />
             ) : (
               <EmptyStoryPanel
                 compact={compact}
@@ -1061,6 +1036,7 @@ export default function BlogEditor({
     billingPlanId,
     generating,
     loadingOverlay,
+    blogGenHint,
   } = useContentPipelineState();
 
   const leaveGuardActive =
@@ -1103,13 +1079,32 @@ export default function BlogEditor({
   const hasAnyChannelResult =
     hasDeliveredBlog || Boolean(placeContent) || Boolean(instagramContent);
 
-  const mobileIdleEmpty = isMobile && !hasAnyChannelResult && !storyBusy;
-  const showMobileChrome = isMobile && (hasAnyChannelResult || storyBusy);
-  const hideFormPanel =
-    isMobile && !formOpen && (hasAnyChannelResult || storyBusy);
-  const mobileHideResults =
-    isMobile && (mobileIdleEmpty || formOpen);
-  const mobilePane = formOpen ? "form" : "story";
+  const hasFailureHint =
+    Boolean(blogGenHint) &&
+    !Boolean(blogContent?.sections?.length) &&
+    !Boolean(String(blogContent?.fullCopyText || "").trim());
+
+  const {
+    mobileIdleEmpty,
+    showMobileChrome,
+    hideFormPanel,
+    mobileHideResults,
+    mobilePane: resolvedPane,
+  } = resolveChannelMobilePaneState({
+    isMobile,
+    hasContent: hasAnyChannelResult,
+    isGenerating: storyBusy,
+    formOpen,
+    hasFailureHint,
+  });
+
+  useEffect(() => {
+    if (isMobile && hasFailureHint) {
+      setFormOpen(false);
+    }
+  }, [isMobile, hasFailureHint]);
+
+  const mobilePane = resolvedPane === "result" ? "story" : "form";
   const storyTitle =
     blogContent?.representativeTitle || blogContent?.title || null;
 
@@ -1119,7 +1114,7 @@ export default function BlogEditor({
         <MobileStoryChrome
           pane={mobilePane}
           onPaneChange={(next) => setFormOpen(next === "form")}
-          storyReady={hasAnyChannelResult}
+          storyReady={hasAnyChannelResult || hasFailureHint}
           isGenerating={storyBusy && !hasAnyChannelResult}
           storyTitle={storyTitle}
         />

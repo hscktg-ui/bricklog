@@ -178,7 +178,7 @@ export default function GenerationLoadingOverlay({
     >
       <div className={backdropClass} aria-hidden />
       <div
-        className={`${VISION_LOADING_PANEL} pointer-events-auto relative z-10 mx-4 w-full max-w-sm px-6 py-8 sm:max-w-md sm:px-8 sm:py-9`}
+        className={`${VISION_LOADING_PANEL} pointer-events-auto relative z-10 mx-4 w-full max-w-sm px-6 py-8 md:max-w-md md:px-8 md:py-9`}
       >
         <button
           type="button"

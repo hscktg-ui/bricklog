@@ -4,6 +4,8 @@
 import {
   formatPostVerifyUserMessage,
   isBlogGenerationFailureHint,
+  resolveBlogGenHintFooter,
+  resolveBlogGenHintStatusClass,
   resolveBlogHintPanelTitle,
 } from "../lib/product/customerOutput.js";
 
@@ -52,6 +54,25 @@ if (failTitle !== "잠시 후 다시 시도해 주세요") {
 const researchProgress = "브랜드·지역·주제를 알아보는 중이에요.";
 if (resolveBlogHintPanelTitle(researchProgress, true) !== "브랜드·주제 조사 중") {
   console.error("FAIL: in-progress research title");
+  process.exit(1);
+}
+
+if (resolveBlogGenHintStatusClass(techFailMsg, true) !== "warn") {
+  console.error("FAIL: failure hint must not use ok tone");
+  process.exit(1);
+}
+if (
+  resolveBlogGenHintFooter(techFailMsg, { isMobile: true }) !==
+  "아래 「조사 후 글 받기」를 다시 눌러 주세요."
+) {
+  console.error("FAIL: mobile failure footer");
+  process.exit(1);
+}
+if (
+  resolveBlogGenHintFooter(techFailMsg, { isTablet: true }) !==
+  "위 입력란의 「조사 후 글 받기」를 다시 눌러 주세요."
+) {
+  console.error("FAIL: tablet failure footer");
   process.exit(1);
 }
 

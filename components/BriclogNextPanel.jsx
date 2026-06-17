@@ -153,7 +153,7 @@ export default function BriclogNextPanel({
 export function BriclogNextPitchGrid({ className = "" }) {
   const pitch = getBriclogNextPublicPitch();
   return (
-    <div className={`grid grid-cols-1 gap-4 @min-[560px]:grid-cols-3 ${className}`}>
+    <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 ${className}`}>
       {pitch.pillars.map((item, i) => (
         <article
           key={item.title}
