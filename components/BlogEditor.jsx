@@ -33,7 +33,10 @@ import {
   useContentForm,
   useContentPipelineState,
 } from "@/context/ContentContext";
-import { resolveBlogHintPanelTitle } from "@/lib/product/customerOutput";
+import {
+  isBlogGenerationFailureHint,
+  resolveBlogHintPanelTitle,
+} from "@/lib/product/customerOutput";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import {
   isFormValid as checkFormValid,
@@ -1014,7 +1017,9 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 </p>
                 {!blogGenHintIsAuth ? (
                   <p className="mt-3 text-[12px] text-[var(--vision-muted)]">
-                    왼쪽 폼에서 「조사 후 글 받기」로 이어갈 수 있어요.
+                    {isBlogGenerationFailureHint(blogGenHint)
+                      ? "왼쪽 「조사 후 글 받기」를 다시 눌러 주세요."
+                      : "왼쪽 폼에서 「조사 후 글 받기」로 이어갈 수 있어요."}
                   </p>
                 ) : null}
               </div>

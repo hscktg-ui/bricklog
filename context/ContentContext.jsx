@@ -208,6 +208,53 @@ function missionProseFallbackForUi(pipelineInput) {
   }
 }
 
+function attemptBlogUiRescue(pipelineInput, partial = null) {
+  if (!allowBlogUiRescue() || !hasFilledBlogAxes(pipelineInput)) return null;
+  try {
+    const rescued =
+      forceLocalBlogPreviewDelivery(pipelineInput, partial) ||
+      (() => {
+        const pack = missionProseFallbackForUi(pipelineInput);
+        return pack
+          ? { ok: true, blogContent: pack, withheld: false, softPass: true }
+          : null;
+      })();
+    return rescued?.blogContent?.sections?.length ? rescued : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildRescuedBlogPackForUi(pipelineInput, partial = null) {
+  const rescued = attemptBlogUiRescue(pipelineInput, partial);
+  if (!rescued?.blogContent?.sections?.length) return null;
+  const pack = finalizeContentQualityForDelivery(
+    ensureBlogDisplayPack(rescued.blogContent, pipelineInput),
+    pipelineInput,
+    "blog"
+  );
+  if (!pack?.sections?.length) return null;
+  const publishReady = isHumanDeliveryGrade(pack, pipelineInput);
+  return {
+    pack: {
+      ...pack,
+      _meta: {
+        ...(pack._meta || {}),
+        deliveryPreview: !publishReady,
+        deliveryPreviewMessage: publishReady ? undefined : SOFT_PREVIEW_HINT,
+        passOutput: publishReady,
+        softPass: !publishReady,
+        completeDraft: publishReady,
+        displayReady: true,
+        deliveryRescue: true,
+        missionFallbackUi: true,
+      },
+    },
+    preview: !publishReady,
+    userMessage: publishReady ? null : SOFT_PREVIEW_HINT,
+  };
+}
+
 const ContentContext = createContext(null);
 const ContentFormContext = createContext(null);
 const ContentPipelineContext = createContext(null);
@@ -1203,6 +1250,28 @@ export function ContentProvider({
             onStep: setPipelineStep,
           });
           if (!axis.ok) {
+            const rescuedUi = buildRescuedBlogPackForUi(pipelineInput);
+            if (rescuedUi) {
+              flushSync(() => {
+                setBlogContent(rescuedUi.pack);
+                setBlogGenHint(null);
+                setBlogGenHintSoft(false);
+                setBlogGenHintIsAuth(false);
+                setBlogResultRevealPending(false);
+                setGenerating((g) => ({ ...g, blog: false }));
+              });
+              blogOnScreenRef.current = true;
+              overlaySuccess = true;
+              finishLoadingOverlay("blog", startedAt, {
+                success: true,
+                immediate: true,
+                quietSuccess: true,
+              });
+              if (rescuedUi.preview && rescuedUi.userMessage) {
+                onToast?.(rescuedUi.userMessage, "info");
+              }
+              return;
+            }
             blogGenLock.current = false;
             setGenerationSessionActive(false);
             setGenerating((g) => ({ ...g, blog: false }));
@@ -1831,6 +1900,28 @@ export function ContentProvider({
 
         void runPostBlogTail();
       } catch (err) {
+        const rescuedUi = buildRescuedBlogPackForUi(pipelineInput, err?.payload);
+        if (rescuedUi) {
+          flushSync(() => {
+            setBlogContent(rescuedUi.pack);
+            setBlogGenHint(null);
+            setBlogGenHintSoft(false);
+            setBlogGenHintIsAuth(false);
+            setBlogResultRevealPending(false);
+            setGenerating((g) => ({ ...g, blog: false }));
+          });
+          blogOnScreenRef.current = true;
+          overlaySuccess = true;
+          finishLoadingOverlay(overlayChannel, startedAt, {
+            success: true,
+            immediate: true,
+            quietSuccess: true,
+          });
+          if (rescuedUi.preview && rescuedUi.userMessage) {
+            onToast?.(rescuedUi.userMessage, "info");
+          }
+          return;
+        }
         const norm = normalizeBlogGenerationFailure(err);
         setBlogGenHint(norm.message);
         setBlogGenHintSoft(norm.soft);
