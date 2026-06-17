@@ -76,9 +76,16 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
         ...opts,
         preferStandalone: standalone,
         inputOverride: input,
+        ...(placeContent
+          ? {
+              regen: true,
+              regenVariation: Date.now(),
+              priorRewriteCount: placeContent._meta?.rewriteCount || 0,
+            }
+          : {}),
       });
     },
-    [flushToCommitted, generatePlace, preferStandalone]
+    [flushToCommitted, generatePlace, preferStandalone, placeContent]
   );
 
   const recentTopics = useMemo(

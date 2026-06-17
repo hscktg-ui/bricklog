@@ -167,6 +167,10 @@ import {
   coalesceBlogGenerationInput,
   mergeWorkspaceBrandIntoInput,
 } from "@/lib/workspace/brandFormSync";
+import {
+  enrichGenerationInput,
+  stampChannelRewriteMeta,
+} from "@/lib/workspace/enrichGenerationInput";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
 import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
 import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
@@ -288,6 +292,7 @@ const SHARED_CHANNEL_OPTION_KEYS = [
   "contentPersona",
   "contentPersonaSubtype",
   "blogLengthTier",
+  "toneRequest",
 ];
 
 /** 플레이스·인스타 피드백 재생성 — LLM 이야기 없이도 타 채널 초안으로 연계 */
@@ -1057,6 +1062,12 @@ export function ContentProvider({
         blankBrandMode: brandHooks?.blankBrandMode,
       }
     );
+    input = enrichGenerationInput(input, brandHooks, {
+      regen: Boolean(genOpts.regen),
+      priorRewriteCount: genOpts.priorRewriteCount,
+      regenVariation: genOpts.regenVariation,
+      channel: "blog",
+    });
     const errors = validateForm(input);
     if (Object.keys(errors).length > 0) {
       onToast?.(errors[Object.values(errors)[0]], "error");
@@ -1083,34 +1094,6 @@ export function ContentProvider({
     const runChannelPack =
       genOpts.blogOnly === false ||
       (genOpts.blogOnly !== true && isAutoPipelineAfterBlog());
-
-    if (genOpts.regen) {
-      const variation = Number(genOpts.regenVariation) || Date.now();
-      const prior = Number(genOpts.priorRewriteCount) || 0;
-      const nextCount = prior + 1;
-      input = {
-        ...input,
-        regenVariation: variation,
-        rewriteCount: nextCount,
-        feedbackSeed:
-          ((Number(input.feedbackSeed) || 0) + (variation % 11) + nextCount) % 97,
-        brandFeedbackBrief: [
-          input.brandFeedbackBrief,
-          `【다시 받기 ${nextCount}회차】이전 글과 다른 섹션 구성·도입·사례 각도. 동일 문장·소제목 반복 금지.`,
-        ]
-          .filter(Boolean)
-          .join(" · "),
-        feedbackRegenDirective: "regen_variation_required",
-        feedbackIntentDriven: true,
-        feedbackHints: [
-          ...(Array.isArray(input.feedbackHints) ? input.feedbackHints : []),
-          "restructure_sections",
-          "add_information_units",
-          "expand_explanations",
-          "weave_research_facts",
-        ],
-      };
-    }
 
     if (researchResult && (genOpts.regen || !input.researchFacts?.length)) {
       input = mergeResearchSessionIntoInput(input, researchResult);
@@ -1144,6 +1127,7 @@ export function ContentProvider({
 
     flushSync(() => {
       setBlogContent(null);
+      clearDerived();
       setBlogResultRevealPending(false);
       setLoadingOverlay({
         active: true,
@@ -2949,8 +2933,14 @@ export function ContentProvider({
       onToast?.(CHANNEL_UPGRADE_HINT, "info");
       return;
     }
-    const formValues = prepareChannelForm(opts.inputOverride);
-    if (!formValues) return;
+    const prepared = prepareChannelForm(opts.inputOverride);
+    if (!prepared) return;
+    const formValues = enrichGenerationInput(prepared, brandHooks, {
+      regen: Boolean(opts.regen),
+      priorRewriteCount: opts.priorRewriteCount,
+      regenVariation: opts.regenVariation,
+      channel: "place",
+    });
     commitChannelFormFromOpts(opts, formValues);
     let source = opts.preferStandalone
       ? {
@@ -3028,7 +3018,11 @@ export function ContentProvider({
           if (source.standalone) {
             const rescued = await rescueChannelViaServerApi("place", formValues);
             if (rescued.ok) {
-              setPlaceContent(rescued.content);
+              const stamped = stampChannelRewriteMeta(
+                rescued.content,
+                formValues.rewriteCount
+              );
+              setPlaceContent(stamped);
               setBaseContentLabel(
                 rescued.baseContentLabel || source.baseLabel
               );
@@ -3050,7 +3044,9 @@ export function ContentProvider({
             generationMode: "place_local_fallback",
             fallbackReason: sig.userMessage || "signature_failed",
           };
-          setPlaceContent(fallbackPlace);
+          setPlaceContent(
+            stampChannelRewriteMeta(fallbackPlace, formValues.rewriteCount)
+          );
           setBaseContentLabel(source.baseLabel);
           setSourceChannel(source.standalone ? "place" : source.sourceChannel);
           brandHooks?.onChannelSaved?.("place", fallbackPlace);
@@ -3063,7 +3059,7 @@ export function ContentProvider({
           finishLoadingOverlay("place", startedAt, { success: true });
           return;
         }
-        setPlaceContent(sig.content);
+        setPlaceContent(stampChannelRewriteMeta(sig.content, formValues.rewriteCount));
         setBaseContentLabel(sig.baseContentLabel || source.baseLabel);
         setSourceChannel(source.standalone ? "place" : source.sourceChannel);
         brandHooks?.onChannelSaved?.("place", sig.content);
@@ -3110,8 +3106,14 @@ export function ContentProvider({
       onToast?.(CHANNEL_UPGRADE_HINT, "info");
       return;
     }
-    const formValues = prepareChannelForm(opts.inputOverride);
-    if (!formValues) return;
+    const prepared = prepareChannelForm(opts.inputOverride);
+    if (!prepared) return;
+    const formValues = enrichGenerationInput(prepared, brandHooks, {
+      regen: Boolean(opts.regen),
+      priorRewriteCount: opts.priorRewriteCount,
+      regenVariation: opts.regenVariation,
+      channel: "instagram",
+    });
     commitChannelFormFromOpts(opts, formValues);
     const tone = opts.instaToneOverride ?? instaTone;
     let source = opts.preferStandalone
@@ -3193,7 +3195,9 @@ export function ContentProvider({
               instaTone: tone,
             });
             if (rescued.ok) {
-              setInstagramContent(rescued.content);
+              setInstagramContent(
+                stampChannelRewriteMeta(rescued.content, formValues.rewriteCount)
+              );
               setBaseContentLabel(
                 rescued.baseContentLabel || source.baseLabel
               );
@@ -3216,7 +3220,9 @@ export function ContentProvider({
             generationMode: "instagram_local_fallback",
             fallbackReason: sig.userMessage || "signature_failed",
           };
-          setInstagramContent(fallbackInsta);
+          setInstagramContent(
+            stampChannelRewriteMeta(fallbackInsta, formValues.rewriteCount)
+          );
           setBaseContentLabel(source.baseLabel);
           setSourceChannel(
             source.standalone ? "instagram" : source.sourceChannel
@@ -3231,7 +3237,9 @@ export function ContentProvider({
           finishLoadingOverlay("instagram", startedAt, { success: true });
           return;
         }
-        setInstagramContent(sig.content);
+        setInstagramContent(
+          stampChannelRewriteMeta(sig.content, formValues.rewriteCount)
+        );
         setBaseContentLabel(sig.baseContentLabel || source.baseLabel);
         setSourceChannel(
           source.standalone ? "instagram" : source.sourceChannel

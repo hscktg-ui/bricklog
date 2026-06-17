@@ -84,9 +84,22 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
         preferStandalone: standalone,
         inputOverride: input,
         instaToneOverride: localInstaTone,
+        ...(instagramContent
+          ? {
+              regen: true,
+              regenVariation: Date.now(),
+              priorRewriteCount: instagramContent._meta?.rewriteCount || 0,
+            }
+          : {}),
       });
     },
-    [flushToCommitted, generateInstagram, localInstaTone, preferStandalone]
+    [
+      flushToCommitted,
+      generateInstagram,
+      localInstaTone,
+      preferStandalone,
+      instagramContent,
+    ]
   );
 
   const recentTopics = useMemo(

@@ -52,6 +52,7 @@
     "test:channel-unified-prose": "node --import ./scripts/register-alias.mjs scripts/test-channel-unified-prose.mjs",
     "test:insta-caption-humanize": "node --import ./scripts/register-alias.mjs scripts/test-insta-caption-humanize.mjs",
     "test:place-notice-humanize": "node --import ./scripts/register-alias.mjs scripts/test-place-notice-humanize.mjs",
+    "test:enrich-generation-input": "node --import ./scripts/register-alias.mjs scripts/test-enrich-generation-input.mjs",
     "test:research-arc-length-delivery": "node --import ./scripts/register-alias.mjs scripts/test-research-arc-length-delivery.mjs",
     "test:ui-stability": "node scripts/ui-interaction-stability.mjs",
     "test:eight-journeys": "node scripts/eight-user-smoke.mjs",

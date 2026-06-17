@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { trackContentEvent } from "@/lib/feedback/trackEvent";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolveBlogLengthTier } from "@/lib/constants";
@@ -30,6 +30,8 @@ import { USER_QUALITY_GOAL } from "@/lib/quality/qualityTargets";
 import { isPaidPlan } from "@/lib/billing/plans";
 import BriclogStrengthChips from "@/components/BriclogStrengthChips";
 import BrandHabitStrip from "@/components/BrandHabitStrip";
+import RegenTonePanel from "@/components/generation/RegenTonePanel";
+import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
 import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
@@ -42,7 +44,7 @@ import ResultCopyHero, {
   ResultCopyGhostButton,
 } from "@/components/workspace/ResultCopyHero";
 import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
-import { VISION_EYEBROW, VISION_COPY_BTN } from "@/lib/landing/vision2030Styles";
+import { VISION_EYEBROW } from "@/lib/landing/vision2030Styles";
 
 export default function BlogResultView({
   blog,
@@ -57,6 +59,7 @@ export default function BlogResultView({
   onRewrite,
   onRegenerate,
   regenerateBusy = false,
+  onToneRequestChange,
   onEditorImprove,
   editorImproving = false,
   blogInput = null,
@@ -81,12 +84,19 @@ export default function BlogResultView({
   const [showSubheadings, setShowSubheadings] = useState(
     blog?._meta?.includeSubheadings !== false
   );
+  const [toneRequestDraft, setToneRequestDraft] = useState(
+    blogInput?.toneRequest || ""
+  );
   const blogRevealKey =
     blog?.id ||
     blog?._meta?.generatedAt ||
     blog?._meta?.savedAt ||
     blog?.representativeTitle;
   const [contentRevealed, setContentRevealed] = useState(true);
+
+  useEffect(() => {
+    setToneRequestDraft(blogInput?.toneRequest || "");
+  }, [blogInput?.toneRequest, blogRevealKey]);
 
   useEffect(() => {
     if (!blog) {
@@ -107,6 +117,18 @@ export default function BlogResultView({
   }, [blog, simpleMode]);
 
   const showExpertPanels = isStudio && expertOpen;
+
+  const brandHabitsLine = useMemo(() => {
+    if (blogInput?.brandHabitsBrief) {
+      return String(blogInput.brandHabitsBrief).slice(0, 96);
+    }
+    return formatBrandHabitsBrief(blogInput?.brandMemory);
+  }, [blogInput?.brandHabitsBrief, blogInput?.brandMemory]);
+
+  const handleToneDraftChange = (value) => {
+    setToneRequestDraft(value);
+    onToneRequestChange?.(value);
+  };
 
   if (!draft) return null;
 
@@ -415,6 +437,17 @@ export default function BlogResultView({
       {!isBriefOnly ? (
         <DeliveryTrustBadge pack={draft} className="mb-3" compact={mobileSimple} />
       ) : null}
+      {onRegenerate && !isBriefOnly ? (
+        <RegenTonePanel
+          className="mb-4"
+          toneRequest={toneRequestDraft}
+          onToneRequestChange={handleToneDraftChange}
+          onRegenerate={onRegenerate}
+          busy={regenerateBusy}
+          brandHabitsLine={brandHabitsLine}
+          rewriteCount={draft._meta?.rewriteCount || 0}
+        />
+      ) : null}
       <ResultCopyHero
         title={
           mobileSimple
@@ -435,16 +468,6 @@ export default function BlogResultView({
         hint={copyHintLine}
         actions={
           <>
-            {onRegenerate ? (
-              <button
-                type="button"
-                onClick={onRegenerate}
-                disabled={regenerateBusy}
-                className={`${VISION_COPY_BTN} hover:border-[rgba(48,209,88,0.45)] hover:bg-[rgba(48,209,88,0.1)] hover:text-[#047a2a] disabled:opacity-50`}
-              >
-                {regenerateBusy ? RETRY.ctaBusy : RETRY.cta}
-              </button>
-            ) : null}
             <FullCopyButton
               text={copyText}
               label={copyButtonLabel}

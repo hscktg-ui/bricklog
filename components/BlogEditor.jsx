@@ -697,6 +697,13 @@ const BlogEditorResults = memo(function BlogEditorResults({
     });
   }, [generateBlog, blogInput, blogContent]);
 
+  const handleToneRequestChange = useCallback(
+    (toneRequest) => {
+      setBlogInput((prev) => ({ ...prev, toneRequest }));
+    },
+    [setBlogInput]
+  );
+
   const regenerateBusy =
     generating.blog ||
     Boolean(
@@ -761,8 +768,13 @@ const BlogEditorResults = memo(function BlogEditorResults({
   }, [researchResult]);
 
   const handleHintRetry = useCallback(() => {
-    generateBlog(blogInput, { blogOnly: loadBlogOnlyPref(), regen: true });
-  }, [generateBlog, blogInput]);
+    generateBlog(blogInput, {
+      blogOnly: loadBlogOnlyPref(),
+      regen: true,
+      regenVariation: Date.now(),
+      priorRewriteCount: blogContent?._meta?.rewriteCount || 0,
+    });
+  }, [generateBlog, blogInput, blogContent]);
 
   if (mobileHidden) return null;
 
@@ -899,6 +911,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
                   conciseView={concise || isMobile}
                   mobileView={isMobile}
                   onRegenerate={handleRegenerate}
+                  onToneRequestChange={handleToneRequestChange}
                   regenerateBusy={regenerateBusy}
                   onCopy={(text) => {
                     onCopy?.(text);
