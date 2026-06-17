@@ -125,11 +125,24 @@ export default function AdminProductOverviewPanel({ snapshot, publicTest = {} })
             ))}
           </div>
           {quality.crossChannelBatch ? (
-            <p className="mt-3 text-[12px] text-[#4E5968]">
-              cross-channel 배치 — 통과율{" "}
-              {quality.crossChannelBatch.passRate ?? "—"}% / n=
-              {quality.crossChannelBatch.total ?? "—"}
-            </p>
+            <div className="mt-3 space-y-2">
+              <p className="text-[12px] text-[#4E5968]">
+                cross-channel — {quality.crossChannelBatch.passRate ?? "—"}% (
+                {quality.crossChannelBatch.pass ?? "—"}/{quality.crossChannelBatch.total ?? "—"})
+              </p>
+              {quality.crossChannelBatch.byChannel ? (
+                <div className="flex flex-wrap gap-2 text-[11px] text-[#4E5968]">
+                  {Object.entries(quality.crossChannelBatch.byChannel).map(([ch, d]) => (
+                    <span
+                      key={ch}
+                      className="rounded-full bg-[#F2F4F6] px-2 py-0.5"
+                    >
+                      {ch} {d.passRate ?? "—"}%
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           ) : (
             <p className="mt-3 text-[12px] text-[#8B95A1]">
               cross-channel 배치 요약 없음 (artifacts/cross-channel-batch)

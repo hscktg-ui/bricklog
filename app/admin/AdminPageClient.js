@@ -12,6 +12,7 @@ import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminAdvisoryPanel from "@/components/admin/AdminAdvisoryPanel";
 import AdminOpsHub from "@/components/admin/AdminOpsHub";
 import AdminProductOverviewPanel from "@/components/admin/AdminProductOverviewPanel";
+import AdminQualityOpsPanel from "@/components/admin/AdminQualityOpsPanel";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
 
@@ -48,6 +49,8 @@ export default function AdminPageClient() {
   const [advisory, setAdvisory] = useState(null);
   const [advisoryLoading, setAdvisoryLoading] = useState(false);
   const [productOverview, setProductOverview] = useState(null);
+  const [qualityOps, setQualityOps] = useState(null);
+  const [qualityOpsLoading, setQualityOpsLoading] = useState(false);
   const [showDetailMetrics, setShowDetailMetrics] = useState(false);
   const pollRef = useRef(null);
 
@@ -191,6 +194,18 @@ export default function AdminPageClient() {
     }
   }, []);
 
+  const loadQualityOps = useCallback(async () => {
+    setQualityOpsLoading(true);
+    try {
+      const data = await fetchWithAuth("/api/admin/quality-ops");
+      setQualityOps(data.snapshot || null);
+    } catch {
+      setQualityOps(null);
+    } finally {
+      setQualityOpsLoading(false);
+    }
+  }, []);
+
   const loadInsights = useCallback(async (refresh = false) => {
     setInsightsLoading(true);
     try {
@@ -242,6 +257,7 @@ export default function AdminPageClient() {
     loadAdvisory();
     loadInsights();
     loadProductOverview();
+    loadQualityOps();
   }, [
     user,
     hasAdminAccess,
@@ -250,6 +266,7 @@ export default function AdminPageClient() {
     loadAdvisory,
     loadInsights,
     loadProductOverview,
+    loadQualityOps,
   ]);
 
   useEffect(() => {
@@ -347,7 +364,7 @@ export default function AdminPageClient() {
           <div>
             <h1 className="text-[22px] font-bold">BRICLOG 운영 · 제품 개요</h1>
             <p className="mt-1 text-[12px] text-[#8B95A1]">
-              SEO·도움말 AI·품질 KPI · 샘플·가입 신호 — 랜딩·가입 설정은 그대로
+              SEO·품질 관제·배치 KPI · 샘플·가입 신호 — 랜딩·가입 설정은 그대로
             </p>
           </div>
           <Link href="/" className="text-[13px] text-[#03A94D] hover:underline">
@@ -367,6 +384,8 @@ export default function AdminPageClient() {
           snapshot={productOverview}
           publicTest={stats?.dashboard?.publicBrandTest || {}}
         />
+
+        <AdminQualityOpsPanel snapshot={qualityOps} loading={qualityOpsLoading} />
 
         <AdminAdvisoryPanel
           advisory={advisory}

@@ -117,6 +117,20 @@ export default function AutoEvolutionStatusPanel() {
               전체 배치 마무리 · {formatKst(activity.finishedAt)}
             </p>
           )}
+          {activity.resultSummary && (
+            <div className="mt-3 grid gap-2 border-t border-[#E8EBED] pt-3 sm:grid-cols-2">
+              <p className="text-[11px] text-[#4E5968]">
+                인사이트 제안 {activity.resultSummary.insightsSuggested ?? "—"} · 삽입{" "}
+                {activity.resultSummary.insightsInserted ?? "—"} · 승인{" "}
+                {activity.resultSummary.insightsApproved ?? "—"}
+              </p>
+              <p className="text-[11px] text-[#4E5968]">
+                품질 처리 {activity.resultSummary.qualityProcessed ?? "—"} · 평균{" "}
+                {activity.resultSummary.qualityAvgScore ?? "—"}점 · Lab 통과율{" "}
+                {activity.resultSummary.labPassRate ?? "—"}%
+              </p>
+            </div>
+          )}
         </div>
       )}
 
