@@ -17,6 +17,7 @@ import { spawnSync } from "node:child_process";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const envPath = resolve(root, ".env.local");
 const token = (process.env.VERCEL_TOKEN || "").trim();
+const useCliAuth = !token;
 const project = (process.env.VERCEL_PROJECT || "bricklog").trim();
 const prodAppUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://briclog.ai").trim();
 
@@ -51,6 +52,11 @@ function parseEnvFile(path) {
   }
   out.set("NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL", "true");
   out.set("BRICLOG_BRAND_FIRST_ENGINE", "1");
+  out.set("BRICLOG_FAST_PIPELINE", "true");
+  out.set("BRICLOG_CHANNEL_PACK_DEFER", "true");
+  out.set("BRICLOG_CHANNEL_STANDALONE_FAST", "true");
+  out.set("BRICLOG_LOCAL_FINISH_MS", "12000");
+  out.set("BRICLOG_GENERATION_BUDGET_MS", "58000");
   return out;
 }
 
@@ -60,7 +66,9 @@ function runVercel(args) {
     encoding: "utf8",
     shell: true,
     timeout: 120_000,
-    env: { ...process.env, VERCEL_TOKEN: token },
+    env: useCliAuth
+      ? process.env
+      : { ...process.env, VERCEL_TOKEN: token },
   });
   if (result.stdout) process.stdout.write(result.stdout);
   if (result.stderr) process.stderr.write(result.stderr);
@@ -74,11 +82,20 @@ function runVercel(args) {
 }
 
 if (!token) {
-  console.error("VERCEL_TOKEN이 없습니다.");
-  console.error("1) https://vercel.com/account/tokens 에서 토큰 생성");
-  console.error('2) PowerShell: $env:VERCEL_TOKEN = "vercel_..."');
-  console.error("3) npm run sync:vercel-env");
-  process.exit(1);
+  const who = spawnSync("npx", ["vercel", "whoami"], {
+    cwd: root,
+    encoding: "utf8",
+    shell: true,
+    timeout: 30_000,
+  });
+  if (who.status !== 0) {
+    console.error("VERCEL_TOKEN이 없고 Vercel CLI 로그인도 없습니다.");
+    console.error("1) https://vercel.com/account/tokens 에서 토큰 생성");
+    console.error('2) PowerShell: $env:VERCEL_TOKEN = "vercel_..."');
+    console.error("3) npm run sync:vercel-env");
+    process.exit(1);
+  }
+  console.log("VERCEL_TOKEN 없음 — CLI 로그인 세션으로 동기화합니다.");
 }
 
 if (!existsSync(envPath)) {
@@ -113,7 +130,9 @@ for (const key of [...REQUIRED_FOR_AUTH, ...RECOMMENDED_PROD]) {
 }
 
 console.log(`Link project: ${project}`);
-runVercel(["link", "--yes", "--project", project, "--token", token]);
+const linkArgs = ["link", "--yes", "--project", project];
+if (!useCliAuth) linkArgs.push("--token", token);
+runVercel(linkArgs);
 
 const TARGET_ENVS = (process.env.VERCEL_ENV_TARGETS || "production")
   .split(",")
@@ -137,9 +156,8 @@ for (const [name, value] of vars) {
       value,
       "--yes",
       "--force",
-      "--token",
-      token,
     ];
+    if (!useCliAuth) args.push("--token", token);
     if (sensitive) args.push("--sensitive");
     runVercel(args);
   }

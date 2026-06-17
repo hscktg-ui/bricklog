@@ -39,6 +39,14 @@ const complete = buildBriclogNextSnapshot(input, {
 assert.equal(complete.doneCount, 3);
 assert.equal(complete.progress, 100);
 
+const preBlog = buildBriclogNextSnapshot(input, {
+  blog: false,
+  place: false,
+  insta: false,
+});
+assert.ok(preBlog.ok);
+assert.equal(preBlog.progress, 0);
+
 const pitch = getBriclogNextPublicPitch();
 assert.ok(pitch.headline.includes("이번 달"));
 assert.equal(pitch.pillars.length, 3);

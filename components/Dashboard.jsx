@@ -63,6 +63,7 @@ import {
   profileNeedsSetup,
 } from "@/lib/auth/profilePersonalization";
 import ProfileSetupBanner from "@/components/ProfileSetupBanner";
+import BriclogNextHomeStrip from "@/components/BriclogNextHomeStrip";
 import { WorkspacePreviewProvider, useWorkspacePreview } from "@/context/WorkspacePreviewContext";
 import WorkspaceDevicePreviewToggle from "@/components/workspace/WorkspaceDevicePreviewToggle";
 import WorkspaceDevicePreviewTabs from "@/components/workspace/WorkspaceDevicePreviewTabs";
@@ -425,8 +426,16 @@ function DashboardLayout({
   useMobileSidebar(mobileOpen, setMobileOpen);
 
   const { preview, native, simulating } = useWorkspacePreview();
-  const { resetToHome, setBlogInput, loadingOverlay, blogContent, loadMemoryContentIntoWorkspace } =
-    useContentPipeline();
+  const {
+    resetToHome,
+    setBlogInput,
+    loadingOverlay,
+    blogContent,
+    placeContent,
+    instagramContent,
+    blogInput,
+    loadMemoryContentIntoWorkspace,
+  } = useContentPipeline();
   const {
     applyBrandToForm,
     activeBrandId,
@@ -761,6 +770,18 @@ function DashboardLayout({
             onToast={showToast}
             onOpenSetup={onRequestProfileSetup}
             onDismiss={() => setProfileBannerDismissed(true)}
+          />
+        )}
+
+        {!showChannelWelcome && (
+          <BriclogNextHomeStrip
+            activeMenu={activeMenu}
+            blogInput={blogInput}
+            blogContent={blogContent}
+            hasPlace={Boolean(placeContent)}
+            hasInsta={Boolean(instagramContent)}
+            onNavigate={navigate}
+            generationBusy={generationBusy}
           />
         )}
 
