@@ -93,6 +93,7 @@
     "test:research-quality-delivery": "node --import ./scripts/register-alias.mjs scripts/test-research-quality-delivery.mjs",
     "test:brand-scope-industry": "node --import ./scripts/register-alias.mjs scripts/test-brand-scope-industry.mjs",
     "test:stressless-contamination": "node --import ./scripts/register-alias.mjs scripts/test-stressless-contamination.mjs",
+    "test:research-narrative-delivery": "node --import ./scripts/register-alias.mjs scripts/test-research-narrative-delivery.mjs",
     "test:insight-to-rules": "node --import ./scripts/register-alias.mjs scripts/test-insight-to-rules.mjs",
     "test:mission-soft-delivery": "node --import ./scripts/register-alias.mjs scripts/test-mission-soft-delivery.mjs",
     "demo:ace-opimo": "node --import ./scripts/register-alias.mjs scripts/run-ace-opimo-demo.mjs",

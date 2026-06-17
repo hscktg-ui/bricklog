@@ -131,6 +131,10 @@ import { buildImageGenerationContext } from "@/lib/images/imagePurposeConfig";
 import { applyResearchToPipeline } from "@/lib/research/applyResearchToPipeline";
 import { applyV2AxisResearch } from "@/lib/content/applyV2AxisResearch";
 import {
+  canReuseClientResearch,
+  mergeResearchSessionIntoInput,
+} from "@/lib/content/researchSessionMerge";
+import {
   runSignatureChannelGeneration,
   runDerivedSignatureChannel,
 } from "@/lib/content/runSignatureChannelGeneration";
@@ -1052,8 +1056,13 @@ export function ContentProvider({
           "restructure_sections",
           "add_information_units",
           "expand_explanations",
+          "weave_research_facts",
         ],
       };
+    }
+
+    if (researchResult && (genOpts.regen || !input.researchFacts?.length)) {
+      input = mergeResearchSessionIntoInput(input, researchResult);
     }
 
     blogGenLock.current = true;
@@ -1166,6 +1175,26 @@ export function ContentProvider({
           pipelineInput.v2PreWriteVerified = true;
           pipelineInput.v3PreWriteVerified = true;
           pipelineInput.v2ResearchReady = true;
+        } else if (
+          genOpts.regen &&
+          canReuseClientResearch(
+            { ...pipelineInput, ...blogInput },
+            researchResult
+          )
+        ) {
+          Object.assign(
+            pipelineInput,
+            mergeResearchSessionIntoInput(
+              { ...pipelineInput, ...blogInput },
+              researchResult
+            )
+          );
+          pipelineInput.regenReuseResearch = true;
+          pipelineInput.v2AxisVerified = true;
+          pipelineInput.v2ResearchReady = true;
+          pipelineInput.v2PreWriteVerified = true;
+          pipelineInput.v2PipelineStage =
+            pipelineInput.v2PipelineStage || "information_research_verified";
         } else {
           const axis = await applyV2AxisResearch({
             pipelineInput,
@@ -1198,6 +1227,16 @@ export function ContentProvider({
             console.info("[BRICLOG]", geminiHint);
             onToast?.(geminiHint, "info");
           }
+          setBlogInput((prev) => ({
+            ...prev,
+            researchFacts: pipelineInput.researchFacts,
+            researchBrief: pipelineInput.researchBrief,
+            v2AxisBrief: pipelineInput.v2AxisBrief,
+            v2ResearchReady: true,
+            v2PreWriteVerified: true,
+            v2AxisVerified: true,
+            v2PipelineStage: pipelineInput.v2PipelineStage,
+          }));
         }
 
         setPipelineStep("콘텐츠 작성 중…");
@@ -1869,6 +1908,7 @@ export function ContentProvider({
     maybeChannelUpgradeHint,
     requireEmailVerified,
     billingPlanId,
+    researchResult,
   ]);
 
   const persistChannelMemory = useCallback(
@@ -2018,29 +2058,34 @@ export function ContentProvider({
           const includeWithFeedback = [patchedInput.includePhrases, intentBrief]
             .filter(Boolean)
             .join(", ");
-          const pipelineInput = normalizePipelineInput({
-            ...patchedInput,
-            includePhrases: includeWithFeedback,
-            topic: patchedInput.topic?.trim() || topicMain,
-            mainKeyword: topicMain || patchedInput.mainKeyword,
-            feedbackHints: mergeFeedbackHints(
-              blogInput.feedbackHints,
-              intentHints,
-              feedbackText
-            ),
-            feedbackIntentBrief: intentBrief,
-            feedbackRegenDirective: regenDirective,
-            feedbackSeed: feedbackRegenSeed(
-              [feedbackText, ...intentHints].join("|")
-            ),
-            brandFeedbackBrief: feedbackBrief,
-            brandMemory: brandHooks?.activeBrand || patchedInput.brandMemory,
-            brandId: brandHooks?.activeBrandId || patchedInput.brandId,
-            v2AxisRequired: true,
-            v2PipelineEnforced: true,
-            v3EngineEnforced: true,
-            rewriteCount: (blogContent._meta?.rewriteCount || 0) + 1,
-          });
+          const pipelineInput = normalizePipelineInput(
+            mergeResearchSessionIntoInput(
+              {
+                ...patchedInput,
+                includePhrases: includeWithFeedback,
+                topic: patchedInput.topic?.trim() || topicMain,
+                mainKeyword: topicMain || patchedInput.mainKeyword,
+                feedbackHints: mergeFeedbackHints(
+                  blogInput.feedbackHints,
+                  intentHints,
+                  feedbackText
+                ),
+                feedbackIntentBrief: intentBrief,
+                feedbackRegenDirective: regenDirective,
+                feedbackSeed: feedbackRegenSeed(
+                  [feedbackText, ...intentHints].join("|")
+                ),
+                brandFeedbackBrief: feedbackBrief,
+                brandMemory: brandHooks?.activeBrand || patchedInput.brandMemory,
+                brandId: brandHooks?.activeBrandId || patchedInput.brandId,
+                v2AxisRequired: true,
+                v2PipelineEnforced: true,
+                v3EngineEnforced: true,
+                rewriteCount: (blogContent._meta?.rewriteCount || 0) + 1,
+              },
+              researchResult
+            )
+          );
 
           const useSurgicalFeedback = !shouldFeedbackFullRegen({
             intents: intentHints,
@@ -2379,6 +2424,7 @@ export function ContentProvider({
       llmStatus.llmAvailable,
       allowPipelineChannel,
       maybeChannelUpgradeHint,
+      researchResult,
     ]
   );
 

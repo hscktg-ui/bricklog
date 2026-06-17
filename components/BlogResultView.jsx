@@ -386,6 +386,15 @@ export default function BlogResultView({
             hasPlace={hasPlace}
             hasInsta={hasInsta}
           />
+          {draft._meta?.researchFactUtilization?.total > 0 ? (
+            <p className="text-[11px] leading-relaxed text-[#8B95A1]">
+              조사 {draft._meta.researchFactUtilization.total}건 중{" "}
+              {draft._meta.researchFactUtilization.anchored}건이 본문에 녹았어요.
+              {!draft._meta.researchFactUtilization.ok
+                ? " 아래 「피드백」이나 「다시 받기」로 조사 반영·분량을 보강할 수 있어요."
+                : null}
+            </p>
+          ) : null}
           <BrandHabitStrip className="mt-1" />
         </>
       ) : null}
@@ -541,7 +550,7 @@ export default function BlogResultView({
         </MobileSecondaryAccordion>
       ) : null}
 
-      {userId && (
+      {userId || onRewrite ? (
         <ContentFeedbackPanel
           key={`fb-${blogRevealKey}-${feedbackRound}`}
           contentItemId={contentItemId}
@@ -554,7 +563,7 @@ export default function BlogResultView({
           onReflect={onRewrite ? handleFeedbackReflect : undefined}
           onToast={onToast}
         />
-      )}
+      ) : null}
 
       {(simpleMode || mobileView) && (
         <button

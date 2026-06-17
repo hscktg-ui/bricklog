@@ -227,7 +227,7 @@ export default function ContentFeedbackPanel({
     !!onReflect &&
     reaction &&
     reaction !== "good" &&
-    (tags.length > 0 || memo.trim() || reaction === "bad");
+    (tags.length > 0 || memo.trim().length >= 3 || reaction === "bad");
 
   const hints = [
     ...FEEDBACK_LOOP_HINTS,
