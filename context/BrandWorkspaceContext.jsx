@@ -30,7 +30,12 @@ import {
   resolveBrandFromFormSync as resolveBrandFromFormSyncImpl,
   buildProvisionalBrandFromForm as buildProvisionalBrandFromFormImpl,
 } from "@/lib/brands/resolveBrandForForm";
-
+import {
+  readBrandWorkspaceSession,
+  writeBrandWorkspaceSession,
+  emitBlankBrandSession,
+  emitBrandWorkspaceSelected,
+} from "@/lib/workspace/brandScopeGuard";
 const BrandWorkspaceContext = createContext(null);
 
 function findBrand(brands, id) {
@@ -41,10 +46,40 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
   const [agency, setAgency] = useState(null);
   const [brands, setBrands] = useState([]);
   const [activeBrandId, setActiveBrandId] = useState(null);
+  const [blankBrandMode, setBlankBrandMode] = useState(false);
+  const [brandWorkspaceGateOpen, setBrandWorkspaceGateOpen] = useState(false);
+  const [brandSessionReady, setBrandSessionReady] = useState(false);
   const [loading, setLoading] = useState(false);
   const isDemo = isInternalDemoWorkspace(userId, demoMode);
   const useServer =
     !demoMode && isSupabaseConfigured && Boolean(userId);
+
+  const applyBrandSession = useCallback(
+    (session, list) => {
+      if (session?.choice === "blank") {
+        setBlankBrandMode(true);
+        setActiveBrandId(null);
+        setBrandWorkspaceGateOpen(false);
+        setBrandSessionReady(true);
+        return;
+      }
+      if (session?.choice === "brand" && session.brandId) {
+        const exists = list.some((b) => b.id === session.brandId);
+        if (exists) {
+          setBlankBrandMode(false);
+          setActiveBrandId(session.brandId);
+          setBrandWorkspaceGateOpen(false);
+          setBrandSessionReady(true);
+          return;
+        }
+      }
+      setBlankBrandMode(false);
+      setActiveBrandId(null);
+      setBrandWorkspaceGateOpen(!demoMode && Boolean(userId));
+      setBrandSessionReady(true);
+    },
+    [demoMode, userId]
+  );
 
   const reloadLocal = useCallback(() => {
     setBrandStorageScope({ userId, demoMode });
@@ -52,10 +87,13 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
     const ag = loadAgency();
     setBrands(list);
     setAgency(ag);
-    setActiveBrandId((prev) =>
-      prev && list.some((b) => b.id === prev) ? prev : null
-    );
-  }, [userId, demoMode]);
+    if (demoMode || !userId) {
+      setBrandSessionReady(true);
+      setBrandWorkspaceGateOpen(false);
+      return;
+    }
+    applyBrandSession(readBrandWorkspaceSession(userId), list);
+  }, [userId, demoMode, applyBrandSession]);
 
   const reloadFromServer = useCallback(async () => {
     setLoading(true);
@@ -69,9 +107,12 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       const list = data.brands || [];
       setBrands(list);
       setAgency({ name: "내 브랜드 창고", brandIds: list.map((b) => b.id) });
-      setActiveBrandId((prev) =>
-        prev && list.some((b) => b.id === prev) ? prev : null
-      );
+      if (demoMode || !userId) {
+        setBrandSessionReady(true);
+        setBrandWorkspaceGateOpen(false);
+      } else {
+        applyBrandSession(readBrandWorkspaceSession(userId), list);
+      }
     } catch {
       reloadLocal();
     } finally {
@@ -93,9 +134,34 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
     [activeBrandId, brands]
   );
 
-  const selectBrand = useCallback((id) => {
-    setActiveBrandId(id);
-  }, []);
+  const selectBrand = useCallback(
+    (id) => {
+      setBlankBrandMode(false);
+      setActiveBrandId(id);
+      if (userId && !demoMode) {
+        writeBrandWorkspaceSession(userId, {
+          choice: id ? "brand" : "blank",
+          brandId: id || null,
+          at: Date.now(),
+        });
+      }
+    },
+    [userId, demoMode]
+  );
+
+  const startBlankBrandSession = useCallback(async () => {
+    setBlankBrandMode(true);
+    setActiveBrandId(null);
+    setBrandWorkspaceGateOpen(false);
+    if (userId && !demoMode) {
+      writeBrandWorkspaceSession(userId, {
+        choice: "blank",
+        brandId: null,
+        at: Date.now(),
+      });
+    }
+    emitBlankBrandSession();
+  }, [userId, demoMode]);
 
   const saveBrandLocally = useCallback(
     (draft) => {
@@ -266,6 +332,17 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
     [brands]
   );
 
+  const confirmBrandWorkspaceSelection = useCallback(
+    async (brandId) => {
+      if (!brandId) return;
+      selectBrand(brandId);
+      setBrandWorkspaceGateOpen(false);
+      const formSeed = applyBrandToForm(brandId);
+      emitBrandWorkspaceSelected(brandId, formSeed);
+    },
+    [selectBrand, applyBrandToForm]
+  );
+
   const resolveBrandFromFormSync = useCallback(
     (formInput) =>
       resolveBrandFromFormSyncImpl(formInput, brands, activeBrandId),
@@ -274,8 +351,10 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
 
   const buildProvisionalBrandFromForm = useCallback(
     (formInput) =>
-      buildProvisionalBrandFromFormImpl(formInput, activeBrand),
-    [activeBrand]
+      buildProvisionalBrandFromFormImpl(formInput, activeBrand, {
+        blankBrandMode,
+      }),
+    [activeBrand, blankBrandMode]
   );
 
   const ensureBrandFromForm = useCallback(
@@ -353,7 +432,12 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       allBrands: brands,
       activeBrand,
       activeBrandId,
+      blankBrandMode,
+      brandWorkspaceGateOpen,
+      brandSessionReady,
       selectBrand,
+      confirmBrandWorkspaceSelection,
+      startBlankBrandSession,
       addBrand,
       updateActiveBrand,
       deleteBrand,
@@ -377,7 +461,12 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       brands,
       activeBrand,
       activeBrandId,
+      blankBrandMode,
+      brandWorkspaceGateOpen,
+      brandSessionReady,
       selectBrand,
+      confirmBrandWorkspaceSelection,
+      startBlankBrandSession,
       addBrand,
       updateActiveBrand,
       deleteBrand,

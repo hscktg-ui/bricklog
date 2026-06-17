@@ -15,6 +15,7 @@ import MarketingImageStudio from "@/components/MarketingImageStudio";
 import DailyTimelinessPanel from "@/components/DailyTimelinessPanel";
 import PricingModal from "@/components/billing/PricingModal";
 import { BrandWorkspaceProvider, useBrandWorkspace } from "@/context/BrandWorkspaceContext";
+import BrandWorkspaceGate from "@/components/BrandWorkspaceGate";
 import Header from "@/components/Header";
 import ChannelWelcomeScreen from "@/components/ChannelWelcomeScreen";
 import {
@@ -328,6 +329,7 @@ function DashboardWithBrands({
     () => ({
       activeBrand: brandWs.activeBrand,
       activeBrandId: brandWs.activeBrandId,
+      blankBrandMode: brandWs.blankBrandMode,
       ensureBrandFromForm: brandWs.ensureBrandFromForm,
       resolveBrandFromFormSync: brandWs.resolveBrandFromFormSync,
       buildProvisionalBrandFromForm: brandWs.buildProvisionalBrandFromForm,
@@ -339,6 +341,7 @@ function DashboardWithBrands({
     [
       brandWs.activeBrand,
       brandWs.activeBrandId,
+      brandWs.blankBrandMode,
       brandWs.ensureBrandFromForm,
       brandWs.resolveBrandFromFormSync,
       brandWs.buildProvisionalBrandFromForm,
@@ -357,6 +360,7 @@ function DashboardWithBrands({
       onToast={showToast}
       brandHooks={brandHooks}
     >
+      <BrandWorkspaceGate />
       <ClickBlockerDebugPanel />
       <DashboardLayout
         user={user}

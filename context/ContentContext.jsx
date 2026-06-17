@@ -49,7 +49,16 @@ import { pushRewriteVersion } from "@/lib/rewrite/rewriteVersions";
 import {
   loadFormDraft,
   saveFormDraft,
+  clearFormDraft,
 } from "@/lib/formDraft";
+import {
+  BRAND_BLANK_SESSION_EVENT,
+  BRAND_WORKSPACE_SELECTED_EVENT,
+  brandNamesMatch,
+  resolveBrandIdForGeneration,
+  sanitizeFormInputIndustryScope,
+} from "@/lib/workspace/brandScopeGuard";
+import { resolveBriclogIndustryKey } from "@/lib/product/industryContextEngine";
 import { consumePublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import { brandMemoryToFormInput } from "@/lib/brands/brandMemory";
 import {
@@ -583,11 +592,14 @@ export function ContentProvider({
     const publicDraft = consumePublicTestSignupDraft();
     const today = new Date().toISOString().slice(0, 10);
     if (draft || publicDraft) {
-      const merged = {
-        ...DEFAULT_BLOG_INPUT,
-        ...draft,
-        contentDate: draft?.contentDate || today,
-      };
+      const merged = sanitizeFormInputIndustryScope(
+        {
+          ...DEFAULT_BLOG_INPUT,
+          ...draft,
+          contentDate: draft?.contentDate || today,
+        },
+        resolveBriclogIndustryKey(draft || {})
+      );
       if (publicDraft) {
         setSignupDraftRestored(true);
         if (!merged.brandName?.trim() && publicDraft.brandName) {
@@ -618,10 +630,65 @@ export function ContentProvider({
   }, [user?.id]);
 
   useEffect(() => {
+    const handler = () => {
+      const today = new Date().toISOString().slice(0, 10);
+      clearFormDraft(user?.id);
+      personalizationRef.current = null;
+      hydratedBrandRef.current = null;
+      const fresh = { ...DEFAULT_BLOG_INPUT, contentDate: today };
+      setBlogInput(fresh);
+      emitBrandFormSync(fresh);
+      setBlogContent(null);
+      setPlaceContent(null);
+      setInstagramContent(null);
+      setMemoryContentIds({ blog: null, place: null, instagram: null });
+      setBaseContentLabel(null);
+      setSourceChannel(null);
+    };
+    window.addEventListener(BRAND_BLANK_SESSION_EVENT, handler);
+    return () => window.removeEventListener(BRAND_BLANK_SESSION_EVENT, handler);
+  }, [user?.id]);
+
+  useEffect(() => {
+    const handler = (event) => {
+      const seed = event?.detail?.form;
+      if (!seed) return;
+      const today = new Date().toISOString().slice(0, 10);
+      clearFormDraft(user?.id);
+      personalizationRef.current = null;
+      hydratedBrandRef.current = event?.detail?.brandId || null;
+      const merged = sanitizeFormInputIndustryScope({
+        ...DEFAULT_BLOG_INPUT,
+        ...seed,
+        contentDate: seed.contentDate || today,
+      });
+      setBlogInput(merged);
+      emitBrandFormSync(merged);
+      saveFormDraft(merged, user?.id);
+      setBlogContent(null);
+      setPlaceContent(null);
+      setInstagramContent(null);
+      setMemoryContentIds({ blog: null, place: null, instagram: null });
+      setBaseContentLabel(null);
+      setSourceChannel(null);
+    };
+    window.addEventListener(BRAND_WORKSPACE_SELECTED_EVENT, handler);
+    return () =>
+      window.removeEventListener(BRAND_WORKSPACE_SELECTED_EVENT, handler);
+  }, [user?.id]);
+
+  useEffect(() => {
     const brand = brandHooks?.activeBrand;
     const brandId = brandHooks?.activeBrandId;
+    if (brandHooks?.blankBrandMode) return;
     if (!brand?.brandName?.trim() || !brandId) return;
     setBlogInput((prev) => {
+      if (
+        prev.brandName?.trim() &&
+        !brandNamesMatch(prev.brandName, brand.brandName)
+      ) {
+        return prev;
+      }
       const seeded = brandMemoryToFormInput(brand);
       const brandSwitched = prev.brandId !== brandId;
       const merged = brandSwitched
@@ -662,6 +729,7 @@ export function ContentProvider({
     brandHooks?.activeBrand?.brandName,
     brandHooks?.activeBrand?.region,
     brandHooks?.activeBrand?.tone,
+    brandHooks?.blankBrandMode,
   ]);
 
   useEffect(() => {
@@ -929,7 +997,10 @@ export function ContentProvider({
             inputOverride
           )
         : blogInput,
-      brandHooks
+      {
+        ...brandHooks,
+        blankBrandMode: brandHooks?.blankBrandMode,
+      }
     );
     const errors = validateForm(input);
     if (Object.keys(errors).length > 0) {
@@ -1031,11 +1102,19 @@ export function ContentProvider({
       input.mainKeyword?.trim() ||
       "";
     const runGeneration = async () => {
+    if (
+      brandHooks?.blankBrandMode ||
+      (input.brandName?.trim() &&
+        brandHooks?.activeBrand?.brandName?.trim() &&
+        !brandNamesMatch(input.brandName, brandHooks.activeBrand.brandName))
+    ) {
+      personalizationRef.current = null;
+    }
     const syncBrand = brandHooks?.resolveBrandFromFormSync?.(input) ?? null;
     const provisional =
       syncBrand ||
       brandHooks?.buildProvisionalBrandFromForm?.(input) ||
-      brandHooks?.activeBrand ||
+      (!brandHooks?.blankBrandMode ? brandHooks?.activeBrand : null) ||
       null;
     const needsBrandCreate =
       Boolean(input.brandName?.trim()) && !syncBrand;
@@ -1059,11 +1138,12 @@ export function ContentProvider({
       v2AxisRequired: true,
       v2PipelineEnforced: true,
       v3EngineEnforced: true,
-      brandId:
-        syncBrand?.id ||
-        brandHooks?.activeBrandId ||
-        input.brandId ||
-        provisional?.id,
+      brandId: resolveBrandIdForGeneration(input, {
+        syncBrand,
+        activeBrand: brandHooks?.activeBrand,
+        activeBrandId: brandHooks?.activeBrandId,
+        blankBrandMode: brandHooks?.blankBrandMode,
+      }) || provisional?.id,
     };
       const blogDerive = resolveDerivationSource("blog", {
         blogContent,
