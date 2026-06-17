@@ -51,7 +51,8 @@ const insta = applyInstagramUnifiedProsePass(instaPack, input);
 const instaFull = [insta.hook, insta.body, insta.ending].join("\n");
 assert("insta staccato merged", !/원두가 좋습니다\.\s*향이/.test(insta.body || ""));
 assert("insta no 특히 opener", !/^특히 /m.test(insta.ending || ""));
-assert("insta bridge", /이어서|마지막으로/.test(instaFull));
+assert("insta no duplicate bridge", !/(?:이어서\s*){2,}/.test(instaFull));
+assert("insta human tone", insta._meta?.instaCaptionHumanized === true);
 assert("insta emotion", /생각보다|느껴|좋을/.test(instaFull));
 assert("insta unified meta", insta._meta?.channelUnifiedProsePass === true);
 
