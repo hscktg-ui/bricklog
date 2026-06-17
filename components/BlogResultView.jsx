@@ -401,27 +401,6 @@ export default function BlogResultView({
         )
       )}
 
-      {!isBriefOnly ? (
-        <>
-          <BriclogStrengthChips
-            draft={draft}
-            blogInput={blogInput}
-            hasPlace={hasPlace}
-            hasInsta={hasInsta}
-          />
-          {draft._meta?.researchFactUtilization?.total > 0 ? (
-            <p className="text-[11px] leading-relaxed text-[#8B95A1]">
-              조사 {draft._meta.researchFactUtilization.total}건 중{" "}
-              {draft._meta.researchFactUtilization.anchored}건이 본문에 녹았어요.
-              {!draft._meta.researchFactUtilization.ok
-                ? " 아래 「피드백」이나 「다시 받기」로 조사 반영·분량을 보강할 수 있어요."
-                : null}
-            </p>
-          ) : null}
-          <BrandHabitStrip className="mt-1" />
-        </>
-      ) : null}
-
       {simWarn && (simpleMode || !showExpertPanels) ? (
         <div
           className="rounded-xl border border-[#FFE0B2] bg-[#FFF8E6] px-4 py-3 text-[12px] font-medium leading-relaxed text-[#E67700]"
@@ -439,13 +418,17 @@ export default function BlogResultView({
       ) : null}
       {onRegenerate && !isBriefOnly ? (
         <RegenTonePanel
-          className="mb-4"
+          variant="blog"
+          className="mb-3 md:mb-4"
           toneRequest={toneRequestDraft}
           onToneRequestChange={handleToneDraftChange}
           onRegenerate={onRegenerate}
           busy={regenerateBusy}
           brandHabitsLine={brandHabitsLine}
           rewriteCount={draft._meta?.rewriteCount || 0}
+          mobile={mobileSimple}
+          compact={mobileSimple}
+          showBrandHabits={mobileSimple}
         />
       ) : null}
       <ResultCopyHero
@@ -525,6 +508,27 @@ export default function BlogResultView({
           {copyText}
         </pre>
       </ResultCopyHero>
+
+      {!isBriefOnly ? (
+        <div className="mt-3 space-y-2 md:mt-4">
+          <BriclogStrengthChips
+            draft={draft}
+            blogInput={blogInput}
+            hasPlace={hasPlace}
+            hasInsta={hasInsta}
+          />
+          {draft._meta?.researchFactUtilization?.total > 0 ? (
+            <p className="text-[11px] leading-relaxed text-[#8B95A1]">
+              조사 {draft._meta.researchFactUtilization.total}건 중{" "}
+              {draft._meta.researchFactUtilization.anchored}건이 본문에 녹았어요.
+              {!draft._meta.researchFactUtilization.ok
+                ? " 위 「다시 받기」나 아래 피드백으로 보강할 수 있어요."
+                : null}
+            </p>
+          ) : null}
+          {!mobileSimple ? <BrandHabitStrip className="mt-1" /> : null}
+        </div>
+      ) : null}
 
       {!isBriefOnly ? (
         <ContentOperatingPlanPanel

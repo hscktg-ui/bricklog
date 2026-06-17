@@ -40,6 +40,9 @@ import {
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import MobileChannelChrome from "@/components/workspace/MobileChannelChrome";
 import WorkspaceManuscriptStatus from "@/components/quality/WorkspaceManuscriptStatus";
+import RegenTonePanel from "@/components/generation/RegenTonePanel";
+import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
+import { RETRY } from "@/lib/product/craft";
 
 export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }) {
   const { blogInput, setBlogInput } = useContentForm();
@@ -111,6 +114,20 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
     [activeBrand?.contentArchive?.blog]
   );
   const generationCount = activeBrand?.contentArchive?.blog?.length ?? 0;
+
+  const brandHabitsLine = useMemo(() => {
+    if (blogInput?.brandHabitsBrief) {
+      return String(blogInput.brandHabitsBrief).slice(0, 96);
+    }
+    return formatBrandHabitsBrief(activeBrand);
+  }, [blogInput?.brandHabitsBrief, activeBrand]);
+
+  const handleToneRequestChange = useCallback(
+    (toneRequest) => {
+      setBlogInput((prev) => ({ ...prev, toneRequest }));
+    },
+    [setBlogInput]
+  );
 
   const [formOpen, setFormOpen] = useState(true);
   const { isMobile, isTablet } = useEffectiveViewport();
@@ -221,7 +238,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
             {generating.instagram
               ? "만드는 중…"
               : instagramContent
-                ? "다시 만들기"
+                ? RETRY.cta
                 : CHANNEL_PRODUCTS.insta.generateLabel}
           </button>
           {hasFullBlog && blogContent && (
@@ -293,7 +310,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
               {generating.instagram
                 ? "만드는 중…"
                 : instagramContent
-                  ? "다시 만들기"
+                  ? RETRY.cta
                   : CHANNEL_PRODUCTS.insta.generateLabel}
             </button>
           </div>
@@ -343,6 +360,19 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
               input={blogInput}
               channel="instagram"
               compact
+            />
+            <RegenTonePanel
+              variant="instagram"
+              className="mb-4"
+              toneRequest={blogInput?.toneRequest || ""}
+              onToneRequestChange={handleToneRequestChange}
+              onRegenerate={() => runInstaGenerate()}
+              busy={generating.instagram}
+              brandHabitsLine={brandHabitsLine}
+              rewriteCount={instagramContent._meta?.rewriteCount || 0}
+              mobile={isMobile}
+              compact={isMobile || concise}
+              showBrandHabits={isMobile}
             />
             <EditableInstaView
               insta={instagramContent}

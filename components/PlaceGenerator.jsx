@@ -40,6 +40,9 @@ import {
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import MobileChannelChrome from "@/components/workspace/MobileChannelChrome";
 import WorkspaceManuscriptStatus from "@/components/quality/WorkspaceManuscriptStatus";
+import RegenTonePanel from "@/components/generation/RegenTonePanel";
+import { formatBrandHabitsBrief } from "@/lib/brands/brandHabits";
+import { RETRY } from "@/lib/product/craft";
 
 export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
   const { blogInput, setBlogInput } = useContentForm();
@@ -97,6 +100,20 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
     [activeBrand?.contentArchive?.blog]
   );
   const generationCount = activeBrand?.contentArchive?.blog?.length ?? 0;
+
+  const brandHabitsLine = useMemo(() => {
+    if (blogInput?.brandHabitsBrief) {
+      return String(blogInput.brandHabitsBrief).slice(0, 96);
+    }
+    return formatBrandHabitsBrief(activeBrand);
+  }, [blogInput?.brandHabitsBrief, activeBrand]);
+
+  const handleToneRequestChange = useCallback(
+    (toneRequest) => {
+      setBlogInput((prev) => ({ ...prev, toneRequest }));
+    },
+    [setBlogInput]
+  );
 
   const [formOpen, setFormOpen] = useState(true);
   const { isMobile, isTablet } = useEffectiveViewport();
@@ -200,11 +217,7 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
             }
             className="briclog-btn-primary mt-5 disabled:opacity-50"
           >
-            {generating.place
-              ? "만드는 중…"
-              : placeContent
-                ? "다시 만들기"
-                : CHANNEL_PRODUCTS.place.generateLabel}
+            {generating.place ? "만드는 중…" : placeContent ? RETRY.cta : CHANNEL_PRODUCTS.place.generateLabel}
           </button>
           {hasFullBlog && blogContent && (
             <button
@@ -275,7 +288,7 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
               {generating.place
                 ? "만드는 중…"
                 : placeContent
-                  ? "다시 만들기"
+                  ? RETRY.cta
                   : CHANNEL_PRODUCTS.place.generateLabel}
             </button>
           </div>
@@ -325,6 +338,19 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
               input={blogInput}
               channel="place"
               compact
+            />
+            <RegenTonePanel
+              variant="place"
+              className="mb-4"
+              toneRequest={blogInput?.toneRequest || ""}
+              onToneRequestChange={handleToneRequestChange}
+              onRegenerate={() => runPlaceGenerate()}
+              busy={generating.place}
+              brandHabitsLine={brandHabitsLine}
+              rewriteCount={placeContent._meta?.rewriteCount || 0}
+              mobile={isMobile}
+              compact={isMobile || concise}
+              showBrandHabits={isMobile}
             />
             <EditablePlaceView
               place={placeContent}
