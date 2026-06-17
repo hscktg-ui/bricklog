@@ -28,6 +28,8 @@ export default function GeneratingResultPlaceholder({
   channelLabel = "이야기",
   stepLabel = null,
   startedAt = null,
+  researchSnippet = null,
+  researchFactCount = 0,
 }) {
   const { simplifyUi: mobileSimple } = useMobileWriteUx();
   const revealing = phase === "revealing";
@@ -106,6 +108,18 @@ export default function GeneratingResultPlaceholder({
               : ""}
           </p>
         </div>
+
+        {!revealing && (researchSnippet || researchFactCount > 0) ? (
+          <div className="mt-4 rounded-xl border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-3 text-left">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
+              조사 메모
+              {researchFactCount > 0 ? ` · ${researchFactCount}건` : ""}
+            </p>
+            <p className="mt-1.5 line-clamp-4 text-[12px] leading-relaxed text-[var(--vision-ink)]">
+              {researchSnippet}
+            </p>
+          </div>
+        ) : null}
 
         {!mobileSimple ? (
           <ol className="mt-5 space-y-2" aria-label="생성 단계">

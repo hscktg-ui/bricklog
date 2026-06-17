@@ -1,5 +1,6 @@
 "use client";
 
+import { BLOG_GENERATE_CTA } from "@/lib/product/blogCtaCopy";
 import {
   resolveBlogGenHintFooter,
   resolveBlogGenHintStatusClass,
@@ -72,7 +73,7 @@ export default function BlogGenHintPanel({
           onClick={onRetry}
           className={`${VISION_CTA_ACCENT} mt-4 !min-h-[48px] w-full sm:max-w-xs`}
         >
-          조사 후 글 받기
+          {BLOG_GENERATE_CTA}
         </button>
       ) : null}
     </div>

@@ -34,6 +34,7 @@ import {
   useContentPipelineState,
 } from "@/context/ContentContext";
 import BlogGenHintPanel from "@/components/workspace/BlogGenHintPanel";
+import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import {
   isFormValid as checkFormValid,
@@ -739,6 +740,26 @@ const BlogEditorResults = memo(function BlogEditorResults({
     loadingOverlay?.channel,
   ]);
 
+  const researchLiveMemo = useMemo(() => {
+    const brief = String(researchResult?.summary || researchResult?.brief || "").trim();
+    if (brief) return brief.slice(0, 220);
+    const facts = researchResult?.facts || researchResult?.researchFacts || [];
+    if (Array.isArray(facts) && facts.length) {
+      return facts
+        .slice(0, 3)
+        .map((f) => (typeof f === "string" ? f : f?.text || f?.fact || ""))
+        .filter(Boolean)
+        .join(" · ")
+        .slice(0, 220);
+    }
+    return null;
+  }, [researchResult]);
+
+  const researchFactCount = useMemo(() => {
+    const facts = researchResult?.facts || researchResult?.researchFacts || [];
+    return Array.isArray(facts) ? facts.length : 0;
+  }, [researchResult]);
+
   const handleHintRetry = useCallback(() => {
     generateBlog(blogInput, { blogOnly: loadBlogOnlyPref(), regen: true });
   }, [generateBlog, blogInput]);
@@ -751,7 +772,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
         className={`${channelResultPaneClass({
           stickyCopy: showStickyCopy,
           resultScrollPadClass,
-        })} ${hideFormPanel ? "max-lg:min-h-0" : ""}`}
+        })} ${hideFormPanel ? "max-md:min-h-0" : ""}`}
       >
         {showResultPlaceholder ? (
           <GeneratingResultPlaceholder
@@ -764,26 +785,21 @@ const BlogEditorResults = memo(function BlogEditorResults({
             }
             stepLabel={loadingOverlay?.stepLabel}
             startedAt={loadingOverlay?.startedAt}
+            researchSnippet={researchLiveMemo}
+            researchFactCount={researchFactCount}
           />
         ) : showFullResult ? (
           <>
-            {blogContent?._meta?.completeDraft ? (
+            <DeliveryTrustBadge pack={blogContent} className="mb-4" />
+            {blogContent?._meta?.completeDraft &&
+            !blogContent?._meta?.deliveryPreview &&
+            !blogContent?._meta?.softPass ? (
               <div className={`${VISION_STATUS_OK} mb-4 px-4 py-3`}>
                 <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
                   {RESULT_VIEW.completeBannerTitle}
                 </p>
                 <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
                   {RESULT_VIEW.completeBannerBody}
-                </p>
-              </div>
-            ) : blogContent?._meta?.deliveryPreview || blogContent?._meta?.softPass ? (
-              <div className={`${VISION_STATUS_NEUTRAL} mb-4 px-4 py-3`}>
-                <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
-                  {RESULT_VIEW.draftBannerTitle}
-                </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-                  {blogContent._meta?.deliveryPreviewMessage ||
-                    RESULT_VIEW.draftBannerBody}
                 </p>
               </div>
             ) : null}

@@ -41,6 +41,7 @@ import {
 import ResultCopyHero, {
   ResultCopyGhostButton,
 } from "@/components/workspace/ResultCopyHero";
+import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
 import { VISION_EYEBROW, VISION_COPY_BTN } from "@/lib/landing/vision2030Styles";
 
 export default function BlogResultView({
@@ -410,6 +411,9 @@ export default function BlogResultView({
 
       {!mobileSimple ? (
         <p className={VISION_EYEBROW}>{RESULT_VIEW.sectionLabel}</p>
+      ) : null}
+      {!isBriefOnly ? (
+        <DeliveryTrustBadge pack={draft} className="mb-3" compact={mobileSimple} />
       ) : null}
       <ResultCopyHero
         title={

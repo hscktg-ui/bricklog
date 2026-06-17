@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import BriclogNextPanel from "@/components/BriclogNextPanel";
-import { buildBriclogNextSnapshot } from "@/lib/product/briclogNext";
+import { buildBriclogNextSnapshot, getBriclogNextPublicPitch } from "@/lib/product/briclogNext";
+import { VISION_EYEBROW } from "@/lib/landing/vision2030Styles";
 
 const WORKSPACE_MENUS = new Set(["blog", "place", "insta", "image", "growth"]);
 
@@ -54,6 +55,13 @@ export default function BriclogNextHomeStrip({
     hasInsta,
   ]);
 
+  const heroMode =
+    activeMenu === "blog" &&
+    !blogContent &&
+    (Boolean(blogInput?.brandName?.trim()) || Boolean(blogInput?.topic?.trim()));
+
+  const pitch = useMemo(() => getBriclogNextPublicPitch(), []);
+
   if (!show) return null;
 
   const onChannelAction =
@@ -67,12 +75,28 @@ export default function BriclogNextHomeStrip({
       : undefined;
 
   return (
-    <div className="border-b border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] px-4 py-3 sm:px-5 md:px-6">
+    <div
+      className={`border-b border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] ${
+        heroMode ? "px-4 py-4 sm:px-6 sm:py-5" : "px-4 py-3 sm:px-5 md:px-6"
+      }`}
+    >
       <div className="mx-auto max-w-5xl">
+        {heroMode ? (
+          <div className="mb-4 text-center md:text-left">
+            <p className={VISION_EYEBROW}>{pitch.eyebrow}</p>
+            <h2 className="mt-1 text-[clamp(1.125rem,2.5vw,1.375rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
+              {pitch.headline}
+            </h2>
+            <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[var(--vision-muted)] md:text-[14px]">
+              {pitch.sub}
+            </p>
+          </div>
+        ) : null}
         <BriclogNextPanel
           blogInput={blogInput}
           meta={blogContent?._meta}
-          compact
+          compact={!heroMode}
+          hero={heroMode}
           hasPlace={hasPlace}
           hasInsta={hasInsta}
           blogTopic={

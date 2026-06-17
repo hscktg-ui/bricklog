@@ -180,6 +180,8 @@ import {
 } from "@/lib/product/contentQualityDelivery";
 import { isHumanDeliveryGrade } from "@/lib/product/deliveryGrade";
 import { SOFT_PREVIEW_HINT } from "@/lib/product/deliverySoftPass";
+import { blogGenerateCtaInlineRetry } from "@/lib/product/blogCtaCopy";
+import { applyProdBlogBeliefBoost } from "@/lib/product/prodBeliefBoost";
 
 function allowBlogUiRescue() {
   return true;
@@ -191,7 +193,7 @@ function resolveBlogGenerationFailMessage(pipelineInput, result) {
   if (!hasFilledBlogAxes(pipelineInput)) {
     return "브랜드 · 지역 · 주제를 모두 입력해 주세요.";
   }
-  return "이번에는 편집본을 화면에 올리지 못했어요. 잠시 후 「조사 후 글 받기」를 다시 눌러 주세요.";
+  return `이번에는 편집본을 화면에 올리지 못했어요. ${blogGenerateCtaInlineRetry()}`;
 }
 
 function missionProseFallbackForUi(pipelineInput) {
@@ -233,11 +235,13 @@ function buildRescuedBlogPackForUi(pipelineInput, partial = null) {
     pipelineInput,
     "blog"
   );
-  if (!pack?.sections?.length) return null;
-  const publishReady = isHumanDeliveryGrade(pack, pipelineInput);
+  const boosted = applyProdBlogBeliefBoost(pack, pipelineInput);
+  const finalPack = boosted?.sections?.length ? boosted : pack;
+  if (!finalPack?.sections?.length) return null;
+  const publishReady = isHumanDeliveryGrade(finalPack, pipelineInput);
   return {
     pack: {
-      ...pack,
+      ...finalPack,
       _meta: {
         ...(pack._meta || {}),
         deliveryPreview: !publishReady,

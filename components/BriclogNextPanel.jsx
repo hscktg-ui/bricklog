@@ -13,6 +13,7 @@ export default function BriclogNextPanel({
   blogInput = null,
   meta = {},
   compact = false,
+  hero = false,
   hasPlace = false,
   hasInsta = false,
   blogTopic = "",
@@ -33,9 +34,11 @@ export default function BriclogNextPanel({
   if (!snapshot.ok) return null;
 
   const headline = meta?.coreEngine?.operatingHeadline || snapshot.headline;
-  const panelClass = compact
-    ? "rounded-xl border border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] px-3 py-3"
-    : `${VISION_PANEL} px-4 py-4`;
+  const panelClass = hero
+    ? `${VISION_PANEL} px-4 py-4 sm:px-5 sm:py-5`
+    : compact
+      ? "rounded-xl border border-[var(--vision-line,#E8EBED)] bg-[var(--vision-paper,#F7F8FA)] px-3 py-3"
+      : `${VISION_PANEL} px-4 py-4`;
 
   const handleAction = (channel) => {
     if (typeof onChannelAction === "function") onChannelAction(channel);
@@ -45,19 +48,19 @@ export default function BriclogNextPanel({
     <section className={panelClass} aria-label="브릭로그 다음">
       <p
         className={
-          compact
+          compact && !hero
             ? "text-[10px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]"
             : VISION_EYEBROW
         }
       >
         브릭로그 다음 · {snapshot.month}
       </p>
-      {headline && !compact ? (
-        <h3 className="mt-1 text-[15px] font-bold text-[var(--vision-ink)]">
+      {headline && (!compact || hero) ? (
+        <h3 className={`mt-1 font-bold text-[var(--vision-ink)] ${hero ? "text-[16px]" : "text-[15px]"}`}>
           {headline}
         </h3>
       ) : null}
-      <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
+      <p className={`mt-1 leading-relaxed text-[var(--vision-muted)] ${hero ? "text-[13px]" : "text-[12px]"}`}>
         네이버에 올린 뒤 같은 조사·브랜드 톤으로 이어갈 채널과 주제입니다.
       </p>
 
