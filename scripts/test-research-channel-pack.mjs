@@ -43,8 +43,12 @@ if (!isChannelPackDeliverable("place", place)) {
   process.exit(1);
 }
 const placeFull = getChannelFullText(place, "place");
-if (!/직접|다녀|확인/.test(placeFull)) {
-  console.error("FAIL: place visit voice missing");
+if (/방문\s*후기|다녀(?:왔|온)|솔직\s*후기/.test(placeFull)) {
+  console.error("FAIL: place must not use customer review tone", placeFull.slice(0, 200));
+  process.exit(1);
+}
+if (!/안내|운영|예약|매장|플레이스/.test(placeFull)) {
+  console.error("FAIL: place owner notice voice missing");
   process.exit(1);
 }
 
