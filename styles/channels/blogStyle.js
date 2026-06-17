@@ -1,13 +1,17 @@
 /**
  * 블로그 채널 — 읽는 콘텐츠 (체류·정보·자연스러운 흐름)
  */
+import { BLOG_LENGTH_TIERS } from "@/lib/product/briclogUltimateV20";
+
+const DEFAULT_TIER = BLOG_LENGTH_TIERS.short;
+
 export const BLOG_CHANNEL = {
   id: "blog",
   goal: "체류시간 · 정보 밀도 · 지역 SEO",
-  bodyMin: 2000,
-  bodyMax: 2800,
-  sectionCount: { min: 5, max: 7 },
-  sectionChars: { min: 250, max: 400 },
+  bodyMin: DEFAULT_TIER.target,
+  bodyMax: DEFAULT_TIER.max,
+  sectionCount: { min: 8, max: 12 },
+  sectionChars: { min: 320, max: 520 },
   mainKeywordUses: { min: 5, max: 7 },
   subKeywordUses: { min: 1, max: 2 },
   hashtagCount: { min: 15, max: 25 },

@@ -5,6 +5,7 @@ import {
   countChars,
   countKeywordOccurrences,
 } from "@/lib/prompts/engine/textUtils";
+import { resolveBlogLengthTier } from "@/lib/constants";
 import { containsOverused } from "@/lib/prompts/situations";
 import { detectGptTone } from "@/utils/gptToneScrubber";
 import { hasMechanicalKeywordPattern } from "@/lib/keywords/naturalKeywordWeave";
@@ -86,7 +87,8 @@ export function checkBlogQuality(blog, ctx) {
 
   const noUndefined = !hasJunkOutput(fullText);
   const excludeApplied = !containsForbidden(fullText, forbidden);
-  const charCountOk = charCount >= 1800 && charCount <= 2800;
+  const tier = resolveBlogLengthTier(ctx.blogLengthTier || "short");
+  const charCountOk = charCount >= tier.min && charCount <= tier.max;
   const mainKeywordOk = mainUses >= 4 && mainUses <= 8;
   const lowDuplicates = !hasDuplicateSentences(fullText);
   const noBannedOpeners = !BANNED_OPENERS.some((p) => fullText.includes(p));
@@ -100,7 +102,7 @@ export function checkBlogQuality(blog, ctx) {
   const badges = [
     { id: "undefined", label: "undefined 없음", ok: noUndefined },
     { id: "exclude", label: "금지어 없음", ok: excludeApplied },
-    { id: "chars", label: "1,800자 이상", ok: charCountOk },
+    { id: "chars", label: `${tier.min.toLocaleString()}자 이상`, ok: charCountOk },
     { id: "keyword", label: "메인키워드 자연 삽입", ok: mainKeywordOk },
     { id: "dup", label: "반복문장 최소화", ok: lowDuplicates },
     { id: "opener", label: "금지 도입문 없음", ok: noBannedOpeners },

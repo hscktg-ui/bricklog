@@ -76,9 +76,9 @@ assert(
 const short = resolveBlogLengthTier("short");
 const med = resolveBlogLengthTier("medium");
 const long = resolveBlogLengthTier("long");
-assert(short.min === 1800 && short.max === 2200, "short tier band");
-assert(med.min === 2800 && med.max === 3200, "medium tier band");
-assert(long.min === 3800 && long.max === 5000, "long tier band");
+assert(short.min === 3600 && short.max === 4400, "short tier band");
+assert(med.min === 5600 && med.max === 6400, "medium tier band");
+assert(long.min === 7600 && long.max === 10000, "long tier band");
 
 // 7 writing skill → proficiency
 const civilian = resolveWritingSkillLevel({ writingSkillLevel: "civilian" });

@@ -26,9 +26,9 @@ assert(
   "pipeline aligns with knowledge expansion stages"
 );
 assert(INFORMATION_UNIT_RANGE.min === 20 && INFORMATION_UNIT_RANGE.max === 50, "20~50 units");
-assert(BLOG_LENGTH_TIERS.short.min === 1800, "short min");
-assert(BLOG_LENGTH_TIERS.medium.min === 2800, "medium min");
-assert(BLOG_LENGTH_TIERS.long.max === 5000, "long max");
+assert(BLOG_LENGTH_TIERS.short.min === 3600, "short min");
+assert(BLOG_LENGTH_TIERS.medium.min === 5600, "medium min");
+assert(BLOG_LENGTH_TIERS.long.max === 10000, "long max");
 assert(MASTER_FINAL_REVIEW.length === 6, "final review 6 items");
 assert(HUMAN_DUPLICATE_POLICY.similarityPercent === 70, "70% human duplicate");
 assert(STRUCTURE_DUPLICATE_POLICY.similarityPercent === 80, "80% structure duplicate");
