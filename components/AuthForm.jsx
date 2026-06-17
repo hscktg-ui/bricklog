@@ -31,6 +31,10 @@ import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewCo
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
 import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import { isObfuscatedDuplicateSignup } from "@/lib/auth/signupResponse";
+import {
+  resolveSignupPhoneForSignup,
+  shouldRunSignupActivate,
+} from "@/lib/auth/signupPhonePayload";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 
 
@@ -60,19 +64,17 @@ async function signInAfterSignup(email, password) {
   });
   if (data?.session) return data;
 
-  const needsActivate =
-    /email not confirmed/i.test(String(error?.message || "")) || Boolean(data?.user);
-  if (!needsActivate && error) throw error;
-
   const activated = await ensureEmailActive(email, password);
-  if (!activated) throw new Error("계정 활성화에 실패했습니다.");
+  if (activated) {
+    ({ data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    }));
+    if (data?.session) return data;
+  }
 
-  ({ data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim(),
-    password,
-  }));
   if (error) throw error;
-  return data;
+  throw new Error("로그인에 실패했습니다.");
 }
 
 export default function AuthForm({
@@ -297,15 +299,12 @@ export default function AuthForm({
           return;
         }
 
-        const useOptionalPhone =
-          isSignupPhoneOptional() &&
-          phoneSmsVerified &&
-          phoneVerificationId &&
-          signupPhone.trim();
-        const contactPhone = useOptionalPhone ? signupPhone.trim() : "";
-        const signupPhoneVerificationId = useOptionalPhone
-          ? phoneVerificationId
-          : null;
+        const { contactPhone, signupPhoneVerificationId, phoneVerifiedForSignup } =
+          resolveSignupPhoneForSignup({
+            phoneSmsVerified,
+            phoneVerificationId,
+            signupPhone,
+          });
 
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -334,6 +333,7 @@ export default function AuthForm({
           return;
         }
 
+        let phoneHoldOk = false;
         if (signupPhoneVerificationId && contactPhone && data?.user?.id) {
           const holdRes = await fetch("/api/auth/signup/phone-hold", {
             method: "POST",
@@ -354,24 +354,30 @@ export default function AuthForm({
             setMode(MODES.login);
             return;
           }
+          phoneHoldOk = true;
         }
 
-        if (!data.session && data?.user?.id) {
-          if (isSignupPhoneOptional()) {
-            const actRes = await fetch("/api/auth/signup/activate", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId: data.user.id }),
-            });
-            const actData = await actRes.json().catch(() => ({}));
-            if (!actRes.ok || !actData.ok) {
-              onToast?.(
-                actData.userMessage || "가입 활성화에 실패했습니다. 로그인을 시도해 주세요.",
-                "error"
-              );
-              setMode(MODES.login);
-              return;
-            }
+        if (
+          shouldRunSignupActivate({
+            hasSession: Boolean(data.session),
+            phoneVerifiedForSignup,
+            phoneHoldOk,
+          }) &&
+          data?.user?.id
+        ) {
+          const actRes = await fetch("/api/auth/signup/activate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: data.user.id }),
+          });
+          const actData = await actRes.json().catch(() => ({}));
+          if (!actRes.ok || !actData.ok) {
+            onToast?.(
+              actData.userMessage || "가입 활성화에 실패했습니다. 로그인을 시도해 주세요.",
+              "error"
+            );
+            setMode(MODES.login);
+            return;
           }
         }
 
