@@ -47,6 +47,7 @@
     "test:click-blockers": "node scripts/diagnose-click-blockers.mjs",
     "test:signup-phone-required-flow": "node scripts/test-signup-phone-required-flow.mjs",
     "test:human-prose-delivery": "node --import ./scripts/register-alias.mjs scripts/test-human-prose-delivery.mjs",
+    "test:research-arc-length-delivery": "node --import ./scripts/register-alias.mjs scripts/test-research-arc-length-delivery.mjs",
     "test:ui-stability": "node scripts/ui-interaction-stability.mjs",
     "test:eight-journeys": "node scripts/eight-user-smoke.mjs",
     "test:eight-users": "node scripts/eight-user-smoke.mjs",
