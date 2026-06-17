@@ -439,6 +439,7 @@ function DashboardLayout({
   const [userPrefs, setUserPrefs] = useState(DEFAULT_USER_PREFERENCES);
   const [pricingOpen, setPricingOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [profileBannerDismissed, setProfileBannerDismissed] = useState(false);
   const [visitCount, setVisitCount] = useState(1);
   const [lastPost, setLastPost] = useState(null);
   const welcomeInitRef = useRef(false);
@@ -670,7 +671,10 @@ function DashboardLayout({
   const idleHintActive =
     !showChannelWelcome && workspaceMenus.has(activeMenu);
   const showProfileSetupBanner =
-    !demoMode && !suppressProfileBanner && profileNeedsSetup(profile);
+    !demoMode &&
+    !suppressProfileBanner &&
+    !profileBannerDismissed &&
+    profileNeedsSetup(profile);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -756,6 +760,7 @@ function DashboardLayout({
             userId={user?.id}
             onToast={showToast}
             onOpenSetup={onRequestProfileSetup}
+            onDismiss={() => setProfileBannerDismissed(true)}
           />
         )}
 

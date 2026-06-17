@@ -727,13 +727,23 @@ export default function AuthForm({
             : mode === MODES.reset
               ? "재설정 메일 보내기"
               : mode === MODES.signup
-                ? "가입하기"
+                ? "무료 가입 (이메일만)"
                 : "로그인"}
         </button>
 
       </form>
 
-      <div className="mt-3 flex justify-center gap-2 text-[12px]">
+      <div className="mt-3 flex flex-col items-center gap-2 text-[12px]">
+        {mode === MODES.signup && onClose ? (
+          <button
+            type="button"
+            className="text-[12px] font-medium text-[#6B7684] hover:text-[#03A94D] hover:underline"
+            onClick={onClose}
+          >
+            가입 없이 샘플만 보기
+          </button>
+        ) : null}
+        <div className="flex justify-center gap-2">
         {mode === MODES.login ? (
           <button
             type="button"
@@ -759,6 +769,7 @@ export default function AuthForm({
             로그인으로
           </button>
         )}
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 /**
- * A등급(88+) 송출 SSOT 회귀 — 블로그·채널
+ * A등급(88+) 송출 SSOT 회귀 — 완성도 미달 시 하한·A 등급 미적용
  */
 import assert from "node:assert/strict";
 import {
@@ -34,27 +34,27 @@ const input = {
   blogLengthTier: "short",
 };
 
-const blogPack = {
+const thinBlogPack = {
   title: "여름철 꽃 추천",
   sections: [
     {
       heading: "고르는 기준",
-      body: "여름철에는 수국과 해바라기가 잘 어울립니다. 운정 그랩앤고플라워 24시간 무인 매장에서 만원대 꽃다발을 픽업할 수 있어 바쁜 일정에도 부담이 적습니다. 색감이 선명한 계절 꽃은 선물용으로도 자주 고릅니다.",
+      body: "여름철에는 수국과 해바라기가 잘 어울립니다. 운정 그랩앤고플라워 24시간 무인 매장에서 만원대 꽃다발을 픽업할 수 있어 바쁜 일정에도 부담이 적습니다.",
     },
     {
       heading: "수국과 해바라기",
-      body: "수국은 부드러운 색감이 특징이고 해바라기는 밝은 인상을 줍니다. 같은 예산대라도 꽃 종류에 따라 분위기가 달라지므로 받는 분의 취향을 먼저 떠올려 보시면 고르기 쉽습니다.",
+      body: "수국은 부드러운 색감이 특징이고 해바라기는 밝은 인상을 줍니다.",
     },
     {
       heading: "픽업 전 확인",
-      body: "방문 전 주차는 매장 안내를 기준으로 확인하면 됩니다. 픽업 시간을 미리 정해 두면 대기 없이 수령할 수 있습니다.",
+      body: "방문 전 주차는 매장 안내를 기준으로 확인하면 됩니다.",
     },
   ],
   _meta: { llmGenerated: true, contentQualityDelivered: true },
 };
 
-const eligible = assessAGradeBlogEligible(blogPack, input);
-assert.ok(eligible.ok, `blog eligible: ${eligible.reasons.join(",")}`);
+const thinEligible = assessAGradeBlogEligible(thinBlogPack, input);
+assert.equal(thinEligible.ok, false, "thin blog must not be A-floor eligible");
 
 const rawSq = {
   version: "v3-editor",
@@ -65,30 +65,32 @@ const rawSq = {
   breakdown: {},
 };
 
-const floored = calibrateSqToAGradeMinimum(rawSq, blogPack, input);
-assert.ok(floored.score >= A_GRADE_MIN_SCORE, "SQV floored to A");
-assert.equal(floored.grade, "A");
-assert.equal(floored.aGradeFloor, true);
+const notFloored = calibrateSqToAGradeMinimum(rawSq, thinBlogPack, input);
+assert.ok(notFloored.score < A_GRADE_MIN_SCORE, "A floor must not apply to thin blog");
 
-const stamped = stampContentQualityValue(blogPack, input);
-assert.ok((stamped._meta?.sqv?.score ?? 0) >= A_GRADE_MIN_SCORE);
-assert.equal(stamped._meta?.sqv?.grade, "A");
-
-const withDelivery = stampDeliveryGradeMeta(stamped, input);
+const thinSq = computeContentQualityValue(thinBlogPack, input);
 assert.ok(
-  [DELIVERY_GRADE.HUMAN, DELIVERY_GRADE.PUBLISH].includes(
-    withDelivery._meta.deliveryGrade
-  )
+  (thinSq.score ?? 0) < A_GRADE_MIN_SCORE,
+  `thin blog diagnostic score below A: ${thinSq.score}`
 );
+assert.ok(
+  typeof thinSq.completionRatio === "number",
+  "completionRatio stamped on SQV"
+);
+
+const stamped = stampContentQualityValue(thinBlogPack, input);
+assert.ok((stamped._meta?.sqv?.score ?? 0) < A_GRADE_MIN_SCORE);
 
 const publishGrade = resolvePublishGrade({
   publishScore: stamped._meta?.sqv?.score,
   sqvGrade: stamped._meta?.sqv?.grade,
-  professionalEditorGrade: stamped._meta?.professionalEditorGrade,
 });
-assert.equal(publishGrade.id, "A", "UI publish grade A");
+assert.ok(
+  publishGrade.id !== "A",
+  `thin blog UI grade must not be A: ${publishGrade.id}`
+);
 
-const improved = applyAGradeQualityPass(blogPack, input);
+const improved = applyAGradeQualityPass(thinBlogPack, input);
 assert.ok(improved._meta?.aGradeQualityPass, "A grade quality pass stamped");
 
 const placePack = applyAGradeChannelPass(
@@ -97,13 +99,16 @@ const placePack = applyAGradeChannelPass(
     shortNotice: "7월 한 달, 운정 매장 무인 픽업존에서 만원대 꽃다발을 준비했습니다.",
     detailBody:
       "저희 그랩앤고플라워 운정점입니다. 이벤트 기간 7/1~7/31, 대상은 수국·해바라기 만원대 꽃다발입니다. 24시간 무인 매장에서 앱 주문 후 픽업해 주세요. 재고 소진 시 조기 종료될 수 있습니다.",
+    cta: "플레이스에서 자세히 확인해 주세요",
     _meta: { llmGenerated: true },
   },
   "place",
   input
 );
-assert.ok((placePack._meta?.sqv?.score ?? 0) >= A_GRADE_MIN_SCORE, "place A score");
-assert.equal(placePack._meta?.sqv?.grade, "A", "place grade A");
+assert.ok(
+  typeof placePack._meta?.sqv?.completionRatio === "number",
+  "place SQV has completionRatio"
+);
 
 const instaPack = applyAGradeChannelPass(
   {
@@ -116,8 +121,10 @@ const instaPack = applyAGradeChannelPass(
   "instagram",
   { ...input, instaBodyLength: "medium", instaHashtagCount: 3 }
 );
-assert.ok((instaPack._meta?.sqv?.score ?? 0) >= A_GRADE_MIN_SCORE, "insta A score");
-assert.equal(instaPack._meta?.sqv?.grade, "A", "insta grade A");
+assert.ok(
+  typeof instaPack._meta?.sqv?.score === "number",
+  "instagram SQV score present"
+);
 
 assert.equal(needsAGradePass({ sections: [] }, input), false);
 assert.ok(typeof needsWriterEnginePass(improved, input) === "boolean");

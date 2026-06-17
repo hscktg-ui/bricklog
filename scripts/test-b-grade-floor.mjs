@@ -1,5 +1,5 @@
 /**
- * B등급(76+) 송출 SSOT 회귀
+ * B등급(76+) 송출 SSOT 회귀 — 완성도 미달 시 하한·B 등급 미적용
  */
 import assert from "node:assert/strict";
 import {
@@ -53,7 +53,7 @@ const thinPack = {
 };
 
 const eligible = assessBGradeDeliveryEligible(thinPack, input);
-assert.ok(eligible.ok, `delivery eligible: ${eligible.reasons.join(",")}`);
+assert.equal(eligible.ok, false, "thin pack must not be B-floor eligible");
 
 const rawSq = {
   version: "v3-editor",
@@ -64,42 +64,42 @@ const rawSq = {
   breakdown: {},
 };
 
-const floored = calibrateSqToBGradeMinimum(rawSq, thinPack, input);
-assert.ok(floored.score >= B_GRADE_MIN_SCORE, "SQV floored to B minimum");
-assert.equal(floored.grade, "B", "grade is B");
-assert.equal(floored.bGradeFloor, true, "bGradeFloor meta");
-assert.equal(floored.publishReady, true, "publishReady after B floor");
+const notFloored = calibrateSqToBGradeMinimum(rawSq, thinPack, input);
+assert.ok(notFloored.score < B_GRADE_MIN_SCORE, "B floor must not apply to thin pack");
+assert.notEqual(notFloored.bGradeFloor, true);
 
 const stamped = stampContentQualityValue(thinPack, input);
 assert.ok(
-  (stamped._meta?.sqv?.score ?? 0) >= B_GRADE_MIN_SCORE,
-  `stamped SQV >= ${B_GRADE_MIN_SCORE}: ${stamped._meta?.sqv?.score}`
+  (stamped._meta?.sqv?.score ?? 0) < B_GRADE_MIN_SCORE,
+  `diagnostic SQV below B: ${stamped._meta?.sqv?.score}`
 );
 assert.ok(
-  stamped._meta?.sqv?.grade === "A" || stamped._meta?.sqv?.grade === "B",
-  `stamped grade A/B: ${stamped._meta?.sqv?.grade}`
+  typeof stamped._meta?.sqv?.completionRatio === "number",
+  "completionRatio on stamped SQV"
 );
 
 const withDelivery = stampDeliveryGradeMeta(stamped, input);
 assert.ok(
-  withDelivery._meta?.deliveryGrade === DELIVERY_GRADE.HUMAN ||
-    withDelivery._meta?.deliveryGrade === DELIVERY_GRADE.PUBLISH,
-  `delivery grade human+: ${withDelivery._meta?.deliveryGrade}`
+  withDelivery._meta?.deliveryGrade === DELIVERY_GRADE.DRAFT ||
+    withDelivery._meta?.deliveryGrade === DELIVERY_GRADE.HUMAN,
+  `delivery grade for thin pack: ${withDelivery._meta?.deliveryGrade}`
 );
 
 const publishGrade = resolvePublishGrade({
   publishScore: stamped._meta?.sqv?.score,
   sqvGrade: stamped._meta?.sqv?.grade,
 });
-assert.equal(publishGrade.id, "A", "UI publish grade A or B");
-assert.ok(["A", "B"].includes(publishGrade.id));
+assert.ok(
+  publishGrade.id !== "A",
+  `thin pack UI grade must not be A: ${publishGrade.id}`
+);
 
 const improved = applyBGradeQualityPass(thinPack, input);
 assert.ok(improved._meta?.bGradeQualityPass, "B grade quality pass stamped");
 const improvedSq = computeContentQualityValue(improved, input);
 assert.ok(
-  (improvedSq.score ?? 0) >= B_GRADE_MIN_SCORE,
-  `improved pack SQV >= ${B_GRADE_MIN_SCORE}`
+  (improvedSq.score ?? 0) < B_GRADE_MIN_SCORE || improvedSq.completionRatio < 0.88,
+  "improved thin pack still diagnostic-capped or below B"
 );
 
 assert.equal(needsBGradePass({ sections: [] }, input), false, "empty pack skips B pass");

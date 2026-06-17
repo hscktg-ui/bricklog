@@ -12,6 +12,8 @@ import {
 import { getBlogFullText } from "@/utils/qualityCheck.js";
 import { countBlogBodyCharsWithSpaces } from "@/lib/prompts/engine/textUtils.js";
 
+process.env.BRICLOG_MISSION = "true";
+
 const INPUT = {
   brandName: "티카페",
   region: "강남",
