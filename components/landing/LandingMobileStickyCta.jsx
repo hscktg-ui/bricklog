@@ -8,7 +8,6 @@ import {
 import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
 import {
   VISION_CTA_ACCENT,
-  VISION_CTA_GHOST,
 } from "@/lib/landing/vision2030Styles";
 
 export default function LandingMobileStickyCta({
@@ -55,25 +54,25 @@ export default function LandingMobileStickyCta({
               이야기 · 플레이스 · 인스타
             </p>
           </div>
-          {onSignup ? (
-            <button
-              type="button"
-              data-briclog-cta="signup-mobile-sticky"
-              onClick={onSignup}
-              className={`${VISION_CTA_GHOST} !min-h-[44px] !w-auto shrink-0 !px-3 !py-2.5 !text-[11px]`}
-            >
-              {LANDING_NAV_SIGNUP_CTA}
-            </button>
-          ) : null}
           <button
             type="button"
             data-briclog-cta="start"
             onClick={onStart}
-            className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto shrink-0 !px-3 !py-2.5 !text-[11px]`}
+            className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto shrink-0 !px-4 !py-2.5 !text-[12px]`}
           >
             {LANDING_PRIMARY_CTA}
           </button>
         </div>
+        {onSignup ? (
+          <button
+            type="button"
+            data-briclog-cta="signup-mobile-sticky"
+            onClick={onSignup}
+            className="mt-2 w-full text-center text-[12px] font-semibold text-[var(--vision-muted)] underline-offset-2 hover:text-[var(--vision-ink)] hover:underline"
+          >
+            {LANDING_NAV_SIGNUP_CTA}
+          </button>
+        ) : null}
       </div>
     </div>
   );

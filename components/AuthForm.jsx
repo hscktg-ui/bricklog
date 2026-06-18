@@ -484,7 +484,7 @@ export default function AuthForm({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-3 top-3 rounded-lg p-1 text-[#8B95A1] hover:bg-[#F7F8FA]"
+          className="absolute right-3 top-3 rounded-lg p-1 text-[var(--vision-muted)] hover:bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))]"
         >
           ✕
         </button>
@@ -494,29 +494,29 @@ export default function AuthForm({
           <button
             type="button"
             onClick={onClose}
-            className="flex flex-col items-center gap-1 rounded-xl px-2 py-1 transition active:brightness-[0.97] hover:bg-[#F7F8FA]"
+            className="flex flex-col items-center gap-1 rounded-xl px-2 py-1 transition active:brightness-[0.97] hover:bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))]"
             aria-label="랜딩으로"
           >
             <Logo className="max-w-[200px]!" />
-            <p className="text-center text-[12px] leading-snug text-[#8B95A1]">
+            <p className="text-center text-[12px] leading-snug text-[var(--vision-muted)]">
               {BRICLOG_SLOGAN_SHORT}
             </p>
           </button>
         ) : (
           <>
             <Logo className="max-w-[200px]!" />
-            <p className="mt-1 text-center text-[12px] leading-snug text-[#8B95A1]">
+            <p className="mt-1 text-center text-[12px] leading-snug text-[var(--vision-muted)]">
               {BRICLOG_SLOGAN_SHORT}
             </p>
           </>
         )}
       </div>
 
-      <h1 className="text-center text-lg font-bold text-[#191F28]">{title}</h1>
+      <h1 className="text-center text-lg font-bold text-[var(--vision-ink)]">{title}</h1>
 
       {mode === MODES.signup && publicTestDraft?.brandName ? (
-        <div className="mt-4 rounded-2xl border border-[#03C75A]/20 bg-[#03C75A]/8 px-4 py-3 text-center">
-          <p className="text-[12px] font-semibold leading-snug text-[#191F28]">
+        <div className="mt-4 rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))] px-4 py-3 text-center">
+          <p className="text-[12px] font-semibold leading-snug text-[var(--vision-ink)]">
             「{publicTestDraft.brandName}」 테스트 그대로 작업실에 이어집니다
           </p>
           {publicTestDraft.topic ? (

@@ -101,7 +101,7 @@ export default function DemoPreviewSection({ sample, onTest }) {
           </button>
         ) : null}
         <p className="mt-4 text-center text-[13px] text-[var(--vision-muted)]">
-          프롬프트·붙여넣기 검수는 가입 후 메뉴에서 이용할 수 있어요
+          붙여넣기·검수 도구는 가입 후 작업실에서 이용할 수 있어요
         </p>
       </div>
     </section>

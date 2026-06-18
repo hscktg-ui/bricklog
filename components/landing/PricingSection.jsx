@@ -19,7 +19,7 @@ export default function PricingSection({ onStart }) {
       className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}
     >
       <div className="mx-auto max-w-6xl">
-        <p className={`${VISION_EYEBROW} text-center`}>Pricing</p>
+        <p className={`${VISION_EYEBROW} text-center`}>요금</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           {LANDING_PRICING_INTRO}
         </h2>
