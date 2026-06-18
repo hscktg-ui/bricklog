@@ -5,6 +5,7 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { StatCard } from "@/components/admin/AdminCharts";
 import AdminFeedbackPanel from "@/components/admin/AdminFeedbackPanel";
 import AdminTrafficPanel from "@/components/admin/AdminTrafficPanel";
+import AdminSignupFunnelPanel from "@/components/admin/AdminSignupFunnelPanel";
 
 function formatKst(iso) {
   if (!iso) return "—";
@@ -434,6 +435,7 @@ const TABS = [
 export default function AdminOpsHub({ onToast }) {
   const [tab, setTab] = useState("overview");
   const [live, setLive] = useState(null);
+  const [funnel, setFunnel] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadLive = useCallback(async () => {
@@ -441,6 +443,7 @@ export default function AdminOpsHub({ onToast }) {
     try {
       const data = await fetchWithAuth("/api/admin/live");
       setLive(data.live);
+      setFunnel(data.funnel || null);
     } catch (err) {
       onToast?.(err.message, "error");
     } finally {
@@ -457,6 +460,7 @@ export default function AdminOpsHub({ onToast }) {
   return (
     <div className="mb-8 space-y-4">
       <LiveStatsBar live={live} onRefresh={() => void loadLive()} refreshing={refreshing} />
+      <AdminSignupFunnelPanel funnel={funnel} />
       <AdminTrafficPanel onToast={onToast} />
 
       <div className="flex flex-wrap gap-2 border-b border-[#E8EBED] pb-2">

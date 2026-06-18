@@ -36,6 +36,10 @@ import {
   shouldRunSignupActivate,
 } from "@/lib/auth/signupPhonePayload";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
+import {
+  getSignupAttributionSource,
+  recordSignupFunnelStep,
+} from "@/lib/analytics/signupIntent";
 
 
 const MODES = {
@@ -133,6 +137,11 @@ export default function AuthForm({
     } else {
       setPublicTestDraft(null);
     }
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== MODES.signup) return;
+    recordSignupFunnelStep("modal_open", getSignupAttributionSource());
   }, [mode]);
 
   useEffect(() => {
@@ -273,6 +282,7 @@ export default function AuthForm({
       }
 
       if (mode === MODES.signup) {
+        recordSignupFunnelStep("form_submit", getSignupAttributionSource());
         if (signupLimited) {
           onToast?.(
             signupLimitMessage ||
@@ -397,6 +407,7 @@ export default function AuthForm({
             /* 프로필 테이블 미적용 시에도 가입은 유지 */
           }
           persistSavedEmail(email, saveEmail);
+          recordSignupFunnelStep("signup_success", getSignupAttributionSource());
           onToast?.(
             "가입되었습니다. 닉네임·호칭은 로그인 후 안내에서 입력할 수 있어요.",
             "success"
@@ -511,6 +522,11 @@ export default function AuthForm({
           {publicTestDraft.topic ? (
             <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-[#4E5968]">
               {publicTestDraft.topic}
+            </p>
+          ) : null}
+          {phoneOptional ? (
+            <p className="mt-2 text-[11px] text-[#03A94D]">
+              휴대폰 인증은 건너뛰고 이메일만으로 가입할 수 있어요
             </p>
           ) : null}
         </div>

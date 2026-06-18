@@ -7,6 +7,11 @@ import {
 } from "@/lib/brand/copy";
 import {
   PUBLIC_TEST_QUOTA_EXCEEDED,
+  PUBLIC_TEST_QUOTA_SIGNUP_HEADLINE,
+  PUBLIC_TEST_QUOTA_SIGNUP_SUB,
+  PUBLIC_TEST_QUOTA_SIGNUP_CTA,
+  PUBLIC_TEST_ERROR_SIGNUP_SUB,
+  PUBLIC_TEST_ERROR_SIGNUP_CTA,
   PUBLIC_TEST_GATE_FAIL_SIGNUP_HINT,
   PUBLIC_TEST_BLUR_HINT,
   PUBLIC_TEST_TOPIC_HINT,
@@ -357,28 +362,53 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
             {error ? (
               <div className={`${VISION_STATUS_NEUTRAL} mt-4 space-y-3 px-4 py-3`}>
                 <div className="space-y-1.5 text-[13px] font-medium text-[var(--vision-muted)]">
+                  {error === PUBLIC_TEST_QUOTA_EXCEEDED ? (
+                    <p className="font-semibold text-[var(--vision-ink)]">
+                      {PUBLIC_TEST_QUOTA_SIGNUP_HEADLINE}
+                    </p>
+                  ) : null}
                   {error.split("\n").map((line) => (
                     <p key={line}>{line}</p>
                   ))}
                 </div>
-                {error.includes("구체적") ||
-                error.includes("예시") ||
-                error === PUBLIC_TEST_QUOTA_EXCEEDED ? (
+                {error === PUBLIC_TEST_QUOTA_EXCEEDED ? (
+                  <p className="text-[12px] leading-relaxed text-[var(--vision-muted)]">
+                    {PUBLIC_TEST_QUOTA_SIGNUP_SUB}
+                  </p>
+                ) : error.includes("구체적") || error.includes("예시") ? (
                   <p className="text-[12px] text-[var(--vision-muted)]">
-                    {error === PUBLIC_TEST_QUOTA_EXCEEDED
-                      ? PUBLIC_TEST_HERO.signupPhilosophy
-                      : PUBLIC_TEST_GATE_FAIL_SIGNUP_HINT}
+                    {PUBLIC_TEST_ERROR_SIGNUP_SUB}
                   </p>
                 ) : null}
+                {(error === PUBLIC_TEST_QUOTA_EXCEEDED ||
+                  error.includes("구체적") ||
+                  error.includes("예시")) && (
+                  <ul className="space-y-1.5 text-[12px] text-[var(--vision-muted)]">
+                    {PUBLIC_TEST_SIGNUP_UNLOCKS.slice(0, 3).map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="text-[var(--vision-accent)]" aria-hidden>
+                          ✓
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <button
                   type="button"
-                  onClick={() => signup("public_test_error")}
+                  onClick={() =>
+                    signup(
+                      error === PUBLIC_TEST_QUOTA_EXCEEDED
+                        ? "public_test_quota"
+                        : "public_test_error"
+                    )
+                  }
                   className={`${VISION_CTA_ACCENT} w-full min-h-[48px]`}
                 >
                   <span>
                     {error === PUBLIC_TEST_QUOTA_EXCEEDED
-                      ? "브랜드 작업실 만들기"
-                      : "가입 후 전체 생성 이어가기"}
+                      ? PUBLIC_TEST_QUOTA_SIGNUP_CTA
+                      : PUBLIC_TEST_ERROR_SIGNUP_CTA}
                   </span>
                 </button>
                 {isGateFail ? (
@@ -403,13 +433,31 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
             )}
 
             {quota.remaining <= 0 ? (
-              <button
-                type="button"
-                onClick={() => signup("public_test_quota")}
-                className={`${VISION_CTA_ACCENT} mt-5 w-full min-h-[48px]`}
-              >
-                <span>브랜드 작업실 만들기</span>
-              </button>
+              <div className="mt-5 space-y-3 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-surface)] px-4 py-4">
+                <p className="text-[14px] font-semibold text-[var(--vision-ink)]">
+                  {PUBLIC_TEST_QUOTA_SIGNUP_HEADLINE}
+                </p>
+                <p className="text-[12px] leading-relaxed text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_QUOTA_SIGNUP_SUB}
+                </p>
+                <ul className="space-y-1.5 text-[12px] text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_SIGNUP_UNLOCKS.slice(0, 3).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-[var(--vision-accent)]" aria-hidden>
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={() => signup("public_test_quota")}
+                  className={`${VISION_CTA_ACCENT} w-full min-h-[48px]`}
+                >
+                  <span>{PUBLIC_TEST_QUOTA_SIGNUP_CTA}</span>
+                </button>
+              </div>
             ) : (
               <button
                 type="submit"
