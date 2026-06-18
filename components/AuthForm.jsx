@@ -21,7 +21,9 @@ import {
   AUTH_MOBILE_PAGE_CLASS,
   AUTH_MOBILE_SHELL_CLASS,
   AUTH_PRIMARY_BTN_CLASS,
+  AUTH_SECONDARY_BTN_CLASS,
   AUTH_SURFACE_CLASS,
+  AUTH_VISION_SCOPE_CLASS,
 } from "@/lib/ui/authFieldStyles";
 import Logo from "./Logo";
 import { BRICLOG_SLOGAN_SHORT } from "@/lib/brand/slogan";
@@ -475,7 +477,7 @@ export default function AuthForm({
 
   const shell = (
     <div
-      className={`${AUTH_SURFACE_CLASS} ${AUTH_MOBILE_SHELL_CLASS} ${
+      className={`${AUTH_VISION_SCOPE_CLASS} ${AUTH_SURFACE_CLASS} ${AUTH_MOBILE_SHELL_CLASS} ${
         embedded ? "relative" : ""
       }`}
     >
@@ -571,7 +573,7 @@ export default function AuthForm({
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 sm:space-y-3">
         <div>
-          <label htmlFor="auth-email" className="mb-1.5 block text-[13px] font-semibold text-[#191F28] sm:text-[12px]">
+          <label htmlFor="auth-email" className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]">
             이메일
           </label>
           <input
@@ -607,7 +609,7 @@ export default function AuthForm({
 
         {mode !== MODES.reset && (
           <div>
-            <label htmlFor="auth-password" className="mb-1.5 block text-[13px] font-semibold text-[#191F28] sm:text-[12px]">
+            <label htmlFor="auth-password" className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]">
               비밀번호
             </label>
             <PasswordField
@@ -725,7 +727,7 @@ export default function AuthForm({
             </label>
             <button
               type="button"
-              className="text-[#03A94D] hover:underline"
+              className="text-[var(--vision-accent-deep,#03a94d)] hover:underline"
               onClick={() => setMode(MODES.reset)}
             >
               비밀번호 찾기
@@ -753,7 +755,7 @@ export default function AuthForm({
         {mode === MODES.signup && onClose ? (
           <button
             type="button"
-            className="text-[12px] font-medium text-[#6B7684] hover:text-[#03A94D] hover:underline"
+            className="text-[12px] font-medium text-[var(--vision-muted,#5a6b62)] hover:text-[var(--vision-accent-deep,#03a94d)] hover:underline"
             onClick={onClose}
           >
             가입 없이 샘플만 보기
@@ -763,7 +765,7 @@ export default function AuthForm({
         {mode === MODES.login ? (
           <button
             type="button"
-            className="rounded-lg border border-[#03C75A]/35 bg-[#F8FDF9] px-3 py-1.5 font-semibold text-[#03A94D] hover:bg-[#E8F9EF]"
+            className={AUTH_SECONDARY_BTN_CLASS}
             onClick={() => setMode(MODES.signup)}
           >
             회원가입
@@ -771,7 +773,7 @@ export default function AuthForm({
         ) : mode === MODES.signup ? (
           <button
             type="button"
-            className="rounded-lg border border-[#03C75A]/35 bg-[#F8FDF9] px-3 py-1.5 font-semibold text-[#03A94D] hover:bg-[#E8F9EF]"
+            className={AUTH_SECONDARY_BTN_CLASS}
             onClick={() => setMode(MODES.login)}
           >
             로그인
@@ -779,7 +781,7 @@ export default function AuthForm({
         ) : (
           <button
             type="button"
-            className="rounded-lg border border-[#03C75A]/35 bg-[#F8FDF9] px-3 py-1.5 font-semibold text-[#03A94D] hover:bg-[#E8F9EF]"
+            className={AUTH_SECONDARY_BTN_CLASS}
             onClick={() => setMode(MODES.login)}
           >
             로그인으로

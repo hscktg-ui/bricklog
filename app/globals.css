@@ -156,6 +156,52 @@ button:enabled,
   transition: background-color 9999s ease-out 0s;
 }
 
+/* 로그인·가입 — 랜딩 모달은 .briclog-vision-page 밖에 렌더 → 토큰 자체 정의 */
+.briclog-auth-vision {
+  --briclog-green: #03a94d;
+  --briclog-green-bright: #03c75a;
+  --vision-accent: var(--briclog-green-bright);
+  --vision-accent-deep: var(--briclog-green);
+  --vision-accent-soft: rgba(3, 199, 90, 0.12);
+  --vision-accent-ring: rgba(3, 199, 90, 0.18);
+  --vision-ink: #0f1a14;
+  --vision-paper: #f7faf8;
+  --vision-muted: #5a6b62;
+  --vision-line: rgba(15, 26, 20, 0.08);
+  --vision-line-strong: rgba(15, 26, 20, 0.14);
+  --vision-panel-bg: #ffffff;
+  --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+  color: var(--vision-ink);
+  color-scheme: light;
+}
+
+@media (max-width: 1023px) {
+  .briclog-auth-vision,
+  .briclog-auth-vision.briclog-vision-page {
+    --vision-ink: #0f1a14;
+    --vision-paper: #f7faf8;
+    --vision-muted: #5a6b62;
+    --vision-line: rgba(15, 26, 20, 0.08);
+    --vision-line-strong: rgba(15, 26, 20, 0.14);
+    --vision-panel-bg: #ffffff;
+    --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+    --vision-accent-soft: rgba(3, 199, 90, 0.12);
+    background: var(--vision-paper);
+    color: var(--vision-ink);
+  }
+}
+
+.briclog-auth-vision .briclog-auth-primary {
+  background-color: var(--vision-accent, #03c75a);
+  color: #ffffff;
+}
+
+.briclog-auth-vision .briclog-auth-primary:disabled {
+  background-color: #b0b8c1;
+  color: #ffffff;
+  opacity: 0.65;
+}
+
 @keyframes briclog-spin {
   to {
     transform: rotate(360deg);
