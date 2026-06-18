@@ -426,14 +426,13 @@ function DashboardLayout({
   useMobileSidebar(mobileOpen, setMobileOpen);
 
   const { preview, native, simulating } = useWorkspacePreview();
+  const { blogInput, setBlogInput } = useContentForm();
   const {
     resetToHome,
-    setBlogInput,
     loadingOverlay,
     blogContent,
     placeContent,
     instagramContent,
-    blogInput,
     loadMemoryContentIntoWorkspace,
   } = useContentPipeline();
   const {
