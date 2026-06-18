@@ -37,6 +37,10 @@ if (!blog._meta?.researchFactsWoven && !blog._meta?.researchGroundedHumanPack) {
     process.exit(1);
   }
 }
+if (!blog._meta?.humanProseFallbackFinish && !blog._meta?.researchGroundedHumanPack) {
+  console.error("FAIL: blog fallback missing human prose finish");
+  process.exit(1);
+}
 if ((blogFull.match(/비교가 수월/g) || []).length >= 3) {
   console.error("FAIL: template spam without research weave");
   process.exit(1);

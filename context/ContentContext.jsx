@@ -176,7 +176,7 @@ import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generat
 import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
-import { applyHumanityFinishPass } from "@/lib/content/humanityFinishPass";
+import { finishBlogFallbackHumanProse } from "@/lib/content/humanProseFallbackFinish";
 import {
   finalizeContentQualityForDelivery,
   hasSubstantiveLlmBody,
@@ -204,9 +204,11 @@ function missionProseFallbackForUi(pipelineInput) {
   if (!allowBlogUiRescue()) return null;
   if (!hasFilledBlogAxes(pipelineInput)) return null;
   try {
-    let pack = buildMissionProseFallbackPack(pipelineInput);
+    let pack = finishBlogFallbackHumanProse(
+      buildMissionProseFallbackPack(pipelineInput),
+      pipelineInput
+    );
     pack = applyV17PostWritePack(pack, { input: pipelineInput }, "blog");
-    pack = applyHumanityFinishPass(pack, { input: pipelineInput }, "blog");
     pack = ensureBlogDisplayPack(pack, pipelineInput);
     return pack?.sections?.length ? pack : null;
   } catch {

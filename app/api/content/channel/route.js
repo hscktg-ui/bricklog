@@ -26,6 +26,7 @@ import { withSignatureEnforcement } from "@/lib/content/channelPack";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
 import { buildDeliverableChannelFallback } from "@/lib/llm/channelDeliveryFallback";
 import { isPublishableChannelPack } from "@/lib/content/outlinePackGuard";
+import { finishChannelFallbackHumanProse } from "@/lib/content/humanProseFallbackFinish";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -166,10 +167,15 @@ export async function POST(request) {
             ? "imagePrompts"
             : null;
     if (channel && contentKey) {
-      const { pack } = buildDeliverableChannelFallback(channel, {
+      const { pack: rawPack } = buildDeliverableChannelFallback(channel, {
         input: savedInput,
         failures: ["server_error_recovered"],
       });
+      const pack = rawPack
+        ? finishChannelFallbackHumanProse(rawPack, channel, savedInput, {
+            deliveryFinalize: true,
+          })
+        : null;
       if (pack && isPublishableChannelPack(channel, pack)) {
         try {
           await incrementContentUsage(auth.supabase, auth.user.id);
