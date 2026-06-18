@@ -661,7 +661,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
     memoryContentIds,
     researchResult,
   } = useContentPipelineState();
-  const { blogInput } = useContentForm();
+  const { blogInput, setBlogInput } = useContentForm();
 
   const [resultTab, setResultTab] = useState("blog");
   const resultScrollRef = useRef(null);
