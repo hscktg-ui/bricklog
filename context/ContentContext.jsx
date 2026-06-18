@@ -742,6 +742,7 @@ export function ContentProvider({
     const brandId = brandHooks?.activeBrandId;
     if (brandHooks?.blankBrandMode) return;
     if (!brand?.brandName?.trim() || !brandId) return;
+    const today = new Date().toISOString().slice(0, 10);
     setBlogInput((prev) => {
       if (
         prev.brandName?.trim() &&
