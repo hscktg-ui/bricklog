@@ -17,7 +17,7 @@ export default function LandingPageFooter() {
                 {SITE_FOOTER_TAGLINE || BRICLOG_SLOGAN}
               </p>
               <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
-                브랜드명·지역·주제로 이야기 · 플레이스 · 인스타 초안을 차곡 쌓습니다.
+                {BRICLOG_SLOGAN}
               </p>
             </div>
 

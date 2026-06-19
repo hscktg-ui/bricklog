@@ -9,10 +9,10 @@ export default function WhyBriclog() {
       <div className="mx-auto max-w-5xl">
         <p className={`${VISION_EYEBROW} text-center`}>왜 브릭로그</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
-          왜 브릭로그인가
+          브랜드 글, 차곡차곡
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-[16px] leading-relaxed text-[var(--vision-muted)]">
-          주제 하나로 이야기 · 플레이스 · 인스타 글을 차곡 쌓는 브랜드 글쓰기입니다
+          주제 하나로 이야기 · 플레이스 · 인스타 초안을 받습니다
         </p>
 
         <div className="mt-12 grid grid-cols-1 gap-5 @min-[560px]:grid-cols-2">

@@ -97,7 +97,7 @@ export default function DemoPreviewSection({ sample, onTest }) {
             onClick={onTest}
             className={`${VISION_CTA_ACCENT} mt-6 w-full min-h-[48px]`}
           >
-            <span>내 브랜드로 {LANDING_PRIMARY_CTA}</span>
+            <span>{LANDING_PRIMARY_CTA}</span>
           </button>
         ) : null}
         <p className="mt-4 text-center text-[13px] text-[var(--vision-muted)]">

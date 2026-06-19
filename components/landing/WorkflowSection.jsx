@@ -7,7 +7,7 @@ export default function WorkflowSection() {
   return (
     <section className={`${VISION_SECTION} px-5 py-14 md:px-8 md:py-20`}>
       <div className="mx-auto max-w-4xl">
-        <p className={`${VISION_EYEBROW} text-center`}>Workflow</p>
+        <p className={`${VISION_EYEBROW} text-center`}>쓰는 순서</p>
         <h2 className="mt-3 text-center text-[clamp(1.25rem,3vw,1.5rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
           이렇게 쓰시면 돼요
         </h2>
