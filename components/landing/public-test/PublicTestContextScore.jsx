@@ -7,7 +7,7 @@ export default function PublicTestContextScore({ contextScore, channelReady = {}
     <div className="border-t border-[var(--vision-line)] px-5 py-4">
       <BriclogDepthPanel
         contextScore={contextScore}
-        variant="full"
+        variant="compact"
         channelReady={channelReady}
       />
       {contextScore?.improvementHint ? (

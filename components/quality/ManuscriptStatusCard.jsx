@@ -4,10 +4,15 @@ import {
   buildManuscriptStatusLines,
   resolvePublishGrade,
 } from "@/lib/product/publishUiDisplay";
-import { VISION_EYEBROW, VISION_WORKSPACE_PANEL } from "@/lib/landing/vision2030Styles";
+import { shouldShowInternalQualityScore } from "@/lib/copy/customerQualityDisplay";
+import {
+  VISION_EYEBROW,
+  VISION_STATUS_WARN,
+  VISION_WORKSPACE_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 /**
- * 원고 상태 카드 — 점수보다 상태·행동 가이드 우선
+ * 원고 상태 카드 — 점수·등급 문자보다 상태·행동 가이드 우선
  */
 export default function ManuscriptStatusCard({
   contextScore,
@@ -20,6 +25,8 @@ export default function ManuscriptStatusCard({
   const lines = buildManuscriptStatusLines(contextScore.axes);
   const { readiness, publishScore, checks, sqvDiagnostic, humanVoiceMet, catalogProseOk, speakerTone } =
     contextScore;
+  const internalScores = shouldShowInternalQualityScore();
+  const scoreDetailsVisible = internalScores && showScoreDetails;
 
   return (
     <div
@@ -30,32 +37,35 @@ export default function ManuscriptStatusCard({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className={VISION_EYEBROW}>발행 등급</p>
+          <p className={VISION_EYEBROW}>발행 준비</p>
           <p
             className={`mt-1 font-semibold tracking-[-0.02em] text-[var(--vision-ink)] ${
               compact ? "text-[17px]" : "text-[19px]"
             }`}
           >
-            <span aria-hidden>{grade.dot}</span> {grade.label}
+            <span aria-hidden>{grade.dot}</span>{" "}
+            {grade.shortLabel || grade.label}
           </p>
           <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
             {readiness?.hint || grade.action}
           </p>
         </div>
-        <div
-          className={`shrink-0 rounded-xl border px-3 py-2 text-center ${
-            grade.tone === "ready"
-              ? "border-[rgba(48,209,88,0.25)] bg-[rgba(48,209,88,0.1)]"
-              : grade.tone === "review"
-                ? "border-[var(--vision-line-strong)] bg-white/80"
-                : "border-[rgba(255,59,48,0.2)] bg-[rgba(255,59,48,0.06)]"
-          }`}
-        >
-          <p className="text-[10px] font-semibold text-[var(--vision-muted)]">등급</p>
-          <p className="text-[22px] font-bold leading-none text-[var(--vision-ink)]">
-            {grade.id}
-          </p>
-        </div>
+        {internalScores ? (
+          <div
+            className={`shrink-0 rounded-xl border px-3 py-2 text-center ${
+              grade.tone === "ready"
+                ? "border-[rgba(48,209,88,0.25)] bg-[rgba(48,209,88,0.1)]"
+                : grade.tone === "review"
+                  ? "border-[var(--vision-line-strong)] bg-white/80"
+                  : "border-[rgba(255,59,48,0.2)] bg-[rgba(255,59,48,0.06)]"
+            }`}
+          >
+            <p className="text-[10px] font-semibold text-[var(--vision-muted)]">등급</p>
+            <p className="text-[22px] font-bold leading-none text-[var(--vision-ink)]">
+              {grade.id}
+            </p>
+          </div>
+        ) : null}
       </div>
 
       <ul
@@ -79,12 +89,12 @@ export default function ManuscriptStatusCard({
       </ul>
 
       {!catalogProseOk ? (
-        <p className="mt-2 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[11px] text-[#E67700]">
-          카탈로그·체크리스트 문장이 섞여 있어 서사형으로 다듬는 중입니다.
+        <p className={`mt-2 ${VISION_STATUS_WARN}`}>
+          문장을 자연스럽게 다듬는 중입니다.
         </p>
       ) : humanVoiceMet === false ? (
-        <p className="mt-2 text-[11px] text-[#8B95A1]">
-          사람 칼럼 말투 편집을 마치는 중입니다.
+        <p className="mt-2 text-[11px] text-[var(--vision-muted)]">
+          말투를 한 번 더 맞추는 중입니다.
         </p>
       ) : null}
 
@@ -92,7 +102,7 @@ export default function ManuscriptStatusCard({
         <p
           className={`mt-2 rounded-lg border px-3 py-2 text-[11px] leading-relaxed ${
             speakerTone.alignment?.mismatch
-              ? "border-[#FFE0B2] bg-[#FFF8E6] text-[#4E5968]"
+              ? VISION_STATUS_WARN
               : "border-[var(--vision-line)] bg-[var(--vision-paper)] text-[var(--vision-muted)]"
           }`}
         >
@@ -100,14 +110,14 @@ export default function ManuscriptStatusCard({
         </p>
       ) : null}
 
-      {sqvDiagnostic ? (
+      {sqvDiagnostic?.hint || sqvDiagnostic?.label ? (
         <p className="mt-2 rounded-lg border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-2 text-[11px] leading-relaxed text-[var(--vision-muted)]">
           {sqvDiagnostic.hint || sqvDiagnostic.label}
         </p>
       ) : null}
 
-      {showScoreDetails && sqvDiagnostic?.score != null ? (
-        <p className="mt-1 text-[10px] text-[#8B95A1]">
+      {scoreDetailsVisible && sqvDiagnostic?.score != null ? (
+        <p className="mt-1 text-[10px] text-[var(--vision-muted)]">
           글값 {sqvDiagnostic.grade} ({sqvDiagnostic.score})
           {sqvDiagnostic.tips?.length
             ? ` · ${sqvDiagnostic.tips.join(" · ")}`
@@ -115,12 +125,12 @@ export default function ManuscriptStatusCard({
         </p>
       ) : null}
 
-      {showScoreDetails ? (
-        <details className="mt-3 rounded-lg border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2">
-          <summary className="cursor-pointer text-[11px] font-semibold text-[#8B95A1] marker:content-none [&::-webkit-details-marker]:hidden">
+      {scoreDetailsVisible ? (
+        <details className="mt-3 rounded-lg border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-2">
+          <summary className="cursor-pointer text-[11px] font-semibold text-[var(--vision-muted)] marker:content-none [&::-webkit-details-marker]:hidden">
             세부 점수 보기
           </summary>
-          <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-[#4E5968] sm:grid-cols-4">
+          <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-[var(--vision-muted)] sm:grid-cols-4">
             {contextScore.axes.map((axis) => (
               <p key={axis.id}>
                 {axis.label} {axis.score}

@@ -8,16 +8,23 @@ import {
 } from "@/lib/constants";
 import { QUICK_PRESETS } from "@/lib/formPresets";
 import { getDefaultIndustry, getIndustriesForType } from "@/lib/prompts/businessTypes";
+import {
+  VISION_CHIP_IDLE,
+  VISION_EYEBROW,
+  VISION_FORM_FIELD,
+  VISION_FORM_PANEL,
+  VISION_WORKSPACE_PANEL,
+} from "@/lib/landing/vision2030Styles";
 import ChipSelect from "./ChipSelect";
 import MatrixPreview from "./MatrixPreview";
 
-const inputClass =
-  "w-full rounded-xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 text-[14px] text-[#191F28] placeholder:text-[#B0B8C1] outline-none transition focus:border-[#03C75A] focus:bg-white focus:ring-2 focus:ring-[#03C75A]/15";
+const inputClass = `${VISION_FORM_FIELD} placeholder:text-[var(--vision-muted,#5a6b62)]`;
 
 const inputErrorClass =
-  "w-full rounded-xl border border-[#FF6B6B] bg-[#FFF5F5] px-3 py-2.5 text-[14px] text-[#191F28] outline-none ring-2 ring-[#FF6B6B]/20";
+  `${VISION_FORM_FIELD} border-[#FF6B6B] bg-[#FFF5F5] ring-2 ring-[#FF6B6B]/20`;
 
-const labelClass = "mb-1 block text-[11px] font-semibold text-[#8B95A1]";
+const labelClass =
+  "mb-1 block text-[11px] font-semibold text-[var(--vision-muted,#5a6b62)]";
 
 function FieldLabel({ children, required }) {
   return (
@@ -55,19 +62,16 @@ export default function ContentForm({
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="rounded-2xl border border-[#E8EBED] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
-        {/* 빠른 시작 */}
-        <div className="border-b border-[#E8EBED] p-3 md:p-4">
-          <p className="mb-2 text-[11px] font-bold text-[#4E5968]">
-            빠른 시작
-          </p>
+      <div className={`${VISION_WORKSPACE_PANEL} overflow-hidden`}>
+        <div className="border-b border-[var(--vision-line)] p-3 md:p-4">
+          <p className={`mb-2 ${VISION_EYEBROW}`}>빠른 시작</p>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {QUICK_PRESETS.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => onApplyPreset(p)}
-                className="shrink-0 rounded-full border border-[#E8EBED] bg-[#FAFBFC] px-3 py-1.5 text-[11px] font-semibold text-[#4E5968] transition hover:border-[#03C75A] hover:bg-[#E8F9EF] hover:text-[#03A94D]"
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold transition ${VISION_CHIP_IDLE} hover:border-[var(--vision-accent-ring,rgba(3,199,90,0.3))] hover:text-[var(--vision-accent-deep,#03a94d)]`}
               >
                 {p.label}
               </button>
@@ -93,7 +97,7 @@ export default function ContentForm({
                 ))}
               </select>
               {btHint && (
-                <p className="mt-1 text-[10px] text-[#8B95A1]">{btHint}</p>
+                <p className="mt-1 text-[10px] text-[var(--vision-muted,#5a6b62)]">{btHint}</p>
               )}
             </label>
             <label className="block">
@@ -183,14 +187,14 @@ export default function ContentForm({
           <button
             type="button"
             onClick={() => setAdvancedOpen(!advancedOpen)}
-            className="flex w-full items-center justify-between rounded-xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2 text-[12px] font-semibold text-[#4E5968]"
+            className={`flex w-full items-center justify-between rounded-xl border border-[var(--vision-line)] bg-[var(--vision-paper)] px-3 py-2 text-[12px] font-semibold text-[var(--vision-muted,#5a6b62)]`}
           >
             더 맞추기 (선택)
-            <span className="text-[#8B95A1]">{advancedOpen ? "▲" : "▼"}</span>
+            <span>{advancedOpen ? "▲" : "▼"}</span>
           </button>
 
           {advancedOpen && (
-            <div className="grid gap-3 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] p-3">
+            <div className={`grid gap-3 ${VISION_FORM_PANEL}`}>
               <label className="block">
                 <FieldLabel>매장·서비스 특징</FieldLabel>
                 <input
@@ -224,7 +228,7 @@ export default function ContentForm({
           {children}
         </div>
       </div>
-      <p className="mt-2 text-center text-[10px] text-[#B0B8C1]">
+      <p className="mt-2 text-center text-[11px] text-[var(--vision-muted,#5a6b62)]">
         Ctrl+Enter 로 생성 · 입력값은 자동 저장됩니다
       </p>
     </div>

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import ManuscriptStatusCard from "@/components/quality/ManuscriptStatusCard";
 import ChannelRoadmapStrip from "@/components/product/ChannelRoadmapStrip";
-import { resolvePublishGrade } from "@/lib/product/publishUiDisplay";
+import { shouldShowInternalQualityScore } from "@/lib/copy/customerQualityDisplay";
 
 /**
  * 브릭로그 맥락·발행 준비도 — 등급·상태 우선, 숫자는 접기
@@ -19,14 +19,13 @@ export default function BriclogDepthPanel({
   if (!data?.axes?.length) return null;
 
   const compact = variant === "compact";
-  const grade = resolvePublishGrade(data);
 
   return (
     <div className={compact ? "space-y-3" : "space-y-4"}>
       <ManuscriptStatusCard
         contextScore={data}
         compact={compact}
-        showScoreDetails={!compact}
+        showScoreDetails={shouldShowInternalQualityScore() && !compact}
       />
       {!compact ? (
         <ChannelRoadmapStrip
@@ -38,8 +37,8 @@ export default function BriclogDepthPanel({
         />
       ) : null}
       {showDepthBadge && data.depth?.levelLabel ? (
-        <p className="text-[10px] font-medium text-[#8B95A1]">
-          등급 {grade.id} · {data.depth.levelLabel}
+        <p className="text-[10px] font-medium text-[var(--vision-muted,#5a6b62)]">
+          {data.depth.levelLabel}
         </p>
       ) : null}
     </div>

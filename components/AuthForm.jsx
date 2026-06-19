@@ -24,6 +24,11 @@ import {
   AUTH_SECONDARY_BTN_CLASS,
   AUTH_SURFACE_CLASS,
   AUTH_VISION_SCOPE_CLASS,
+  AUTH_CHECKBOX_CLASS,
+  AUTH_MUTED_TEXT_CLASS,
+  AUTH_LINK_CLASS,
+  AUTH_WARN_SURFACE_CLASS,
+  AUTH_ERROR_SURFACE_CLASS,
 } from "@/lib/ui/authFieldStyles";
 import Logo from "./Logo";
 import { BRICLOG_SLOGAN_SHORT } from "@/lib/brand/slogan";
@@ -475,6 +480,24 @@ export default function AuthForm({
     (mode === MODES.signup &&
       (!termsAgreed || emailRegistered || phoneAvailabilityBlocks || phoneBlocksSignup));
 
+  const signupSubmitLabel = (() => {
+    if (loading) return "처리 중…";
+    if (mode === MODES.reset) return "재설정 메일 보내기";
+    if (mode === MODES.login) return "로그인";
+    if (phoneOptional) return "무료 가입하기";
+    if (phoneBlocksSignup) return "휴대폰 인증 후 가입";
+    return "가입하기";
+  })();
+
+  const signupDisabledReason = (() => {
+    if (mode !== MODES.signup || loading || signupLimited) return "";
+    if (!termsAgreed) return "이용약관·개인정보처리방침에 동의해 주세요.";
+    if (emailRegistered) return "이미 사용 중인 이메일입니다.";
+    if (phoneAvailabilityBlocks) return "이미 등록된 휴대폰 번호입니다.";
+    if (phoneBlocksSignup) return "휴대폰 문자 인증을 완료해 주세요.";
+    return "";
+  })();
+
   const shell = (
     <div
       className={`${AUTH_VISION_SCOPE_CLASS} ${AUTH_SURFACE_CLASS} ${AUTH_MOBILE_SHELL_CLASS} ${
@@ -552,7 +575,7 @@ export default function AuthForm({
       )}
 
       {!isSupabaseConfigured && (
-        <p className="mt-3 rounded-lg bg-[#FFF5F5] px-3 py-2 text-center text-[12px] text-[#E42939]">
+        <p className={`mt-3 ${AUTH_ERROR_SURFACE_CLASS}`}>
           지금은 로그인을 이용할 수 없습니다.
         </p>
       )}
@@ -560,12 +583,12 @@ export default function AuthForm({
       {showSocial && (
         <div className="mt-4">
           <SocialAuthButtons onToast={onToast} disabled={loading} />
-          <p className="my-4 text-center text-[11px] text-[#8B95A1]">또는 이메일</p>
+          <p className="my-4 text-center text-[11px] text-[var(--vision-muted,#5a6b62)]">또는 이메일</p>
         </div>
       )}
 
       {mode === MODES.signup && signupLimited ? (
-        <p className="mt-3 rounded-lg border border-[#FFE8CC] bg-[#FFF9F0] px-3 py-2 text-center text-[12px] leading-relaxed text-[#8B5A00]">
+        <p className={`mt-3 ${AUTH_WARN_SURFACE_CLASS}`}>
           {signupLimitMessage ||
             "지금은 품질 안정화 기간이라 신규 가입을 잠시 받지 않습니다."}
         </p>
@@ -657,7 +680,7 @@ export default function AuthForm({
                 onVerified={handlePhoneVerified}
               />
             )}
-            <p className="text-[12px] leading-relaxed text-[#4E5968] sm:text-[11px]">
+            <p className={`text-[12px] leading-relaxed ${AUTH_MUTED_TEXT_CLASS} sm:text-[11px]`}>
               {isSignupPhoneOptional()
                 ? "이메일·비밀번호만으로 가입할 수 있어요."
                 : "휴대폰 번호는 한 계정에 하나만 등록됩니다. 문자 인증만 완료하면 바로 이용할 수 있어요."}{" "}
@@ -667,19 +690,19 @@ export default function AuthForm({
         )}
 
         {mode === MODES.signup && (
-          <div className="text-[12px] text-[#4E5968]">
+          <div className={`text-[12px] ${AUTH_MUTED_TEXT_CLASS}`}>
             <label className="flex cursor-pointer items-start gap-2">
               <input
                 type="checkbox"
                 checked={termsAgreed}
                 onChange={(e) => setTermsAgreed(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#E8EBED] text-[#03C75A]"
+                className={`mt-0.5 h-4 w-4 shrink-0 ${AUTH_CHECKBOX_CLASS}`}
               />
               <span>
                 <Link
                   href={LEGAL_LINKS.terms}
                   target="_blank"
-                  className="font-semibold text-[#03A94D] hover:underline"
+                  className={AUTH_LINK_CLASS}
                 >
                   이용약관
                 </Link>
@@ -687,7 +710,7 @@ export default function AuthForm({
                 <Link
                   href={LEGAL_LINKS.privacy}
                   target="_blank"
-                  className="font-semibold text-[#03A94D] hover:underline"
+                  className={AUTH_LINK_CLASS}
                 >
                   개인정보처리방침
                 </Link>
@@ -695,7 +718,7 @@ export default function AuthForm({
               </span>
             </label>
             <details className="mt-2">
-              <summary className="cursor-pointer text-[#8B95A1]">
+              <summary className={`cursor-pointer ${AUTH_MUTED_TEXT_CLASS}`}>
                 선택 동의
               </summary>
               <label className="mt-2 flex cursor-pointer items-center gap-2">
@@ -703,7 +726,7 @@ export default function AuthForm({
                   type="checkbox"
                   checked={marketingAgreed}
                   onChange={(e) => setMarketingAgreed(e.target.checked)}
-                  className="h-4 w-4 rounded border-[#E8EBED] text-[#03C75A]"
+                  className={`h-4 w-4 ${AUTH_CHECKBOX_CLASS}`}
                 />
                 <span>마케팅 정보 수신</span>
               </label>
@@ -712,7 +735,7 @@ export default function AuthForm({
         )}
 
         {mode === MODES.login && isSupabaseConfigured && (
-          <div className="flex flex-wrap items-center justify-between gap-2 text-[12px] text-[#4E5968]">
+          <div className={`flex flex-wrap items-center justify-between gap-2 text-[12px] ${AUTH_MUTED_TEXT_CLASS}`}>
             <label className="flex cursor-pointer items-center gap-1.5">
               <input
                 type="checkbox"
@@ -721,7 +744,7 @@ export default function AuthForm({
                   setSaveEmail(e.target.checked);
                   if (!e.target.checked) persistSavedEmail("", false);
                 }}
-                className="h-3.5 w-3.5 rounded border-[#E8EBED] text-[#03C75A]"
+                className={`h-3.5 w-3.5 ${AUTH_CHECKBOX_CLASS}`}
               />
               아이디 저장
             </label>
@@ -740,14 +763,14 @@ export default function AuthForm({
           disabled={signupSubmitDisabled}
           className={AUTH_PRIMARY_BTN_CLASS}
         >
-          {loading
-            ? "처리 중…"
-            : mode === MODES.reset
-              ? "재설정 메일 보내기"
-              : mode === MODES.signup
-                ? "무료 가입 (이메일만)"
-                : "로그인"}
+          {signupSubmitLabel}
         </button>
+
+        {signupDisabledReason ? (
+          <p className="text-center text-[11px] leading-relaxed text-[#E42939]" role="status">
+            {signupDisabledReason}
+          </p>
+        ) : null}
 
       </form>
 
