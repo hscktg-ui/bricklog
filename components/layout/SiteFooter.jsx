@@ -5,6 +5,7 @@ import {
   BRAND_META_DESCRIPTION,
   BRAND_META_TITLE,
 } from "@/lib/brand/copy";
+import SiteFooterSocial from "@/components/layout/SiteFooterSocial";
 
 const LEGAL_LINKS = [
   { href: "/guides", label: "콘텐츠 가이드" },
@@ -56,6 +57,7 @@ export default function SiteFooter() {
               {BRICLOG_CONTACT_EMAIL}
             </a>
           </p>
+          <SiteFooterSocial />
           <nav
             className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] font-medium"
             aria-label="법적 고지"
