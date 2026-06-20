@@ -84,7 +84,7 @@ for (const vu of VIRTUAL_USERS) {
     const profileBrief = personalizationBriefFromProfile(vu.profile);
     assert(profileBrief.length > 0, "profile brief");
     const menu = defaultMenuFromProfile(vu.profile);
-    assert(["blog", "place", "insta", "image"].includes(menu), "default menu");
+    assert(["blog", "place", "insta", "plan", "image"].includes(menu), "default menu");
 
     const sidebar = buildSidebarPersonalization(vu.profile, vu.brand, {
       primaryChannel: vu.profile.primaryUseCase === "instagram" ? "insta" : vu.profile.primaryUseCase === "place" ? "place" : "blog",

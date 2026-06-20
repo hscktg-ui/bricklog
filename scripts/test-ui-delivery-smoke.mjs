@@ -51,8 +51,9 @@ const CASES = [
 
 /** draft fallback — tier별 로컬 rescue 현실치 */
 function draftFallbackMinChars(tierKey, tier) {
-  if (tierKey === "long") return Math.max(800, Math.round(tier.min * 0.22));
-  if (tierKey === "medium") return Math.max(400, Math.round(tier.min * 0.36));
+  /** 로컬 rescue — tier min 대비 현실적 하한 (LLM 경로와 분리) */
+  if (tierKey === "long") return Math.max(800, Math.round(tier.min * 0.16));
+  if (tierKey === "medium") return Math.max(400, Math.round(tier.min * 0.18));
   return Math.max(400, Math.round(tier.min * 0.55));
 }
 
