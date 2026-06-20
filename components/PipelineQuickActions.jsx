@@ -8,7 +8,6 @@ import { BRICLOG_MULTICHANNEL_TEASER } from "@/lib/product/briclogPerspectiveCop
 const ACTIONS = [
   { id: "place", label: "플레이스 소식", icon: "map", key: "place" },
   { id: "insta", label: "인스타그램 바디", icon: "camera", key: "instagram" },
-  { id: "image", label: "썸네일 문구", icon: "image", key: "image" },
 ];
 
 export default function PipelineQuickActions({
@@ -22,15 +21,11 @@ export default function PipelineQuickActions({
     generating,
     generatePlace,
     generateInstagram,
-    generateImage,
     placeContent,
     instagramContent,
-    imagePrompts,
   } = useContentPipelineState();
 
-  const actions = simpleMode
-    ? ACTIONS.filter((a) => a.id !== "image")
-    : ACTIONS;
+  const actions = ACTIONS;
 
   if (simpleMode && placeContent && instagramContent) {
     return null;
@@ -47,7 +42,7 @@ export default function PipelineQuickActions({
           {BRICLOG_MULTICHANNEL_TEASER}
         </p>
         <div className="mt-3 space-y-2 opacity-80">
-          {ACTIONS.filter((a) => a.id !== "image").map((action) => (
+          {ACTIONS.map((action) => (
             <div
               key={action.id}
               className="flex items-center justify-between rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-[13px] text-[#8B95A1]"
@@ -91,7 +86,7 @@ export default function PipelineQuickActions({
               ? canPlace
               : action.key === "instagram"
                 ? canInsta
-                : canUsePipelineChannel(billingPlanId, "image");
+                : false;
           if (!channelAllowed) return null;
           const ready = pipelineReady[action.key];
           const done =
@@ -99,7 +94,7 @@ export default function PipelineQuickActions({
               ? !!placeContent
               : action.key === "instagram"
                 ? !!instagramContent
-                : !!imagePrompts;
+                : false;
           const busy = generating[action.key];
 
           return (
@@ -110,7 +105,6 @@ export default function PipelineQuickActions({
               onClick={() => {
                 if (action.key === "place") generatePlace();
                 else if (action.key === "instagram") generateInstagram();
-                else generateImage();
                 onNavigate?.(action.id);
               }}
               className="briclog-pressable flex w-full items-center justify-between rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-left transition hover:border-[#03C75A]/40 disabled:opacity-50"

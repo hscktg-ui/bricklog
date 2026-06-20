@@ -33,11 +33,11 @@ export default function DemoFlow({ sample }) {
           쓰는 순서
         </h2>
         <p className={`mt-3 text-center ${VISION_SUB}`}>
-          브랜드 · 지역 → 오늘의 주제 → 조사 후 글 받기 → 플레이스 · 인스타 → 복사
+          브랜드 → 월·주 계획 → 조사 후 글 → 세 채널 → 다음 주 이어가기
         </p>
 
         <div className={`mt-10 overflow-hidden ${VISION_PANEL}`}>
-          <LandingPanelHeader title="브릭로그 · 글쓰기" />
+          <LandingPanelHeader title="브릭로그 · 운영 계획" />
 
           <div className="grid min-h-[180px] grid-cols-1 gap-0 @min-[640px]:min-h-[220px] @min-[640px]:grid-cols-[1fr_1.2fr]">
             <div className="border-b border-[var(--vision-line)] p-5 md:border-b-0 md:border-r">
@@ -81,10 +81,10 @@ export default function DemoFlow({ sample }) {
 function MockStepVisual({ step, sample }) {
   const panels = [
     <MockBrand key="0" sample={sample} />,
-    <MockTopic key="1" sample={sample} />,
-    <MockContext key="2" />,
+    <MockMonthPlan key="1" />,
+    <MockTopic key="2" sample={sample} />,
     <MockChannels key="3" />,
-    <MockCopy key="4" />,
+    <MockNextWeek key="4" />,
   ];
   return (
     <div
@@ -105,29 +105,28 @@ function MockBrand({ sample }) {
   );
 }
 
-function MockTopic({ sample }) {
+function MockMonthPlan() {
   return (
-    <div className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-3 text-[12px] shadow-[var(--vision-shadow-soft)]">
-      <p className="text-[var(--vision-muted)]">오늘의 주제</p>
-      <p className="mt-2 rounded-xl bg-[var(--vision-paper)] px-2 py-2 text-[var(--vision-ink)]">
-        {sample.topic}
-      </p>
+    <div className="w-full space-y-2 text-[11px]">
+      {["1주 · 시즌 소식", "2주 · 플레이스", "3주 · 인스타"].map((t) => (
+        <div
+          key={t}
+          className="rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-2.5 font-medium text-[var(--vision-ink)]"
+        >
+          {t}
+        </div>
+      ))}
     </div>
   );
 }
 
-function MockContext() {
+function MockTopic({ sample }) {
   return (
-    <div className="space-y-2 text-[11px]">
-      {["말투 정리", "채널별 길이", "올리기 전 확인"].map((t) => (
-        <div
-          key={t}
-          className="flex items-center gap-2 rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-2"
-        >
-          <span className="h-2 w-2 rounded-full bg-[var(--vision-accent)]" />
-          <span className="text-[var(--vision-muted)]">{t}</span>
-        </div>
-      ))}
+    <div className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-3 text-[12px] shadow-[var(--vision-shadow-soft)]">
+      <p className="text-[var(--vision-muted)]">이번 주 주제</p>
+      <p className="mt-2 rounded-xl bg-[var(--vision-paper)] px-2 py-2 text-[var(--vision-ink)]">
+        {sample.topic}
+      </p>
     </div>
   );
 }
@@ -147,11 +146,11 @@ function MockChannels() {
   );
 }
 
-function MockCopy() {
+function MockNextWeek() {
   return (
     <div className="rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.25))] bg-[var(--vision-panel-bg,#fff)] p-3 text-center text-[12px] shadow-[var(--vision-shadow-soft)]">
-      <p className="font-semibold text-[var(--vision-ink)]">복사 완료</p>
-      <p className="mt-1 text-[var(--vision-muted)]">복사 완료 · 발행 전 확인 OK</p>
+      <p className="font-semibold text-[var(--vision-ink)]">다음 주 주제</p>
+      <p className="mt-1 text-[var(--vision-muted)]">운영 계획에서 바로 이어 씁니다</p>
     </div>
   );
 }

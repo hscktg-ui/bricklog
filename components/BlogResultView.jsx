@@ -233,8 +233,8 @@ export default function BlogResultView({
     !isBriefOnly && publishReadiness.status === "ready"
       ? "네이버에 붙여넣기"
       : "전체 복사하기";
-  const goReview =
-    typeof onNavigate === "function" ? () => onNavigate("review") : null;
+  const goPlan =
+    typeof onNavigate === "function" ? () => onNavigate("plan") : null;
   const dwellRef = useRef({ started: Date.now(), sent: 0 });
   const [publishedMarked, setPublishedMarked] = useState(false);
 
@@ -456,9 +456,9 @@ export default function BlogResultView({
               label={copyButtonLabel}
               onCopy={() => onCopy?.(copyText)}
             />
-            {!isBriefOnly && goReview ? (
-              <ResultCopyGhostButton onClick={goReview}>
-                붙여넣어 점검
+            {!isBriefOnly && goPlan ? (
+              <ResultCopyGhostButton onClick={goPlan}>
+                운영 계획 보기
               </ResultCopyGhostButton>
             ) : null}
             {!isBriefOnly && userId && contentItemId ? (

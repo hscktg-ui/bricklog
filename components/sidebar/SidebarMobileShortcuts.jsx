@@ -3,14 +3,14 @@
 import Icon from "@/components/Icon";
 import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
 
-/** 모바일 드로어 상단 — 하단 탭에 없는 검수·기록 바로가기 */
+/** 모바일 드로어 상단 — 하단 탭에 없는 운영 계획·기록 바로가기 */
 export default function SidebarMobileShortcuts({
   activeMenu,
   onSelect,
   onClose,
 }) {
   const items = [
-    { id: "review", ...CHANNEL_PRODUCTS.review },
+    { id: "plan", ...CHANNEL_PRODUCTS.plan },
     { id: "history", ...CHANNEL_PRODUCTS.history },
   ];
 
@@ -21,7 +21,9 @@ export default function SidebarMobileShortcuts({
       </p>
       <div className="grid grid-cols-2 gap-1.5">
         {items.map((item) => {
-          const active = activeMenu === item.id;
+          const active =
+            activeMenu === item.id ||
+            (item.id === "plan" && (activeMenu === "review" || activeMenu === "image"));
           return (
             <button
               key={item.id}

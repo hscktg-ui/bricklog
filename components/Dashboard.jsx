@@ -11,7 +11,6 @@ import {
 import BlogEditor from "@/components/BlogEditor";
 import PlaceGenerator from "@/components/PlaceGenerator";
 import InstagramGenerator from "@/components/InstagramGenerator";
-import MarketingImageStudio from "@/components/MarketingImageStudio";
 import DailyTimelinessPanel from "@/components/DailyTimelinessPanel";
 import PricingModal from "@/components/billing/PricingModal";
 import { BrandWorkspaceProvider, useBrandWorkspace } from "@/context/BrandWorkspaceContext";
@@ -51,7 +50,7 @@ import WelcomeOverlay, {
   isWelcomeDismissedPermanent,
 } from "@/components/WelcomeOverlay";
 import GrowthStudio from "@/components/growth/GrowthStudio";
-import DraftReviewStudio from "@/components/DraftReviewStudio";
+import ContentPlanWorkspace from "@/components/workspace/ContentPlanWorkspace";
 import { recordDashboardVisit } from "@/lib/dashboard/visitCounter";
 import {
   mapLastContentItem,
@@ -70,8 +69,6 @@ import WorkspaceDevicePreviewTabs from "@/components/workspace/WorkspaceDevicePr
 import DevicePreviewViewport from "@/components/workspace/DevicePreviewViewport";
 import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
-import ChannelStartScreen from "@/components/channels/ChannelStartScreen";
-import { resolveDerivationSource } from "@/lib/content/channelSource";
 import { CHANNEL_PRODUCTS, normalizeWorkspaceMenuId } from "@/lib/channels/channelProducts";
 import {
   fetchGenerationById,
@@ -675,7 +672,7 @@ function DashboardLayout({
   const goBlog = () => setActiveMenu("blog");
   const navigate = (menu) => setActiveMenu(normalizeWorkspaceMenuId(menu));
 
-  const workspaceMenus = new Set(["blog", "place", "insta", "image", "growth"]);
+  const workspaceMenus = new Set(["blog", "place", "insta", "plan", "growth"]);
   const idleHintActive =
     !showChannelWelcome && workspaceMenus.has(activeMenu);
   const showProfileSetupBanner =
@@ -805,16 +802,8 @@ function DashboardLayout({
               brandId={activeBrandId}
               onPlanChange={() => setPricingOpen(true)}
             />
-          ) : activeMenu === "review" ? (
-            <DraftReviewStudio
-              userId={user.id}
-              brandId={activeBrandId}
-              demoMode={demoMode}
-              onCopy={handleCopy}
-              onToast={showToast}
-              onUpgradeClick={() => setPricingOpen(true)}
-              onOpenBrandWorkspace={() => navigate("growth")}
-            />
+          ) : activeMenu === "plan" || activeMenu === "review" || activeMenu === "image" ? (
+            <ContentPlanWorkspace onNavigate={navigate} onToast={showToast} />
           ) : activeMenu === "place" ? (
             <PlaceGenerator
               onGoBlog={goBlog}
@@ -828,13 +817,6 @@ function DashboardLayout({
               onCopy={(t) => handleCopy(t, "전체 콘텐츠가 복사되었습니다.")}
               userId={user.id}
               brandId={activeBrandId}
-            />
-          ) : activeMenu === "image" ? (
-            <ImageEnginePanel
-              onNavigate={navigate}
-              onCopy={(t) => handleCopy(t, "전체 콘텐츠가 복사되었습니다.")}
-              brandId={activeBrandId}
-              onToast={showToast}
             />
           ) : activeMenu === "growth" ? (
             <GrowthStudio
@@ -939,92 +921,5 @@ function DashboardLayout({
         }}
       />
     </div>
-  );
-}
-
-function ImageEnginePanel({ onNavigate, onCopy, brandId, onToast }) {
-  const { activeBrand } = useBrandWorkspace();
-  const { blogInput, setBlogInput } = useContentForm();
-  const {
-    blogContent,
-    placeContent,
-    instagramContent,
-    baseContentLabel,
-    sourceChannel,
-    imagePrompts,
-    imageOptions,
-    setImageOptions,
-    generating,
-    hasFullBlog,
-    hasOtherDraft,
-    generateImage,
-  } = useContentPipelineState();
-
-  const recentTopics = useMemo(
-    () =>
-      (activeBrand?.contentArchive?.blog || [])
-        .map((b) => b?.title || b?.representativeTitle)
-        .filter(Boolean)
-        .slice(0, 5),
-    [activeBrand?.contentArchive?.blog]
-  );
-  const generationCount = activeBrand?.contentArchive?.blog?.length ?? 0;
-
-  const sourceBlog = useMemo(() => {
-    const source = resolveDerivationSource("image", {
-      blogContent,
-      placeContent,
-      instagramContent,
-      blogInput,
-      baseContentLabel,
-      sourceChannel,
-    });
-    return source?.blogLike || null;
-  }, [
-    blogContent,
-    placeContent,
-    instagramContent,
-    blogInput,
-    baseContentLabel,
-    sourceChannel,
-  ]);
-
-  if (!imagePrompts) {
-    return (
-      <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-[var(--vision-paper)] p-4 md:p-8">
-        <div className="mx-auto w-full max-w-lg space-y-6">
-          <ChannelStartScreen
-            channel="image"
-            blogInput={blogInput}
-            setBlogInput={setBlogInput}
-            activeBrand={activeBrand}
-            imageOptions={imageOptions}
-            setImageOptions={setImageOptions}
-            generating={generating.image}
-            hasFullBlog={hasFullBlog}
-            hasOtherDraft={hasOtherDraft}
-            onGenerate={generateImage}
-            onGenerateFromDraft={() => generateImage()}
-            onGoBlog={() => onNavigate?.("blog")}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <MarketingImageStudio
-      blog={sourceBlog || blogContent}
-      blogInput={blogInput}
-      baseLabel={baseContentLabel}
-      imagePack={imagePrompts}
-      imageOptions={imageOptions}
-      onOptionsChange={setImageOptions}
-      generating={generating.image}
-      onGeneratePrompt={generateImage}
-      onCopy={onCopy}
-      brandId={brandId}
-      onToast={onToast}
-    />
   );
 }

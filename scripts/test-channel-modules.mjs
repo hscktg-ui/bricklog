@@ -32,9 +32,12 @@ for (const id of channels) {
 
 const menu = buildSidebarMenuSections({ demoMode: false });
 const menuIds = menu.flatMap((s) => s.items.map((i) => i.id));
-for (const id of ["blog", "place", "insta", "image", "review", "history", "growth"]) {
+for (const id of ["blog", "place", "insta", "plan", "history", "growth"]) {
   assert(menuIds.includes(id), `menu missing ${id}`);
 }
+
+assert(normalizeWorkspaceMenuId("review") === "plan", "review alias → plan");
+assert(normalizeWorkspaceMenuId("image") === "plan", "image alias → plan");
 
 for (const id of MAIN_CHANNEL_IDS) {
   assert(channels.includes(id) || id === "insta", `MAIN_CHANNEL_IDS ${id}`);

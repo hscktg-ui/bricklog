@@ -20,6 +20,7 @@ import LandingPreviewShell from "./LandingPreviewShell";
 import HeroSection from "./HeroSection";
 import LiveStatsBanner from "./LiveStatsBanner";
 import DemoPreviewSection from "./DemoPreviewSection";
+import ContentPlanSection from "./ContentPlanSection";
 import DemoFlow from "./DemoFlow";
 import BriclogNextSection from "./BriclogNextSection";
 import WhyBriclog from "./WhyBriclog";
@@ -189,6 +190,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onTest={withLandingCta(scrollToPublicTest)}
           />
           <WhyBriclog />
+          <ContentPlanSection />
           <BriclogNextSection />
           <LiveStatsBanner introOpen={introOpen} />
           <PublicBrandTestSection

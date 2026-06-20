@@ -112,7 +112,7 @@ export default function DemoPreviewSection({ sample, onTest }) {
           </button>
         ) : null}
         <p className="mt-4 text-center text-[13px] text-[var(--vision-muted)]">
-          붙여넣기·검수는 가입 후 작업실에서 이어집니다
+          붙여넣기 대신 운영 계획에서 이어갑니다
         </p>
       </div>
     </section>
