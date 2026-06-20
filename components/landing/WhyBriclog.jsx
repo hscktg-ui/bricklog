@@ -7,27 +7,42 @@ export default function WhyBriclog() {
   return (
     <section className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}>
       <div className="mx-auto max-w-5xl">
-        <p className={`${VISION_EYEBROW} text-center`}>왜 브릭로그</p>
-        <h2 className="mt-3 text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-tight text-[var(--vision-ink)]">
-          브랜드 글, 차곡차곡
+        <p className={`${VISION_EYEBROW} text-center`}>Why BRICLOG</p>
+        <h2 className="mt-3 text-center text-[clamp(1.75rem,4vw,2.25rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
+          글 하나가 아니라,
+          <span className="block text-[var(--vision-muted)]">운영이 쌓입니다</span>
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-[16px] leading-relaxed text-[var(--vision-muted)]">
-          주제 하나로 이야기 · 플레이스 · 인스타 초안을 받습니다
+        <p className="mx-auto mt-4 max-w-xl text-center text-[17px] leading-relaxed text-[var(--vision-muted)]">
+          조사 → 초안 → 채널별 정리. 복잡한 과정은 숨기고, 결과만 남깁니다.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-5 @min-[560px]:grid-cols-2">
+        <div className="mt-14 grid grid-cols-1 gap-4 @min-[720px]:grid-cols-6 @min-[720px]:grid-rows-2 @min-[720px]:gap-5">
           {WHY_BRICLOG.map((item, i) => (
             <article
               key={item.title}
-              className="group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--vision-shadow-panel)]"
+              className={`group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--vision-shadow-panel)] ${
+                i === 0
+                  ? "@min-[720px]:col-span-3 @min-[720px]:row-span-2 @min-[720px]:p-9"
+                  : i === 1
+                    ? "@min-[720px]:col-span-3"
+                    : "@min-[720px]:col-span-2"
+              }`}
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--vision-accent)] text-[12px] font-bold text-[#071510] lg:bg-[var(--vision-ink)] lg:text-white">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] text-[12px] font-bold tabular-nums text-[var(--vision-accent-deep,#03a94d)] ring-1 ring-[var(--vision-accent-ring,rgba(3,199,90,0.2))]">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-[var(--vision-ink)]">
+              <h3
+                className={`mt-5 font-semibold tracking-tight text-[var(--vision-ink)] ${
+                  i === 0 ? "text-[22px] md:text-[26px]" : "text-[19px]"
+                }`}
+              >
                 {item.title}
               </h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-[var(--vision-muted)]">
+              <p
+                className={`mt-3 leading-relaxed text-[var(--vision-muted)] ${
+                  i === 0 ? "text-[16px] md:text-[17px]" : "text-[15px]"
+                }`}
+              >
                 {item.desc}
               </p>
             </article>

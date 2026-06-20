@@ -20,7 +20,7 @@ import LandingPreviewShell from "./LandingPreviewShell";
 import HeroSection from "./HeroSection";
 import LiveStatsBanner from "./LiveStatsBanner";
 import DemoPreviewSection from "./DemoPreviewSection";
-import WorkflowSection from "./WorkflowSection";
+import DemoFlow from "./DemoFlow";
 import BriclogNextSection from "./BriclogNextSection";
 import WhyBriclog from "./WhyBriclog";
 import CoreEngineSection from "./CoreEngineSection";
@@ -199,7 +199,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             sample={sample}
             onTest={withLandingCta(scrollToPublicTest)}
           />
-          <WorkflowSection />
+          <DemoFlow sample={sample} />
           <CoreEngineSection />
           <LandingFaqSection />
           <PricingSection onStart={handleStart} />

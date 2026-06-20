@@ -845,6 +845,49 @@ button:enabled,
   animation: briclog-vision-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.briclog-vision-stagger {
+  animation: briclog-vision-reveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.briclog-vision-stagger-1 { animation-delay: 0.04s; }
+.briclog-vision-stagger-2 { animation-delay: 0.12s; }
+.briclog-vision-stagger-3 { animation-delay: 0.2s; }
+.briclog-vision-stagger-4 { animation-delay: 0.28s; }
+.briclog-vision-stagger-5 { animation-delay: 0.36s; }
+
+.briclog-vision-glass-card {
+  border: 1px solid var(--vision-line-strong);
+  background: linear-gradient(
+    165deg,
+    var(--vision-glass-strong) 0%,
+    var(--vision-panel-bg) 100%
+  );
+  backdrop-filter: blur(20px);
+}
+
+.briclog-vision-cta-glow {
+  box-shadow:
+    0 12px 36px rgba(3, 199, 90, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.briclog-vision-cta-glow:hover {
+  box-shadow:
+    0 16px 48px rgba(3, 199, 90, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes briclog-vision-reveal {
   from {
     opacity: 0;

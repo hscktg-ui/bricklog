@@ -35,58 +35,59 @@ export default function HeroSection({
   const ideaText = contentIdea?.text ?? LANDING_HERO_DEFAULT.ideaFallback;
 
   return (
-    <section className="briclog-vision-hero relative overflow-hidden px-5 pb-16 pt-10 md:px-8 md:pb-24 md:pt-16">
+    <section className="briclog-vision-hero relative overflow-hidden px-5 pb-20 pt-12 md:px-8 md:pb-28 md:pt-20">
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="pointer-events-none absolute inset-0 opacity-40"
         style={{
-          background: `radial-gradient(60% 50% at 80% 20%, ${heroTheme.blobPrimary}, transparent),
-            radial-gradient(50% 40% at 10% 80%, ${heroTheme.blobSecondary}, transparent)`,
+          background: `radial-gradient(55% 45% at 85% 15%, ${heroTheme.blobPrimary}, transparent),
+            radial-gradient(45% 35% at 8% 85%, ${heroTheme.blobSecondary}, transparent)`,
         }}
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-3xl text-center briclog-vision-reveal">
-        <p className={VISION_EYEBROW}>브릭로그 · 브랜드 글쓰기</p>
+      <div className="relative mx-auto max-w-4xl text-center">
+        <p className={`${VISION_EYEBROW} briclog-vision-stagger briclog-vision-stagger-1`}>
+          BRICLOG · Brand Content OS
+        </p>
 
         <h1
-          className={`${VISION_HEADLINE} mt-6`}
+          className={`${VISION_HEADLINE} mt-5 briclog-vision-stagger briclog-vision-stagger-2 md:mt-7`}
           suppressHydrationWarning
         >
           {headline}
-          <span className="block text-[var(--vision-muted)]">{headlineBreak}</span>
+          <span className="mt-1 block bg-gradient-to-r from-[var(--vision-ink)] via-[var(--vision-accent-deep,#03a94d)] to-[var(--vision-ink)] bg-clip-text text-transparent">
+            {headlineBreak}
+          </span>
         </h1>
 
         <p
-          className={`${VISION_SUB} mx-auto mt-6 max-w-xl`}
+          className={`${VISION_SUB} mx-auto mt-6 max-w-xl briclog-vision-stagger briclog-vision-stagger-3 md:mt-8`}
           suppressHydrationWarning
         >
           {sub}
         </p>
 
         {seasonBadge ? (
-          <p className="mt-4 text-[13px] font-medium text-[var(--vision-muted)]">
+          <p className="mt-4 text-[13px] font-medium text-[var(--vision-muted)] briclog-vision-stagger briclog-vision-stagger-3">
             {seasonBadge}
           </p>
         ) : null}
 
-        <div className="mx-auto mt-10 max-w-md text-left">
-          <div className="rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-glass-strong)] p-5 shadow-[var(--vision-shadow-soft)] backdrop-blur-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
+        <div className="mx-auto mt-10 max-w-md text-left briclog-vision-stagger briclog-vision-stagger-4 md:mt-12">
+          <div className="briclog-vision-glass-card rounded-[1.75rem] p-6 shadow-[var(--vision-shadow-panel)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--vision-muted)]">
               오늘의 한 줄
             </p>
             <p
-              className="mt-2 text-[18px] font-medium leading-snug tracking-tight text-[var(--vision-ink)] line-clamp-3"
+              className="mt-3 text-[20px] font-semibold leading-snug tracking-[-0.02em] text-[var(--vision-ink)] line-clamp-3 md:text-[22px]"
               suppressHydrationWarning
             >
               {ideaText}
             </p>
-            <ul
-              className="mt-4 flex flex-wrap gap-2"
-              aria-label="지원 채널"
-            >
+            <ul className="mt-5 flex flex-wrap gap-2" aria-label="지원 채널">
               {CHANNELS.map((label) => (
                 <li key={label}>
-                  <span className="inline-block rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,rgba(255,255,255,0.9))] px-3 py-1 text-[11px] font-semibold text-[var(--vision-ink)] lg:bg-[var(--vision-ink)] lg:text-white lg:border-transparent">
+                  <span className="inline-block rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,rgba(255,255,255,0.92))] px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[var(--vision-ink)] lg:border-transparent lg:bg-[var(--vision-ink)] lg:text-white">
                     {label}
                   </span>
                 </li>
@@ -95,23 +96,19 @@ export default function HeroSection({
           </div>
         </div>
 
-        <LandingTrustStrip className="mt-8" />
+        <LandingTrustStrip className="mt-8 briclog-vision-stagger briclog-vision-stagger-5" />
 
-        <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
+        <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center briclog-vision-stagger briclog-vision-stagger-5">
           <button
             id="landing-hero-cta"
             type="button"
             data-briclog-cta="test"
             onClick={onTest || onStart}
-            className={VISION_CTA_ACCENT}
+            className={`${VISION_CTA_ACCENT} briclog-vision-cta-glow`}
           >
             <span>{LANDING_PRIMARY_CTA}</span>
           </button>
-          <button
-            type="button"
-            onClick={onSample}
-            className={VISION_CTA_GHOST}
-          >
+          <button type="button" onClick={onSample} className={VISION_CTA_GHOST}>
             <span>{LANDING_SECONDARY_CTA}</span>
           </button>
         </div>

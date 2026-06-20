@@ -28,7 +28,7 @@ export default function DemoFlow({ sample }) {
   return (
     <section className={`${VISION_SECTION} px-4 py-14 md:px-8 md:py-20`}>
       <div className="mx-auto max-w-4xl">
-        <p className={`text-center ${VISION_EYEBROW}`}>How it works</p>
+        <p className={`text-center ${VISION_EYEBROW}`}>쓰는 순서</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,4vw,2rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
           쓰는 순서
         </h2>
