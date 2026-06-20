@@ -36,6 +36,8 @@ import { formatBlogFullCopy } from "@/utils/copyFormatter";
 import { useSimpleWorkspaceMode } from "@/hooks/useSimpleWorkspaceMode";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
 import {
+  VISION_EYEBROW,
+  VISION_GHOST_BTN,
   VISION_STATUS_OK,
   VISION_STATUS_WARN,
   VISION_WORKSPACE_PANEL,
@@ -44,7 +46,6 @@ import ResultCopyHero, {
   ResultCopyGhostButton,
 } from "@/components/workspace/ResultCopyHero";
 import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
-import { VISION_EYEBROW } from "@/lib/landing/vision2030Styles";
 
 export default function BlogResultView({
   blog,
@@ -609,7 +610,7 @@ export default function BlogResultView({
         <button
           type="button"
           onClick={() => setExpertOpen((o) => !o)}
-          className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[#E8EBED] bg-white px-4 py-3 text-[13px] font-semibold text-[#4E5968] hover:bg-[#F9FAFB]"
+          className={`${VISION_GHOST_BTN} flex min-h-[44px] w-full !text-[13px]`}
         >
           {expertOpen
             ? "간단히 보기"

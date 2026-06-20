@@ -101,7 +101,7 @@ export default function ChannelWelcomeScreen({
                 <button
                   type="button"
                   onClick={() => onSelectChannel(ch.id)}
-                  className="flex w-full min-h-[48px] items-center gap-3 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-4 py-3 text-left transition hover:border-[var(--vision-accent-ring,rgba(3,199,90,0.25))] active:scale-[0.995]"
+                  className="flex w-full min-h-[48px] items-center gap-3 rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-btn-surface,rgba(3,199,90,0.1))] px-4 py-3 text-left transition hover:border-[var(--vision-accent)] active:scale-[0.995]"
                 >
                   <Icon
                     name={meta?.icon || ch.icon}

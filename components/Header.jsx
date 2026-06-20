@@ -26,7 +26,7 @@ export default function Header({
           <button
             type="button"
             onClick={onOpenSidebar}
-            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--vision-line-strong)] bg-white/80 text-[var(--vision-ink)] backdrop-blur-sm hover:bg-white sm:h-10 sm:w-10 lg:hidden"
+            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-btn-surface,rgba(3,199,90,0.1))] text-[var(--vision-ink)] backdrop-blur-sm hover:bg-[var(--vision-btn-surface-hover,rgba(3,199,90,0.16))] sm:h-10 sm:w-10 lg:hidden"
             aria-label="메뉴 열기"
           >
             <Icon name="menu" className="h-5 w-5" />

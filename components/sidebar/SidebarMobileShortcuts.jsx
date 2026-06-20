@@ -38,7 +38,7 @@ export default function SidebarMobileShortcuts({
               className={`flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-xl px-2 py-2 text-center text-[11px] font-semibold ${
                 active
                   ? "bg-[var(--vision-accent)] text-white shadow-[var(--vision-shadow-soft)]"
-                  : "border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] text-[var(--vision-muted)]"
+                  : "border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-btn-surface,rgba(3,199,90,0.1))] text-[var(--vision-ink)]"
               }`}
             >
               <Icon

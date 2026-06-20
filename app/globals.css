@@ -662,6 +662,9 @@ button:enabled,
   --vision-glass: rgba(247, 250, 248, 0.82);
   --vision-glass-strong: rgba(255, 255, 255, 0.92);
   --vision-panel-bg: #ffffff;
+  --vision-btn-surface: rgba(3, 199, 90, 0.1);
+  --vision-btn-ghost-bg: rgba(3, 199, 90, 0.08);
+  --vision-btn-surface-hover: rgba(3, 199, 90, 0.16);
   --vision-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
   --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
   --vision-hero-mesh:
@@ -682,7 +685,10 @@ button:enabled,
     --vision-line-strong: rgba(196, 220, 205, 0.18);
     --vision-glass: rgba(15, 31, 24, 0.88);
     --vision-glass-strong: rgba(15, 31, 24, 0.94);
-    --vision-panel-bg: rgba(255, 255, 255, 0.05);
+    --vision-panel-bg: rgba(255, 255, 255, 0.08);
+    --vision-btn-surface: rgba(255, 255, 255, 0.1);
+    --vision-btn-ghost-bg: rgba(255, 255, 255, 0.12);
+    --vision-btn-surface-hover: rgba(255, 255, 255, 0.18);
     --vision-shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.42);
     --vision-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.52);
     --vision-accent-soft: rgba(3, 199, 90, 0.14);
@@ -949,6 +955,9 @@ button:enabled,
   --vision-glass: rgba(247, 250, 248, 0.82);
   --vision-glass-strong: rgba(255, 255, 255, 0.92);
   --vision-panel-bg: #ffffff;
+  --vision-btn-surface: rgba(3, 199, 90, 0.1);
+  --vision-btn-ghost-bg: rgba(3, 199, 90, 0.08);
+  --vision-btn-surface-hover: rgba(3, 199, 90, 0.16);
   --vision-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
   --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
   background: var(--vision-paper);
@@ -985,12 +994,20 @@ button:enabled,
 
 .briclog-vision-workspace .briclog-btn-secondary {
   border-radius: 9999px;
-  border-color: var(--vision-line-strong);
+  border-color: var(--vision-accent-ring);
+  background: var(--vision-btn-surface);
+  color: var(--vision-ink);
 }
 
 .briclog-vision-workspace .briclog-btn-secondary:hover:not(:disabled) {
-  background: #ffffff;
-  border-color: var(--vision-line-strong);
+  background: var(--vision-btn-surface-hover);
+  border-color: var(--vision-accent);
+}
+
+@media (max-width: 1023px) {
+  .briclog-vision-workspace .briclog-btn-secondary {
+    box-shadow: var(--vision-shadow-soft);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

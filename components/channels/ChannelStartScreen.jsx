@@ -310,7 +310,7 @@ export default function ChannelStartScreen({
               type="button"
               disabled={generating}
               onClick={() => commitAndGenerate({ preferStandalone: false })}
-              className="mt-2 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-4 py-2.5 text-[13px] font-semibold text-[var(--vision-muted)] disabled:opacity-50"
+              className="mt-2 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.28))] bg-[var(--vision-btn-surface,rgba(3,199,90,0.1))] px-4 py-2.5 text-[13px] font-semibold text-[var(--vision-ink)] disabled:opacity-50"
             >
               {product.deriveFromDraftLabel ||
                 channelDeriveButtonLabel(channel, { hasOtherDraft: true })}

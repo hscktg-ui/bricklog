@@ -1,6 +1,10 @@
 "use client";
 
 import { MOBILE_CHANNEL_COPY } from "@/lib/workspace/channelWorkspaceLayout";
+import {
+  VISION_MOBILE_SEGMENT_ACTIVE,
+  VISION_MOBILE_SEGMENT_IDLE,
+} from "@/lib/landing/vision2030Styles";
 
 function SegmentLabel({ icon, text, busy = false }) {
   return (
@@ -52,8 +56,8 @@ export default function MobileChannelChrome({
           onClick={() => !isGenerating && onPaneChange?.("form")}
           className={`min-h-[48px] flex-1 rounded-full text-[14px] font-semibold transition-all duration-200 ease-out ${
             pane === "form"
-              ? "bg-white text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)]"
-              : "text-[var(--vision-muted)]"
+              ? VISION_MOBILE_SEGMENT_ACTIVE
+              : VISION_MOBILE_SEGMENT_IDLE
           } disabled:opacity-40`}
         >
           <SegmentLabel icon={copy.form.icon} text={copy.form.label} />
@@ -66,10 +70,10 @@ export default function MobileChannelChrome({
           onClick={() => !resultDisabled && onPaneChange?.("result")}
           className={`relative min-h-[48px] flex-1 rounded-full text-[14px] font-semibold transition-all duration-200 ease-out ${
             pane === "result"
-              ? "bg-white text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)]"
+              ? VISION_MOBILE_SEGMENT_ACTIVE
               : resultDisabled
-                ? "text-[var(--vision-muted)]/50"
-                : "text-[var(--vision-muted)]"
+                ? `${VISION_MOBILE_SEGMENT_IDLE} opacity-50`
+                : VISION_MOBILE_SEGMENT_IDLE
           }`}
         >
           {isGenerating ? (

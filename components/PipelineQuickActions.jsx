@@ -45,7 +45,7 @@ export default function PipelineQuickActions({
           {ACTIONS.map((action) => (
             <div
               key={action.id}
-              className="flex items-center justify-between rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-[13px] text-[#8B95A1]"
+              className="flex items-center justify-between rounded-lg border border-[var(--vision-line)] bg-[var(--vision-btn-ghost-bg,rgba(3,199,90,0.06))] px-3 py-2.5 text-[13px] text-[var(--vision-muted)]"
             >
               <span className="flex items-center gap-2">
                 <Icon name={action.icon} className="h-4 w-4" />
@@ -107,7 +107,7 @@ export default function PipelineQuickActions({
                 else if (action.key === "instagram") generateInstagram();
                 onNavigate?.(action.id);
               }}
-              className="briclog-pressable flex w-full items-center justify-between rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-left transition hover:border-[#03C75A]/40 disabled:opacity-50"
+          className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.28))] bg-[var(--vision-btn-surface,rgba(3,199,90,0.1))] px-4 py-2.5 text-left transition hover:border-[var(--vision-accent)] disabled:opacity-50"
             >
               <span className="flex items-center gap-2 text-[13px] font-medium text-[#191F28]">
                 <Icon name={action.icon} className="h-4 w-4 text-[#03C75A]" />
