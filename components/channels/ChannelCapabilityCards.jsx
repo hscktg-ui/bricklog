@@ -1,5 +1,7 @@
 "use client";
 
+import { VISION_WORKSPACE_PANEL } from "@/lib/landing/vision2030Styles";
+
 const CAPABILITIES = {
   place: [
     { title: "한 줄 공지", body: "플레이스·지도에 바로 붙일 짧은 소식" },
@@ -10,11 +12,6 @@ const CAPABILITIES = {
     { title: "캡션·줄바꿈", body: "피드·릴스에 맞는 짧은 문장" },
     { title: "해시태그", body: "지역·주제 태그 묶음" },
     { title: "톤 선택", body: "감성·정보·프로모션 톤 전환" },
-  ],
-  image: [
-    { title: "썸네일 문구", body: "클릭을 부르는 한 줄·카드 카피" },
-    { title: "비율·목적", body: "1:1·16:9 등 용도별 프롬프트" },
-    { title: "브랜드 톤", body: "이야기·다른 채널 초안과 맞춤" },
   ],
 };
 
@@ -30,10 +27,12 @@ export default function ChannelCapabilityCards({ channel, compact = false }) {
       {items.map((item) => (
         <div
           key={item.title}
-          className="rounded-xl border border-[#E8EBED] bg-white px-3 py-3 shadow-sm"
+          className={`px-3 py-3 ${VISION_WORKSPACE_PANEL}`}
         >
-          <p className="text-[12px] font-semibold text-[#191F28]">{item.title}</p>
-          <p className="mt-1 text-[11px] leading-relaxed text-[#8B95A1]">
+          <p className="text-[12px] font-semibold text-[var(--vision-ink)]">
+            {item.title}
+          </p>
+          <p className="mt-1 text-[11px] leading-relaxed text-[var(--vision-muted)]">
             {item.body}
           </p>
         </div>

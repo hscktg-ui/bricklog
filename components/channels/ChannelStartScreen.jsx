@@ -23,6 +23,12 @@ import ChannelGenPrefToggle, {
 } from "@/components/channels/ChannelGenPrefToggle";
 import ChannelCapabilityCards from "@/components/channels/ChannelCapabilityCards";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
+import {
+  VISION_CTA_ACCENT,
+  VISION_EYEBROW,
+  VISION_STATUS_OK,
+  VISION_WORKSPACE_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 const ICON_MAP = {
   blog: "document",
@@ -165,35 +171,39 @@ export default function ChannelStartScreen({
     >
       <div className="workspace-shell-inner mx-auto space-y-3 md:space-y-4">
         <div
-          className={`briclog-surface flex items-start gap-3 ${
+          className={`flex items-start gap-3 ${VISION_WORKSPACE_PANEL} ${
             compact ? "px-3 py-2.5" : "px-4 py-3"
           }`}
         >
           <div
-            className={`flex shrink-0 items-center justify-center rounded-xl bg-[#E8F9EF] ${
+            className={`flex shrink-0 items-center justify-center rounded-xl bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] ${
               compact ? "h-9 w-9" : "h-11 w-11"
             }`}
           >
             <Icon
               name={ICON_MAP[channel] || "document"}
-              className={compact ? "h-4 w-4 text-[#03A94D]" : "h-5 w-5 text-[#03A94D]"}
+              className={
+                compact
+                  ? "h-4 w-4 text-[var(--vision-accent-deep,#03a94d)]"
+                  : "h-5 w-5 text-[var(--vision-accent-deep,#03a94d)]"
+              }
             />
           </div>
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[#03A94D]">
+            <p className={compact ? "text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--vision-accent-deep,#03a94d)]" : VISION_EYEBROW}>
               {product.menuLabel} · 브리프
             </p>
             <h2
               className={
                 compact
-                  ? "text-[16px] font-bold text-[#191F28]"
-                  : "text-[17px] font-bold text-[#191F28]"
+                  ? "text-[16px] font-semibold tracking-tight text-[var(--vision-ink)]"
+                  : "text-[17px] font-semibold tracking-tight text-[var(--vision-ink)]"
               }
             >
               {product.startTitle || product.emptyTitle}
             </h2>
             {!compact && (
-              <p className="mt-1 text-[12px] leading-relaxed text-[#8B95A1]">
+              <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
                 {product.startDesc || product.emptyDesc}
               </p>
             )}
@@ -201,7 +211,7 @@ export default function ChannelStartScreen({
         </div>
 
         {linkBanner && (
-          <p className="rounded-xl border border-[#03C75A]/25 bg-[#F0FFF5] px-3 py-2.5 text-[12px] leading-relaxed text-[#03A94D]">
+          <p className={`px-3 py-2.5 text-[12px] leading-relaxed text-[var(--vision-accent-deep,#03a94d)] ${VISION_STATUS_OK}`}>
             {linkBanner}
           </p>
         )}
@@ -264,7 +274,7 @@ export default function ChannelStartScreen({
           </MobileSecondaryAccordion>
         ) : null}
 
-        <div className="sticky bottom-0 z-10 -mx-1 rounded-2xl border border-[#E8EBED] bg-white/95 p-4 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] backdrop-blur-sm">
+        <div className="sticky bottom-0 z-10 -mx-1 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-glass-strong)] p-4 shadow-[var(--vision-shadow-soft)] backdrop-blur-sm">
           {!generating && (
             <ChannelGenPrefToggle
               channel={channel}
@@ -279,7 +289,7 @@ export default function ChannelStartScreen({
             data-briclog-generate={channel}
             disabled={generating}
             onClick={() => commitAndGenerate({ preferStandalone })}
-            className="flex min-h-[48px] w-full items-center justify-center rounded-xl bg-[#03C75A] px-4 py-3 text-[14px] font-semibold text-white hover:bg-[#02B350] disabled:opacity-50"
+            className={`flex min-h-[48px] w-full items-center justify-center rounded-xl px-4 py-3 text-[14px] font-semibold text-white disabled:opacity-50 ${VISION_CTA_ACCENT}`}
           >
             {generating ? "만드는 중…" : product.generateLabel}
           </button>
@@ -289,7 +299,7 @@ export default function ChannelStartScreen({
               type="button"
               disabled={generating}
               onClick={() => commitAndGenerate({ preferStandalone: false })}
-              className="mt-2 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[#03C75A]/40 bg-[#F8FDF9] px-4 py-2.5 text-[13px] font-semibold text-[#03A94D] hover:bg-[#E8F9EF] disabled:opacity-50"
+              className="mt-2 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.35))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))] px-4 py-2.5 text-[13px] font-semibold text-[var(--vision-accent-deep,#03a94d)] disabled:opacity-50"
             >
               {channelDeriveButtonLabel(channel, { hasFullBlog, hasOtherDraft })}
             </button>
@@ -300,7 +310,7 @@ export default function ChannelStartScreen({
               type="button"
               disabled={generating}
               onClick={() => commitAndGenerate({ preferStandalone: false })}
-              className="mt-2 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[#E8EBED] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#4E5968] disabled:opacity-50"
+              className="mt-2 flex min-h-[44px] w-full items-center justify-center rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-4 py-2.5 text-[13px] font-semibold text-[var(--vision-muted)] disabled:opacity-50"
             >
               {product.deriveFromDraftLabel ||
                 channelDeriveButtonLabel(channel, { hasOtherDraft: true })}
@@ -311,7 +321,7 @@ export default function ChannelStartScreen({
             <button
               type="button"
               onClick={onGoBlog}
-              className="mt-2 w-full text-center text-[12px] font-medium text-[#8B95A1] hover:text-[#03A94D] hover:underline"
+              className="mt-2 w-full text-center text-[12px] font-medium text-[var(--vision-muted)] hover:text-[var(--vision-accent-deep,#03a94d)] hover:underline"
             >
               {product.goBlogLabel}
             </button>

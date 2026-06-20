@@ -60,9 +60,12 @@ export default function ContentPlanWorkspace({ onNavigate, onToast }) {
   if (!input.brandName) {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
-        <p className="text-center text-[15px] text-[var(--vision-muted)]">
-          브랜드를 선택하면 이번 달·이번 주 운영 계획이 잡힙니다.
-        </p>
+        <div className={`max-w-md px-6 py-8 text-center ${VISION_PANEL}`}>
+          <p className={VISION_EYEBROW}>운영 계획</p>
+          <p className={`mt-3 ${VISION_SUB}`}>
+            브랜드를 선택하면 이번 달·이번 주 운영 계획이 잡힙니다.
+          </p>
+        </div>
       </div>
     );
   }
