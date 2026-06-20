@@ -116,8 +116,11 @@ async function runScenario(scenario) {
 
   const input = {
     ...scenario.raw,
-    ...axis.pipelineInput,
+    ...(axis.pipelineInput || {}),
+    researchFacts: axis.facts || axis.pipelineInput?.researchFacts || [],
+    researchFactCount: axis.factCount ?? axis.pipelineInput?.researchFactCount,
     v2PreWriteVerified: true,
+    v2ResearchReady: true,
     _skipDefaultResearch: true,
   };
 
