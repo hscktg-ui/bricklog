@@ -33,14 +33,19 @@ import {
   LANDING_CTA_HEADLINE,
   LANDING_CTA_PHILOSOPHY,
   LANDING_CTA_SUB,
-  LANDING_NAV_SIGNUP_CTA,
+  LANDING_FOOTER_SIGNUP_CTA,
+  LANDING_LOGIN_CTA,
+  LANDING_LOGIN_HINT,
+  LANDING_NAV_START_CTA,
   LANDING_PRIMARY_CTA,
+  LANDING_PRIMARY_SUB,
 } from "@/lib/landing/ctaCopy";
 import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
+  VISION_LOGIN_LINK,
   VISION_NAV,
   VISION_NAV_INNER,
   VISION_PAGE,
@@ -103,6 +108,10 @@ export default function LandingPage({ onAuthOpen, onStart }) {
     [onAuthOpen]
   );
 
+  const openLogin = useCallback(() => {
+    onAuthOpen("login");
+  }, [onAuthOpen]);
+
   const scrollToSample = () => scrollToId("landing-sample");
 
   const handleIntroDismiss = useCallback(() => {
@@ -148,10 +157,11 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             ))}
             <button
               type="button"
-              onClick={() => onAuthOpen("login")}
-              className="hidden rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] sm:inline-flex sm:px-3 sm:text-[13px]"
+              data-briclog-cta="login-nav"
+              onClick={() => openLogin()}
+              className={VISION_LOGIN_LINK}
             >
-              로그인
+              {LANDING_LOGIN_CTA}
             </button>
             <button
               type="button"
@@ -159,7 +169,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               onClick={withLandingCta(scrollToPublicTest)}
               className={`${VISION_CTA_ACCENT} !min-h-[36px] !w-auto !px-3.5 !py-2 !text-[12px] sm:!min-h-[40px] sm:!px-4 sm:!text-[13px] lg:!min-h-[44px]`}
             >
-              <span>{LANDING_PRIMARY_CTA}</span>
+              <span>{LANDING_NAV_START_CTA}</span>
             </button>
           </nav>
         </div>
@@ -180,6 +190,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onStart={handleStart}
             onSample={withLandingCta(scrollToSample)}
             onTest={withLandingCta(scrollToPublicTest)}
+            onLogin={openLogin}
           />
           <WhyBriclog />
           <ContentPlanSection />
@@ -229,15 +240,29 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             >
               <span>{LANDING_PRIMARY_CTA}</span>
             </button>
+            <p className="mx-auto mt-3 max-w-md text-[13px] text-white/50">
+              {LANDING_PRIMARY_SUB}
+            </p>
             <button
               type="button"
               data-briclog-cta="signup-footer"
               onClick={() => openSignup("landing_footer")}
-              className="mt-5 hidden min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-8 text-[14px] font-semibold text-white/85 transition hover:bg-white/10 active:scale-[0.99] sm:inline-flex"
+              className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-8 text-[14px] font-semibold text-white/85 transition hover:bg-white/10 active:scale-[0.99]"
             >
-              {LANDING_NAV_SIGNUP_CTA}
+              {LANDING_FOOTER_SIGNUP_CTA}
             </button>
-            <p className="mt-8 text-[12px] text-white/35">{LANDING_CTA_FOOTNOTE}</p>
+            <p className="mt-5 text-[13px] text-white/45">
+              {LANDING_LOGIN_HINT}{" "}
+              <button
+                type="button"
+                data-briclog-cta="login-footer"
+                onClick={openLogin}
+                className="font-semibold text-white/75 underline-offset-4 hover:text-white hover:underline"
+              >
+                {LANDING_LOGIN_CTA}
+              </button>
+            </p>
+            <p className="mt-6 text-[12px] text-white/35">{LANDING_CTA_FOOTNOTE}</p>
           </section>
 
           <LandingPageFooter />
@@ -246,6 +271,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
       <LandingMobileStickyCta
         onStart={withLandingCta(scrollToPublicTest)}
+        onLogin={openLogin}
         introOpen={introOpen}
         suppressed={publicTestPreviewActive}
       />

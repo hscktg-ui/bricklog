@@ -13,7 +13,7 @@ import DevicePreviewToggle, {
   useDevicePreview,
 } from "@/components/landing/DevicePreviewToggle";
 import { useViewport } from "@/hooks/useViewport";
-import { LANDING_PRIMARY_CTA } from "@/lib/landing/ctaCopy";
+import { LANDING_PRIMARY_CTA, LANDING_PRIMARY_SUB } from "@/lib/landing/ctaCopy";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
@@ -124,6 +124,11 @@ export default function DemoPreviewSection({ sample, onTest }) {
           >
             <span>{LANDING_PRIMARY_CTA}</span>
           </button>
+        ) : null}
+        {onTest ? (
+          <p className="mt-3 text-center text-[13px] text-[var(--vision-muted)]">
+            {LANDING_PRIMARY_SUB}
+          </p>
         ) : null}
         <p className="mt-4 hidden text-center text-[13px] text-[var(--vision-muted)] sm:block">
           붙여넣기 대신 운영 계획에서 이어갑니다

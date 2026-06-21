@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LANDING_PRIMARY_CTA } from "@/lib/landing/ctaCopy";
-import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
+import {
+  LANDING_LOGIN_CTA,
+  LANDING_NAV_START_CTA,
+} from "@/lib/landing/ctaCopy";
+import {
+  VISION_CTA_ACCENT,
+  VISION_LOGIN_LINK,
+} from "@/lib/landing/vision2030Styles";
 
-/** 모바일·태블릿 — 히어로 CTA 이탈 시 단일 액션만 (Vision 2030: 한 가지 선택) */
+/** 모바일·태블릿 — accent 시작 + 로그인 텍스트 (Jobs: 한 결정 + 기존 회원) */
 export default function LandingMobileStickyCta({
   onStart,
+  onLogin,
   introOpen = false,
   suppressed = false,
 }) {
@@ -37,15 +44,25 @@ export default function LandingMobileStickyCta({
       role="region"
       aria-label="빠른 시작"
     >
-      <div className="mx-auto max-w-lg px-4 py-3">
+      <div className="mx-auto flex max-w-lg items-center gap-2 px-4 py-3">
         <button
           type="button"
           data-briclog-cta="start"
           onClick={onStart}
-          className={`${VISION_CTA_ACCENT} w-full !min-h-[48px] !text-[14px]`}
+          className={`${VISION_CTA_ACCENT} min-w-0 flex-1 !min-h-[48px] !text-[14px]`}
         >
-          {LANDING_PRIMARY_CTA}
+          {LANDING_NAV_START_CTA}
         </button>
+        {onLogin ? (
+          <button
+            type="button"
+            data-briclog-cta="login-sticky"
+            onClick={onLogin}
+            className={`${VISION_LOGIN_LINK} !min-h-[48px]`}
+          >
+            {LANDING_LOGIN_CTA}
+          </button>
+        ) : null}
       </div>
     </div>
   );

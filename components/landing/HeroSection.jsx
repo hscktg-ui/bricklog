@@ -3,7 +3,10 @@
 import { DEFAULT_SEASON_THEME } from "@/lib/landing/seasonTheme";
 import {
   LANDING_HERO_DEFAULT,
+  LANDING_LOGIN_CTA,
+  LANDING_LOGIN_HINT,
   LANDING_PRIMARY_CTA,
+  LANDING_PRIMARY_SUB,
   LANDING_SECONDARY_CTA,
 } from "@/lib/landing/ctaCopy";
 import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
@@ -12,6 +15,7 @@ import {
   VISION_CTA_GHOST_SUBTLE,
   VISION_EYEBROW,
   VISION_HEADLINE,
+  VISION_LOGIN_LINK,
   VISION_SUB,
 } from "@/lib/landing/vision2030Styles";
 
@@ -25,6 +29,7 @@ export default function HeroSection({
   onStart,
   onSample,
   onTest,
+  onLogin,
 }) {
   const heroTheme = theme ?? DEFAULT_SEASON_THEME;
   const headline = greeting?.headline ?? LANDING_HERO_DEFAULT.headline;
@@ -98,19 +103,37 @@ export default function HeroSection({
 
         <LandingTrustStrip className="mt-8 hidden briclog-vision-stagger briclog-vision-stagger-5 lg:flex" />
 
-        <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:justify-center briclog-vision-stagger briclog-vision-stagger-5">
-          <button
-            id="landing-hero-cta"
-            type="button"
-            data-briclog-cta="test"
-            onClick={onTest || onStart}
-            className={`${VISION_CTA_ACCENT} briclog-vision-cta-glow`}
-          >
-            <span>{LANDING_PRIMARY_CTA}</span>
-          </button>
-          <button type="button" onClick={onSample} className={VISION_CTA_GHOST_SUBTLE}>
-            <span>{LANDING_SECONDARY_CTA}</span>
-          </button>
+        <div className="mt-8 briclog-vision-stagger briclog-vision-stagger-5">
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center">
+            <button
+              id="landing-hero-cta"
+              type="button"
+              data-briclog-cta="test"
+              onClick={onTest || onStart}
+              className={`${VISION_CTA_ACCENT} briclog-vision-cta-glow`}
+            >
+              <span>{LANDING_PRIMARY_CTA}</span>
+            </button>
+            <button type="button" onClick={onSample} className={VISION_CTA_GHOST_SUBTLE}>
+              <span>{LANDING_SECONDARY_CTA}</span>
+            </button>
+          </div>
+          <p className="mt-3 text-[13px] leading-relaxed text-[var(--vision-muted)]">
+            {LANDING_PRIMARY_SUB}
+          </p>
+          {onLogin ? (
+            <p className="mt-2 text-[13px] text-[var(--vision-muted)]">
+              {LANDING_LOGIN_HINT}{" "}
+              <button
+                type="button"
+                data-briclog-cta="login-hero"
+                onClick={onLogin}
+                className={`${VISION_LOGIN_LINK} !min-h-0 !px-1 !py-0 !text-[13px]`}
+              >
+                {LANDING_LOGIN_CTA}
+              </button>
+            </p>
+          ) : null}
         </div>
       </div>
     </section>
