@@ -1,14 +1,14 @@
 {
-  "startedAt": "2026-06-21T12:53:27.488Z",
+  "startedAt": "2026-06-21T13:19:13.516Z",
   "total": 234,
-  "pass": 213,
-  "fail": 21,
-  "passRate": 91,
+  "pass": 218,
+  "fail": 16,
+  "passRate": 93.2,
   "byChannel": {
     "blog": {
       "total": 78,
-      "pass": 73,
-      "passRate": 93.6
+      "pass": 78,
+      "passRate": 100
     },
     "place": {
       "total": 78,
@@ -23,13 +23,9 @@
   },
   "failReasons": {
     "first_delivery_channel_editor": 16,
-    "first_delivery_human_belief": 20,
-    "human_belief_low": 20,
-    "first_delivery_channel_format": 6,
-    "first_delivery_human_editor": 3,
-    "first_delivery_editor_v95": 3,
-    "information_yield_low": 3,
-    "length_tier_under": 2
+    "first_delivery_human_belief": 16,
+    "human_belief_low": 16,
+    "first_delivery_channel_format": 6
   },
   "failedSamples": [
     {
@@ -113,18 +109,6 @@
       "chars": 216
     },
     {
-      "id": "헬스장_2_blog",
-      "channel": "blog",
-      "label": "헬스장 · 홍대 · blog",
-      "failReasons": [
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95",
-        "first_delivery_human_belief"
-      ],
-      "belief": 66,
-      "chars": 758
-    },
-    {
       "id": "헬스장_4_instagram",
       "channel": "instagram",
       "label": "헬스장 · 대구 수성 · instagram",
@@ -134,18 +118,6 @@
       ],
       "belief": 42,
       "chars": 457
-    },
-    {
-      "id": "온라인 _1_blog",
-      "channel": "blog",
-      "label": "온라인 쇼핑몰 · 부산 해운대 · blog",
-      "failReasons": [
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95",
-        "first_delivery_human_belief"
-      ],
-      "belief": 66,
-      "chars": 465
     },
     {
       "id": "온라인 _2_place",
@@ -227,35 +199,16 @@
       "chars": 496
     },
     {
-      "id": "세무_0_blog",
-      "channel": "blog",
-      "label": "세무 · 대전 둔산 · blog",
+      "id": "건강기능_1_instagram",
+      "channel": "instagram",
+      "label": "건강기능식품 · 제주 연동 · instagram",
       "failReasons": [
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95"
+        "first_delivery_channel_editor",
+        "first_delivery_human_belief",
+        "first_delivery_channel_format"
       ],
-      "belief": 84,
-      "chars": 484
-    },
-    {
-      "id": "노무_1_blog",
-      "channel": "blog",
-      "label": "노무 · 홍대 · blog",
-      "failReasons": [
-        "first_delivery_human_belief"
-      ],
-      "belief": 66,
-      "chars": 698
-    },
-    {
-      "id": "부동산_0_blog",
-      "channel": "blog",
-      "label": "부동산 · 홍대 · blog",
-      "failReasons": [
-        "first_delivery_human_belief"
-      ],
-      "belief": 66,
-      "chars": 728
+      "belief": 31,
+      "chars": 621
     }
   ]
 }
