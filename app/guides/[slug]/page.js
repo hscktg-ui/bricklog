@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BRAND_META_TITLE } from "@/lib/brand/copy";
-import { buildLegalPageMetadata, resolvePublicSiteUrl } from "@/lib/brand/seo";
-import JsonLdScript from "@/components/seo/JsonLdScript";
+import { buildGuideArticleJsonLd, buildGuideBreadcrumbJsonLd, buildLegalPageMetadata, resolvePublicSiteUrl } from "@/lib/brand/seo";
+import PageJsonLdScript from "@/components/seo/PageJsonLdScript";
 import { GUIDE_PAGES, getGuidePage } from "@/lib/seo/guidePages";
 
 export function generateStaticParams() {
@@ -20,31 +20,21 @@ export async function generateMetadata({ params }) {
   });
 }
 
-function buildArticleJsonLd(page, siteUrl) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: page.title,
-    description: page.description,
-    keywords: page.keywords.join(", "),
-    author: { "@type": "Organization", name: BRAND_META_TITLE },
-    publisher: { "@type": "Organization", name: BRAND_META_TITLE },
-    mainEntityOfPage: `${siteUrl}/guides/${page.slug}`,
-    inLanguage: "ko-KR",
-  };
-}
-
 export default async function GuidePage({ params }) {
   const { slug } = await params;
   const page = getGuidePage(slug);
   if (!page) notFound();
 
   const siteUrl = resolvePublicSiteUrl();
-  const jsonLd = buildArticleJsonLd(page, siteUrl);
 
   return (
     <>
-      <JsonLdScript data={jsonLd} />
+      <PageJsonLdScript
+        graphs={[
+          buildGuideArticleJsonLd(page, siteUrl),
+          buildGuideBreadcrumbJsonLd(page, siteUrl),
+        ]}
+      />
       <main className="min-h-screen bg-[#F7F8FA] px-4 py-12 text-[#191F28]">
         <article className="mx-auto max-w-3xl">
           <p className="text-[12px] font-semibold text-[#03A94D]">

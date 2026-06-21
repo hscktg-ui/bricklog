@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BRAND_META_TITLE } from "@/lib/brand/copy";
-import { buildLegalPageMetadata, resolvePublicSiteUrl } from "@/lib/brand/seo";
+import { buildGuidesIndexJsonLd, buildLegalPageMetadata, resolvePublicSiteUrl } from "@/lib/brand/seo";
+import PageJsonLdScript from "@/components/seo/PageJsonLdScript";
 import { GUIDE_PAGES } from "@/lib/seo/guidePages";
 
 export const metadata = buildLegalPageMetadata({
@@ -14,7 +15,9 @@ export default function GuidesIndexPage() {
   const siteUrl = resolvePublicSiteUrl();
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] px-4 py-12 text-[#191F28]">
+    <>
+      <PageJsonLdScript graphs={[buildGuidesIndexJsonLd(siteUrl)]} />
+      <main className="min-h-screen bg-[#F7F8FA] px-4 py-12 text-[#191F28]">
       <div className="mx-auto max-w-3xl">
         <p className="text-[12px] font-semibold text-[#03A94D]">브릭로그 가이드</p>
         <h1 className="mt-2 text-[26px] font-bold tracking-tight">
@@ -57,5 +60,6 @@ export default function GuidesIndexPage() {
         </p>
       </div>
     </main>
+    </>
   );
 }

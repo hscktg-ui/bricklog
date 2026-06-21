@@ -18,8 +18,8 @@ export default function sitemap() {
     .filter((p) => p !== "/guides")
     .map((p) => ({
       path: p,
-      priority: 0.75,
-      changeFrequency: "monthly",
+      priority: 0.82,
+      changeFrequency: "weekly",
     }));
 
   const paths = [...STATIC_PATHS, ...guidePaths];

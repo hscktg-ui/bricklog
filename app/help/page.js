@@ -4,8 +4,7 @@ import {
   BRAND_META_DESCRIPTION,
   BRAND_META_TITLE,
 } from "@/lib/brand/copy";
-import { buildLegalPageMetadata, buildLandingFaqJsonLd, resolvePublicSiteUrl } from "@/lib/brand/seo";
-import JsonLdScript from "@/components/seo/JsonLdScript";
+import { buildLegalPageMetadata, resolvePublicSiteUrl } from "@/lib/brand/seo";
 import {
   LANDING_FAQ_CATEGORIES,
   LANDING_FAQ_ITEMS,
@@ -20,11 +19,9 @@ export const metadata = buildLegalPageMetadata({
 
 export default function HelpPage() {
   const siteUrl = resolvePublicSiteUrl();
-  const faqJsonLd = buildLandingFaqJsonLd(siteUrl);
 
   return (
     <>
-      <JsonLdScript data={faqJsonLd} />
       <main className="min-h-screen bg-[#F7F8FA] px-4 py-12 text-[#191F28]">
         <div className="mx-auto max-w-3xl">
           <p className="text-[12px] font-semibold text-[#03A94D]">
@@ -51,7 +48,7 @@ export default function HelpPage() {
               네이버·플레이스·인스타 작성 팁 — 검색에도 노출되는 무료 가이드
             </p>
             <ul className="mt-3 space-y-2">
-              {GUIDE_PAGES.slice(0, 4).map((page) => (
+              {GUIDE_PAGES.map((page) => (
                 <li key={page.slug}>
                   <Link
                     href={`/guides/${page.slug}`}

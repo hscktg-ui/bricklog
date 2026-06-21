@@ -17,7 +17,12 @@ assert.ok(page.includes("HomeClientLoader"));
 
 const loader = readFileSync("components/home/HomeClientLoader.jsx", "utf8");
 assert.ok(loader.includes("ssr: false"));
-assert.ok(seoJs.includes("potentialAction"));
+assert.ok(seoJs.includes("buildGuidesIndexJsonLd"));
+
+const jsonLd = readFileSync("components/seo/JsonLdScript.jsx", "utf8");
+assert.ok(jsonLd.includes("buildOrganizationJsonLd"));
+const pageJsonLd = readFileSync("components/seo/PageJsonLdScript.jsx", "utf8");
+assert.ok(pageJsonLd.includes("graphs"));
 
 const middleware = readFileSync("middleware.js", "utf8");
 assert.ok(middleware.includes("www.") && middleware.includes("briclog.ai"));

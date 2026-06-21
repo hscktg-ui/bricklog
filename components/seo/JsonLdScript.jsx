@@ -1,21 +1,23 @@
 import { buildLandingFaqJsonLd, buildOrganizationJsonLd } from "@/lib/brand/seo";
 import { resolveSiteUrl } from "@/lib/brand/siteMetadata";
 
+/** 루트 layout 전용 — Organization · FAQ · WebSite JSON-LD */
 export default async function JsonLdScript() {
   const siteUrl = await resolveSiteUrl();
-  const orgLd = buildOrganizationJsonLd(siteUrl);
-  const faqLd = buildLandingFaqJsonLd(siteUrl);
+  const payloads = [
+    buildOrganizationJsonLd(siteUrl),
+    buildLandingFaqJsonLd(siteUrl),
+  ];
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
-      />
+      {payloads.map((ld, idx) => (
+        <script
+          key={idx}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+        />
+      ))}
     </>
   );
 }

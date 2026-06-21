@@ -3,30 +3,48 @@ import {
   BRAND_LATEST_UPDATE,
   BRAND_META_DESCRIPTION,
   BRAND_META_TITLE,
+  BRAND_META_TITLE_KO,
   BRICLOG_SLOGAN,
+  LANDING_PRIMARY_CTA,
 } from "@/lib/brand/copy";
+import { GUIDE_PAGES } from "@/lib/seo/guidePages";
+
+const SEO_SEARCH_PHRASES = [
+  "네이버 블로그 글쓰기",
+  "스마트플레이스 공지",
+  "인스타그램 캡션",
+  "매장 홍보",
+  "카페·미용실·학원",
+];
 
 /**
  * 서버 HTML에 항상 포함 — 네이버·구글 크롤러용 (JS 없이 브랜드·서비스 설명)
  */
 export default function SeoDiscoverabilityHero() {
+  const featuredGuides = GUIDE_PAGES.slice(0, 4);
+
   return (
     <section
       id="briclog-seo-intro"
-      className="border-b border-[#E8EBED] bg-[#F7F8FA] px-4 py-10 text-center"
+      className="border-b border-[#E8EBED] bg-[#F7F8FA] px-4 py-8 text-center sm:py-10"
       aria-label="브릭로그 서비스 소개"
     >
       <p className="inline-block rounded-full bg-[#E8F9EF] px-3 py-1 text-[11px] font-semibold text-[#03A94D]">
-        {BRAND_LATEST_UPDATE.label}
+        {BRAND_LATEST_UPDATE.label} · 무료 샘플 · 가입 없이 체험
       </p>
-      <h1 className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[26px]">
-        {BRAND_META_TITLE}
+      <h1 className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
+        {BRAND_META_TITLE_KO} — 매장 {SEO_SEARCH_PHRASES[0]}·{SEO_SEARCH_PHRASES[1]}·
+        {SEO_SEARCH_PHRASES[2]} 한 번에
       </h1>
       <p className="mx-auto mt-2 max-w-xl text-[15px] font-semibold text-[#191F28]">
         {BRAND_LATEST_UPDATE.headline}
       </p>
       <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-relaxed text-[#4E5968]">
         {BRAND_META_DESCRIPTION}
+      </p>
+      <p className="mx-auto mt-2 max-w-2xl text-[13px] text-[#8B95A1]">
+        {SEO_SEARCH_PHRASES.join(" · ")} · {SEO_SEARCH_PHRASES[4]} 등 지역 브랜드 운영에
+        맞춘 초안
       </p>
       <ul className="mx-auto mt-4 max-w-xl space-y-1 text-left text-[13px] text-[#4E5968] sm:text-center sm:list-none">
         {BRAND_LATEST_UPDATE.bullets.map((line) => (
@@ -38,15 +56,50 @@ export default function SeoDiscoverabilityHero() {
           </li>
         ))}
       </ul>
-      <p className="mx-auto mt-3 max-w-xl text-[13px] text-[#8B95A1]">
-        {BRICLOG_SLOGAN}
-      </p>
+      <p className="mx-auto mt-3 max-w-xl text-[13px] text-[#8B95A1]">{BRICLOG_SLOGAN}</p>
+
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/#public-brand-test"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#03C75A] px-5 py-2.5 text-[14px] font-bold text-white shadow-sm transition hover:opacity-95"
+        >
+          {LANDING_PRIMARY_CTA}
+        </Link>
+        <Link
+          href="/guides"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[#E8EBED] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#191F28] hover:border-[#03A94D]/40"
+        >
+          업종별 작성 가이드
+        </Link>
+      </div>
+
       <nav
-        className="mt-5 flex flex-wrap items-center justify-center gap-3 text-[13px] font-medium text-[#03A94D]"
+        className="mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[12px] text-[#4E5968]"
+        aria-label="검색용 가이드 링크"
+      >
+        {featuredGuides.map((page) => (
+          <Link
+            key={page.slug}
+            href={`/guides/${page.slug}`}
+            className="text-[#03A94D] hover:underline"
+          >
+            {page.title.split("—")[0].trim()}
+          </Link>
+        ))}
+      </nav>
+
+      <nav
+        className="mt-4 flex flex-wrap items-center justify-center gap-3 text-[13px] font-medium text-[#03A94D]"
         aria-label="바로가기"
       >
         <Link href="/help" className="hover:underline">
           자주 묻는 질문
+        </Link>
+        <span className="text-[#E8EBED]" aria-hidden>
+          ·
+        </span>
+        <Link href="/guides" className="hover:underline">
+          콘텐츠 가이드
         </Link>
         <span className="text-[#E8EBED]" aria-hidden>
           ·
@@ -60,12 +113,6 @@ export default function SeoDiscoverabilityHero() {
         <Link href="/privacy" className="hover:underline">
           개인정보처리방침
         </Link>
-        <span className="text-[#E8EBED]" aria-hidden>
-          ·
-        </span>
-        <a href="https://briclog.ai" className="hover:underline">
-          briclog.ai
-        </a>
       </nav>
     </section>
   );
