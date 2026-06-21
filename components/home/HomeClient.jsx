@@ -23,6 +23,7 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { isEmailVerified } from "@/lib/auth/emailVerification";
 import LoggedInDebugTools from "@/components/dev/LoggedInDebugTools";
 import PageLoadingState from "@/components/ui/PageLoadingState";
+import Toast from "@/components/Toast";
 import { LOADING } from "@/lib/product/craft";
 import { isFastOnboarding } from "@/lib/config/productFlags";
 
@@ -350,6 +351,7 @@ export default function HomeClient() {
               <AuthForm
                 embedded
                 initialMode={authMode}
+                authContext={loginSource}
                 onClose={() => setAuthMode(null)}
                 onToast={showToast}
                 onAuthSuccess={syncUser}
