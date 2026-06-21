@@ -23,12 +23,19 @@ export async function GET(request) {
   }
 
   const ip = getClientIp(request);
-  const limit = checkRateLimit(`check-phone:${ip}`, {
-    max: 60,
+  const phoneLimit = checkRateLimit(`check-phone:phone:${norm.e164}`, {
+    max: 24,
     windowMs: 60_000,
   });
-  if (!limit.ok) {
-    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
+  if (!phoneLimit.ok) {
+    return rateLimit429(NextResponse, phoneLimit, RATE_LIMIT_MSG);
+  }
+  const ipLimit = checkRateLimit(`check-phone:ip:${ip}`, {
+    max: 120,
+    windowMs: 60_000,
+  });
+  if (!ipLimit.ok) {
+    return rateLimit429(NextResponse, ipLimit, RATE_LIMIT_MSG);
   }
 
   try {

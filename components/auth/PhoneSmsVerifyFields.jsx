@@ -12,11 +12,14 @@ import { AUTH_FIELD_CLASS } from "@/lib/ui/authFieldStyles";
 const fieldClass = AUTH_FIELD_CLASS;
 
 const RESEND_COOLDOWN_SEC = 60;
-const PHONE_CHECK_DEBOUNCE_MS = 900;
+const PHONE_CHECK_DEBOUNCE_MS = 1400;
 
 function rateLimitUserMessage(data, fallback) {
-  if (data?.retryAfterSec) {
-    return `요청이 많습니다. ${data.retryAfterSec}초 후 다시 시도해 주세요.`;
+  if (data?.code === "rate_limit" || data?.retryAfterSec) {
+    return (
+      data?.userMessage ||
+      `요청이 많습니다. ${data.retryAfterSec || 60}초 후 다시 시도해 주세요.`
+    );
   }
   return data?.userMessage || fallback;
 }
@@ -63,6 +66,7 @@ export default function PhoneSmsVerifyFields({
   const lastCheckedE164Ref = useRef("");
   const timerRef = useRef(null);
   const phoneCheckTimer = useRef(null);
+  const verifyLockRef = useRef(false);
   const [phoneTaken, setPhoneTaken] = useState(false);
   const [phoneCheckMsg, setPhoneCheckMsg] = useState("");
   const [phoneChecking, setPhoneChecking] = useState(false);
@@ -237,10 +241,16 @@ export default function PhoneSmsVerifyFields({
   ]);
 
   const verifyOtp = useCallback(async () => {
+    if (verifyLockRef.current || verified) return;
     if (!otpSent && !devHint) {
       onToast?.("먼저 「인증번호 받기」를 눌러 주세요.", "error");
       return;
     }
+    if (code.length !== 6) {
+      onToast?.("인증번호 6자리를 입력해 주세요.", "error");
+      return;
+    }
+    verifyLockRef.current = true;
     setVerifying(true);
     setLastError(null);
     try {
@@ -282,6 +292,7 @@ export default function PhoneSmsVerifyFields({
       setLastError(msg);
       onToast?.(msg, "error");
     } finally {
+      verifyLockRef.current = false;
       setVerifying(false);
     }
   }, [
@@ -289,12 +300,22 @@ export default function PhoneSmsVerifyFields({
     code,
     otpSent,
     devHint,
+    verified,
     onVerified,
     onToast,
     purpose,
     excludeUserId,
     onAvailabilityChange,
   ]);
+
+  useEffect(() => {
+    if (verified || verifying || disabled || code.length !== 6) return undefined;
+    if (!otpSent && !devHint) return undefined;
+    const timer = setTimeout(() => {
+      verifyOtp();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [code, verified, verifying, disabled, otpSent, devHint, verifyOtp]);
 
   const phoneBorder = verified
     ? "border-[#03C75A]"

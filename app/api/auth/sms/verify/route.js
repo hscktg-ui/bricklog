@@ -8,7 +8,8 @@ import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 
 export const runtime = "nodejs";
 
-const RATE_LIMIT_MSG = "요청이 많습니다. 잠시 후 다시 시도해 주세요.";
+const RATE_LIMIT_MSG =
+  "인증번호 확인 시도가 많습니다. 1~2분 후 다시 시도해 주세요.";
 
 export async function POST(request) {
   let body;
@@ -30,9 +31,19 @@ export async function POST(request) {
   }
 
   const ip = getClientIp(request);
-  const limit = checkRateLimit(`sms-verify:${ip}`, { max: 30, windowMs: 60_000 });
-  if (!limit.ok) {
-    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
+  const phoneLimit = checkRateLimit(`sms-verify:phone:${norm.e164}`, {
+    max: 10,
+    windowMs: 5 * 60_000,
+  });
+  if (!phoneLimit.ok) {
+    return rateLimit429(NextResponse, phoneLimit, RATE_LIMIT_MSG);
+  }
+  const ipLimit = checkRateLimit(`sms-verify:ip:${ip}`, {
+    max: 120,
+    windowMs: 60_000,
+  });
+  if (!ipLimit.ok) {
+    return rateLimit429(NextResponse, ipLimit, RATE_LIMIT_MSG);
   }
 
   try {

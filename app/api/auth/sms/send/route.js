@@ -35,9 +35,24 @@ export async function POST(request) {
   }
 
   const ip = getClientIp(request);
-  const limit = checkRateLimit(`sms-send:${ip}`, { max: 15, windowMs: 60_000 });
-  if (!limit.ok) {
-    return rateLimit429(NextResponse, limit, RATE_LIMIT_MSG);
+  const phoneLimit = checkRateLimit(`sms-send:phone:${norm.e164}`, {
+    max: 6,
+    windowMs: 60 * 60_000,
+  });
+  if (!phoneLimit.ok) {
+    return rateLimit429(
+      NextResponse,
+      phoneLimit,
+      "인증번호 요청이 많습니다. 1시간 뒤 다시 시도해 주세요."
+    );
+  }
+  const ipLimit = checkRateLimit(`sms-send:ip:${ip}`, { max: 30, windowMs: 60_000 });
+  if (!ipLimit.ok) {
+    return rateLimit429(
+      NextResponse,
+      ipLimit,
+      "요청이 많습니다. 잠시 후 다시 시도해 주세요."
+    );
   }
 
   try {
