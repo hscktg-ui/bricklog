@@ -41,6 +41,7 @@ import { isObfuscatedDuplicateSignup } from "@/lib/auth/signupResponse";
 import {
   resolveSignupPhoneForSignup,
   shouldRunSignupActivate,
+  isSignupEmailConfirmedOnServer,
 } from "@/lib/auth/signupPhonePayload";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import {
@@ -326,6 +327,7 @@ export default function AuthForm({
         }
 
         let phoneHoldOk = false;
+        let activateOk = false;
         if (signupPhoneVerificationId && contactPhone && data?.user?.id) {
           const holdRes = await fetch("/api/auth/signup/phone-hold", {
             method: "POST",
@@ -371,11 +373,17 @@ export default function AuthForm({
             setMode(MODES.login);
             return;
           }
+          activateOk = true;
         }
 
         const signedIn = await signInAfterSignup(email, password, {
           userId: data?.user?.id ?? null,
           signUpData: data,
+          emailConfirmedOnServer: isSignupEmailConfirmedOnServer({
+            hasSession: Boolean(data.session),
+            phoneHoldOk,
+            activateOk,
+          }),
         });
         if (signedIn?.session) {
           try {
@@ -434,7 +442,15 @@ export default function AuthForm({
         const { code } = classifyAuthError(err?.message);
         recordLoginFailure(code, authContext);
       }
-      onToast?.(mapAuthError(err.message), "error");
+      const mapped = mapAuthError(err.message);
+      if (mode === MODES.signup && /요청이 너무 많/i.test(mapped)) {
+        onToast?.(
+          "가입 시도가 많습니다. 1~2분 뒤 다시 시도해 주세요.",
+          "error"
+        );
+      } else {
+        onToast?.(mapped, "error");
+      }
     } finally {
       setLoading(false);
     }

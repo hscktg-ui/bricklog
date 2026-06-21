@@ -3,6 +3,7 @@
  */
 import {
   ENSURE_EMAIL_ACTIVE_MAX_AGE_MS,
+  POST_SIGNUP_SIGNIN_ATTEMPTS,
   isRecentSignupUser,
   shouldAttemptEmailConfirmAfterAuthError,
   userNeedsEmailConfirm,
@@ -56,6 +57,11 @@ assert(
 assert(
   "confirmed user skips confirm",
   !userNeedsEmailConfirm({ email_confirmed_at: "2026-06-13T11:00:00.000Z" })
+);
+
+assert(
+  "post-signup sign-in retries capped",
+  POST_SIGNUP_SIGNIN_ATTEMPTS === 2
 );
 
 if (failed > 0) {

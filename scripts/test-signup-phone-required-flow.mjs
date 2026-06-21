@@ -5,6 +5,7 @@
 import {
   resolveSignupPhoneForSignup,
   shouldRunSignupActivate,
+  isSignupEmailConfirmedOnServer,
 } from "../lib/auth/signupPhonePayload.js";
 
 let failed = 0;
@@ -82,6 +83,24 @@ assert(
     phoneVerifiedForSignup: false,
     phoneHoldOk: false,
   }) === false
+);
+
+assert(
+  "phone-hold marks email confirmed on server",
+  isSignupEmailConfirmedOnServer({
+    hasSession: false,
+    phoneHoldOk: true,
+    activateOk: false,
+  })
+);
+
+assert(
+  "activate marks email confirmed on server",
+  isSignupEmailConfirmedOnServer({
+    hasSession: false,
+    phoneHoldOk: false,
+    activateOk: true,
+  })
 );
 
 if (failed > 0) {
