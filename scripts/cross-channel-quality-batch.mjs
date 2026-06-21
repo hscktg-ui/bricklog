@@ -24,7 +24,7 @@ import { resolveBlogLengthTier } from "../lib/constants.js";
 import { GENERAL_CATEGORIES, SENSITIVE_CATEGORIES, REGIONS, TRAINING_PERSONAS } from "../lib/quality/training/constants.js";
 import { applyBatchEvolutionFromReport } from "../lib/evolution/batchEvolutionFromReport.js";
 import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
-import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogCharsOk, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
+import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogPassProxy, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
 import { assessFirstDeliveryQuality } from "../lib/product/firstDeliveryQuality.js";
 import { resolveLocalBatchBlogMinChars } from "../lib/content/missionProseGate.js";
 
@@ -93,6 +93,7 @@ function buildScenarios() {
 function runBlog(scenario) {
   const input = {
     ...scenario.input,
+    batchLocalFinish: true,
     personaEngineProfile: resolvePersonaEngineProfile({ input: scenario.input, ...scenario.input }),
   };
   let pack = buildMissionProseFallbackPack(input);
@@ -105,19 +106,21 @@ function runBlog(scenario) {
   const info = scoreInformationYield(full, { input: beliefInput }, "blog");
   const sqv = pack._meta?.sqv?.score ?? pack._meta?.contentQualityValue ?? 0;
   const first = assessFirstDeliveryQuality(pack, input);
+  const tier = resolveBlogLengthTier(input.blogLengthTier);
+  const batchMin = resolveLocalBatchBlogMinChars(input.blogLengthTier, tier);
+  const batchPass = batchBlogPassProxy(
+    { belief: belief.score, info, chars },
+    batchMin
+  );
   const failReasons = [
     ...(pack._meta?.humanWritingDelivery?.reasons || []),
     ...(pack._meta?.publishReadiness?.failReasons || []),
     ...(first.reasons || []),
   ];
-  const tier = resolveBlogLengthTier(input.blogLengthTier);
-  const batchMin = resolveLocalBatchBlogMinChars(input.blogLengthTier, tier);
 
   const ok =
     (pack.sections?.length || 0) >= 3 &&
-    (first.displayReady || belief.score >= BATCH_BELIEF_FLOOR) &&
-    (info.ok || info.score >= BATCH_INFO_FLOOR) &&
-    batchBlogCharsOk(chars, batchMin, belief.score, info.score) &&
+    batchPass &&
     sqv >= 50;
 
   return {
