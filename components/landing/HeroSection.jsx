@@ -9,7 +9,7 @@ import {
 import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
 import {
   VISION_CTA_ACCENT,
-  VISION_CTA_GHOST,
+  VISION_CTA_GHOST_SUBTLE,
   VISION_EYEBROW,
   VISION_HEADLINE,
   VISION_SUB,
@@ -68,12 +68,12 @@ export default function HeroSection({
         </p>
 
         {seasonBadge ? (
-          <p className="mt-4 text-[13px] font-medium text-[var(--vision-muted)] briclog-vision-stagger briclog-vision-stagger-3">
+          <p className="mt-4 hidden text-[13px] font-medium text-[var(--vision-muted)] briclog-vision-stagger briclog-vision-stagger-3 sm:block">
             {seasonBadge}
           </p>
         ) : null}
 
-        <div className="mx-auto mt-10 max-w-md text-left briclog-vision-stagger briclog-vision-stagger-4 md:mt-12">
+        <div className="mx-auto mt-8 max-w-md text-left briclog-vision-stagger briclog-vision-stagger-4 md:mt-12 lg:mt-12">
           <div className="briclog-vision-glass-card rounded-[1.75rem] p-6 shadow-[var(--vision-shadow-panel)]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--vision-muted)]">
               오늘의 한 줄
@@ -87,7 +87,7 @@ export default function HeroSection({
             <ul className="mt-5 flex flex-wrap gap-2" aria-label="지원 채널">
               {CHANNELS.map((label) => (
                 <li key={label}>
-                  <span className="inline-block rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,rgba(255,255,255,0.92))] px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[var(--vision-ink)] lg:border-transparent lg:bg-[var(--vision-ink)] lg:text-white">
+                  <span className="inline-block rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-accent-soft)] px-3.5 py-1.5 text-[11px] font-semibold tracking-wide text-[var(--vision-ink)] lg:border-transparent lg:bg-[var(--vision-chip-active-bg,var(--vision-ink))] lg:text-[var(--vision-chip-active-fg,#fff)]">
                     {label}
                   </span>
                 </li>
@@ -96,9 +96,9 @@ export default function HeroSection({
           </div>
         </div>
 
-        <LandingTrustStrip className="mt-8 briclog-vision-stagger briclog-vision-stagger-5" />
+        <LandingTrustStrip className="mt-8 hidden briclog-vision-stagger briclog-vision-stagger-5 lg:flex" />
 
-        <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center briclog-vision-stagger briclog-vision-stagger-5">
+        <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:justify-center briclog-vision-stagger briclog-vision-stagger-5">
           <button
             id="landing-hero-cta"
             type="button"
@@ -108,7 +108,7 @@ export default function HeroSection({
           >
             <span>{LANDING_PRIMARY_CTA}</span>
           </button>
-          <button type="button" onClick={onSample} className={VISION_CTA_GHOST}>
+          <button type="button" onClick={onSample} className={VISION_CTA_GHOST_SUBTLE}>
             <span>{LANDING_SECONDARY_CTA}</span>
           </button>
         </div>

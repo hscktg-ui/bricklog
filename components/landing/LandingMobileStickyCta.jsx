@@ -1,18 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  LANDING_NAV_SIGNUP_CTA,
-  LANDING_PRIMARY_CTA,
-} from "@/lib/landing/ctaCopy";
-import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
-import {
-  VISION_CTA_ACCENT,
-} from "@/lib/landing/vision2030Styles";
+import { LANDING_PRIMARY_CTA } from "@/lib/landing/ctaCopy";
+import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 
+/** 모바일·태블릿 — 히어로 CTA 이탈 시 단일 액션만 (Vision 2030: 한 가지 선택) */
 export default function LandingMobileStickyCta({
   onStart,
-  onSignup,
   introOpen = false,
   suppressed = false,
 }) {
@@ -44,35 +38,14 @@ export default function LandingMobileStickyCta({
       aria-label="빠른 시작"
     >
       <div className="mx-auto max-w-lg px-4 py-3">
-        <LandingTrustStrip className="mb-2" />
-        <div className="flex items-center gap-2">
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[12px] font-semibold text-[var(--vision-ink)]">
-              한 주제, 채널별 초안
-            </p>
-            <p className="mt-0.5 text-[11px] text-[var(--vision-muted)]">
-              이야기 · 플레이스 · 인스타
-            </p>
-          </div>
-          <button
-            type="button"
-            data-briclog-cta="start"
-            onClick={onStart}
-            className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto shrink-0 !px-4 !py-2.5 !text-[12px]`}
-          >
-            {LANDING_PRIMARY_CTA}
-          </button>
-        </div>
-        {onSignup ? (
-          <button
-            type="button"
-            data-briclog-cta="signup-mobile-sticky"
-            onClick={onSignup}
-            className="mt-2 w-full text-center text-[12px] font-semibold text-[var(--vision-muted)] underline-offset-2 hover:text-[var(--vision-ink)] hover:underline"
-          >
-            {LANDING_NAV_SIGNUP_CTA}
-          </button>
-        ) : null}
+        <button
+          type="button"
+          data-briclog-cta="start"
+          onClick={onStart}
+          className={`${VISION_CTA_ACCENT} w-full !min-h-[48px] !text-[14px]`}
+        >
+          {LANDING_PRIMARY_CTA}
+        </button>
       </div>
     </div>
   );

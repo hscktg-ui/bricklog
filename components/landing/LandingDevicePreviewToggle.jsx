@@ -22,6 +22,9 @@ import { nextPreviewDevice } from "@/lib/workspace/devicePreviewCycle";
  */
 export default function LandingDevicePreviewToggle({ className = "" }) {
   const { preview, native, simulating, cyclePreview } = useLandingPreview();
+
+  if (native === "mobile") return null;
+
   const next = nextPreviewDevice(preview);
   const bottom = assistFabBottom("landing");
 

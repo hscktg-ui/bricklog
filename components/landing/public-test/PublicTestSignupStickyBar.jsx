@@ -4,14 +4,9 @@ import {
   PUBLIC_TEST_STICKY_SIGNUP_CTA,
   PUBLIC_TEST_STICKY_SIGNUP_HEADLINE,
 } from "@/lib/brand/copy";
-import {
-  VISION_CTA_ACCENT,
-  VISION_EYEBROW,
-} from "@/lib/landing/vision2030Styles";
+import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 
-/**
- * 샘플 결과 열람 중 하단 고정 가입 CTA — Vision 2030 glass bar
- */
+/** 샘플 결과 열람 중 하단 고정 가입 CTA — 모바일 단일 액션 */
 export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
   if (!onSignup) return null;
   const label = brandName?.trim()
@@ -24,21 +19,18 @@ export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
       role="region"
       aria-label="작업실 만들기"
     >
-      <div className="pointer-events-auto mx-auto flex max-w-lg items-center gap-3 rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-glass-strong)] p-3 shadow-[var(--vision-shadow-panel)] backdrop-blur-xl sm:max-w-2xl sm:gap-4 sm:p-4">
-        <div className="min-w-0 flex-1">
-          <p className={VISION_EYEBROW}>브랜드 작업실</p>
-          <p className="mt-0.5 line-clamp-2 text-[13px] font-semibold leading-snug tracking-tight text-[var(--vision-ink)] sm:text-[14px]">
-            {label}
-          </p>
-        </div>
+      <div className="pointer-events-auto mx-auto max-w-lg rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-glass-strong)] p-3 shadow-[var(--vision-shadow-panel)] backdrop-blur-xl">
         <button
           type="button"
           data-briclog-cta="signup-sticky"
           onClick={onSignup}
-          className={`${VISION_CTA_ACCENT} !min-h-[44px] !w-auto shrink-0 !px-5 !py-2.5 !text-[13px] sm:!min-h-[48px] sm:!px-6`}
+          className={`${VISION_CTA_ACCENT} w-full !min-h-[48px] !text-[14px]`}
         >
           <span>{PUBLIC_TEST_STICKY_SIGNUP_CTA}</span>
         </button>
+        <p className="mt-2 line-clamp-1 text-center text-[11px] font-medium text-[var(--vision-muted)]">
+          {label}
+        </p>
       </div>
     </div>
   );

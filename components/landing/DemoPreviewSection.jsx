@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CUSTOMER_SAMPLE_BADGE } from "@/lib/copy/customerFacing";
 import { LANDING_SAMPLE } from "@/lib/landing/sampleContent";
 import {
@@ -12,12 +12,15 @@ import DevicePreviewToggle, {
   DevicePreviewFrame,
   useDevicePreview,
 } from "@/components/landing/DevicePreviewToggle";
+import { useViewport } from "@/hooks/useViewport";
 import { LANDING_PRIMARY_CTA } from "@/lib/landing/ctaCopy";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
   VISION_SECTION,
   VISION_SUB,
+  VISION_TAB_ACTIVE,
+  VISION_TAB_IDLE,
 } from "@/lib/landing/vision2030Styles";
 
 const TABS = [
@@ -30,6 +33,12 @@ export default function DemoPreviewSection({ sample, onTest }) {
   const s = sample ?? LANDING_SAMPLE;
   const [tab, setTab] = useState("blog");
   const { device, setDevice } = useDevicePreview("mobile");
+  const { isMobile, isTablet } = useViewport();
+  const compactPreview = isMobile || isTablet;
+
+  useEffect(() => {
+    if (compactPreview && device !== "mobile") setDevice("mobile");
+  }, [compactPreview, device, setDevice]);
 
   return (
     <section
@@ -45,8 +54,8 @@ export default function DemoPreviewSection({ sample, onTest }) {
           실제 작업실과 같은 흐름입니다. 미리보기만으로도 감이 옵니다.
         </p>
 
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex-1 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-4 py-3.5 text-[14px] text-[var(--vision-muted)] shadow-[var(--vision-shadow-soft)]">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex-1 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] px-4 py-3.5 text-[14px] text-[var(--vision-muted)] shadow-[var(--vision-shadow-soft)]">
             <span className="font-semibold text-[var(--vision-ink)]">{s.brand.name}</span>
             {s.brand.region ? (
               <>
@@ -57,22 +66,20 @@ export default function DemoPreviewSection({ sample, onTest }) {
             <span className="text-[var(--vision-muted)]"> · </span>
             {s.topic}
           </p>
-          <span className="shrink-0 self-start rounded-full bg-[var(--vision-accent)] px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wide text-white lg:bg-[var(--vision-accent-deep,#03a94d)]">
+          <span className="hidden shrink-0 self-start rounded-full bg-[var(--vision-accent-deep)] px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wide text-white lg:inline-flex">
             {CUSTOMER_SAMPLE_BADGE}
           </span>
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="inline-flex rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-1 shadow-[var(--vision-shadow-soft)]">
+        <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="inline-flex w-full rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] p-1 shadow-[var(--vision-shadow-soft)] sm:w-auto">
             {TABS.map((t) => (
               <button
                 key={t.id}
                 type="button"
                 onClick={() => setTab(t.id)}
-                className={`min-h-[40px] rounded-full px-5 text-[13px] font-semibold transition ${
-                  tab === t.id
-                    ? "bg-[var(--vision-ink)] text-white shadow-sm"
-                    : "text-[var(--vision-muted)] hover:text-[var(--vision-ink)]"
+                className={`min-h-[44px] flex-1 rounded-full px-4 text-[13px] font-semibold transition sm:flex-none sm:px-5 ${
+                  tab === t.id ? VISION_TAB_ACTIVE : VISION_TAB_IDLE
                 }`}
               >
                 {t.label}
@@ -84,16 +91,23 @@ export default function DemoPreviewSection({ sample, onTest }) {
             onChange={setDevice}
             showLabels
             compact
-            className="w-full sm:w-auto"
+            desktopOnly
+            className="w-full lg:w-auto"
           />
         </div>
 
-        <DevicePreviewFrame device={device} className="mt-6">
-          <span className="rounded-full bg-[var(--vision-paper)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
-            {tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"}
-          </span>
+        <DevicePreviewFrame
+          device={device}
+          hideChrome={compactPreview}
+          className="mt-6"
+        >
+          {!compactPreview ? (
+            <span className="rounded-full bg-[var(--vision-paper)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
+              {tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"}
+            </span>
+          ) : null}
           <div
-            className="mt-4 max-h-[min(68vh,560px)] overflow-y-auto scroll-smooth pr-1"
+            className={`${compactPreview ? "" : "mt-4"} max-h-[min(68vh,560px)] overflow-y-auto scroll-smooth pr-1`}
             suppressHydrationWarning
           >
             {tab === "blog" && <SampleBlogPreview blog={s.blog} />}
@@ -111,7 +125,7 @@ export default function DemoPreviewSection({ sample, onTest }) {
             <span>{LANDING_PRIMARY_CTA}</span>
           </button>
         ) : null}
-        <p className="mt-4 text-center text-[13px] text-[var(--vision-muted)]">
+        <p className="mt-4 hidden text-center text-[13px] text-[var(--vision-muted)] sm:block">
           붙여넣기 대신 운영 계획에서 이어갑니다
         </p>
       </div>

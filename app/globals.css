@@ -667,6 +667,10 @@ button:enabled,
   --vision-btn-surface-hover: rgba(3, 199, 90, 0.16);
   --vision-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
   --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+  --vision-tab-active-bg: var(--vision-ink);
+  --vision-tab-active-fg: #ffffff;
+  --vision-chip-active-bg: var(--vision-ink);
+  --vision-chip-active-fg: #ffffff;
   --vision-hero-mesh:
     radial-gradient(120% 80% at 50% -20%, rgba(3, 169, 77, 0.16), transparent 55%),
     radial-gradient(70% 50% at 100% 10%, var(--briclog-brick-soft), transparent 50%),
@@ -692,6 +696,10 @@ button:enabled,
     --vision-shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.42);
     --vision-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.52);
     --vision-accent-soft: rgba(3, 199, 90, 0.14);
+    --vision-tab-active-bg: var(--vision-accent-deep);
+    --vision-tab-active-fg: #ffffff;
+    --vision-chip-active-bg: var(--vision-accent-deep);
+    --vision-chip-active-fg: #ffffff;
     --vision-hero-mesh:
       radial-gradient(120% 80% at 50% -15%, rgba(3, 199, 90, 0.18), transparent 55%),
       radial-gradient(80% 60% at 100% 0%, rgba(3, 169, 77, 0.1), transparent 50%),

@@ -359,7 +359,7 @@ export default function HomeClient() {
         {!authMode && (
           <>
             <LandingFloatingDeviceBar />
-            <LandingDevicePreviewToggle className="hidden sm:flex" />
+            <LandingDevicePreviewToggle className="hidden lg:flex" />
             <BriclogAssistant layout="landing" />
           </>
         )}

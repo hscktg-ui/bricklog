@@ -40,7 +40,6 @@ import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta"
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
 import {
   VISION_CTA_ACCENT,
-  VISION_CTA_GHOST,
   VISION_EYEBROW,
   VISION_NAV,
   VISION_NAV_INNER,
@@ -49,7 +48,7 @@ import {
 } from "@/lib/landing/vision2030Styles";
 
 const NAV_LINKS = [
-  { id: "public-brand-test", label: "무료 테스트", show: "inline-flex md:inline-flex" },
+  { id: "public-brand-test", label: "무료 테스트", show: "hidden sm:inline-flex" },
   { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
   { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
   { id: "pricing", label: "요금", show: "hidden lg:inline-flex" },
@@ -150,23 +149,15 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               onClick={() => onAuthOpen("login")}
-              className="rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] sm:px-3 sm:text-[13px]"
+              className="hidden rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] sm:inline-flex sm:px-3 sm:text-[13px]"
             >
               로그인
             </button>
             <button
               type="button"
-              data-briclog-cta="signup-nav"
-              onClick={() => openSignup("landing_nav")}
-              className={`${VISION_CTA_GHOST} md:hidden !min-h-[36px] !w-auto !px-3 !py-2 !text-[11px] sm:!px-3.5 sm:!text-[13px]`}
-            >
-              <span>{LANDING_NAV_SIGNUP_CTA}</span>
-            </button>
-            <button
-              type="button"
               data-briclog-cta="start"
               onClick={withLandingCta(scrollToPublicTest)}
-              className="hidden rounded-full bg-[var(--vision-accent)] px-4 py-2 text-[12px] font-semibold text-white shadow-[0_8px_24px_rgba(3,199,90,0.28)] md:inline-flex md:text-[13px]"
+              className={`${VISION_CTA_ACCENT} !min-h-[36px] !w-auto !px-3.5 !py-2 !text-[12px] sm:!min-h-[40px] sm:!px-4 sm:!text-[13px] lg:!min-h-[44px]`}
             >
               <span>{LANDING_PRIMARY_CTA}</span>
             </button>
@@ -192,8 +183,12 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           />
           <WhyBriclog />
           <ContentPlanSection />
-          <BriclogNextSection />
-          <LiveStatsBanner introOpen={introOpen} />
+          <div className="hidden lg:block">
+            <BriclogNextSection />
+          </div>
+          <div className="hidden md:block">
+            <LiveStatsBanner introOpen={introOpen} />
+          </div>
           <PublicBrandTestSection
             onSignup={(mode) => onAuthOpen(mode || "signup")}
             onPreviewActiveChange={setPublicTestPreviewActive}
@@ -203,7 +198,9 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onTest={withLandingCta(scrollToPublicTest)}
           />
           <DemoFlow sample={sample} />
-          <CoreEngineSection />
+          <div className="hidden lg:block">
+            <CoreEngineSection />
+          </div>
           <LandingFaqSection />
           <PricingSection onStart={handleStart} />
 
@@ -220,7 +217,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               {LANDING_CTA_SUB}
             </p>
             {LANDING_CTA_PHILOSOPHY ? (
-              <p className="mx-auto mt-4 max-w-xl text-[14px] leading-relaxed text-white/40">
+              <p className="mx-auto mt-4 hidden max-w-xl text-[14px] leading-relaxed text-white/40 md:block">
                 {LANDING_CTA_PHILOSOPHY}
               </p>
             ) : null}
@@ -236,7 +233,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               type="button"
               data-briclog-cta="signup-footer"
               onClick={() => openSignup("landing_footer")}
-              className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-8 text-[14px] font-semibold text-white/85 transition hover:bg-white/10 active:scale-[0.99]"
+              className="mt-5 hidden min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-8 text-[14px] font-semibold text-white/85 transition hover:bg-white/10 active:scale-[0.99] sm:inline-flex"
             >
               {LANDING_NAV_SIGNUP_CTA}
             </button>
@@ -249,7 +246,6 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
       <LandingMobileStickyCta
         onStart={withLandingCta(scrollToPublicTest)}
-        onSignup={() => openSignup("landing_mobile_sticky")}
         introOpen={introOpen}
         suppressed={publicTestPreviewActive}
       />

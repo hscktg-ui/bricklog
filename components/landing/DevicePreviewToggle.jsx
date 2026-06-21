@@ -14,6 +14,7 @@ import {
   nextPreviewDevice,
 } from "@/lib/workspace/devicePreviewCycle";
 import {
+  VISION_DESKTOP_ONLY,
   VISION_DEVICE_TAB_ACTIVE,
   VISION_DEVICE_TAB_IDLE,
   VISION_PANEL,
@@ -52,6 +53,8 @@ export default function DevicePreviewToggle({
   /** 탭에 폰·패드·PC + 이모지 */
   showLabels = false,
   compact = false,
+  /** lg 미만에서 숨김 — 실제 모바일·태블릿 고객 화면 */
+  desktopOnly = false,
 }) {
   if (variant === "cycle") {
     const next = nextPreviewDevice(device);
@@ -60,7 +63,7 @@ export default function DevicePreviewToggle({
         type="button"
         onClick={() => onChange(next)}
         aria-label={deviceCycleAriaLabel(device, next)}
-        className={`inline-flex items-center gap-2 rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-panel-bg,#fff)]/80 px-4 py-2.5 text-[12px] font-semibold text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)] backdrop-blur-sm transition hover:bg-[var(--vision-panel-bg,#fff)] sm:text-[13px] ${className}`}
+        className={`${desktopOnly ? VISION_DESKTOP_ONLY : "inline-flex"} items-center gap-2 rounded-full border border-[var(--vision-line-strong)] bg-[var(--vision-btn-ghost-bg)] px-4 py-2.5 text-[12px] font-semibold text-[var(--vision-ink)] shadow-[var(--vision-shadow-soft)] backdrop-blur-sm transition hover:bg-[var(--vision-btn-surface-hover)] sm:text-[13px] ${className}`}
       >
         <span className="text-[15px] leading-none" aria-hidden>
           {DEVICE_EMOJI[device]}
@@ -75,7 +78,7 @@ export default function DevicePreviewToggle({
 
   return (
     <div
-      className={`inline-flex rounded-full border border-[var(--vision-line)] bg-[var(--vision-paper)] p-1 shadow-[inset_0_1px_2px_rgba(5,5,6,0.04)] ${compact ? "w-full justify-between gap-0.5" : ""} ${className}`}
+      className={`${desktopOnly ? VISION_DESKTOP_ONLY : "inline-flex"} rounded-full border border-[var(--vision-line)] bg-[var(--vision-paper)] p-1 shadow-[inset_0_1px_2px_rgba(5,5,6,0.04)] ${compact ? "w-full justify-between gap-0.5" : ""} ${className}`}
       role="tablist"
       aria-label="화면 크기"
     >
@@ -128,20 +131,24 @@ export default function DevicePreviewToggle({
   );
 }
 
-export function DevicePreviewFrame({ device, children, className = "" }) {
+export function DevicePreviewFrame({ device, children, className = "", hideChrome = false }) {
   const maxWidth = DEVICE_PREVIEW_WIDTHS[device];
 
   return (
     <div
       className={`mx-auto w-full transition-[max-width] duration-300 ease-out ${className}`}
-      style={{ maxWidth }}
+      style={hideChrome ? undefined : { maxWidth }}
     >
-      <div className={`overflow-hidden ${VISION_PANEL}`}>
-        <LandingPanelHeader
-          title={`${DEVICE_EMOJI[device]} ${DEVICE_TAB_SHORT[device]} · 브릭로그`}
-          className="bg-[var(--vision-panel-bg,#fff)]"
-        />
-        <div className="bg-[var(--vision-panel-bg,#fff)] p-4 sm:p-5">{children}</div>
+      <div className={`overflow-hidden ${hideChrome ? "" : VISION_PANEL}`}>
+        {!hideChrome ? (
+          <LandingPanelHeader
+            title={`${DEVICE_EMOJI[device]} ${DEVICE_TAB_SHORT[device]} · 브릭로그`}
+            className="bg-[var(--vision-panel-bg)]"
+          />
+        ) : null}
+        <div className={`bg-[var(--vision-panel-bg)] ${hideChrome ? "p-0" : "p-4 sm:p-5"}`}>
+          {children}
+        </div>
       </div>
     </div>
   );

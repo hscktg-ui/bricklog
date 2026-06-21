@@ -303,7 +303,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
           <p className="mt-5 text-[17px] leading-relaxed text-[var(--vision-muted)]">
             {PUBLIC_TEST_HERO.sub}
           </p>
-          <p className="mt-6 text-[14px] leading-relaxed text-[var(--vision-muted)]/80">
+          <p className="mt-6 hidden text-[14px] leading-relaxed text-[var(--vision-muted)]/80 md:block">
             {PUBLIC_TEST_HERO.signupPhilosophy}
           </p>
           {quota.remaining > 0 ? (
@@ -331,8 +331,8 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
             </div>
           ) : null}
           {sampleReady ? (
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <p className="text-[11px] text-[var(--vision-muted)]">
+            <div className="mb-3 flex items-center justify-end gap-2">
+              <p className="hidden flex-1 text-[11px] text-[var(--vision-muted)] sm:block">
                 {prefillSource === "cache"
                   ? "이 브라우저에 저장된 마지막 입력을 불러왔어요"
                   : "접속할 때마다 다른 가상 브랜드 예시가 보입니다"}

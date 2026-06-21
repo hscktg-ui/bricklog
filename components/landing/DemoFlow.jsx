@@ -30,7 +30,7 @@ export default function DemoFlow({ sample }) {
       <div className="mx-auto max-w-4xl">
         <p className={`text-center ${VISION_EYEBROW}`}>쓰는 순서</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,4vw,2rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
-          쓰는 순서
+          브랜드부터 채널까지
         </h2>
         <p className={`mt-3 text-center ${VISION_SUB}`}>
           브랜드 → 월·주 계획 → 조사 후 글 → 세 채널 → 다음 주 이어가기
