@@ -37,12 +37,7 @@ import LandingWidthShell from "@/components/landing/LandingWidthShell";
 import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewContext";
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
 import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
-import { isObfuscatedDuplicateSignup } from "@/lib/auth/signupResponse";
-import {
-  resolveSignupPhoneForSignup,
-  shouldRunSignupActivate,
-  isSignupEmailConfirmedOnServer,
-} from "@/lib/auth/signupPhonePayload";
+import { resolveSignupPhoneForSignup } from "@/lib/auth/signupPhonePayload";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import {
   getSignupAttributionSource,
@@ -292,127 +287,90 @@ export default function AuthForm({
           return;
         }
 
-        const { contactPhone, signupPhoneVerificationId, phoneVerifiedForSignup } =
+        const { contactPhone, signupPhoneVerificationId } =
           resolveSignupPhoneForSignup({
             phoneSmsVerified,
             phoneVerificationId,
             signupPhone,
           });
 
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: {
-            emailRedirectTo: callbackUrl,
-            data: {
-              terms_agreed: true,
-              privacy_agreed: true,
-              marketing_agreed: marketingAgreed,
-              terms_version: TERMS_VERSION,
-              privacy_version: PRIVACY_VERSION,
-              contact_phone: contactPhone,
-              phone_verification_id: signupPhoneVerificationId,
-            },
-          },
+        const regRes = await fetch("/api/auth/signup/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email.trim(),
+            password,
+            marketingAgreed,
+            phone: contactPhone,
+            phoneVerificationId: signupPhoneVerificationId,
+          }),
         });
-        if (error) throw error;
-
-        if (isObfuscatedDuplicateSignup(data?.user)) {
+        const regData = await regRes.json().catch(() => ({}));
+        if (!regRes.ok || !regData.ok) {
           onToast?.(
-            "이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해 주세요.",
+            regData.userMessage ||
+              "가입에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+            "error"
+          );
+          if (regData.code === "EMAIL_TAKEN") setMode(MODES.login);
+          return;
+        }
+
+        let sessionReady = false;
+        if (regData.session?.access_token && regData.session?.refresh_token) {
+          const { error: sessionErr } = await supabase.auth.setSession({
+            access_token: regData.session.access_token,
+            refresh_token: regData.session.refresh_token,
+          });
+          sessionReady = !sessionErr;
+          if (sessionReady) {
+            for (let i = 0; i < 4; i += 1) {
+              const { data: sessionData } = await supabase.auth.getSession();
+              if (sessionData?.session) break;
+              await new Promise((r) => setTimeout(r, 120));
+            }
+          }
+        }
+
+        if (!sessionReady && regData.needsLogin) {
+          onToast?.(
+            regData.userMessage ||
+              "가입되었습니다. 로그인 화면에서 같은 이메일·비밀번호로 로그인해 주세요.",
+            "success"
+          );
+          setMode(MODES.login);
+          return;
+        }
+
+        if (!sessionReady) {
+          onToast?.(
+            "가입은 완료됐지만 자동 로그인에 실패했습니다. 로그인 화면에서 다시 시도해 주세요.",
             "error"
           );
           setMode(MODES.login);
           return;
         }
 
-        let phoneHoldOk = false;
-        let activateOk = false;
-        if (signupPhoneVerificationId && contactPhone && data?.user?.id) {
-          const holdRes = await fetch("/api/auth/signup/phone-hold", {
+        try {
+          await fetchWithAuth("/api/auth/terms", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              userId: data.user.id,
-              phoneVerificationId: signupPhoneVerificationId,
-              phone: contactPhone,
+              termsAgreed: true,
+              privacyAgreed: true,
+              marketingAgreed,
             }),
           });
-          const holdData = await holdRes.json().catch(() => ({}));
-          if (!holdRes.ok || !holdData.ok) {
-            onToast?.(
-              holdData.userMessage ||
-                "이미 가입에 사용된 휴대폰 번호입니다. 기존 계정으로 로그인해 주세요.",
-              "error"
-            );
-            setMode(MODES.login);
-            return;
-          }
-          phoneHoldOk = true;
+          await fetchWithAuth("/api/auth/profile", { method: "POST" });
+        } catch {
+          /* 프로필 테이블 미적용 시에도 가입은 유지 */
         }
-
-        if (
-          shouldRunSignupActivate({
-            hasSession: Boolean(data.session),
-            phoneVerifiedForSignup,
-            phoneHoldOk,
-          }) &&
-          data?.user?.id
-        ) {
-          const actRes = await fetch("/api/auth/signup/activate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: data.user.id }),
-          });
-          const actData = await actRes.json().catch(() => ({}));
-          if (!actRes.ok || !actData.ok) {
-            onToast?.(
-              actData.userMessage || "가입 활성화에 실패했습니다. 로그인을 시도해 주세요.",
-              "error"
-            );
-            setMode(MODES.login);
-            return;
-          }
-          activateOk = true;
-        }
-
-        const signedIn = await signInAfterSignup(email, password, {
-          userId: data?.user?.id ?? null,
-          signUpData: data,
-          emailConfirmedOnServer: isSignupEmailConfirmedOnServer({
-            hasSession: Boolean(data.session),
-            phoneHoldOk,
-            activateOk,
-          }),
-        });
-        if (signedIn?.session) {
-          try {
-            await fetchWithAuth("/api/auth/terms", {
-              method: "POST",
-              body: JSON.stringify({
-                termsAgreed: true,
-                privacyAgreed: true,
-                marketingAgreed,
-              }),
-            });
-            await fetchWithAuth("/api/auth/profile", { method: "POST" });
-          } catch {
-            /* 프로필 테이블 미적용 시에도 가입은 유지 */
-          }
-          persistSavedEmail(email, saveEmail);
-          recordSignupFunnelStep("signup_success", getSignupAttributionSource());
-          onToast?.(
-            "가입되었습니다. 닉네임·호칭은 로그인 후 안내에서 입력할 수 있어요.",
-            "success"
-          );
-          onAuthSuccess?.();
-        } else {
-          onToast?.(
-            "가입은 완료됐지만 자동 로그인에 실패했습니다. 로그인 화면에서 다시 시도해 주세요.",
-            "error"
-          );
-          setMode(MODES.login);
-        }
+        persistSavedEmail(email, saveEmail);
+        recordSignupFunnelStep("signup_success", getSignupAttributionSource());
+        onToast?.(
+          "가입되었습니다. 닉네임·호칭은 로그인 후 안내에서 입력할 수 있어요.",
+          "success"
+        );
+        onAuthSuccess?.();
         return;
       }
 
