@@ -73,8 +73,9 @@ export async function POST(request) {
       );
     }
 
-    await applyPhoneVerificationToProfile(userId, verificationId, phone);
+    // 로그인 가능 상태를 먼저 확보 — 프로필 연결 실패해도 가입 직후 로그인은 되게
     await confirmSignupEmail(service, userId);
+    await applyPhoneVerificationToProfile(userId, verificationId, phone);
 
     return NextResponse.json({
       ok: true,

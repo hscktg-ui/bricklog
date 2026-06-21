@@ -46,6 +46,7 @@
     "test:brand-memory-journey": "node --import ./scripts/register-alias.mjs scripts/simulate-brand-memory-four-journey.mjs",
     "test:click-blockers": "node scripts/diagnose-click-blockers.mjs",
     "test:signup-phone-required-flow": "node scripts/test-signup-phone-required-flow.mjs",
+    "test:post-signup-session": "node scripts/test-post-signup-session.mjs",
     "test:onboarding-friction": "node --import ./scripts/register-alias.mjs scripts/test-onboarding-friction.mjs",
     "test:human-prose-delivery": "node --import ./scripts/register-alias.mjs scripts/test-human-prose-delivery.mjs",
     "test:visit-review-unified-prose": "node --import ./scripts/register-alias.mjs scripts/test-visit-review-unified-prose.mjs",

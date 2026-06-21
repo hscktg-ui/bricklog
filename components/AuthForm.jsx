@@ -50,6 +50,7 @@ import {
   recordSignupFunnelStep,
 } from "@/lib/analytics/signupIntent";
 import { classifyAuthError } from "@/lib/auth/authErrorCode";
+import { signInAfterSignup } from "@/lib/auth/postSignupSession";
 
 
 const MODES = {
@@ -59,37 +60,6 @@ const MODES = {
 };
 
 const EMAIL_CHECK_DEBOUNCE_MS = 800;
-
-async function ensureEmailActive(email, password) {
-  const res = await fetch("/api/auth/ensure-email-active", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: email.trim(), password }),
-  });
-  if (!res.ok) return false;
-  const data = await res.json().catch(() => ({}));
-  return Boolean(data.ok);
-}
-
-async function signInAfterSignup(email, password) {
-  let { data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim(),
-    password,
-  });
-  if (data?.session) return data;
-
-  const activated = await ensureEmailActive(email, password);
-  if (activated) {
-    ({ data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    }));
-    if (data?.session) return data;
-  }
-
-  if (error) throw error;
-  throw new Error("로그인에 실패했습니다.");
-}
 
 export default function AuthForm({
   onToast,
@@ -403,7 +373,10 @@ export default function AuthForm({
           }
         }
 
-        const signedIn = await signInAfterSignup(email, password);
+        const signedIn = await signInAfterSignup(email, password, {
+          userId: data?.user?.id ?? null,
+          signUpData: data,
+        });
         if (signedIn?.session) {
           try {
             await fetchWithAuth("/api/auth/terms", {
