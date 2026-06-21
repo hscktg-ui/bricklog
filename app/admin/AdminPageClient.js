@@ -15,21 +15,31 @@ import AdminProductOverviewPanel from "@/components/admin/AdminProductOverviewPa
 import AdminQualityOpsPanel from "@/components/admin/AdminQualityOpsPanel";
 import AdminCommandCenter from "@/components/admin/AdminCommandCenter";
 import AdminSectionNav from "@/components/admin/AdminSectionNav";
+import AdminSignupFunnelPanel from "@/components/admin/AdminSignupFunnelPanel";
 import { buildAdminCommandCenter } from "@/lib/admin/buildAdminCommandCenter";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
+import {
+  ADMIN_EYEBROW,
+  ADMIN_GATE,
+  ADMIN_GATE_PANEL,
+  ADMIN_GHOST_BTN,
+  ADMIN_HEADLINE,
+  ADMIN_INNER,
+  ADMIN_LINK,
+  ADMIN_PAGE,
+  ADMIN_SUB,
+} from "@/lib/admin/adminVision2030Styles";
 
-function AdminGateShell({ title, children }) {
+function AdminGateShell({ title, subtitle, children, footer }) {
   return (
-    <div className="min-h-screen bg-[#F7F8FA] p-6 text-[#191F28]">
-      <div className="mx-auto max-w-lg rounded-2xl border border-[#E8EBED] bg-white p-8 shadow-sm">
-        <h1 className="text-[20px] font-bold">{title}</h1>
-        <div className="mt-4 space-y-3 text-[14px] leading-relaxed text-[#4E5968]">{children}</div>
-        <p className="mt-6">
-          <Link href="/" className="text-[13px] text-[#03A94D] hover:underline">
-            작업실(메인)으로 돌아가기
-          </Link>
-        </p>
+    <div className={ADMIN_GATE}>
+      <div className={ADMIN_GATE_PANEL}>
+        <p className={ADMIN_EYEBROW}>BRICLOG · Admin</p>
+        <h1 className={`${ADMIN_HEADLINE} mt-2`}>{title}</h1>
+        {subtitle ? <p className={`${ADMIN_SUB} mt-3`}>{subtitle}</p> : null}
+        <div className="mt-6">{children}</div>
+        {footer ? <div className="mt-6 border-t border-[var(--admin-line)] pt-5">{footer}</div> : null}
       </div>
     </div>
   );
@@ -41,7 +51,6 @@ export default function AdminPageClient() {
   const [loading, setLoading] = useState(true);
   const [adminApiOk, setAdminApiOk] = useState(false);
   const [accessChecking, setAccessChecking] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [stats, setStats] = useState(null);
   const [errors, setErrors] = useState([]);
   const [warnings, setWarnings] = useState([]);
@@ -56,6 +65,7 @@ export default function AdminPageClient() {
   const [qualityOpsLoading, setQualityOpsLoading] = useState(false);
   const [adminSection, setAdminSection] = useState("now");
   const [showDetailMetrics, setShowDetailMetrics] = useState(false);
+  const [signupFunnel, setSignupFunnel] = useState(null);
   const pollRef = useRef(null);
 
   const showToast = useCallback((message, type = "info") => {
@@ -210,6 +220,15 @@ export default function AdminPageClient() {
     }
   }, []);
 
+  const loadSignupFunnel = useCallback(async () => {
+    try {
+      const data = await fetchWithAuth("/api/admin/live");
+      setSignupFunnel(data.funnel || null);
+    } catch {
+      setSignupFunnel(null);
+    }
+  }, []);
+
   const loadInsights = useCallback(async (refresh = false) => {
     setInsightsLoading(true);
     try {
@@ -262,6 +281,7 @@ export default function AdminPageClient() {
     loadInsights();
     loadProductOverview();
     loadQualityOps();
+    loadSignupFunnel();
   }, [
     user,
     hasAdminAccess,
@@ -271,6 +291,7 @@ export default function AdminPageClient() {
     loadInsights,
     loadProductOverview,
     loadQualityOps,
+    loadSignupFunnel,
   ]);
 
   useEffect(() => {
@@ -295,16 +316,23 @@ export default function AdminPageClient() {
 
   if (loading) {
     return (
-      <AdminGateShell title="BRICLOG 관리자">
-        <p className="text-[#8B95A1]">접근 권한을 확인하는 중입니다…</p>
+      <AdminGateShell title="관리자" subtitle="접근 권한을 확인하는 중입니다…">
+        <p className={ADMIN_SUB}>잠시만 기다려 주세요.</p>
       </AdminGateShell>
     );
   }
 
   if (!isSupabaseConfigured) {
     return (
-      <AdminGateShell title="설정 필요">
-        <p>Supabase 연동이 되어 있지 않아 관리자 페이지를 열 수 없습니다.</p>
+      <AdminGateShell
+        title="설정 필요"
+        footer={
+          <Link href="/" className={ADMIN_LINK}>
+            작업실로 돌아가기
+          </Link>
+        }
+      >
+        <p className={ADMIN_SUB}>Supabase 연동이 되어 있지 않아 관리자 페이지를 열 수 없습니다.</p>
       </AdminGateShell>
     );
   }
@@ -312,38 +340,26 @@ export default function AdminPageClient() {
   if (!user) {
     return (
       <>
-        <AdminGateShell title="관리자 로그인">
-          <p>운영자 계정으로 로그인하면 이 페이지에서 바로 관리자 화면을 볼 수 있습니다.</p>
-          <p className="text-[13px] text-[#8B95A1]">
-            메인으로 돌아가지 않습니다. 여기서 로그인해 주세요.
-          </p>
-          {!showLogin ? (
-            <button
-              type="button"
-              onClick={() => setShowLogin(true)}
-              className="mt-2 w-full rounded-xl bg-[#03C75A] py-3 text-[14px] font-bold text-white"
-            >
-              로그인하기
-            </button>
-          ) : null}
+        <AdminGateShell
+          title="관리자 로그인"
+          subtitle="운영자 계정으로 로그인하면 가입·품질·시스템 현황을 볼 수 있습니다."
+          footer={
+            <Link href="/" className={ADMIN_LINK}>
+              작업실(랜딩)으로
+            </Link>
+          }
+        >
+          <AuthForm
+            embedded
+            initialMode="login"
+            onClose={() => {}}
+            onToast={(message, type) => showToast(message, type)}
+            onAuthSuccess={() => {
+              setLoading(true);
+              syncUser();
+            }}
+          />
         </AdminGateShell>
-        {showLogin ? (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
-            <div className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-xl">
-              <AuthForm
-                embedded
-                initialMode="login"
-                onClose={() => setShowLogin(false)}
-                onToast={(message, type) => showToast(message, type)}
-                onAuthSuccess={() => {
-                  setShowLogin(false);
-                  setLoading(true);
-                  syncUser();
-                }}
-              />
-            </div>
-          </div>
-        ) : null}
         <Toast visible={toast.visible} message={toast.message} type={toast.type} />
       </>
     );
@@ -351,8 +367,8 @@ export default function AdminPageClient() {
 
   if (accessChecking) {
     return (
-      <AdminGateShell title="BRICLOG 관리자">
-        <p className="text-[#8B95A1]">운영자 권한을 확인하는 중입니다…</p>
+      <AdminGateShell title="관리자" subtitle="운영자 권한을 확인하는 중입니다…">
+        <p className={ADMIN_SUB}>잠시만 기다려 주세요.</p>
       </AdminGateShell>
     );
   }
@@ -360,41 +376,71 @@ export default function AdminPageClient() {
   if (!hasAdminAccess) {
     const email = user.email || profile?.email || "(이메일 없음)";
     return (
-      <AdminGateShell title="운영자 전용 페이지">
-        <p>
-          현재 로그인: <strong className="text-[#191F28]">{email}</strong>
+      <AdminGateShell
+        title="운영자 전용"
+        footer={
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setLoading(true);
+                syncUser();
+              }}
+              className={ADMIN_GHOST_BTN}
+            >
+              다른 계정으로 로그인
+            </button>
+            <Link href="/" className={ADMIN_LINK}>
+              작업실로
+            </Link>
+          </div>
+        }
+      >
+        <p className={ADMIN_SUB}>
+          현재 로그인: <strong className="text-[var(--admin-ink,#0f1a14)]">{email}</strong>
         </p>
-        <p>
+        <p className={`${ADMIN_SUB} mt-3`}>
           이 계정은 운영자 목록(
-          <code className="rounded bg-[#F2F4F6] px-1 text-[12px]">BRICLOG_ADMIN_EMAILS</code>
-          )에 없습니다. <strong>hscktg@gmail.com</strong>으로 로그인해야 합니다.
+          <code className="rounded bg-[var(--admin-paper,#f7faf8)] px-1 text-[12px]">
+            BRICLOG_ADMIN_EMAILS
+          </code>
+          )에 없습니다.
         </p>
       </AdminGateShell>
     );
   }
 
   const mem = stats?.memory;
+  const operatorEmail = user.email || profile?.email || "";
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setLoading(true);
+    syncUser();
+  };
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] p-4 text-[#191F28] md:p-6">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8B95A1]">
-              BRICLOG
-            </p>
-            <h1 className="text-[24px] font-bold tracking-tight md:text-[28px]">관리자</h1>
-            <p className="mt-1 text-[12px] text-[#8B95A1]">
-              한눈에 보고, 필요할 때만 깊게
+    <div className={ADMIN_PAGE}>
+      <div className={ADMIN_INNER}>
+        <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className={ADMIN_EYEBROW}>BRICLOG · Admin</p>
+            <h1 className={`${ADMIN_HEADLINE} md:text-[28px]`}>관리자</h1>
+            <p className={`${ADMIN_SUB} mt-1 text-[12px]`}>
+              {operatorEmail ? `${operatorEmail} · ` : ""}
+              가입 · 품질 · 시스템
             </p>
           </div>
-          <Link
-            href="/"
-            className="rounded-xl border border-[#E8EBED] bg-white px-4 py-2 text-[13px] font-medium text-[#03A94D] hover:bg-[#F6FDF9]"
-          >
-            작업실로
-          </Link>
-        </div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Link href="/" className={ADMIN_GHOST_BTN}>
+              작업실로
+            </Link>
+            <button type="button" onClick={() => void handleSignOut()} className={ADMIN_LINK}>
+              로그아웃
+            </button>
+          </div>
+        </header>
 
         {warnings.length > 0 && (
           <ul className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-[12px] text-amber-900">
@@ -409,30 +455,23 @@ export default function AdminPageClient() {
         <AdminSectionNav active={adminSection} onChange={setAdminSection} />
 
         {adminSection === "now" && (
-          <AdminAdvisoryPanel
-            advisory={advisory}
-            loading={advisoryLoading}
-            insights={insights}
-            insightsLoading={insightsLoading}
-            onRefreshInsights={loadInsights}
-            onApproveInsight={approveInsight}
-            compact
-          />
-        )}
-
-        {adminSection === "quality" && (
           <>
-            <AdminQualityOpsPanel
-              snapshot={qualityOps}
-              loading={qualityOpsLoading}
-              showHero={false}
+            <AdminSignupFunnelPanel funnel={signupFunnel} compact />
+            <AdminAdvisoryPanel
+              advisory={advisory}
+              loading={advisoryLoading}
+              insights={insights}
+              insightsLoading={insightsLoading}
+              onRefreshInsights={loadInsights}
+              onApproveInsight={approveInsight}
+              compact
             />
-            <AutoEvolutionStatusPanel />
           </>
         )}
 
         {adminSection === "growth" && (
           <>
+            <AdminOpsHub onToast={showToast} signupFunnel={signupFunnel} />
             <AdminAdvisoryPanel
               advisory={advisory}
               loading={advisoryLoading}
@@ -446,7 +485,17 @@ export default function AdminPageClient() {
               snapshot={productOverview}
               publicTest={stats?.dashboard?.publicBrandTest || {}}
             />
-            <AdminOpsHub onToast={showToast} />
+          </>
+        )}
+
+        {adminSection === "quality" && (
+          <>
+            <AdminQualityOpsPanel
+              snapshot={qualityOps}
+              loading={qualityOpsLoading}
+              showHero={false}
+            />
+            <AutoEvolutionStatusPanel />
           </>
         )}
 

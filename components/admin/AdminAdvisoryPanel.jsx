@@ -87,7 +87,7 @@ export default function AdminAdvisoryPanel({
           <FunnelStat
             label="7일 샘플 성공"
             value={funnel?.sampleRuns7d ?? 0}
-            hint="발행 샘플 바로보기"
+            hint="무료 시작·샘플 CTA"
           />
           <FunnelStat
             label="30일 가입"

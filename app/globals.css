@@ -1026,3 +1026,19 @@ button:enabled,
     animation: none;
   }
 }
+
+/* ── Vision 2030 Admin — operator console ── */
+.briclog-admin-page {
+  --admin-accent: #03c75a;
+  --admin-accent-deep: #03a94d;
+  --admin-accent-soft: rgba(3, 199, 90, 0.1);
+  --admin-accent-ring: rgba(3, 199, 90, 0.22);
+  --admin-ink: #0f1a14;
+  --admin-paper: #f7faf8;
+  --admin-muted: #5a6b62;
+  --admin-line: rgba(15, 26, 20, 0.08);
+  --admin-line-strong: rgba(15, 26, 20, 0.14);
+  --admin-panel: #ffffff;
+  --admin-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
+  --admin-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+}

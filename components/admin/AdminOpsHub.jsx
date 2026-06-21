@@ -4,8 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { StatCard } from "@/components/admin/AdminCharts";
 import AdminFeedbackPanel from "@/components/admin/AdminFeedbackPanel";
-import AdminTrafficPanel from "@/components/admin/AdminTrafficPanel";
 import AdminSignupFunnelPanel from "@/components/admin/AdminSignupFunnelPanel";
+import AdminTrafficPanel from "@/components/admin/AdminTrafficPanel";
+import {
+  ADMIN_GHOST_BTN,
+  ADMIN_PANEL,
+  ADMIN_TAB_ACTIVE,
+  ADMIN_TAB_IDLE,
+} from "@/lib/admin/adminVision2030Styles";
 
 function formatKst(iso) {
   if (!iso) return "—";
@@ -20,7 +26,7 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
   }
 
   return (
-    <section className="rounded-xl border border-[#3182F6]/30 bg-gradient-to-br from-[#3182F6]/8 to-white p-4">
+    <section className={`${ADMIN_PANEL} mb-6 border-[#3182F6]/30 bg-gradient-to-br from-[#3182F6]/8 to-white p-4`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-[16px] font-bold text-[#191F28]">실시간 현황</h2>
@@ -32,7 +38,8 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
           type="button"
           onClick={onRefresh}
           disabled={refreshing}
-          className="rounded-lg border border-[#E8EBED] bg-white px-3 py-1.5 text-[12px] disabled:opacity-50"
+          disabled={refreshing}
+          className={`${ADMIN_GHOST_BTN} disabled:opacity-50`}
         >
           {refreshing ? "갱신 중…" : "새로고침"}
         </button>
@@ -298,9 +305,9 @@ function ErrorsPanel() {
     <div className="rounded-xl border border-[#E8EBED] bg-white p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="text-[15px] font-bold">오류 로그 (실시간)</h3>
-          <p className="mt-1 text-[12px] text-[#8B95A1]">
-            15초마다 자동 갱신 · 태블릿·PC 어디서나 확인
+          <h3 className="text-[15px] font-bold">오류 로그</h3>
+          <p className="mt-1 text-[12px] text-[var(--admin-muted,#5a6b62)]">
+            15초마다 자동 갱신
           </p>
         </div>
         <label className="flex items-center gap-2 text-[12px] text-[#4E5968]">
@@ -380,10 +387,9 @@ function DevConsolePanel() {
     <div className="space-y-4">
       <div className="rounded-xl border border-[#E8EBED] bg-white p-4">
         <h3 className="text-[15px] font-bold">개발·운영 콘솔</h3>
-        <p className="mt-1 text-[12px] leading-relaxed text-[#8B95A1]">
-          Cursor처럼 코드 편집은 이 화면에 포함되지 않습니다. 대신 엔진 상태·오류·품질
-          테스트를 태블릿·PC에서 바로 확인할 수 있습니다. 코드 수정은 로컬 Cursor +
-          배포(`vercel deploy`) 흐름을 사용하세요.
+        <p className="mt-1 text-[12px] leading-relaxed text-[var(--admin-muted,#5a6b62)]">
+          엔진 상태·오류·품질 테스트 확인. 코드 수정은 로컬 Cursor + 배포 흐름을
+          사용하세요.
         </p>
         <ul className="mt-3 list-disc pl-5 text-[12px] text-[#4E5968]">
           <li>아래 품질 자동 테스트 · Evolution Lab · 인사이트 승인</li>
@@ -429,27 +435,28 @@ const TABS = [
   { id: "feedback", label: "피드백" },
   { id: "users", label: "회원" },
   { id: "errors", label: "오류" },
-  { id: "dev", label: "개발" },
+  { id: "dev", label: "개발", desktopOnly: true },
 ];
 
-export default function AdminOpsHub({ onToast }) {
+export default function AdminOpsHub({ onToast, signupFunnel: funnelProp = null }) {
   const [tab, setTab] = useState("overview");
   const [live, setLive] = useState(null);
-  const [funnel, setFunnel] = useState(null);
+  const [funnelLocal, setFunnelLocal] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const funnel = funnelProp ?? funnelLocal;
 
   const loadLive = useCallback(async () => {
     setRefreshing(true);
     try {
       const data = await fetchWithAuth("/api/admin/live");
       setLive(data.live);
-      setFunnel(data.funnel || null);
+      if (!funnelProp) setFunnelLocal(data.funnel || null);
     } catch (err) {
       onToast?.(err.message, "error");
     } finally {
       setRefreshing(false);
     }
-  }, [onToast]);
+  }, [onToast, funnelProp]);
 
   useEffect(() => {
     void loadLive();
@@ -463,17 +470,15 @@ export default function AdminOpsHub({ onToast }) {
       <AdminSignupFunnelPanel funnel={funnel} />
       <AdminTrafficPanel onToast={onToast} />
 
-      <div className="flex flex-wrap gap-2 border-b border-[#E8EBED] pb-2">
+      <div className="flex gap-2 overflow-x-auto border-b border-[var(--admin-line,rgba(15,26,20,0.08))] pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`rounded-lg px-4 py-2 text-[13px] font-medium ${
-              tab === t.id
-                ? "bg-[#191F28] text-white"
-                : "bg-white text-[#4E5968] border border-[#E8EBED]"
-            }`}
+            className={`shrink-0 rounded-lg px-4 py-2 text-[13px] font-semibold ${
+              t.desktopOnly ? "hidden md:inline-flex" : "inline-flex"
+            } ${tab === t.id ? ADMIN_TAB_ACTIVE : ADMIN_TAB_IDLE}`}
           >
             {t.label}
           </button>

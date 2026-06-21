@@ -1,10 +1,16 @@
 "use client";
 
+import {
+  ADMIN_SECTION_NAV,
+  ADMIN_TAB_ACTIVE,
+  ADMIN_TAB_IDLE,
+} from "@/lib/admin/adminVision2030Styles";
+
 const SECTIONS = [
-  { id: "now", label: "지금" },
-  { id: "quality", label: "품질" },
-  { id: "growth", label: "성장" },
-  { id: "system", label: "시스템" },
+  { id: "now", label: "지금", hint: "오늘" },
+  { id: "growth", label: "가입·성장", hint: "퍼널" },
+  { id: "quality", label: "품질", hint: "배치" },
+  { id: "system", label: "시스템", hint: "상세" },
 ];
 
 /**
@@ -12,10 +18,7 @@ const SECTIONS = [
  */
 export default function AdminSectionNav({ active, onChange }) {
   return (
-    <nav
-      className="mb-6 flex flex-wrap gap-2 rounded-2xl border border-[#E8EBED] bg-white p-1.5"
-      aria-label="관리자 섹션"
-    >
+    <nav className={ADMIN_SECTION_NAV} aria-label="관리자 섹션">
       {SECTIONS.map((s) => {
         const on = active === s.id;
         return (
@@ -23,13 +26,13 @@ export default function AdminSectionNav({ active, onChange }) {
             key={s.id}
             type="button"
             onClick={() => onChange(s.id)}
-            className={`rounded-xl px-4 py-2.5 text-[13px] font-semibold transition-colors ${
-              on
-                ? "bg-[#191F28] text-white shadow-sm"
-                : "text-[#4E5968] hover:bg-[#F7F8FA]"
-            }`}
+            aria-current={on ? "page" : undefined}
+            className={on ? ADMIN_TAB_ACTIVE : ADMIN_TAB_IDLE}
           >
-            {s.label}
+            <span>{s.label}</span>
+            <span className="ml-1.5 hidden text-[10px] font-medium opacity-70 md:inline">
+              {s.hint}
+            </span>
           </button>
         );
       })}

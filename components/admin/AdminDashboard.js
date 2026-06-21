@@ -32,8 +32,8 @@ export default function AdminDashboard({ dashboard, billing }) {
     <>
       {publicBrandTest && (
         <section className="mb-6 rounded-xl border border-[#03A94D]/25 bg-[#03C75A]/5 p-4">
-          <h2 className="text-[15px] font-bold text-[#191F28]">
-            가입 전 브랜드 테스트 (랜딩 샘플)
+          <h2 className="text-[15px] font-bold text-[var(--admin-ink,#0f1a14)]">
+            가입 전 브랜드 테스트 (무료 시작)
           </h2>
           <p className="mt-1 text-[12px] text-[#8B95A1]">
             {publicBrandTest.tableReady

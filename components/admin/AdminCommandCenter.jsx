@@ -1,10 +1,15 @@
 "use client";
 
+import {
+  ADMIN_PANEL,
+  ADMIN_SIGNAL_ACCENT,
+} from "@/lib/admin/adminVision2030Styles";
+
 const PULSE_STYLES = {
   ok: {
-    ring: "border-[#03A94D]/40 bg-gradient-to-br from-[#03C75A]/12 via-white to-white",
-    dot: "bg-[#03A94D]",
-    label: "text-[#03A94D]",
+    ring: "border-[var(--admin-accent-ring,rgba(3,199,90,0.28))] bg-gradient-to-br from-[var(--admin-accent-soft,rgba(3,199,90,0.1))] via-white to-white",
+    dot: "bg-[var(--admin-accent-deep,#03a94d)]",
+    label: "text-[var(--admin-accent-deep,#03a94d)]",
   },
   watch: {
     ring: "border-amber-400/40 bg-gradient-to-br from-amber-50 via-white to-white",
@@ -31,9 +36,9 @@ function ChannelTile({ ch }) {
           : "bg-[#D1D6DB]";
 
   return (
-    <div className="rounded-2xl border border-[#E8EBED]/80 bg-white/80 p-4 backdrop-blur-sm">
+    <div className={`${ADMIN_PANEL} bg-white/80 p-4 backdrop-blur-sm`}>
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[12px] font-medium text-[#4E5968]">{ch.label}</p>
+        <p className="text-[12px] font-medium text-[var(--admin-muted,#5a6b62)]">{ch.label}</p>
         {ch.fraction ? (
           <p className="text-[10px] text-[#8B95A1]">{ch.fraction}</p>
         ) : null}
@@ -54,18 +59,20 @@ function ChannelTile({ ch }) {
 
 function SignalPill({ signal }) {
   const tone =
-    signal.tone === "urgent"
-      ? "border-[#E42939]/25 bg-[#FFF5F5]"
-      : signal.tone === "watch"
-        ? "border-amber-200 bg-amber-50/80"
-        : "border-[#E8EBED] bg-white/90";
+    signal.tone === "accent"
+      ? ADMIN_SIGNAL_ACCENT
+      : signal.tone === "urgent"
+        ? "border-[#E42939]/25 bg-[#FFF5F5]"
+        : signal.tone === "watch"
+          ? "border-amber-200 bg-amber-50/80"
+          : "border-[var(--admin-line,rgba(15,26,20,0.08))] bg-white/90";
 
   return (
     <div className={`rounded-xl border px-3 py-2.5 ${tone}`}>
-      <p className="text-[10px] font-medium uppercase tracking-wide text-[#8B95A1]">
+      <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--admin-muted,#5a6b62)]">
         {signal.label}
       </p>
-      <p className="mt-0.5 text-[20px] font-bold text-[#191F28]">{signal.value}</p>
+      <p className="mt-0.5 text-[20px] font-bold text-[var(--admin-ink,#0f1a14)]">{signal.value}</p>
     </div>
   );
 }
@@ -76,8 +83,8 @@ function SignalPill({ signal }) {
 export default function AdminCommandCenter({ view, loading = false }) {
   if (loading && !view) {
     return (
-      <section className="mb-6 rounded-3xl border border-[#E8EBED] bg-white p-8">
-        <p className="text-[14px] text-[#8B95A1]">현황을 정리하는 중…</p>
+      <section className={`${ADMIN_PANEL} mb-6 p-8`}>
+        <p className="text-[14px] text-[var(--admin-muted,#5a6b62)]">현황을 정리하는 중…</p>
       </section>
     );
   }
