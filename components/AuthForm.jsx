@@ -45,8 +45,11 @@ import {
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import {
   getSignupAttributionSource,
+  recordLoginFailure,
+  recordLoginIntent,
   recordSignupFunnelStep,
 } from "@/lib/analytics/signupIntent";
+import { classifyAuthError } from "@/lib/auth/authErrorCode";
 
 
 const MODES = {
@@ -95,6 +98,8 @@ export default function AuthForm({
   onClose,
   embedded = false,
   showDevicePreview = false,
+  /** admin_gate · auth_modal · landing_* (login intent 집계) */
+  authContext = "auth_modal",
 }) {
   const landingPreview = useLandingPreviewOptional();
   const [mode, setMode] = useState(initialMode);
@@ -430,6 +435,10 @@ export default function AuthForm({
         return;
       }
 
+      if (mode === MODES.login && authContext === "admin_gate") {
+        recordLoginIntent(authContext);
+      }
+
       const signedIn = await signInAfterSignup(email, password);
       if (!signedIn?.session) {
         throw new Error("로그인에 실패했습니다.");
@@ -448,6 +457,10 @@ export default function AuthForm({
       onToast?.("로그인되었습니다.", "success");
       onAuthSuccess?.();
     } catch (err) {
+      if (mode === MODES.login) {
+        const { code } = classifyAuthError(err?.message);
+        recordLoginFailure(code, authContext);
+      }
       onToast?.(mapAuthError(err.message), "error");
     } finally {
       setLoading(false);

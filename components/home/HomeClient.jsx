@@ -7,7 +7,7 @@ import LandingPage from "@/components/landing/LandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
 import LandingDevicePreviewToggle from "@/components/landing/LandingDevicePreviewToggle";
 import LandingFloatingDeviceBar from "@/components/landing/LandingFloatingDeviceBar";
-import Toast from "@/components/Toast";
+import { recordLoginIntent } from "@/lib/analytics/signupIntent";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import TermsConsentModal from "@/components/auth/TermsConsentModal";
 import ProfileCompletionModal from "@/components/auth/ProfileCompletionModal";
@@ -39,6 +39,7 @@ export default function HomeClient() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authMode, setAuthMode] = useState(null);
+  const [loginSource, setLoginSource] = useState("auth_modal");
   const [profileModalDeferred, setProfileModalDeferred] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const lastUserIdRef = useRef(null);
@@ -239,7 +240,12 @@ export default function HomeClient() {
     return () => clearTimeout(t);
   }, [toast.visible, toast.message, toast.type]);
 
-  const openAuth = useCallback((mode) => {
+  const openAuth = useCallback((mode, source) => {
+    if (mode !== "signup") {
+      const src = source || "auth_modal";
+      recordLoginIntent(src);
+      setLoginSource(src);
+    }
     setAuthMode(mode === "signup" ? "signup" : "login");
   }, []);
 

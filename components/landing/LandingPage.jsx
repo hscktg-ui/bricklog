@@ -108,9 +108,12 @@ export default function LandingPage({ onAuthOpen, onStart }) {
     [onAuthOpen]
   );
 
-  const openLogin = useCallback(() => {
-    onAuthOpen("login");
-  }, [onAuthOpen]);
+  const openLogin = useCallback(
+    (source = "auth_modal") => {
+      onAuthOpen("login", source);
+    },
+    [onAuthOpen]
+  );
 
   const scrollToSample = () => scrollToId("landing-sample");
 
@@ -158,7 +161,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             <button
               type="button"
               data-briclog-cta="login-nav"
-              onClick={() => openLogin()}
+              onClick={() => openLogin("landing_nav")}
               className={VISION_LOGIN_LINK}
             >
               {LANDING_LOGIN_CTA}
@@ -190,7 +193,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onStart={handleStart}
             onSample={withLandingCta(scrollToSample)}
             onTest={withLandingCta(scrollToPublicTest)}
-            onLogin={openLogin}
+            onLogin={() => openLogin("landing_hero")}
           />
           <WhyBriclog />
           <ContentPlanSection />
@@ -256,7 +259,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
               <button
                 type="button"
                 data-briclog-cta="login-footer"
-                onClick={openLogin}
+                onClick={() => openLogin("landing_footer")}
                 className="font-semibold text-white/75 underline-offset-4 hover:text-white hover:underline"
               >
                 {LANDING_LOGIN_CTA}
@@ -271,7 +274,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
 
       <LandingMobileStickyCta
         onStart={withLandingCta(scrollToPublicTest)}
-        onLogin={openLogin}
+        onLogin={() => openLogin("landing_sticky")}
         introOpen={introOpen}
         suppressed={publicTestPreviewActive}
       />

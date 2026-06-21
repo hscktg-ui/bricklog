@@ -16,6 +16,8 @@ import AdminQualityOpsPanel from "@/components/admin/AdminQualityOpsPanel";
 import AdminCommandCenter from "@/components/admin/AdminCommandCenter";
 import AdminSectionNav from "@/components/admin/AdminSectionNav";
 import AdminSignupFunnelPanel from "@/components/admin/AdminSignupFunnelPanel";
+import AdminCtaSourcePanel from "@/components/admin/AdminCtaSourcePanel";
+import AdminLoginHintsPanel from "@/components/admin/AdminLoginHintsPanel";
 import { buildAdminCommandCenter } from "@/lib/admin/buildAdminCommandCenter";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
@@ -352,6 +354,7 @@ export default function AdminPageClient() {
           <AuthForm
             embedded
             initialMode="login"
+            authContext="admin_gate"
             onClose={() => {}}
             onToast={(message, type) => showToast(message, type)}
             onAuthSuccess={() => {
@@ -456,6 +459,8 @@ export default function AdminPageClient() {
 
         {adminSection === "now" && (
           <>
+            <AdminCtaSourcePanel funnel={signupFunnel} compact />
+            <AdminLoginHintsPanel funnel={signupFunnel} compact />
             <AdminSignupFunnelPanel funnel={signupFunnel} compact />
             <AdminAdvisoryPanel
               advisory={advisory}
@@ -471,6 +476,8 @@ export default function AdminPageClient() {
 
         {adminSection === "growth" && (
           <>
+            <AdminCtaSourcePanel funnel={signupFunnel} />
+            <AdminLoginHintsPanel funnel={signupFunnel} />
             <AdminOpsHub onToast={showToast} signupFunnel={signupFunnel} />
             <AdminAdvisoryPanel
               advisory={advisory}
