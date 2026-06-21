@@ -3,6 +3,14 @@
 import { WHY_BRICLOG } from "@/lib/landing/sampleContent";
 import { VISION_EYEBROW, VISION_SECTION } from "@/lib/landing/vision2030Styles";
 
+const WHY_STAGGER = [
+  "briclog-vision-stagger-1",
+  "briclog-vision-stagger-2",
+  "briclog-vision-stagger-3",
+  "briclog-vision-stagger-4",
+  "briclog-vision-stagger-5",
+];
+
 export default function WhyBriclog() {
   return (
     <section className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}>
@@ -20,7 +28,7 @@ export default function WhyBriclog() {
           {WHY_BRICLOG.map((item, i) => (
             <article
               key={item.title}
-              className={`group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--vision-shadow-panel)] ${
+              className={`group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--vision-shadow-panel)] briclog-vision-stagger ${WHY_STAGGER[Math.min(i, WHY_STAGGER.length - 1)]} ${
                 i === 0
                   ? "@min-[720px]:col-span-3 @min-[720px]:row-span-2 @min-[720px]:p-9"
                   : i === 1

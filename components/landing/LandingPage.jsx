@@ -41,6 +41,7 @@ import PublicBrandTestSection from "@/components/landing/public-test/PublicBrand
 import {
   VISION_CTA_ACCENT,
   VISION_CTA_GHOST,
+  VISION_EYEBROW,
   VISION_NAV,
   VISION_NAV_INNER,
   VISION_PAGE,
@@ -207,9 +208,9 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           <PricingSection onStart={handleStart} />
 
           <section
-            className={`${VISION_SECTION_DARK} px-5 py-20 text-center md:px-8 md:py-28`}
+            className={`${VISION_SECTION_DARK} px-5 py-20 text-center md:px-8 md:py-28 briclog-vision-footer-cta`}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">
+            <p className={`${VISION_EYEBROW} text-white/45`}>
               시작하기
             </p>
             <p className="mx-auto mt-4 max-w-2xl text-[clamp(1.5rem,4vw,2.25rem)] font-semibold leading-[1.15] tracking-tight text-white">

@@ -1014,4 +1014,7 @@ button:enabled,
   .briclog-vision-reveal {
     animation: none;
   }
+  .briclog-vision-stagger {
+    animation: none;
+  }
 }
