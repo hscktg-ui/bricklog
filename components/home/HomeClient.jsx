@@ -337,17 +337,18 @@ export default function HomeClient() {
         <LandingPage onAuthOpen={openAuth} onStart={openStart} />
         {authMode && (
           <div
-            className="pointer-events-none fixed inset-0 z-[95] flex items-end justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:items-center"
+            className="pointer-events-none fixed inset-0 z-[95] flex items-end justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:items-center sm:p-6"
             role="dialog"
             aria-modal="true"
+            aria-label={authMode === "signup" ? "회원가입" : "로그인"}
           >
             <div
               role="presentation"
               aria-hidden
-              className="pointer-events-auto absolute inset-0 bg-black/40"
+              className="pointer-events-auto absolute inset-0 bg-[rgba(15,26,20,0.42)] backdrop-blur-[2px]"
               onClick={() => setAuthMode(null)}
             />
-            <div className="pointer-events-auto relative z-10 w-full max-h-[92dvh] overflow-y-auto sm:max-w-md">
+            <div className="pointer-events-auto relative z-10 w-full max-w-[440px] max-h-[92dvh] overflow-y-auto overscroll-contain">
               <AuthForm
                 embedded
                 initialMode={authMode}

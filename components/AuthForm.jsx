@@ -19,7 +19,7 @@ import {
   AUTH_FIELD_CLASS,
   AUTH_FIELD_ERROR_CLASS,
   AUTH_MOBILE_PAGE_CLASS,
-  AUTH_MOBILE_SHELL_CLASS,
+  AUTH_SHELL_CLASS,
   AUTH_PRIMARY_BTN_CLASS,
   AUTH_SECONDARY_BTN_CLASS,
   AUTH_SURFACE_CLASS,
@@ -29,12 +29,19 @@ import {
   AUTH_LINK_CLASS,
   AUTH_WARN_SURFACE_CLASS,
   AUTH_ERROR_SURFACE_CLASS,
+  AUTH_EYEBROW,
+  AUTH_TITLE,
+  AUTH_MODE_SEGMENT_SHELL,
+  AUTH_MODE_SEGMENT_ACTIVE,
+  AUTH_MODE_SEGMENT_IDLE,
+  AUTH_TRUST_PANEL,
+  AUTH_STEP_PILL,
+  AUTH_STEP_PILL_ACTIVE,
+  AUTH_LABEL_CLASS,
+  AUTH_CLOSE_BTN_CLASS,
 } from "@/lib/ui/authFieldStyles";
 import Logo from "./Logo";
 import { BRICLOG_SLOGAN_SHORT } from "@/lib/brand/slogan";
-import LandingDeviceBar from "@/components/landing/LandingDeviceBar";
-import LandingWidthShell from "@/components/landing/LandingWidthShell";
-import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewContext";
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
 import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import { resolveSignupPhoneForSignup } from "@/lib/auth/signupPhonePayload";
@@ -69,11 +76,9 @@ export default function AuthForm({
   initialMode = MODES.login,
   onClose,
   embedded = false,
-  showDevicePreview = false,
   /** admin_gate · auth_modal · landing_* (login intent 집계) */
   authContext = "auth_modal",
 }) {
-  const landingPreview = useLandingPreviewOptional();
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -460,10 +465,6 @@ export default function AuthForm({
         ? "비밀번호 재설정"
         : "로그인";
 
-  const previewDevice = landingPreview?.preview ?? "desktop";
-  const setPreviewDevice = landingPreview?.setPreview;
-  const simulating = landingPreview?.simulating ?? false;
-
   const phoneOptional = isSignupPhoneOptional();
   const signupTrust = getSignupTrustCopy({
     phoneRequired: !phoneOptional,
@@ -506,7 +507,7 @@ export default function AuthForm({
 
   const shell = (
     <div
-      className={`${AUTH_VISION_SCOPE_CLASS} ${AUTH_SURFACE_CLASS} ${AUTH_MOBILE_SHELL_CLASS} ${
+      className={`${AUTH_VISION_SCOPE_CLASS} ${AUTH_SURFACE_CLASS} ${AUTH_SHELL_CLASS} ${
         embedded ? "relative" : ""
       }`}
     >
@@ -515,35 +516,88 @@ export default function AuthForm({
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute right-3 top-3 rounded-lg p-1 text-[var(--vision-muted)] hover:bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))]"
+          className={AUTH_CLOSE_BTN_CLASS}
         >
           ✕
         </button>
       )}
-      <div className="mb-3 flex flex-col items-center">
+      <div className="mb-4 flex flex-col items-center text-center">
         {onClose ? (
           <button
             type="button"
             onClick={onClose}
-            className="flex flex-col items-center gap-1 rounded-xl px-2 py-1 transition active:brightness-[0.97] hover:bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))]"
+            className="flex flex-col items-center gap-1.5 rounded-2xl px-2 py-1 transition active:brightness-[0.97] hover:bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))]"
             aria-label="랜딩으로"
           >
-            <Logo className="max-w-[200px]!" />
-            <p className="text-center text-[12px] leading-snug text-[var(--vision-muted)]">
+            <Logo className="max-w-[180px]!" />
+            <p className="text-[11px] leading-snug text-[var(--vision-muted)]">
               {BRICLOG_SLOGAN_SHORT}
             </p>
           </button>
         ) : (
           <>
-            <Logo className="max-w-[200px]!" />
-            <p className="mt-1 text-center text-[12px] leading-snug text-[var(--vision-muted)]">
+            <Logo className="max-w-[180px]!" />
+            <p className="mt-1.5 text-[11px] leading-snug text-[var(--vision-muted)]">
               {BRICLOG_SLOGAN_SHORT}
             </p>
           </>
         )}
+        <p className={`${AUTH_EYEBROW} mt-4`}>Account</p>
+        <h1 className={`${AUTH_TITLE} mt-1`}>{title}</h1>
       </div>
 
-      <h1 className="text-center text-lg font-bold text-[var(--vision-ink)]">{title}</h1>
+      {mode !== MODES.reset ? (
+        <div
+          className={`${AUTH_MODE_SEGMENT_SHELL} mb-4`}
+          role="tablist"
+          aria-label="로그인 또는 회원가입"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === MODES.login}
+            className={
+              mode === MODES.login ? AUTH_MODE_SEGMENT_ACTIVE : AUTH_MODE_SEGMENT_IDLE
+            }
+            onClick={() => setMode(MODES.login)}
+          >
+            로그인
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === MODES.signup}
+            className={
+              mode === MODES.signup ? AUTH_MODE_SEGMENT_ACTIVE : AUTH_MODE_SEGMENT_IDLE
+            }
+            onClick={() => setMode(MODES.signup)}
+          >
+            회원가입
+          </button>
+        </div>
+      ) : null}
+
+      {mode === MODES.signup && !phoneOptional ? (
+        <div className="mb-4 flex flex-wrap items-center justify-center gap-2">
+          <span
+            className={`${AUTH_STEP_PILL} ${
+              phoneSmsVerified ? AUTH_STEP_PILL_ACTIVE : ""
+            }`}
+          >
+            ① 휴대폰 문자
+          </span>
+          <span className="text-[10px] text-[var(--vision-muted)]" aria-hidden>
+            →
+          </span>
+          <span
+            className={`${AUTH_STEP_PILL} ${
+              phoneSmsVerified && !emailRegistered ? AUTH_STEP_PILL_ACTIVE : ""
+            }`}
+          >
+            ② 이메일·비밀번호
+          </span>
+        </div>
+      ) : null}
 
       {mode === MODES.signup && publicTestDraft?.brandName ? (
         <div className="mt-4 rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))] px-4 py-3 text-center">
@@ -562,23 +616,6 @@ export default function AuthForm({
           ) : null}
         </div>
       ) : null}
-
-      {showDevicePreview &&
-        setPreviewDevice &&
-        landingPreview?.native !== "mobile" && (
-        <div className="mt-4 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] p-3">
-          <LandingDeviceBar
-            device={previewDevice}
-            onChange={setPreviewDevice}
-            simulating={simulating}
-            native={landingPreview?.native ?? previewDevice}
-            compact
-          />
-          <p className="mt-2 text-center text-[11px] leading-snug text-[#8B95A1]">
-            로그인 후에도 같은 화면으로 이어갑니다
-          </p>
-        </div>
-      )}
 
       {!isSupabaseConfigured && (
         <p className={`mt-3 ${AUTH_ERROR_SURFACE_CLASS}`}>
@@ -601,28 +638,22 @@ export default function AuthForm({
       ) : null}
 
       {mode === MODES.signup && !signupLimited ? (
-        <div className="mt-3 rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))] px-4 py-3">
+        <div className={`mt-3 ${AUTH_TRUST_PANEL}`}>
           <p className="text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)]">
             {signupTrust.headline}
           </p>
-          <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+          <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--vision-muted,#5a6b62)]">
             {signupTrust.body}
           </p>
-          {signupTrust.emailHint ? (
-            <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
-              {signupTrust.emailHint}
-            </p>
-          ) : null}
-          {signupTrust.smsHint ? (
-            <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
-              {signupTrust.smsHint}
-            </p>
-          ) : null}
-          {signupTrust.planHint ? (
-            <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
-              {signupTrust.planHint}
-            </p>
-          ) : null}
+          <div className="mt-2 space-y-1 text-[11px] leading-relaxed text-[var(--vision-muted,#5a6b62)]">
+            {signupTrust.emailHint ? <p>{signupTrust.emailHint}</p> : null}
+            {signupTrust.smsHint ? <p>{signupTrust.smsHint}</p> : null}
+            {signupTrust.planHint ? (
+              <p className="font-medium text-[var(--vision-ink,#0f1a14)]">
+                {signupTrust.planHint}
+              </p>
+            ) : null}
+          </div>
         </div>
       ) : null}
 
@@ -640,7 +671,7 @@ export default function AuthForm({
         ) : null}
 
         <div>
-          <label htmlFor="auth-email" className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]">
+          <label htmlFor="auth-email" className={AUTH_LABEL_CLASS}>
             {mode === MODES.signup && !phoneOptional ? "로그인 이메일" : "이메일"}
           </label>
           <input
@@ -689,7 +720,7 @@ export default function AuthForm({
 
         {mode !== MODES.reset && (
           <div>
-            <label htmlFor="auth-password" className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]">
+            <label htmlFor="auth-password" className={AUTH_LABEL_CLASS}>
               비밀번호
             </label>
             <PasswordField
@@ -711,7 +742,7 @@ export default function AuthForm({
           <div>
             <label
               htmlFor="auth-password-confirm"
-              className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]"
+              className={`${AUTH_LABEL_CLASS} mb-0`}
             >
               비밀번호 확인
             </label>
@@ -853,61 +884,34 @@ export default function AuthForm({
 
       </form>
 
-      <div className="mt-3 flex flex-col items-center gap-2 text-[12px]">
+      <div className="mt-4 flex flex-col items-center gap-2 text-[12px]">
         {mode === MODES.signup && onClose ? (
           <button
             type="button"
-            className="text-[12px] font-medium text-[var(--vision-muted,#5a6b62)] hover:text-[var(--vision-accent-deep,#03a94d)] hover:underline"
+            className={`${AUTH_SECONDARY_BTN_CLASS} w-full max-w-xs`}
             onClick={onClose}
           >
             가입 없이 샘플만 보기
           </button>
         ) : null}
-        <div className="flex justify-center gap-2">
-        {mode === MODES.login ? (
+        {mode === MODES.reset ? (
           <button
             type="button"
-            className={AUTH_SECONDARY_BTN_CLASS}
-            onClick={() => setMode(MODES.signup)}
-          >
-            회원가입
-          </button>
-        ) : mode === MODES.signup ? (
-          <button
-            type="button"
-            className={AUTH_SECONDARY_BTN_CLASS}
+            className={AUTH_LINK_CLASS}
             onClick={() => setMode(MODES.login)}
           >
-            로그인
+            로그인으로 돌아가기
           </button>
-        ) : (
-          <button
-            type="button"
-            className={AUTH_SECONDARY_BTN_CLASS}
-            onClick={() => setMode(MODES.login)}
-          >
-            로그인으로
-          </button>
-        )}
-        </div>
+        ) : null}
       </div>
     </div>
   );
 
-  const wrapped =
-    showDevicePreview &&
-    landingPreview &&
-    landingPreview.native !== "mobile" ? (
-    <LandingWidthShell>{shell}</LandingWidthShell>
-  ) : (
-    shell
-  );
-
-  if (embedded) return wrapped;
+  if (embedded) return shell;
 
   return (
     <div className={AUTH_MOBILE_PAGE_CLASS}>
-      {wrapped}
+      {shell}
     </div>
   );
 }
