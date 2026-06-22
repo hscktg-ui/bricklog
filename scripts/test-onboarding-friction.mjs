@@ -9,15 +9,38 @@ import {
 } from "../lib/auth/profilePersonalization.js";
 
 const prevPhone = process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
+const prevLaunch = process.env.NEXT_PUBLIC_BRICLOG_LAUNCH;
+const prevVercelEnv = process.env.VERCEL_ENV;
+const prevNodeEnv = process.env.NODE_ENV;
 
 delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
-assert.equal(isSignupPhoneOptional(), true, "phone optional by default");
+delete process.env.VERCEL_ENV;
+process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = "false";
+process.env.NODE_ENV = "development";
+assert.equal(isSignupPhoneOptional(), true, "local dev keeps phone optional");
+
+process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = "true";
+assert.equal(isSignupPhoneOptional(), false, "launch build requires phone by default");
+
+process.env.VERCEL_ENV = "production";
+assert.equal(
+  isSignupPhoneOptional(),
+  false,
+  "vercel production requires phone even with stale optional env"
+);
+process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
+assert.equal(
+  isSignupPhoneOptional(),
+  false,
+  "vercel production ignores optional=true"
+);
+
+delete process.env.VERCEL_ENV;
+process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
+assert.equal(isSignupPhoneOptional(), true, "explicit true on non-prod");
 
 process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "false";
-assert.equal(isSignupPhoneOptional(), false, "phone required when env false");
-
-process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
-assert.equal(isSignupPhoneOptional(), true, "phone optional when env true");
+assert.equal(isSignupPhoneOptional(), false, "explicit false stays required");
 
 const skippedProfile = {
   id: "u1",
@@ -44,5 +67,11 @@ assert.equal(
 
 if (prevPhone === undefined) delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 else process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = prevPhone;
+if (prevLaunch === undefined) delete process.env.NEXT_PUBLIC_BRICLOG_LAUNCH;
+else process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = prevLaunch;
+if (prevVercelEnv === undefined) delete process.env.VERCEL_ENV;
+else process.env.VERCEL_ENV = prevVercelEnv;
+if (prevNodeEnv === undefined) delete process.env.NODE_ENV;
+else process.env.NODE_ENV = prevNodeEnv;
 
 console.log("OK: onboarding-friction");

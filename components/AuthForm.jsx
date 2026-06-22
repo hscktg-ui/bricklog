@@ -38,6 +38,8 @@ import { useLandingPreviewOptional } from "@/components/landing/LandingPreviewCo
 import { isSignupPhoneOptional } from "@/lib/config/productFlags";
 import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import { resolveSignupPhoneForSignup } from "@/lib/auth/signupPhonePayload";
+import { getSignupTrustCopy } from "@/lib/auth/signupTrustCopy";
+import { getPublicSmsSenderLabel } from "@/lib/sms/smsDisplay";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import {
   getSignupAttributionSource,
@@ -269,7 +271,10 @@ export default function AuthForm({
           redirectTo: getResetPasswordUrl() || callbackUrl,
         });
         if (error) throw error;
-        onToast?.("비밀번호 재설정 메일을 보냈습니다.", "success");
+        onToast?.(
+          "브릭로그(BRICLOG) 제목의 재설정 메일을 보냈습니다. 메일함·스팸함을 확인해 주세요.",
+          "success"
+        );
         setMode(MODES.login);
         return;
       }
@@ -441,6 +446,10 @@ export default function AuthForm({
   const simulating = landingPreview?.simulating ?? false;
 
   const phoneOptional = isSignupPhoneOptional();
+  const signupTrust = getSignupTrustCopy({
+    phoneRequired: !phoneOptional,
+    smsSenderLabel: getPublicSmsSenderLabel(),
+  });
   const signupPhoneFilled = signupPhone.trim().length > 0;
   const phoneBlocksSignup =
     !phoneOptional &&
@@ -581,10 +590,43 @@ export default function AuthForm({
         </p>
       ) : null}
 
+      {mode === MODES.signup && !signupLimited ? (
+        <div className="mt-3 rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))] px-4 py-3">
+          <p className="text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)]">
+            {signupTrust.headline}
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+            {signupTrust.body}
+          </p>
+          {signupTrust.emailHint ? (
+            <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
+              {signupTrust.emailHint}
+            </p>
+          ) : null}
+          {signupTrust.smsHint ? (
+            <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
+              {signupTrust.smsHint}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 sm:space-y-3">
+        {mode === MODES.signup && !phoneOptional ? (
+          <PhoneSmsVerifyFields
+            purpose="signup"
+            phone={signupPhone}
+            onPhoneChange={handleSignupPhoneChange}
+            disabled={loading}
+            onToast={onToast}
+            onAvailabilityChange={handlePhoneAvailabilityChange}
+            onVerified={handlePhoneVerified}
+          />
+        ) : null}
+
         <div>
           <label htmlFor="auth-email" className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]">
-            이메일
+            {mode === MODES.signup && !phoneOptional ? "로그인 이메일" : "이메일"}
           </label>
           <input
             id="auth-email"
@@ -666,44 +708,37 @@ export default function AuthForm({
           </div>
         )}
 
-        {mode === MODES.signup && (
+        {mode === MODES.signup && phoneOptional ? (
           <>
-            {isSignupPhoneOptional() ? (
-              <details className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 open:pb-3">
-                <summary className="cursor-pointer list-none text-[13px] font-semibold text-[#4E5968] [&::-webkit-details-marker]:hidden">
-                  휴대폰 인증 (선택)
-                </summary>
-                <div className="mt-3 border-t border-[#E8EBED] pt-3">
-                  <PhoneSmsVerifyFields
-                    purpose="signup"
-                    phone={signupPhone}
-                    onPhoneChange={handleSignupPhoneChange}
-                    disabled={loading}
-                    onToast={onToast}
-                    onAvailabilityChange={handlePhoneAvailabilityChange}
-                    onVerified={handlePhoneVerified}
-                  />
-                </div>
-              </details>
-            ) : (
-              <PhoneSmsVerifyFields
-                purpose="signup"
-                phone={signupPhone}
-                onPhoneChange={handleSignupPhoneChange}
-                disabled={loading}
-                onToast={onToast}
-                onAvailabilityChange={handlePhoneAvailabilityChange}
-                onVerified={handlePhoneVerified}
-              />
-            )}
+            <details className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 open:pb-3">
+              <summary className="cursor-pointer list-none text-[13px] font-semibold text-[#4E5968] [&::-webkit-details-marker]:hidden">
+                휴대폰 인증 (선택)
+              </summary>
+              <div className="mt-3 border-t border-[#E8EBED] pt-3">
+                <PhoneSmsVerifyFields
+                  purpose="signup"
+                  phone={signupPhone}
+                  onPhoneChange={handleSignupPhoneChange}
+                  disabled={loading}
+                  onToast={onToast}
+                  onAvailabilityChange={handlePhoneAvailabilityChange}
+                  onVerified={handlePhoneVerified}
+                />
+              </div>
+            </details>
             <p className={`text-[12px] leading-relaxed ${AUTH_MUTED_TEXT_CLASS} sm:text-[11px]`}>
-              {isSignupPhoneOptional()
-                ? "이메일·비밀번호만으로 가입할 수 있어요."
-                : "휴대폰 번호는 한 계정에 하나만 등록됩니다. 문자 인증만 완료하면 바로 이용할 수 있어요."}{" "}
-              닉네임·호칭은 로그인 뒤 안내에서 입력할 수 있어요.
+              이메일·비밀번호만으로 가입할 수 있어요. 닉네임·호칭은 로그인 뒤 안내에서 입력할 수
+              있어요.
             </p>
           </>
-        )}
+        ) : null}
+
+        {mode === MODES.signup && !phoneOptional ? (
+          <p className={`text-[12px] leading-relaxed ${AUTH_MUTED_TEXT_CLASS} sm:text-[11px]`}>
+            휴대폰 번호는 한 계정에 하나만 등록됩니다. 문자 인증 후 위 이메일·비밀번호로
+            로그인합니다. 닉네임·호칭은 로그인 뒤 안내에서 입력할 수 있어요.
+          </p>
+        ) : null}
 
         {mode === MODES.signup && (
           <div className={`text-[12px] ${AUTH_MUTED_TEXT_CLASS}`}>

@@ -48,6 +48,8 @@
     "test:signup-phone-required-flow": "node scripts/test-signup-phone-required-flow.mjs",
     "test:signup-register-flow": "node scripts/test-signup-register-flow.mjs",
     "test:check-email-server": "node scripts/test-check-email-server.mjs",
+    "test:signup-trust-copy": "node scripts/test-signup-trust-copy.mjs",
+    "patch:supabase-auth-signup": "node scripts/patch-supabase-auth-signup.mjs",
     "test:post-signup-session": "node scripts/test-post-signup-session.mjs",
     "test:onboarding-friction": "node --import ./scripts/register-alias.mjs scripts/test-onboarding-friction.mjs",
     "test:human-prose-delivery": "node --import ./scripts/register-alias.mjs scripts/test-human-prose-delivery.mjs",
