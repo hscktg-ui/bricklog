@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CUSTOMER_SAMPLE_BADGE } from "@/lib/copy/customerFacing";
 import { LANDING_SAMPLE } from "@/lib/landing/sampleContent";
 import {
@@ -8,15 +8,12 @@ import {
   SampleInstaPreview,
   SamplePlacePreview,
 } from "@/components/landing/SamplePreviewBlocks";
-import DevicePreviewToggle, {
-  DevicePreviewFrame,
-  useDevicePreview,
-} from "@/components/landing/DevicePreviewToggle";
-import { useViewport } from "@/hooks/useViewport";
+import LandingPanelHeader from "@/components/landing/LandingPanelHeader";
 import { LANDING_PRIMARY_CTA, LANDING_PRIMARY_SUB } from "@/lib/landing/ctaCopy";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
+  VISION_PANEL,
   VISION_SECTION,
   VISION_SUB,
   VISION_TAB_ACTIVE,
@@ -32,13 +29,6 @@ const TABS = [
 export default function DemoPreviewSection({ sample, onTest }) {
   const s = sample ?? LANDING_SAMPLE;
   const [tab, setTab] = useState("blog");
-  const { device, setDevice } = useDevicePreview("mobile");
-  const { isMobile, isTablet } = useViewport();
-  const compactPreview = isMobile || isTablet;
-
-  useEffect(() => {
-    if (compactPreview && device !== "mobile") setDevice("mobile");
-  }, [compactPreview, device, setDevice]);
 
   return (
     <section
@@ -71,50 +61,36 @@ export default function DemoPreviewSection({ sample, onTest }) {
           </span>
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="inline-flex w-full rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] p-1 shadow-[var(--vision-shadow-soft)] sm:w-auto">
-            {TABS.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                className={`min-h-[44px] flex-1 rounded-full px-4 text-[13px] font-semibold transition sm:flex-none sm:px-5 ${
-                  tab === t.id ? VISION_TAB_ACTIVE : VISION_TAB_IDLE
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <DevicePreviewToggle
-            device={device}
-            onChange={setDevice}
-            showLabels
-            compact
-            desktopOnly
-            className="w-full lg:w-auto"
-          />
+        <div className="mt-6 inline-flex w-full rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] p-1 shadow-[var(--vision-shadow-soft)] sm:w-auto">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`min-h-[44px] flex-1 rounded-full px-4 text-[13px] font-semibold transition sm:flex-none sm:px-5 ${
+                tab === t.id ? VISION_TAB_ACTIVE : VISION_TAB_IDLE
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
-        <DevicePreviewFrame
-          device={device}
-          hideChrome={compactPreview}
-          className="mt-6"
-        >
-          {!compactPreview ? (
-            <span className="rounded-full bg-[var(--vision-paper)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
-              {tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"}
-            </span>
-          ) : null}
+        <div className={`mt-6 overflow-hidden ${VISION_PANEL}`}>
+          <LandingPanelHeader
+            title={
+              tab === "blog" ? "이야기" : tab === "place" ? "플레이스" : "인스타"
+            }
+          />
           <div
-            className={`${compactPreview ? "" : "mt-4"} max-h-[min(68vh,560px)] overflow-y-auto scroll-smooth pr-1`}
+            className="max-h-[min(68vh,560px)] overflow-y-auto scroll-smooth bg-[var(--vision-panel-bg)] p-4 sm:p-5"
             suppressHydrationWarning
           >
             {tab === "blog" && <SampleBlogPreview blog={s.blog} />}
             {tab === "place" && <SamplePlacePreview place={s.place} />}
             {tab === "insta" && <SampleInstaPreview body={s.insta.body} />}
           </div>
-        </DevicePreviewFrame>
+        </div>
 
         {onTest ? (
           <button

@@ -63,10 +63,7 @@ import {
 } from "@/lib/auth/profilePersonalization";
 import ProfileSetupBanner from "@/components/ProfileSetupBanner";
 import BriclogNextHomeStrip from "@/components/BriclogNextHomeStrip";
-import { WorkspacePreviewProvider, useWorkspacePreview } from "@/context/WorkspacePreviewContext";
-import WorkspaceDevicePreviewToggle from "@/components/workspace/WorkspaceDevicePreviewToggle";
-import WorkspaceDevicePreviewTabs from "@/components/workspace/WorkspaceDevicePreviewTabs";
-import DevicePreviewViewport from "@/components/workspace/DevicePreviewViewport";
+import { WorkspacePreviewProvider } from "@/context/WorkspacePreviewContext";
 import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
 import { CHANNEL_PRODUCTS, normalizeWorkspaceMenuId } from "@/lib/channels/channelProducts";
@@ -80,7 +77,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { stopBgm } from "@/lib/audio/briclogBgm";
 import DebugStatePublisher from "@/components/dev/DebugStatePublisher";
-import { isFastOnboarding, isLaunchBuild } from "@/lib/config/productFlags";
+import { isFastOnboarding } from "@/lib/config/productFlags";
 import { emitBrandFormSync } from "@/lib/workspace/brandFormSync";
 
 export default function Dashboard({
@@ -422,7 +419,6 @@ function DashboardLayout({
 }) {
   useMobileSidebar(mobileOpen, setMobileOpen);
 
-  const { preview, native, simulating } = useWorkspacePreview();
   const { blogInput, setBlogInput } = useContentForm();
   const {
     resetToHome,
@@ -734,12 +730,7 @@ function DashboardLayout({
         profile={profile}
       />
 
-      <DevicePreviewViewport
-        preview={preview}
-        native={native}
-        simulating={simulating}
-        className="flex min-h-0 min-w-0 flex-1 flex-col"
-      >
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Header
           onHome={goHome}
           userName={userLabel}
@@ -864,15 +855,9 @@ function DashboardLayout({
             />
           ) : null}
         </main>
-      </DevicePreviewViewport>
+      </div>
       </div>
 
-      {!demoMode && !isLaunchBuild() ? (
-        <>
-          <WorkspaceDevicePreviewTabs />
-          <WorkspaceDevicePreviewToggle className="hidden sm:flex" />
-        </>
-      ) : null}
       <MobileBottomNav
           activeMenu={showChannelWelcome ? null : activeMenu}
           drawerOpen={mobileOpen}

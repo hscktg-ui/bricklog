@@ -5,8 +5,6 @@ import dynamic from "next/dynamic";
 import AuthForm from "@/components/AuthForm";
 import LandingPage from "@/components/landing/LandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
-import LandingDevicePreviewToggle from "@/components/landing/LandingDevicePreviewToggle";
-import LandingFloatingDeviceBar from "@/components/landing/LandingFloatingDeviceBar";
 import { recordLoginIntent } from "@/lib/analytics/signupIntent";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
 import TermsConsentModal from "@/components/auth/TermsConsentModal";
@@ -365,13 +363,7 @@ export default function HomeClient() {
           message={toast.message}
           type={toast.type}
         />
-        {!authMode && (
-          <>
-            <LandingFloatingDeviceBar />
-            <LandingDevicePreviewToggle className="hidden lg:flex" />
-            <BriclogAssistant layout="landing" />
-          </>
-        )}
+        {!authMode && <BriclogAssistant layout="landing" />}
       </LandingPreviewProvider>
     );
   }
