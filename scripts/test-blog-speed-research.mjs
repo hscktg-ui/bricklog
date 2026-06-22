@@ -9,6 +9,8 @@ import {
   getResearchClientTimeoutMs,
 } from "../lib/config/briclogFastPipeline.js";
 import { estimateBlogGenerationMs } from "../lib/loading/estimateGenerationMs.js";
+import { isBriclogMaxQualityEnabled } from "../lib/config/briclogMaxQuality.js";
+import { isBriclogFastPipelineEnabled, isTriAiResearchMaxMode } from "../lib/config/briclogFastPipeline.js";
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
@@ -32,6 +34,11 @@ assert(getResearchClientTimeoutMs(verified) <= getResearchClientTimeoutMs(), "ve
 const estCold = estimateBlogGenerationMs({ brandName: "A", topic: "B", researchEnabled: true });
 const estHot = estimateBlogGenerationMs({ ...verified, brandName: "A", topic: "B" });
 assert(estHot < estCold, "UI estimate lower when research pre-done");
+assert(estCold <= 130_000, "cold estimate within 1-2min UX band");
+
+assert(isBriclogFastPipelineEnabled(), "fast pipeline default when max quality off");
+assert(!isTriAiResearchMaxMode(), "tri-ai research max off unless explicit env");
+assert(!isBriclogMaxQualityEnabled(), "prod UX: max quality off under reset quality");
 
 console.log("OK: blog speed research — depth skip, naver cap, timeout, estimate");
 console.log("  cold est:", estCold, "ms · verified est:", estHot, "ms");

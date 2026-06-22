@@ -1214,7 +1214,6 @@ export function ContentProvider({
           pipelineInput.v3PreWriteVerified = true;
           pipelineInput.v2ResearchReady = true;
         } else if (
-          genOpts.regen &&
           canReuseClientResearch(
             { ...pipelineInput, ...blogInput },
             researchResult
