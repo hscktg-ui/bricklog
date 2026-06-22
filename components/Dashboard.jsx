@@ -803,7 +803,13 @@ function DashboardLayout({
               onPlanChange={() => setPricingOpen(true)}
             />
           ) : activeMenu === "plan" || activeMenu === "review" || activeMenu === "image" ? (
-            <ContentPlanWorkspace onNavigate={navigate} onToast={showToast} />
+            <ContentPlanWorkspace
+              userId={user.id}
+              brandId={activeBrandId}
+              contentArchive={activeBrand?.contentArchive}
+              onNavigate={navigate}
+              onToast={showToast}
+            />
           ) : activeMenu === "place" ? (
             <PlaceGenerator
               onGoBlog={goBlog}
