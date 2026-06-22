@@ -49,6 +49,8 @@
     "test:signup-register-flow": "node scripts/test-signup-register-flow.mjs",
     "test:check-email-server": "node scripts/test-check-email-server.mjs",
     "test:signup-trust-copy": "node scripts/test-signup-trust-copy.mjs",
+    "test:signup-form-gate": "node scripts/test-signup-form-gate.mjs",
+    "test:beta-access-prod": "node scripts/test-beta-access-prod.mjs",
     "patch:supabase-auth-signup": "node scripts/patch-supabase-auth-signup.mjs",
     "test:post-signup-session": "node scripts/test-post-signup-session.mjs",
     "test:onboarding-friction": "node --import ./scripts/register-alias.mjs scripts/test-onboarding-friction.mjs",

@@ -39,6 +39,10 @@ import { isSignupPhoneOptional } from "@/lib/config/productFlags";
 import { normalizeKoreanMobile } from "@/lib/sms/phoneNormalize";
 import { resolveSignupPhoneForSignup } from "@/lib/auth/signupPhonePayload";
 import { getSignupTrustCopy } from "@/lib/auth/signupTrustCopy";
+import {
+  isSignupSubmitLocked,
+  resolveSignupBlockReason,
+} from "@/lib/auth/signupFormGate";
 import { getPublicSmsSenderLabel } from "@/lib/sms/smsDisplay";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import {
@@ -252,12 +256,22 @@ export default function AuthForm({
     }
 
     if (mode === MODES.signup) {
-      if (password.length < 6) {
-        onToast?.("비밀번호는 6자 이상으로 설정해 주세요.", "error");
-        return;
-      }
-      if (password !== passwordConfirm) {
-        onToast?.("비밀번호 확인이 일치하지 않습니다.", "error");
+      const blockReason = resolveSignupBlockReason({
+        termsAgreed,
+        emailRegistered,
+        phoneOptional: isSignupPhoneOptional(),
+        phoneBlocksSignup:
+          !isSignupPhoneOptional() &&
+          (!phoneSmsVerified || !phoneVerificationId || phoneRegistered),
+        phoneAvailabilityBlocks:
+          !isSignupPhoneOptional() &&
+          signupPhone.trim().length > 0 &&
+          phoneRegistered,
+        password,
+        passwordConfirm,
+      });
+      if (blockReason) {
+        onToast?.(blockReason, "error");
         return;
       }
     }
@@ -296,14 +310,6 @@ export default function AuthForm({
             "error"
           );
           setMode(MODES.login);
-          return;
-        }
-
-        if (
-          !isSignupPhoneOptional() &&
-          (!phoneSmsVerified || !phoneVerificationId)
-        ) {
-          onToast?.("휴대폰 문자 인증을 완료해 주세요.", "error");
           return;
         }
 
@@ -463,35 +469,26 @@ export default function AuthForm({
     mode === MODES.signup &&
     passwordConfirmFilled &&
     password !== passwordConfirm;
-  const signupSubmitDisabled =
-    loading ||
-    signupLimited ||
-    (mode === MODES.signup &&
-      (!termsAgreed ||
-        emailRegistered ||
-        phoneAvailabilityBlocks ||
-        phoneBlocksSignup ||
-        passwordMismatch ||
-        !passwordConfirmFilled));
+  const signupBlockReason =
+    mode === MODES.signup
+      ? resolveSignupBlockReason({
+          termsAgreed,
+          emailRegistered,
+          phoneOptional,
+          phoneBlocksSignup,
+          phoneAvailabilityBlocks,
+          password,
+          passwordConfirm,
+        })
+      : "";
+  const signupSubmitDisabled = isSignupSubmitLocked({ loading, signupLimited });
 
   const signupSubmitLabel = (() => {
     if (loading) return "처리 중…";
     if (mode === MODES.reset) return "재설정 메일 보내기";
     if (mode === MODES.login) return "로그인";
-    if (phoneOptional) return "무료 가입하기";
     if (phoneBlocksSignup) return "휴대폰 인증 후 가입";
     return "가입하기";
-  })();
-
-  const signupDisabledReason = (() => {
-    if (mode !== MODES.signup || loading || signupLimited) return "";
-    if (!termsAgreed) return "이용약관·개인정보처리방침에 동의해 주세요.";
-    if (emailRegistered) return "이미 사용 중인 이메일입니다.";
-    if (phoneAvailabilityBlocks) return "이미 등록된 휴대폰 번호입니다.";
-    if (phoneBlocksSignup) return "휴대폰 문자 인증을 완료해 주세요.";
-    if (!passwordConfirmFilled) return "비밀번호 확인을 입력해 주세요.";
-    if (passwordMismatch) return "비밀번호 확인이 일치하지 않습니다.";
-    return "";
   })();
 
   const shell = (
@@ -606,6 +603,11 @@ export default function AuthForm({
           {signupTrust.smsHint ? (
             <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
               {signupTrust.smsHint}
+            </p>
+          ) : null}
+          {signupTrust.planHint ? (
+            <p className="mt-1 text-[11px] text-[var(--vision-muted,#5a6b62)]">
+              {signupTrust.planHint}
             </p>
           ) : null}
         </div>
@@ -817,9 +819,9 @@ export default function AuthForm({
           {signupSubmitLabel}
         </button>
 
-        {signupDisabledReason ? (
+        {signupBlockReason ? (
           <p className="text-center text-[11px] leading-relaxed text-[#E42939]" role="status">
-            {signupDisabledReason}
+            {signupBlockReason}
           </p>
         ) : null}
 

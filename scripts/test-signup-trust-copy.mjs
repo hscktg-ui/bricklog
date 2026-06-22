@@ -35,6 +35,7 @@ const copy = getSignupTrustCopy({
 });
 assert.match(copy.body, /브릭로그/);
 assert.match(copy.body, /이메일 인증 링크는 보내지 않습니다/);
+assert.match(copy.planHint || "", /월 5회/);
 
 if (prevPhone === undefined) delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 else process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = prevPhone;
