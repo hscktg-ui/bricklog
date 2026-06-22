@@ -332,6 +332,11 @@ function DashboardWithBrands({
       onChannelSaved: (channel, content, plain) =>
         brandWs.saveChannelContent(channel, content, plain),
       onFormPersist: brandWs.persistFormToBrand,
+      scheduleRefreshTick: brandWs.scheduleRefreshTick,
+      launchFromPlan: brandWs.launchFromPlan,
+      planLaunchIntent: brandWs.planLaunchIntent,
+      consumePlanLaunchIntent: brandWs.consumePlanLaunchIntent,
+      bumpScheduleRefresh: brandWs.bumpScheduleRefresh,
     }),
     [
       brandWs.activeBrand,
@@ -343,6 +348,11 @@ function DashboardWithBrands({
       brandWs.updateActiveBrand,
       brandWs.saveChannelContent,
       brandWs.persistFormToBrand,
+      brandWs.scheduleRefreshTick,
+      brandWs.launchFromPlan,
+      brandWs.planLaunchIntent,
+      brandWs.consumePlanLaunchIntent,
+      brandWs.bumpScheduleRefresh,
     ]
   );
 
@@ -590,7 +600,7 @@ function DashboardLayout({
     (channelId) => {
       const next = completeChannelOnboarding(user.id, channelId);
       setUserPrefs(next);
-      setActiveMenu(channelId);
+      setActiveMenu("plan");
       setSelectedHistoryId(null);
       setMobileOpen(false);
     },
@@ -837,6 +847,7 @@ function DashboardLayout({
                 handleMenuNavigate(menu);
                 return true;
               }}
+              onGoPlan={() => handleMenuNavigate("plan")}
             />
           ) : activeMenu === "history" ? (
             <HistoryWorkspace

@@ -50,6 +50,8 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
   const [brandWorkspaceGateOpen, setBrandWorkspaceGateOpen] = useState(false);
   const [brandSessionReady, setBrandSessionReady] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [scheduleRefreshTick, setScheduleRefreshTick] = useState(0);
+  const [planLaunchIntent, setPlanLaunchIntent] = useState(null);
   const isDemo = isInternalDemoWorkspace(userId, demoMode);
   const useServer =
     !demoMode && isSupabaseConfigured && Boolean(userId);
@@ -379,12 +381,31 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
     [activeBrandId, brands, addBrand]
   );
 
+  const bumpScheduleRefresh = useCallback(() => {
+    setScheduleRefreshTick((t) => t + 1);
+  }, []);
+
+  const launchFromPlan = useCallback((intent = {}) => {
+    if (!intent?.channel) return;
+    setPlanLaunchIntent({
+      channel: intent.channel,
+      topic: String(intent.topic || "").trim(),
+      dateKey: intent.dateKey || "",
+      at: Date.now(),
+    });
+  }, []);
+
+  const consumePlanLaunchIntent = useCallback(() => {
+    setPlanLaunchIntent(null);
+  }, []);
+
   const saveChannelContent = useCallback(
     async (channel, content, plainText = "") => {
       if (!activeBrandId || !activeBrand) return;
       if (!useServer) {
         recordBrandContent(activeBrandId, channel, content, plainText);
         reloadLocal();
+        bumpScheduleRefresh();
         return;
       }
       const at = new Date().toISOString();
@@ -421,8 +442,9 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       });
       const saved = data.brand;
       setBrands((prev) => prev.map((b) => (b.id === saved.id ? saved : b)));
+      bumpScheduleRefresh();
     },
-    [activeBrandId, activeBrand, useServer, userId, reloadLocal]
+    [activeBrandId, activeBrand, useServer, userId, reloadLocal, bumpScheduleRefresh]
   );
 
   const value = useMemo(
@@ -445,6 +467,11 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       applyActiveBrandToForm,
       persistFormToBrand,
       saveChannelContent,
+      scheduleRefreshTick,
+      launchFromPlan,
+      planLaunchIntent,
+      consumePlanLaunchIntent,
+      bumpScheduleRefresh,
       isDemoWorkspace: isDemo,
       userId,
       reloadBrands,
@@ -474,6 +501,11 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       applyActiveBrandToForm,
       persistFormToBrand,
       saveChannelContent,
+      scheduleRefreshTick,
+      launchFromPlan,
+      planLaunchIntent,
+      consumePlanLaunchIntent,
+      bumpScheduleRefresh,
       isDemo,
       userId,
       reloadBrands,

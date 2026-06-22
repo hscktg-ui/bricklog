@@ -34,6 +34,8 @@ import {
 } from "@/context/ContentContext";
 import BlogGenHintPanel from "@/components/workspace/BlogGenHintPanel";
 import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
+import BlogWithholdEmptyState from "@/components/workspace/BlogWithholdEmptyState";
+import TodayOperationsComplete from "@/components/workspace/TodayOperationsComplete";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import {
   isFormValid as checkFormValid,
@@ -637,6 +639,10 @@ const BlogEditorResults = memo(function BlogEditorResults({
     editorImproving,
     memoryContentIds,
     researchResult,
+    blogWithholdUi,
+    todayOperationsComplete,
+    dismissTodayOperations,
+    clearBlogWithholdUi,
   } = useContentPipelineState();
   const { blogInput, setBlogInput } = useContentForm();
 
@@ -666,13 +672,14 @@ const BlogEditorResults = memo(function BlogEditorResults({
     (isMobile || (isTablet && concise));
 
   const handleRegenerate = useCallback(() => {
+    clearBlogWithholdUi?.();
     generateBlog(blogInput, {
       blogOnly: loadBlogOnlyPref(),
       regen: true,
       regenVariation: Date.now(),
       priorRewriteCount: blogContent?._meta?.rewriteCount || 0,
     });
-  }, [generateBlog, blogInput, blogContent]);
+  }, [clearBlogWithholdUi, generateBlog, blogInput, blogContent]);
 
   const handleToneRequestChange = useCallback(
     (toneRequest) => {
@@ -777,9 +784,28 @@ const BlogEditorResults = memo(function BlogEditorResults({
             researchSnippet={researchLiveMemo}
             researchFactCount={researchFactCount}
           />
+        ) : blogWithholdUi ? (
+          <BlogWithholdEmptyState
+            message={blogWithholdUi.message}
+            onRegenerate={handleRegenerate}
+            busy={regenerateBusy}
+          />
         ) : showFullResult ? (
           <>
-            <DeliveryTrustBadge pack={blogContent} className="mb-4" />
+            {todayOperationsComplete ? (
+              <TodayOperationsComplete
+                className="mb-4"
+                blog={todayOperationsComplete.blog}
+                place={todayOperationsComplete.place}
+                insta={todayOperationsComplete.insta}
+                onViewChannel={(ch) => {
+                  setResultTab(ch === "insta" ? "insta" : ch);
+                }}
+                onGoPlan={() => onNavigate?.("plan")}
+                onDismiss={dismissTodayOperations}
+              />
+            ) : null}
+            <DeliveryTrustBadge pack={blogContent} channel="blog" className="mb-4" />
             {blogContent?._meta?.completeDraft &&
             !blogContent?._meta?.deliveryPreview &&
             !blogContent?._meta?.softPass ? (

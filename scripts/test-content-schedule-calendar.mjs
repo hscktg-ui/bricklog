@@ -51,6 +51,12 @@ const view = buildContentScheduleView({
   industry: "hair",
   memoryItems: [
     {
+      id: "recent",
+      channel: "blog",
+      title: "여름 관리",
+      created_at: "2026-06-01T09:00:00.000Z",
+    },
+    {
       id: "old",
       channel: "blog",
       title: "봄 컬러",
@@ -69,6 +75,16 @@ assert(
 assert(
   "season tip surfaced",
   view.tips.some((t) => t.kind === "season")
+);
+assert("planned slots exist", (view.planned?.length || 0) >= 1);
+assert("planned indexed", Object.keys(view.plannedByDay || {}).length >= 1);
+assert(
+  "month summary",
+  view.monthSummary.createdCount >= 1 && view.monthSummary.plannedCount >= 1
+);
+assert(
+  "next planned after today",
+  view.monthSummary.nextPlannedKey >= view.calendar.todayKey
 );
 
 if (failed > 0) {

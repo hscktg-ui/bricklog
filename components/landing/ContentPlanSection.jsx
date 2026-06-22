@@ -1,16 +1,58 @@
 "use client";
 
+import { useMemo } from "react";
 import { CONTENT_PLAN_DEMO } from "@/lib/landing/contentPlanDemo";
+import { buildContentOperatingPlan } from "@/lib/product/briclogBrandContentOS";
+import { buildWeeklyOperatingReport } from "@/lib/product/weeklyOperatingReport";
 import {
   VISION_EYEBROW,
+  VISION_GLASS_CARD,
   VISION_PANEL,
   VISION_SECTION,
   VISION_SUB,
 } from "@/lib/landing/vision2030Styles";
 import LandingPanelHeader from "@/components/landing/LandingPanelHeader";
 
+const CHANNEL_LABEL = {
+  blog: "이야기",
+  place: "플레이스",
+  instagram: "인스타",
+};
+
 export default function ContentPlanSection() {
   const demo = CONTENT_PLAN_DEMO;
+  const currentWeek = demo.weeks.find((w) => w.status === "current") || demo.weeks[0];
+
+  const plan = useMemo(
+    () =>
+      buildContentOperatingPlan({
+        brandName: demo.brand,
+        region: demo.region,
+        topic: currentWeek?.focus || demo.headline,
+      }),
+    [demo.brand, demo.region, currentWeek?.focus, demo.headline]
+  );
+
+  const weekItems = (plan.whatToWrite || []).filter((w) =>
+    String(w.priority || "").includes("주")
+  );
+  const monthItems = (plan.whatToWrite || []).filter((w) =>
+    String(w.priority || "").includes("달")
+  );
+
+  const weeklyReport = useMemo(
+    () =>
+      buildWeeklyOperatingReport(
+        {
+          historyByDay: {},
+          planned: weekItems.map((item) => ({ kind: "plan", channel: item.channel })),
+          gapDays: 0,
+          rhythm: [],
+        },
+        { brandName: demo.brand, topic: plan.primaryTopic }
+      ),
+    [weekItems, demo.brand, plan.primaryTopic]
+  );
 
   return (
     <section className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-24`}>
@@ -25,8 +67,15 @@ export default function ContentPlanSection() {
           쌓입니다.
         </p>
 
-        <div className={`mt-12 overflow-hidden ${VISION_PANEL}`}>
-          <LandingPanelHeader title={`${demo.month} · ${demo.brand}`} />
+        <div className={`mx-auto mt-8 max-w-3xl ${VISION_GLASS_CARD} px-4 py-4 sm:px-5`}>
+          <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
+            {weeklyReport.headline}
+          </p>
+          <p className={`mt-1.5 ${VISION_SUB} !text-[13px]`}>{weeklyReport.growthLine}</p>
+        </div>
+
+        <div className={`mt-8 overflow-hidden ${VISION_PANEL}`}>
+          <LandingPanelHeader title={`${plan.month} · ${plan.brand}`} />
 
           <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="border-b border-[var(--vision-line)] p-6 lg:border-b-0 lg:border-r">
@@ -34,30 +83,30 @@ export default function ContentPlanSection() {
                 주별 플랜
               </p>
               <ul className="mt-5 space-y-3">
-                {demo.weeks.map((w) => (
+                {weekItems.map((w, idx) => (
                   <li
                     key={w.id}
                     className={`rounded-2xl border px-4 py-3.5 transition ${
-                      w.status === "current"
+                      idx === 0
                         ? "border-[var(--vision-accent-ring,rgba(3,199,90,0.35))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))]"
                         : "border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)]"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-[12px] font-bold tabular-nums text-[var(--vision-muted)]">
-                        {w.label}
+                        {w.priority}
                       </span>
-                      {w.status === "current" ? (
+                      {idx === 0 ? (
                         <span className="rounded-full bg-[var(--vision-accent)] px-2 py-0.5 text-[10px] font-semibold text-white">
                           이번 주
                         </span>
                       ) : null}
                     </div>
                     <p className="mt-2 font-semibold tracking-tight text-[var(--vision-ink)]">
-                      {w.focus}
+                      {w.topic}
                     </p>
                     <p className="mt-2 text-[12px] text-[var(--vision-muted)]">
-                      {w.channels.join(" · ")}
+                      {CHANNEL_LABEL[w.channel] || w.channel}
                     </p>
                   </li>
                 ))}
@@ -69,7 +118,7 @@ export default function ContentPlanSection() {
                 브랜드 리듬
               </p>
               <p className="mt-4 text-[17px] font-semibold leading-snug text-[var(--vision-ink)]">
-                {demo.headline}
+                {plan.operatingHeadline || demo.headline}
               </p>
               <ul className="mt-6 space-y-2.5">
                 {demo.habits.map((h) => (
@@ -82,6 +131,17 @@ export default function ContentPlanSection() {
                   </li>
                 ))}
               </ul>
+              {monthItems.length ? (
+                <ul className="mt-6 space-y-2 border-t border-[var(--vision-line)] pt-5">
+                  {monthItems.map((item) => (
+                    <li key={item.id} className="text-[13px] text-[var(--vision-muted)]">
+                      <span className="font-medium text-[var(--vision-ink)]">{item.topic}</span>
+                      {" · "}
+                      {CHANNEL_LABEL[item.channel] || item.channel}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               <p className="mt-8 text-[13px] leading-relaxed text-[var(--vision-muted)]">
                 가입 후 작업실에서 브랜드·지역·업종에 맞는 월·주 계획이 자동으로 갱신됩니다.
               </p>

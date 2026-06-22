@@ -132,6 +132,7 @@ export default function BlogResultView({
   };
 
   if (!draft) return null;
+  if (draft._meta?.outputWithheld) return null;
 
   const copyText =
     String(draft.fullCopyText || "").trim() ||
@@ -415,7 +416,7 @@ export default function BlogResultView({
         <p className={VISION_EYEBROW}>{RESULT_VIEW.sectionLabel}</p>
       ) : null}
       {!isBriefOnly ? (
-        <DeliveryTrustBadge pack={draft} className="mb-3" compact={mobileSimple} />
+        <DeliveryTrustBadge pack={draft} channel="blog" className="mb-3" compact={mobileSimple} />
       ) : null}
       {onRegenerate && !isBriefOnly ? (
         <RegenTonePanel

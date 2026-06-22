@@ -35,6 +35,7 @@ export default function GrowthStudio({
   onToast,
   onUpgradeClick,
   onOpenInWorkspace,
+  onGoPlan,
 }) {
   const [tab, setTab] = useState("history");
   const [channelFilter, setChannelFilter] = useState("");
@@ -302,6 +303,15 @@ export default function GrowthStudio({
             버전·검색까지 이어집니다.
           </p>
         )}
+        {onGoPlan ? (
+          <button
+            type="button"
+            onClick={onGoPlan}
+            className="mt-3 min-h-[40px] rounded-full border border-[#E8EBED] px-4 text-[12px] font-semibold text-[#4E5968] hover:border-[#03C75A] hover:text-[#191F28]"
+          >
+            운영 계획·주간 리듬 보기
+          </button>
+        ) : null}
       </div>
 
       <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-[#E8EBED] pb-2">

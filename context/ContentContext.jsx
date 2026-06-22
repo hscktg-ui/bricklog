@@ -186,9 +186,11 @@ import { isHumanDeliveryGrade } from "@/lib/product/deliveryGrade";
 import { SOFT_PREVIEW_HINT } from "@/lib/product/deliverySoftPass";
 import { blogGenerateCtaInlineRetry } from "@/lib/product/blogCtaCopy";
 import { applyProdBlogBeliefBoost } from "@/lib/product/prodBeliefBoost";
+import { shouldAllowMissionUiRescue } from "@/lib/product/brandContentCustomerGate";
+import { enforceCustomerBlogOutput } from "@/lib/product/brandContentCustomerGate";
 
-function allowBlogUiRescue() {
-  return true;
+function allowBlogUiRescue(pipelineInput = {}) {
+  return shouldAllowMissionUiRescue(pipelineInput);
 }
 
 function resolveBlogGenerationFailMessage(pipelineInput, result) {
@@ -201,7 +203,7 @@ function resolveBlogGenerationFailMessage(pipelineInput, result) {
 }
 
 function missionProseFallbackForUi(pipelineInput) {
-  if (!allowBlogUiRescue()) return null;
+  if (!allowBlogUiRescue(pipelineInput)) return null;
   if (!hasFilledBlogAxes(pipelineInput)) return null;
   try {
     let pack = finishBlogFallbackHumanProse(
@@ -217,7 +219,7 @@ function missionProseFallbackForUi(pipelineInput) {
 }
 
 function attemptBlogUiRescue(pipelineInput, partial = null) {
-  if (!allowBlogUiRescue() || !hasFilledBlogAxes(pipelineInput)) return null;
+  if (!allowBlogUiRescue(pipelineInput) || !hasFilledBlogAxes(pipelineInput)) return null;
   try {
     const rescued =
       forceLocalBlogPreviewDelivery(pipelineInput, partial) ||
@@ -346,6 +348,8 @@ export function ContentProvider({
 }) {
   const [blogInput, setBlogInput] = useState(DEFAULT_BLOG_INPUT);
   const [blogContent, setBlogContent] = useState(null);
+  const [blogWithholdUi, setBlogWithholdUi] = useState(null);
+  const [todayOperationsComplete, setTodayOperationsComplete] = useState(null);
   const [placeContent, setPlaceContent] = useState(null);
   const [instagramContent, setInstagramContent] = useState(null);
   const [imagePrompts, setImagePrompts] = useState(null);
@@ -362,6 +366,7 @@ export function ContentProvider({
   const [generating, setGenerating] = useState(INITIAL_GENERATING);
   const [channelOptionLockStatus, setChannelOptionLockStatus] = useState(null);
   const blogGenLock = useRef(false);
+  const generationEpochRef = useRef(0);
   const channelUpgradeHintShown = useRef(false);
   const hydratedBrandRef = useRef(null);
 
@@ -837,6 +842,19 @@ export function ContentProvider({
     };
   }, [demoMode, user?.id, brandHooks?.activeBrandId]);
 
+  useEffect(() => {
+    const intent = brandHooks?.planLaunchIntent;
+    if (!intent?.topic) return;
+    const topic = String(intent.topic).trim();
+    if (!topic) return;
+    setBlogInput((prev) => ({
+      ...prev,
+      topic,
+      mainKeyword: topic.split(/[,，]/)[0]?.trim() || topic,
+    }));
+    brandHooks?.consumePlanLaunchIntent?.();
+  }, [brandHooks?.planLaunchIntent, brandHooks?.consumePlanLaunchIntent]);
+
   const hasBlog = !!blogContent;
   const hasChannelPack =
     !!blogContent || !!placeContent || !!instagramContent;
@@ -907,12 +925,22 @@ export function ContentProvider({
     setInstagramContent(null);
     setImagePrompts(null);
     setChannelOptionLockStatus(null);
+    setTodayOperationsComplete(null);
+  }, []);
+
+  const dismissTodayOperations = useCallback(() => {
+    setTodayOperationsComplete(null);
+  }, []);
+
+  const clearBlogWithholdUi = useCallback(() => {
+    setBlogWithholdUi(null);
   }, []);
 
   const resetToHome = useCallback(() => {
     setBlogResultRevealPending(false);
     clearPendingBlogResult();
     setBlogContent(null);
+    setBlogWithholdUi(null);
     setBaseContentLabel(null);
     setSourceChannel(null);
     setResearchResult(null);
@@ -1076,6 +1104,7 @@ export function ContentProvider({
       onToast?.(errors[Object.values(errors)[0]], "error");
       return;
     }
+    setBlogWithholdUi(null);
     if (input.researchEnabled && !String(input.researchQuery || "").trim()) {
       const fallbackResearchQuery = [
         input.brandName,
@@ -1100,7 +1129,17 @@ export function ContentProvider({
 
     if (researchResult && (genOpts.regen || !input.researchFacts?.length)) {
       input = mergeResearchSessionIntoInput(input, researchResult);
+      input.regenReuseResearch = true;
+      input.v2ResearchReady = true;
+      input.v2PreWriteVerified = true;
+      input.v2PipelineStage =
+        input.v2PipelineStage || "information_research_verified";
     }
+
+    clearOverlayFinishTimers();
+    dismissLoadingOverlay();
+    generationEpochRef.current += 1;
+    const genEpoch = generationEpochRef.current;
 
     blogGenLock.current = true;
     setBlogGenHint(null);
@@ -1240,38 +1279,18 @@ export function ContentProvider({
             onStep: setPipelineStep,
           });
           if (!axis.ok) {
-            const rescuedUi = buildRescuedBlogPackForUi(pipelineInput);
-            if (rescuedUi) {
-              flushSync(() => {
-                setBlogContent(rescuedUi.pack);
-                setBlogGenHint(null);
-                setBlogGenHintSoft(false);
-                setBlogGenHintIsAuth(false);
-                setBlogResultRevealPending(false);
-                setGenerating((g) => ({ ...g, blog: false }));
-              });
-              blogOnScreenRef.current = true;
-              overlaySuccess = true;
-              finishLoadingOverlay("blog", startedAt, {
-                success: true,
-                immediate: true,
-                quietSuccess: true,
-              });
-              if (rescuedUi.preview && rescuedUi.userMessage) {
-                onToast?.(rescuedUi.userMessage, "info");
-              }
-              return;
-            }
+            if (generationEpochRef.current !== genEpoch) return;
+            const failMsg =
+              axis.userMessage ||
+              resolveBlogGenerationFailMessage(pipelineInput, {});
+            setBlogContent(null);
+            setBlogWithholdUi({ message: failMsg, withheld: true });
             blogGenLock.current = false;
             setGenerationSessionActive(false);
             setGenerating((g) => ({ ...g, blog: false }));
-            setResearchResult(null);
-            setBlogGenHint(axis.userMessage);
-            setBlogGenHintSoft(hasFilledBlogAxes(pipelineInput));
-            finishLoadingOverlay("blog", startedAt, {
+            finishLoadingOverlay(overlayChannel, startedAt, {
               success: false,
-              message: axis.userMessage,
-              hintSoft: hasFilledBlogAxes(pipelineInput),
+              message: failMsg,
               toastType: "info",
             });
             return;
@@ -1352,7 +1371,7 @@ export function ContentProvider({
           }
         }
         if (result.ok === false && !result.blogContent) {
-          const rescued = allowBlogUiRescue()
+          const rescued = allowBlogUiRescue(pipelineInput)
             ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
               (() => {
                 const pack = missionProseFallbackForUi(pipelineInput);
@@ -1390,7 +1409,7 @@ export function ContentProvider({
           blog = retry.blogContent;
         }
         if (!blog?.sections?.length) {
-          const rescued = allowBlogUiRescue()
+          const rescued = allowBlogUiRescue(pipelineInput)
             ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
               (() => {
                 const pack = missionProseFallbackForUi(pipelineInput);
@@ -1464,6 +1483,7 @@ export function ContentProvider({
           let delivery = resolveBlogUiDelivery(blog, pipelineInput, result);
           if (
             !delivery.ok &&
+            allowBlogUiRescue(pipelineInput) &&
             blog?.sections?.length &&
             isLlmOriginatedPack(blog, result)
           ) {
@@ -1484,7 +1504,7 @@ export function ContentProvider({
           }
           if (
             !delivery.ok &&
-            allowBlogUiRescue() &&
+            allowBlogUiRescue(pipelineInput) &&
             blog?.sections?.length &&
             !isLlmOriginatedPack(blog, result)
           ) {
@@ -1495,7 +1515,7 @@ export function ContentProvider({
               softPass: true,
             });
           }
-          if (!delivery.ok && allowBlogUiRescue()) {
+          if (!delivery.ok && allowBlogUiRescue(pipelineInput)) {
             if (blog?.sections?.length && hasFilledBlogAxes(pipelineInput)) {
               const forced = ensureBlogDisplayPack(
                 salvageBlogPackForDelivery(blog, pipelineInput),
@@ -1524,7 +1544,7 @@ export function ContentProvider({
               }
             }
           }
-          if (!delivery.ok && allowBlogUiRescue()) {
+          if (!delivery.ok && allowBlogUiRescue(pipelineInput)) {
             const fallbackPack = missionProseFallbackForUi(pipelineInput);
             if (fallbackPack) {
               const publishReady = isHumanDeliveryGrade(fallbackPack, pipelineInput);
@@ -1554,6 +1574,8 @@ export function ContentProvider({
                 resolveBlogGenerationFailMessage(pipelineInput, result);
               setBlogGenHint(failMsg);
               setBlogGenHintSoft(true);
+              setBlogContent(null);
+              setBlogWithholdUi({ message: failMsg, withheld: true });
               setGenerating((g) => ({ ...g, blog: false }));
               finishLoadingOverlay(overlayChannel, startedAt, {
                 success: false,
@@ -1563,7 +1585,40 @@ export function ContentProvider({
               return false;
             }
           }
-          const packForUi = delivery.pack;
+          if (!delivery.ok) {
+            const failMsg =
+              delivery.userMessage ||
+              resolveDeliveryFailureMessage(delivery.gate || {}) ||
+              resolveBlogGenerationFailMessage(pipelineInput, result);
+            setBlogGenHint(failMsg);
+            setBlogGenHintSoft(true);
+            setBlogContent(null);
+            setBlogWithholdUi({ message: failMsg, withheld: true });
+            setGenerating((g) => ({ ...g, blog: false }));
+            finishLoadingOverlay(overlayChannel, startedAt, {
+              success: false,
+              message: failMsg,
+              toastType: "info",
+            });
+            return false;
+          }
+          const gated = enforceCustomerBlogOutput(delivery.pack, pipelineInput);
+          if (!gated.ok || !gated.pack?.sections?.length) {
+            const failMsg =
+              gated.userMessage ||
+              delivery.userMessage ||
+              resolveBlogGenerationFailMessage(pipelineInput, result);
+            setBlogContent(null);
+            setBlogWithholdUi({ message: failMsg, withheld: true });
+            setGenerating((g) => ({ ...g, blog: false }));
+            finishLoadingOverlay(overlayChannel, startedAt, {
+              success: false,
+              message: failMsg,
+              toastType: "info",
+            });
+            return false;
+          }
+          const packForUi = gated.pack;
           const nextSource =
             blogDerive?.sourceChannel && blogDerive.sourceChannel !== "blog"
               ? blogDerive.sourceChannel
@@ -1575,6 +1630,7 @@ export function ContentProvider({
           });
           flushSync(() => {
             setBlogContent(packForUi);
+            setBlogWithholdUi(null);
             setBaseContentLabel(result.baseContentLabel);
             setSourceChannel(nextSource);
             clearDerived();
@@ -1611,6 +1667,7 @@ export function ContentProvider({
           return true;
         };
 
+  if (generationEpochRef.current !== genEpoch) return;
         const blogDelivered = deliverBlogResult();
         if (!blogDelivered) {
           blogGenLock.current = false;
@@ -1761,6 +1818,16 @@ export function ContentProvider({
               }),
             ]);
 
+            if (savedInsta && savedPlace && blog?.sections?.length) {
+              setTodayOperationsComplete({
+                blog,
+                place: savedPlace,
+                insta: savedInsta,
+                at: Date.now(),
+              });
+              brandHooks?.bumpScheduleRefresh?.();
+            }
+
             if (AUTO_RUN_PROMPT_ON_BLOG && allowPipelineChannel("image")) {
               // 이미지 프롬프트는 비동기로 분리해 3채널 본문 완료 체감을 우선한다.
               void (async () => {
@@ -1890,32 +1957,13 @@ export function ContentProvider({
 
         void runPostBlogTail();
       } catch (err) {
-        const rescuedUi = buildRescuedBlogPackForUi(pipelineInput, err?.payload);
-        if (rescuedUi) {
-          flushSync(() => {
-            setBlogContent(rescuedUi.pack);
-            setBlogGenHint(null);
-            setBlogGenHintSoft(false);
-            setBlogGenHintIsAuth(false);
-            setBlogResultRevealPending(false);
-            setGenerating((g) => ({ ...g, blog: false }));
-          });
-          blogOnScreenRef.current = true;
-          overlaySuccess = true;
-          finishLoadingOverlay(overlayChannel, startedAt, {
-            success: true,
-            immediate: true,
-            quietSuccess: true,
-          });
-          if (rescuedUi.preview && rescuedUi.userMessage) {
-            onToast?.(rescuedUi.userMessage, "info");
-          }
-          return;
-        }
+        if (generationEpochRef.current !== genEpoch) return;
         const norm = normalizeBlogGenerationFailure(err);
         setBlogGenHint(norm.message);
         setBlogGenHintSoft(norm.soft);
         setBlogGenHintIsAuth(err?.status === 401 || err?.status === 403);
+        setBlogContent(null);
+        setBlogWithholdUi({ message: norm.message, withheld: true });
         finishLoadingOverlay(overlayChannel, startedAt, {
           success: false,
           message: norm.message,
@@ -2245,7 +2293,7 @@ export function ContentProvider({
             blog = result.blogContent;
           }
           if (!blog?.sections?.length) {
-            const rescued = allowBlogUiRescue()
+            const rescued = allowBlogUiRescue(pipelineInput)
               ? forceLocalBlogPreviewDelivery(pipelineInput, result) ||
                 (() => {
                   const pack = missionProseFallbackForUi(pipelineInput);
@@ -3497,6 +3545,10 @@ export function ContentProvider({
       demoMode,
       user,
       brandHooks,
+      blogWithholdUi,
+      clearBlogWithholdUi,
+      todayOperationsComplete,
+      dismissTodayOperations,
       memoryContentIds,
       billingPlanId,
       billingBypassQuotas,
@@ -3550,6 +3602,10 @@ export function ContentProvider({
       demoMode,
       user,
       brandHooks,
+      blogWithholdUi,
+      clearBlogWithholdUi,
+      todayOperationsComplete,
+      dismissTodayOperations,
       memoryContentIds,
       billingPlanId,
       billingBypassQuotas,

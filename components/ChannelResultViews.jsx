@@ -5,6 +5,7 @@ import Icon from "./Icon";
 import FullCopyButton from "./FullCopyButton";
 import VerificationStatus from "./VerificationStatus";
 import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
+import { getChannelHumanVoice } from "@/lib/product/channelHumanVoice";
 
 function TagList({ tags }) {
   if (!tags?.length) return null;
@@ -28,10 +29,10 @@ export function PlaceResultView({ place, onCopy }) {
 
   return (
     <div className="space-y-3">
-      <DeliveryTrustBadge pack={place} className="mb-1" compact />
+      <DeliveryTrustBadge pack={place} channel="place" className="mb-1" compact />
       <div className="flex flex-wrap items-center justify-between gap-2">
       <p className="text-[12px] text-[var(--vision-muted)]">
-        사장님 공지 · 보고 방문
+        {getChannelHumanVoice("place").resultLine}
         {meta?.totalChars != null && (
           <span className="ml-2 font-medium text-[var(--vision-accent)]">
             {meta.totalChars}자 (공백 제외)
@@ -80,10 +81,10 @@ export function InstaResultView({ insta, onCopy }) {
 
   return (
     <div className="space-y-3">
-      <DeliveryTrustBadge pack={insta} className="mb-1" compact />
+      <DeliveryTrustBadge pack={insta} channel="instagram" className="mb-1" compact />
       <div className="flex flex-wrap items-center justify-between gap-2">
       <p className="text-[12px] text-[var(--vision-muted)]">
-        저장형 캡션 · 2025 로컬 감성
+        {getChannelHumanVoice("instagram").resultLine}
         {meta?.bodyChars != null && (
           <span className="ml-2 font-medium text-[var(--vision-accent)]">
             {meta.bodyChars}자
