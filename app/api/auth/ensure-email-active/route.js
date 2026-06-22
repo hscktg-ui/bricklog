@@ -9,6 +9,7 @@ import {
   userNeedsEmailConfirm,
 } from "@/lib/auth/ensureEmailActiveServer";
 import { confirmSignupEmail } from "@/lib/auth/signupEmailConfirm";
+import { lookupAuthUserByEmail } from "@/lib/auth/lookupAuthUserByEmail";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -107,28 +108,30 @@ export async function POST(request) {
     );
   }
 
-  const { data: userRow, error: lookupErr } =
-    await service.auth.admin.getUserByEmail(emailCheck.value);
-  if (lookupErr || !userRow?.user?.id) {
+  const { user: userRow, error: lookupErr } = await lookupAuthUserByEmail(
+    service,
+    emailCheck.value
+  );
+  if (lookupErr || !userRow?.id) {
     return NextResponse.json(
       { ok: false, userMessage: "계정을 찾지 못했습니다." },
       { status: 400 }
     );
   }
 
-  if (!isRecentSignupUser(userRow.user)) {
+  if (!isRecentSignupUser(userRow)) {
     return NextResponse.json(
       { ok: false, userMessage: "이메일 또는 비밀번호가 맞지 않습니다." },
       { status: 401 }
     );
   }
 
-  if (!userNeedsEmailConfirm(userRow.user)) {
+  if (!userNeedsEmailConfirm(userRow)) {
     return NextResponse.json({ ok: true, alreadyActive: true });
   }
 
   try {
-    await confirmSignupEmail(service, userRow.user.id);
+    await confirmSignupEmail(service, userRow.id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[api/auth/ensure-email-active]", err);

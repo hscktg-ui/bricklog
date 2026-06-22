@@ -47,6 +47,7 @@
     "test:click-blockers": "node scripts/diagnose-click-blockers.mjs",
     "test:signup-phone-required-flow": "node scripts/test-signup-phone-required-flow.mjs",
     "test:signup-register-flow": "node scripts/test-signup-register-flow.mjs",
+    "test:check-email-server": "node scripts/test-check-email-server.mjs",
     "test:post-signup-session": "node scripts/test-post-signup-session.mjs",
     "test:onboarding-friction": "node --import ./scripts/register-alias.mjs scripts/test-onboarding-friction.mjs",
     "test:human-prose-delivery": "node --import ./scripts/register-alias.mjs scripts/test-human-prose-delivery.mjs",

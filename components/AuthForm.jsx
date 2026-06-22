@@ -71,6 +71,7 @@ export default function AuthForm({
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [saveEmail, setSaveEmail] = useState(false);
   const [termsAgreed, setTermsAgreed] = useState(false);
@@ -147,6 +148,7 @@ export default function AuthForm({
     setPhoneCheckMsg("");
     setEmailRegistered(false);
     setEmailCheckMsg("");
+    setPasswordConfirm("");
     lastCheckedEmailRef.current = "";
   }, [initialMode]);
 
@@ -197,7 +199,9 @@ export default function AuthForm({
         const data = await res.json().catch(() => ({}));
         if (!data.ok) {
           setEmailRegistered(false);
-          setEmailCheckMsg("");
+          setEmailCheckMsg(
+            data.userMessage || "이메일을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요."
+          );
           return;
         }
         setEmailRegistered(Boolean(data.registered));
@@ -243,6 +247,17 @@ export default function AuthForm({
     if (mode === MODES.signup && !termsAgreed) {
       onToast?.("이용약관과 개인정보처리방침에 동의해 주세요.", "error");
       return;
+    }
+
+    if (mode === MODES.signup) {
+      if (password.length < 6) {
+        onToast?.("비밀번호는 6자 이상으로 설정해 주세요.", "error");
+        return;
+      }
+      if (password !== passwordConfirm) {
+        onToast?.("비밀번호 확인이 일치하지 않습니다.", "error");
+        return;
+      }
     }
 
     setLoading(true);
@@ -434,11 +449,21 @@ export default function AuthForm({
       phoneRegistered);
   const phoneAvailabilityBlocks =
     !phoneOptional && signupPhoneFilled && phoneRegistered;
+  const passwordConfirmFilled = passwordConfirm.length > 0;
+  const passwordMismatch =
+    mode === MODES.signup &&
+    passwordConfirmFilled &&
+    password !== passwordConfirm;
   const signupSubmitDisabled =
     loading ||
     signupLimited ||
     (mode === MODES.signup &&
-      (!termsAgreed || emailRegistered || phoneAvailabilityBlocks || phoneBlocksSignup));
+      (!termsAgreed ||
+        emailRegistered ||
+        phoneAvailabilityBlocks ||
+        phoneBlocksSignup ||
+        passwordMismatch ||
+        !passwordConfirmFilled));
 
   const signupSubmitLabel = (() => {
     if (loading) return "처리 중…";
@@ -455,6 +480,8 @@ export default function AuthForm({
     if (emailRegistered) return "이미 사용 중인 이메일입니다.";
     if (phoneAvailabilityBlocks) return "이미 등록된 휴대폰 번호입니다.";
     if (phoneBlocksSignup) return "휴대폰 문자 인증을 완료해 주세요.";
+    if (!passwordConfirmFilled) return "비밀번호 확인을 입력해 주세요.";
+    if (passwordMismatch) return "비밀번호 확인이 일치하지 않습니다.";
     return "";
   })();
 
@@ -607,6 +634,35 @@ export default function AuthForm({
                 mode === MODES.signup ? "6자 이상 입력" : "비밀번호"
               }
             />
+          </div>
+        )}
+
+        {mode === MODES.signup && (
+          <div>
+            <label
+              htmlFor="auth-password-confirm"
+              className="mb-1.5 block text-[13px] font-semibold text-[var(--vision-ink,#0f1a14)] sm:text-[12px]"
+            >
+              비밀번호 확인
+            </label>
+            <PasswordField
+              id="auth-password-confirm"
+              value={passwordConfirm}
+              onChange={setPasswordConfirm}
+              minLength={6}
+              autoComplete="new-password"
+              placeholder="비밀번호 다시 입력"
+              aria-label="비밀번호 확인"
+            />
+            {passwordMismatch ? (
+              <p className="mt-1 min-h-[1.25rem] text-[11px] text-[#E42939]" role="status">
+                비밀번호 확인이 일치하지 않습니다.
+              </p>
+            ) : (
+              <p className="mt-1 min-h-[1.25rem] text-[11px] text-transparent" aria-hidden>
+                ·
+              </p>
+            )}
           </div>
         )}
 
