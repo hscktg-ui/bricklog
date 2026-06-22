@@ -52,7 +52,7 @@ import {
   recordSignupFunnelStep,
 } from "@/lib/analytics/signupIntent";
 import { classifyAuthError } from "@/lib/auth/authErrorCode";
-import { signInAfterSignup } from "@/lib/auth/postSignupSession";
+import { applyServerAuthSession } from "@/lib/auth/postSignupSession";
 
 
 const MODES = {
@@ -239,6 +239,56 @@ export default function AuthForm({
     return () => clearTimeout(emailCheckTimer.current);
   }, [email, mode, runEmailAvailabilityCheck]);
 
+  const finalizeAuthenticatedSession = useCallback(
+    async ({ successToast, trackSignupSuccess = false }) => {
+      try {
+        if (trackSignupSuccess) {
+          await fetchWithAuth("/api/auth/terms", {
+            method: "POST",
+            body: JSON.stringify({
+              termsAgreed: true,
+              privacyAgreed: true,
+              marketingAgreed,
+            }),
+          });
+        }
+        await fetchWithAuth("/api/auth/profile", { method: "POST" });
+      } catch {
+        /* 프로필 테이블 미적용 시에도 로그인은 유지 */
+      }
+      persistSavedEmail(email, saveEmail);
+      if (trackSignupSuccess) {
+        recordSignupFunnelStep("signup_success", getSignupAttributionSource());
+      }
+      onToast?.(successToast, "success");
+      onAuthSuccess?.();
+    },
+    [email, saveEmail, marketingAgreed, onToast, onAuthSuccess]
+  );
+
+  const tryLoginExistingAccount = useCallback(
+    async (fallbackMessage) => {
+      try {
+        await applyServerAuthSession(email, password);
+        await finalizeAuthenticatedSession({
+          successToast: "이미 가입된 계정으로 로그인했습니다.",
+          trackSignupSuccess: true,
+        });
+        return true;
+      } catch (loginErr) {
+        onToast?.(
+          mapAuthError(loginErr?.message) ||
+            fallbackMessage ||
+            "이메일 또는 비밀번호가 맞지 않습니다. 비밀번호 찾기를 이용해 주세요.",
+          "error"
+        );
+        setMode(MODES.login);
+        return false;
+      }
+    },
+    [email, password, finalizeAuthenticatedSession, onToast]
+  );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -305,11 +355,10 @@ export default function AuthForm({
         }
 
         if (emailRegistered) {
-          onToast?.(
-            "이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해 주세요.",
-            "error"
+          const loggedIn = await tryLoginExistingAccount(
+            "이미 가입된 이메일입니다. 비밀번호를 확인하거나 비밀번호 찾기를 이용해 주세요."
           );
-          setMode(MODES.login);
+          if (loggedIn) return;
           return;
         }
 
@@ -333,12 +382,16 @@ export default function AuthForm({
         });
         const regData = await regRes.json().catch(() => ({}));
         if (!regRes.ok || !regData.ok) {
+          if (regData.code === "EMAIL_TAKEN") {
+            const loggedIn = await tryLoginExistingAccount(regData.userMessage);
+            if (loggedIn) return;
+            return;
+          }
           onToast?.(
             regData.userMessage ||
               "가입에 실패했습니다. 잠시 후 다시 시도해 주세요.",
             "error"
           );
-          if (regData.code === "EMAIL_TAKEN") setMode(MODES.login);
           return;
         }
 
@@ -377,26 +430,11 @@ export default function AuthForm({
           return;
         }
 
-        try {
-          await fetchWithAuth("/api/auth/terms", {
-            method: "POST",
-            body: JSON.stringify({
-              termsAgreed: true,
-              privacyAgreed: true,
-              marketingAgreed,
-            }),
-          });
-          await fetchWithAuth("/api/auth/profile", { method: "POST" });
-        } catch {
-          /* 프로필 테이블 미적용 시에도 가입은 유지 */
-        }
-        persistSavedEmail(email, saveEmail);
-        recordSignupFunnelStep("signup_success", getSignupAttributionSource());
-        onToast?.(
-          "가입되었습니다. 닉네임·호칭은 로그인 후 안내에서 입력할 수 있어요.",
-          "success"
-        );
-        onAuthSuccess?.();
+        await finalizeAuthenticatedSession({
+          successToast:
+            "가입되었습니다. 닉네임·호칭은 로그인 후 안내에서 입력할 수 있어요.",
+          trackSignupSuccess: true,
+        });
         return;
       }
 
@@ -404,23 +442,11 @@ export default function AuthForm({
         recordLoginIntent(authContext);
       }
 
-      const signedIn = await signInAfterSignup(email, password);
-      if (!signedIn?.session) {
-        throw new Error("로그인에 실패했습니다.");
-      }
-      persistSavedEmail(email, saveEmail);
-      for (let i = 0; i < 4; i += 1) {
-        const { data: sessionData } = await supabase.auth.getSession();
-        if (sessionData?.session) break;
-        await new Promise((r) => setTimeout(r, 120));
-      }
-      try {
-        await fetchWithAuth("/api/auth/profile", { method: "POST" });
-      } catch {
-        /* ignore */
-      }
-      onToast?.("로그인되었습니다.", "success");
-      onAuthSuccess?.();
+      await applyServerAuthSession(email, password);
+      await finalizeAuthenticatedSession({
+        successToast: "로그인되었습니다.",
+        trackSignupSuccess: false,
+      });
     } catch (err) {
       if (mode === MODES.login) {
         const { code } = classifyAuthError(err?.message);
