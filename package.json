@@ -51,6 +51,7 @@
     "test:signup-trust-copy": "node scripts/test-signup-trust-copy.mjs",
     "test:signup-form-gate": "node scripts/test-signup-form-gate.mjs",
     "test:content-schedule-calendar": "node --import ./scripts/register-alias.mjs scripts/test-content-schedule-calendar.mjs",
+    "test:phone-rhythm-schedule": "node --import ./scripts/register-alias.mjs scripts/test-phone-rhythm-schedule.mjs",
     "test:beta-access-prod": "node scripts/test-beta-access-prod.mjs",
     "patch:supabase-auth-signup": "node scripts/patch-supabase-auth-signup.mjs",
     "test:post-signup-session": "node scripts/test-post-signup-session.mjs",

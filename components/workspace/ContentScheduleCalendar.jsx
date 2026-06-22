@@ -49,6 +49,7 @@ export default function ContentScheduleCalendar({
   onMonthChange,
   gapDays = null,
   loading = false,
+  rhythm = [],
 }) {
   const selectedItems = historyByDay[selectedDateKey] || [];
   const prev = shiftMonth(calendar.year, calendar.month, -1);
@@ -180,6 +181,57 @@ export default function ContentScheduleCalendar({
       </section>
 
       <aside className="space-y-4">
+        {rhythm?.length ? (
+          <section className={`${VISION_PANEL} p-4 sm:p-5`}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--vision-muted)]">
+              채널 발행 주기
+            </p>
+            <ul className="mt-4 space-y-2.5">
+              {rhythm.map((row) => (
+                <li
+                  key={row.channel}
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3.5 py-2.5"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-2 w-2 rounded-full ${CHANNEL_DOT[row.channel] || CHANNEL_DOT.blog}`}
+                    />
+                    <span className="text-[13px] font-semibold text-[var(--vision-ink)]">
+                      {row.label}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] font-medium text-[var(--vision-muted)]">
+                      {row.daysSinceLast == null
+                        ? "기록 없음"
+                        : `${row.daysSinceLast}일 전 · ${row.cadenceDays}일 주기`}
+                    </p>
+                    <p
+                      className={`text-[10px] font-semibold uppercase tracking-wide ${
+                        row.status === "overdue"
+                          ? "text-[#E42939]"
+                          : row.status === "due"
+                            ? "text-[#8B5A00]"
+                            : row.status === "ok"
+                              ? "text-[var(--vision-accent-deep,#03a94d)]"
+                              : "text-[var(--vision-muted)]"
+                      }`}
+                    >
+                      {row.status === "overdue"
+                        ? "업데이트 지연"
+                        : row.status === "due"
+                          ? "업데이트 권장"
+                          : row.status === "ok"
+                            ? "리듬 양호"
+                            : "시작 필요"}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <section className={`${VISION_PANEL} p-4 sm:p-5`}>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--vision-accent-deep,#03a94d)]">
             브랜드 매니저 팁

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
+import { fetchGenerationsForSchedule } from "@/lib/generations";
 import { buildContentOperatingPlan } from "@/lib/product/briclogBrandContentOS";
 import { buildContentScheduleView } from "@/lib/product/contentScheduleCalendar";
 import ContentScheduleCalendar from "@/components/workspace/ContentScheduleCalendar";
@@ -42,6 +43,7 @@ export default function ContentPlanWorkspace({
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [viewMonth, setViewMonth] = useState(now.getMonth() + 1);
   const [memoryItems, setMemoryItems] = useState([]);
+  const [generationItems, setGenerationItems] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [selectedDateKey, setSelectedDateKey] = useState("");
 
@@ -63,6 +65,7 @@ export default function ContentPlanWorkspace({
     () =>
       buildContentScheduleView({
         memoryItems,
+        generationItems,
         contentArchive,
         brandId: brandId || activeBrand?.id,
         brandName: input.brandName,
@@ -76,6 +79,7 @@ export default function ContentPlanWorkspace({
       }),
     [
       memoryItems,
+      generationItems,
       contentArchive,
       brandId,
       activeBrand?.id,
@@ -96,19 +100,28 @@ export default function ContentPlanWorkspace({
     const id = brandId || activeBrand?.id;
     if (!id || !userId) {
       setMemoryItems([]);
+      setGenerationItems([]);
       return;
     }
     setHistoryLoading(true);
+    const since = new Date(now);
+    since.setDate(since.getDate() - 120);
+    const sinceIso = since.toISOString();
     try {
       const q = new URLSearchParams({ brandId: id });
-      const data = await fetchWithAuth(`/api/memory/content?${q}`);
-      setMemoryItems(data.items || []);
+      const [memRes, gens] = await Promise.all([
+        fetchWithAuth(`/api/memory/content?${q}`),
+        fetchGenerationsForSchedule(userId, { sinceIso, brandId: id }),
+      ]);
+      setMemoryItems(memRes.items || []);
+      setGenerationItems(gens || []);
     } catch {
       setMemoryItems([]);
+      setGenerationItems([]);
     } finally {
       setHistoryLoading(false);
     }
-  }, [brandId, activeBrand?.id, userId]);
+  }, [brandId, activeBrand?.id, userId, now]);
 
   useEffect(() => {
     loadHistory();
@@ -164,6 +177,7 @@ export default function ContentPlanWorkspace({
           calendar={scheduleView.calendar}
           historyByDay={scheduleView.historyByDay}
           tips={scheduleView.tips}
+          rhythm={scheduleView.rhythm}
           selectedDateKey={selectedDateKey || scheduleView.selectedDefaultKey}
           onSelectDateKey={setSelectedDateKey}
           onMonthChange={handleMonthChange}
