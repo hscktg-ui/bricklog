@@ -10,6 +10,7 @@ import {
   LANDING_SECONDARY_CTA,
 } from "@/lib/landing/ctaCopy";
 import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
+import { BRICLOG_SLOGAN } from "@/lib/brand/copy";
 import {
   VISION_CTA_ACCENT,
   VISION_CTA_GHOST_SUBTLE,
@@ -52,7 +53,7 @@ export default function HeroSection({
 
       <div className="relative mx-auto max-w-4xl text-center">
         <p className={`${VISION_EYEBROW} briclog-vision-stagger briclog-vision-stagger-1`}>
-          BRICLOG · Brand Content OS
+          {BRICLOG_SLOGAN}
         </p>
 
         <h1

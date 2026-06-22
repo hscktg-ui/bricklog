@@ -1,6 +1,7 @@
 "use client";
 
 import PlanComparison from "@/components/billing/PlanComparison";
+import { LANDING_PAYMENT_BETA_NOTE } from "@/lib/brand/copy";
 import {
   LANDING_CTA_FOOTNOTE,
   LANDING_PRIMARY_CTA,
@@ -29,7 +30,11 @@ export default function PricingSection({ onStart }) {
         </p>
 
         <div className="mt-12">
-          <PlanComparison variant="landing" onStart={onStart} paymentNote="" />
+          <PlanComparison
+            variant="landing"
+            onStart={onStart}
+            paymentNote={LANDING_PAYMENT_BETA_NOTE}
+          />
         </div>
 
         <div className="mt-12 text-center">

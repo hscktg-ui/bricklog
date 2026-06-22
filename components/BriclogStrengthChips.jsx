@@ -98,12 +98,10 @@ export default function BriclogStrengthChips({
         {meta.llmDeliveryPolish ? <DetailChip>AI 원고 마감</DetailChip> : null}
         {meta.briclogWriterEngine ? (
           <DetailChip>
-            {meta.writerEngineExpanded ? "GPT 분량 확장" : "Writer Engine"}
+            {meta.writerEngineExpanded ? "분량 정리" : "톤 맞춤"}
           </DetailChip>
         ) : null}
-        {meta.adaptiveQualityModeLabel ? (
-          <DetailChip>{meta.adaptiveQualityModeLabel}</DetailChip>
-        ) : null}
+        {meta.adaptiveQualityModeLabel ? <DetailChip>발행 전 점검</DetailChip> : null}
         {!guide.alignmentOk ? (
           <DetailChip warn>
             화자 맞춤 · {speakerLabel}

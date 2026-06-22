@@ -5,8 +5,8 @@ import {
   CUSTOMER_DRAFT_READY,
   CUSTOMER_DRAFT_REVIEW,
 } from "@/lib/copy/customerFacing";
-import { scoreLengthTierCompliance } from "@/lib/content/humanDeliveryRules";
 import { getBlogLengthTierLabel } from "@/lib/constants";
+import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
 
 function ChannelRow({ label, ready, hint }) {
   return (
@@ -25,6 +25,18 @@ function ChannelRow({ label, ready, hint }) {
   );
 }
 
+function resolvePackHint(pack) {
+  if (!pack) {
+    return { ready: false, hint: "아직 없음" };
+  }
+  const readiness = resolvePublishReadiness(pack);
+  const ready = readiness.status === "ready";
+  const hint = ready
+    ? CUSTOMER_DRAFT_READY
+    : readiness.label || CUSTOMER_DRAFT_REVIEW;
+  return { ready, hint };
+}
+
 export default function QualityPanel({
   results,
   meta,
@@ -35,25 +47,16 @@ export default function QualityPanel({
 
   const tierKey =
     results.blog._meta?.blogLengthTier || meta?.blogLengthTier || blogLengthTier;
-  const length = scoreLengthTierCompliance(results.blog, {
-    input: { blogLengthTier: tierKey },
-    blogLengthTier: tierKey,
-  });
-  const blogReady = length.ok;
-  const blogHint = blogReady ? CUSTOMER_DRAFT_READY : CUSTOMER_DRAFT_REVIEW;
+  const blog = resolvePackHint(results.blog);
+  const place = resolvePackHint(results.smartplace);
+  const insta = resolvePackHint(results.insta);
 
-  const hasPlace = Boolean(
-    results.smartplace?.detailBody || results.smartplace?.body
-  );
-  const hasInsta = Boolean(
-    results.insta?.lineBreakBody || results.insta?.body
-  );
   const hasTags = Boolean(
     results.hashtag?.all?.length || results.hashtag?.localTags?.length
   );
   const hasImage = Boolean(results.imagePrompt?.thumbnailPrompt);
 
-  const readyCount = [blogReady, hasPlace, hasInsta, hasTags, hasImage].filter(
+  const readyCount = [blog.ready, place.ready, insta.ready, hasTags, hasImage].filter(
     Boolean
   ).length;
 
@@ -75,18 +78,18 @@ export default function QualityPanel({
         <ul className="space-y-1.5">
           <ChannelRow
             label={`이야기 · ${getBlogLengthTierLabel(tierKey)}`}
-            ready={blogReady}
-            hint={blogHint}
+            ready={blog.ready}
+            hint={blog.hint}
           />
           <ChannelRow
             label="스마트플레이스"
-            ready={hasPlace}
-            hint={hasPlace ? CUSTOMER_DRAFT_READY : "아직 없음"}
+            ready={place.ready}
+            hint={place.hint}
           />
           <ChannelRow
             label="인스타그램"
-            ready={hasInsta}
-            hint={hasInsta ? CUSTOMER_DRAFT_READY : "아직 없음"}
+            ready={insta.ready}
+            hint={insta.hint}
           />
           <ChannelRow
             label="해시태그"
@@ -100,8 +103,8 @@ export default function QualityPanel({
           />
         </ul>
         <p className="mt-2 text-[11px] leading-relaxed text-[#8B95A1]">
-          분량·말투는 왼쪽 폼에서 고른 약속을 기준으로 맞춥니다. 숫자·키워드
-          횟수는 표시하지 않습니다.
+          조사·톤·발행 준비도를 점검한 뒤 복사해 올리세요. 내부 점수는 표시하지
+          않습니다.
         </p>
       </div>
     </details>
