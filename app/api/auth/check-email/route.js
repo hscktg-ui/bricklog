@@ -44,7 +44,7 @@ export async function GET(request) {
       registered: result.registered,
       valid: true,
       userMessage: result.registered
-        ? "이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해 주세요."
+        ? "이미 가입된 이메일입니다. 로그인 탭에서 기존 비밀번호로 로그인해 주세요."
         : "사용 가능한 이메일입니다.",
     });
   } catch {

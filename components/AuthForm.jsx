@@ -266,27 +266,16 @@ export default function AuthForm({
     [email, saveEmail, marketingAgreed, onToast, onAuthSuccess]
   );
 
-  const tryLoginExistingAccount = useCallback(
-    async (fallbackMessage) => {
-      try {
-        await applyServerAuthSession(email, password);
-        await finalizeAuthenticatedSession({
-          successToast: "이미 가입된 계정으로 로그인했습니다.",
-          trackSignupSuccess: true,
-        });
-        return true;
-      } catch (loginErr) {
-        onToast?.(
-          mapAuthError(loginErr?.message) ||
-            fallbackMessage ||
-            "이메일 또는 비밀번호가 맞지 않습니다. 비밀번호 찾기를 이용해 주세요.",
-          "error"
-        );
-        setMode(MODES.login);
-        return false;
-      }
+  const redirectToLoginForExistingEmail = useCallback(
+    (message) => {
+      setMode(MODES.login);
+      onToast?.(
+        message ||
+          "이미 가입된 이메일입니다. 로그인 탭에서 기존 비밀번호를 입력해 주세요.",
+        "error"
+      );
     },
-    [email, password, finalizeAuthenticatedSession, onToast]
+    [onToast]
   );
 
   const handleSubmit = async (e) => {
@@ -355,10 +344,9 @@ export default function AuthForm({
         }
 
         if (emailRegistered) {
-          const loggedIn = await tryLoginExistingAccount(
-            "이미 가입된 이메일입니다. 비밀번호를 확인하거나 비밀번호 찾기를 이용해 주세요."
+          redirectToLoginForExistingEmail(
+            "이미 가입된 이메일입니다. 로그인 탭에서 기존 비밀번호를 입력해 주세요. 비밀번호를 잊으셨다면 비밀번호 찾기를 이용해 주세요."
           );
-          if (loggedIn) return;
           return;
         }
 
@@ -383,8 +371,7 @@ export default function AuthForm({
         const regData = await regRes.json().catch(() => ({}));
         if (!regRes.ok || !regData.ok) {
           if (regData.code === "EMAIL_TAKEN") {
-            const loggedIn = await tryLoginExistingAccount(regData.userMessage);
-            if (loggedIn) return;
+            redirectToLoginForExistingEmail(regData.userMessage);
             return;
           }
           onToast?.(
@@ -684,6 +671,19 @@ export default function AuthForm({
             <p className="mt-1 min-h-[1.25rem] text-[11px] text-transparent" aria-hidden>
               ·
             </p>
+          ) : null}
+          {mode === MODES.signup && emailRegistered ? (
+            <button
+              type="button"
+              className={`${AUTH_LINK_CLASS} mt-1.5 text-[12px] font-semibold`}
+              onClick={() =>
+                redirectToLoginForExistingEmail(
+                  "로그인 탭으로 이동했습니다. 기존 비밀번호를 입력해 주세요."
+                )
+              }
+            >
+              로그인 탭으로 이동
+            </button>
           ) : null}
         </div>
 
