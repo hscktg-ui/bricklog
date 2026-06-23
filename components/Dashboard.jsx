@@ -174,7 +174,7 @@ export default function Dashboard({
     return () => clearTimeout(t);
   }, [toast.visible, toast.message]);
 
-  const loadHistory = useCallback(async () => {
+  const loadHistory = useCallback(async (brandId) => {
     if (demoMode) {
       setHistoryRecords([]);
       return;
@@ -195,7 +195,7 @@ export default function Dashboard({
       }
       const list = await fetchGenerations(user.id, {
         sinceIso,
-        brandId: activeBrandId || undefined,
+        brandId: brandId || undefined,
       });
       setHistoryRecords(list);
     } catch (err) {
@@ -203,7 +203,7 @@ export default function Dashboard({
     } finally {
       setHistoryLoading(false);
     }
-  }, [user.id, showToast, demoMode, activeBrandId]);
+  }, [user.id, showToast, demoMode]);
 
   useEffect(() => {
     if (activeMenu === "history") loadHistory();
@@ -283,7 +283,7 @@ export default function Dashboard({
           setMobileOpen={setMobileOpen}
           historyRecords={historyRecords}
           historyLoading={historyLoading}
-          loadHistory={loadHistory}
+          loadHistory={loadHistoryForBrand}
           selectedHistoryId={selectedHistoryId}
           setSelectedHistoryId={setSelectedHistoryId}
           selectedRecord={selectedRecord}
@@ -332,6 +332,10 @@ function DashboardWithBrands({
   onRequestProfileSetup,
 }) {
   const brandWs = useBrandWorkspace();
+  const loadHistoryForBrand = useCallback(
+    () => loadHistory(brandWs.activeBrandId),
+    [loadHistory, brandWs.activeBrandId]
+  );
   const brandHooks = useMemo(
     () => ({
       activeBrand: brandWs.activeBrand,
