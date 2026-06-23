@@ -169,7 +169,6 @@ while (Date.now() - startedAt < DURATION_MS) {
   run("test:phase-gate", "npm", ["run", "test:phase-gate"]);
   if (PROD_GATE && cycle % 4 === 0) {
     run("test:phase-gate:prod", "npm", ["run", "test:phase-gate:prod"], {
-      PHASE_GATE_PROD: "1",
       BASE_URL: process.env.BASE_URL || "https://briclog.ai",
     });
   }

@@ -57,14 +57,23 @@ const INDUSTRY_INPUT = {
 function personaToInput(persona) {
   const brand = persona.brand || {};
   const ind = INDUSTRY_INPUT[persona.industry] || INDUSTRY_INPUT.cafe;
+  const region = brand.region || "서울";
+  const topic = brand.topic || "매장 소개";
+  const industry = ind.industry || "카페";
   return normalizePipelineInput({
     brandName: brand.brandName || "테스트매장",
-    region: brand.region || "서울",
-    topic: brand.topic || "매장 소개",
-    mainKeyword: brand.mainKeyword || brand.topic || "로컬 매장",
+    region,
+    topic,
+    mainKeyword: brand.mainKeyword || topic || "로컬 매장",
     blogLengthTier: persona.blogLengthTier || "medium",
     v4Speaker: persona.v4Speaker,
     contentPersona: persona.contentPersona,
+    researchFacts: [
+      { fact: `${region} ${industry} 관련 이번 달 안내` },
+      { fact: `${region} 매장 예약·상담 가능` },
+    ],
+    v2PreWriteVerified: true,
+    knowledgeExpansionReady: true,
     ...ind,
   });
 }

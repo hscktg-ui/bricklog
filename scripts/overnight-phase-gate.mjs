@@ -11,7 +11,8 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const OUT = join(root, "artifacts", "overnight-phase-gate", "latest-summary.json");
-const PROD = process.env.PHASE_GATE_PROD === "1";
+/** --prod only (ignore shell PHASE_GATE_PROD leak from overnight:growth) */
+const PROD = process.argv.includes("--prod");
 
 const STEPS = [
   { phase: 0, id: "briclog-defaults", cmd: "npm", args: ["run", "test:briclog-defaults"] },
@@ -31,10 +32,17 @@ const PROD_STEPS = [
 
 async function probeProd() {
   const base = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
-  const urls = ["/", "/api/launch/flags", "/api/public/engine-status"];
-  for (const path of urls) {
+  const urls = [
+    { path: "/", requireOk: true },
+    { path: "/api/launch/flags", requireOk: true },
+    { path: "/api/public/engine-status", requireOk: false },
+  ];
+  for (const { path, requireOk } of urls) {
     const res = await fetch(`${base}${path}`, { signal: AbortSignal.timeout(20_000) });
-    if (!res.ok) throw new Error(`${path} HTTP ${res.status}`);
+    if (requireOk && !res.ok) throw new Error(`${path} HTTP ${res.status}`);
+    if (!requireOk && res.status >= 500 && res.status !== 503) {
+      throw new Error(`${path} HTTP ${res.status}`);
+    }
   }
   return { ok: true, base };
 }

@@ -61,7 +61,7 @@
     "test:blog-async-job": "node --import ./scripts/register-alias.mjs scripts/test-blog-async-job.mjs",
     "test:publish-ready-kpi": "node --import ./scripts/register-alias.mjs scripts/test-publish-ready-kpi.mjs",
     "test:phase-gate": "node scripts/overnight-phase-gate.mjs",
-    "test:phase-gate:prod": "node scripts/overnight-phase-gate.mjs",
+    "test:phase-gate:prod": "node scripts/overnight-phase-gate.mjs --prod",
     "db:apply-blog-jobs": "node scripts/apply-supabase-blog-jobs.mjs",
     "test:column-visit-north-star": "node --import ./scripts/register-alias.mjs scripts/test-column-visit-north-star.mjs",
     "test:channel-visit-north-star": "node --import ./scripts/register-alias.mjs scripts/test-channel-visit-north-star.mjs",
