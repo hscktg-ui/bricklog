@@ -164,12 +164,13 @@ export async function POST(request) {
         ),
       };
     }
-    if (result.blogContent?.sections?.length && !result.withheld) {
-      if (isBriclogFastPipelineEnabled()) {
-        const alreadyEscaped = Boolean(
-          result.blogContent?._meta?.writerFirstOrchestratorEscape &&
+    if (result.blogContent?.sections?.length) {
+      const alreadyEscaped = Boolean(
+        result.blogContent?._meta?.writerFirstOrchestratorEscape &&
           result.blogContent?._meta?.publishReady
-        );
+      );
+      if (!result.withheld || alreadyEscaped) {
+      if (isBriclogFastPipelineEnabled()) {
         const blog = alreadyEscaped
           ? result.blogContent
           : finalizeGpt55BlogPackForUi(result.blogContent, hydratedInput);
@@ -205,6 +206,7 @@ export async function POST(request) {
           ...result,
           blogContent: blog,
         };
+      }
       }
     }
 

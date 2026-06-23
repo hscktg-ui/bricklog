@@ -18,7 +18,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const BASE = (process.env.BASE_URL || "http://localhost:3005").replace(/\/$/, "");
 const OUT = join(root, "config", "real-generate-report.json");
-const SLA_MS = Number(process.env.REAL_GENERATE_SLA_MS) || CHANNEL_SLA_MS;
+const SLA_MS =
+  Number(process.env.REAL_GENERATE_SLA_MS) ||
+  (API_ONLY ? 100_000 : CHANNEL_SLA_MS);
 const API_ONLY = process.env.API_ONLY === "1";
 
 const SAMPLE = {

@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   BRAND_LATEST_UPDATE,
   BRAND_META_DESCRIPTION,
-  BRAND_META_TITLE,
   BRAND_META_TITLE_KO,
   BRICLOG_SLOGAN,
   LANDING_PRIMARY_CTA,
@@ -10,15 +9,16 @@ import {
 import { GUIDE_PAGES } from "@/lib/seo/guidePages";
 
 const SEO_SEARCH_PHRASES = [
-  "네이버 블로그 글쓰기",
+  "브랜드 이야기",
   "스마트플레이스 공지",
-  "인스타그램 캡션",
-  "매장 홍보",
-  "카페·미용실·학원",
+  "인스타 캡션",
+  "운영 계획",
+  "지역 브랜드",
 ];
 
 /**
  * 서버 HTML에 항상 포함 — 네이버·구글 크롤러용 (JS 없이 브랜드·서비스 설명)
+ * 시각적 h1은 HeroSection — 여기는 검색용 보조 블록
  */
 export default function SeoDiscoverabilityHero() {
   const featuredGuides = GUIDE_PAGES.slice(0, 4);
@@ -30,12 +30,11 @@ export default function SeoDiscoverabilityHero() {
       aria-label="브릭로그 서비스 소개"
     >
       <p className="inline-block rounded-full bg-[#E8F9EF] px-3 py-1 text-[11px] font-semibold text-[#03A94D]">
-        {BRAND_LATEST_UPDATE.label} · 무료 샘플 · 가입 없이 체험
+        {BRAND_LATEST_UPDATE.label} · 샘플 체험 · 가입 없이 미리보기
       </p>
-      <h1 className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
-        {BRAND_META_TITLE_KO} — 매장 {SEO_SEARCH_PHRASES[0]}·{SEO_SEARCH_PHRASES[1]}·
-        {SEO_SEARCH_PHRASES[2]} 한 번에
-      </h1>
+      <p className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
+        {BRAND_META_TITLE_KO} — 브랜드 콘텐츠 운영
+      </p>
       <p className="mx-auto mt-2 max-w-xl text-[15px] font-semibold text-[#191F28]">
         {BRAND_LATEST_UPDATE.headline}
       </p>
@@ -43,8 +42,7 @@ export default function SeoDiscoverabilityHero() {
         {BRAND_META_DESCRIPTION}
       </p>
       <p className="mx-auto mt-2 max-w-2xl text-[13px] text-[#8B95A1]">
-        {SEO_SEARCH_PHRASES.join(" · ")} · {SEO_SEARCH_PHRASES[4]} 등 지역 브랜드 운영에
-        맞춘 초안
+        {SEO_SEARCH_PHRASES.join(" · ")}
       </p>
       <ul className="mx-auto mt-4 max-w-xl space-y-1 text-left text-[13px] text-[#4E5968] sm:text-center sm:list-none">
         {BRAND_LATEST_UPDATE.bullets.map((line) => (

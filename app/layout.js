@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
-import SiteFooter from "@/components/layout/SiteFooter";
+import ConditionalSiteFooter from "@/components/layout/ConditionalSiteFooter";
 import SessionTelemetry from "@/components/analytics/SessionTelemetry";
 import JsonLdScript from "@/components/seo/JsonLdScript";
 import CrawlableBrandIntro from "@/components/seo/CrawlableBrandIntro";
@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
           <SessionTelemetry />
         </Suspense>
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-        <SiteFooter />
+        <ConditionalSiteFooter />
       </body>
     </html>
   );

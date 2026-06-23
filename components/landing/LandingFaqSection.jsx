@@ -23,11 +23,11 @@ export default function LandingFaqSection() {
           시작 전에 궁금한 점
         </h2>
         <p className="mt-3 text-[16px] leading-relaxed text-[var(--vision-muted)]">
-          매장·브랜드 운영자가 많이 묻는 내용입니다. 더 궁금하면{" "}
+          브랜드·지역 운영자가 많이 묻는 내용입니다. 더 궁금하면{" "}
           <Link href="/help" className="font-semibold text-[var(--vision-accent)] hover:underline">
             전체 FAQ
           </Link>
-          또는 오른쪽 아래 ? AI 도움말을 이용해 주세요.
+          또는 오른쪽 아래 ? 도움말을 이용해 주세요.
         </p>
 
         {LANDING_FAQ_CATEGORIES.map((cat) => {

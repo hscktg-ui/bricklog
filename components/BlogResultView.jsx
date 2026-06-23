@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { isLaunchPublishFirstMode } from "@/lib/config/launchPublishFlags";
 import { trackContentEvent } from "@/lib/feedback/trackEvent";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolveBlogLengthTier } from "@/lib/constants";
@@ -192,12 +193,14 @@ export default function BlogResultView({
     ...v4Suggestions,
     qualityHint,
   ].filter(Boolean);
+  const launchPublish = isLaunchPublishFirstMode();
   const showV4Hint =
-    draft._meta?.softPass ||
+    !launchPublish &&
+    (draft._meta?.softPass ||
     draft._meta?.deliveryPreview ||
     draft._meta?.deliveryRescue ||
     qualityHint ||
-    (v4Suggestions.length > 0 && !draft._meta?.passOutput);
+    (v4Suggestions.length > 0 && !draft._meta?.passOutput));
   const complianceBanner =
     draft._meta?.complianceUserBanner ||
     (draft._meta?.sensitiveIndustry && "법·의료 정보는 반드시 전문가 확인");

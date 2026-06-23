@@ -191,7 +191,12 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   useEffect(() => {
     if (generating.blog) return undefined;
-    const persist = () => saveFormDraft(debouncedDraftForSave, userId);
+    const persist = () =>
+      saveFormDraft(
+        debouncedDraftForSave,
+        userId,
+        debouncedDraftForSave?.brandId
+      );
     if (typeof requestIdleCallback === "function") {
       const id = requestIdleCallback(persist, { timeout: 2500 });
       return () => cancelIdleCallback(id);
@@ -1015,7 +1020,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
             )}
             {resultTab === "image" && !imagePrompts && (
               <p className="text-center text-[14px] text-[#8B95A1]">
-                썸네일 문구는 「썸네일 문구」 메뉴에서 이어 만들 수 있어요.
+                썸네일 문구는 이야기 결과 탭 「썸네일」에서 이어 만들 수 있어요.
               </p>
             )}
           </>

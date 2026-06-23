@@ -14,6 +14,8 @@ import {
   isChannelPackDeferred,
   shouldSkipClientAxisResearch,
 } from "../lib/config/briclogFastPipeline.js";
+import { isLaunchPublishFirstMode, LAUNCH_PUBLISH_CLIENT_FETCH_MS } from "../lib/config/launchPublishFlags.js";
+import { isGpt55WriterDominant } from "../lib/llm/llmProvider.js";
 import { estimateBlogGenerationMs } from "../lib/loading/estimateGenerationMs.js";
 import { ensureChannelDelivery } from "../lib/generation/ensureChannelDelivery.js";
 
@@ -26,9 +28,20 @@ delete process.env.BRICLOG_MAX_QUALITY;
 
 const SLA = getAllChannelSlaBudgetMs();
 assert(SLA <= 30_000, `SLA budget ${SLA} <= 30s`);
-assert(getGenerationTimeBudgetMs() <= SLA, "generation budget within SLA");
-assert(getLlmLoopBudgetMs() < getGenerationTimeBudgetMs(), "LLM loop < total");
-assert(getBlogClientFetchTimeoutMs() <= SLA + 6_000, "blog fetch cap");
+if (isLaunchPublishFirstMode()) {
+  assert(getGenerationTimeBudgetMs() <= 50_000, "launch gen budget");
+} else {
+  assert(getGenerationTimeBudgetMs() <= SLA, "generation budget within SLA");
+}
+assert(getLlmLoopBudgetMs() <= getGenerationTimeBudgetMs(), "LLM loop <= total");
+if (isLaunchPublishFirstMode()) {
+  assert(getBlogClientFetchTimeoutMs() === LAUNCH_PUBLISH_CLIENT_FETCH_MS, "launch publish fetch cap");
+  assert(getGenerationTimeBudgetMs() <= 45_000, "launch gen budget <= 45s");
+} else if (isGpt55WriterDominant()) {
+  assert(getBlogClientFetchTimeoutMs() >= 120_000, "gpt55 blog fetch >= 120s");
+} else {
+  assert(getBlogClientFetchTimeoutMs() <= SLA + 6_000, "blog fetch cap");
+}
 assert(getChannelClientFetchTimeoutMs({ channelStandaloneFast: true, contentChannel: "place" }) <= 20_000, "channel fast fetch cap");
 
 const estPack = estimateBlogGenerationMs(

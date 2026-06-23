@@ -55,6 +55,7 @@
     "test:channel-human-voice": "node --import ./scripts/register-alias.mjs scripts/test-channel-human-voice.mjs",
     "test:writer-sovereign": "node --import ./scripts/register-alias.mjs scripts/test-writer-sovereign.mjs",
     "test:writer-first-delivery": "node --import ./scripts/register-alias.mjs scripts/test-writer-first-delivery.mjs",
+    "test:launch-publish-mode": "node --import ./scripts/register-alias.mjs scripts/test-launch-publish-mode.mjs",
     "test:column-visit-north-star": "node --import ./scripts/register-alias.mjs scripts/test-column-visit-north-star.mjs",
     "test:channel-visit-north-star": "node --import ./scripts/register-alias.mjs scripts/test-channel-visit-north-star.mjs",
     "test:brand-content-customer-gate": "node --import ./scripts/register-alias.mjs scripts/test-brand-content-customer-gate.mjs",

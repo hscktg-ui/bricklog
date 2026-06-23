@@ -655,32 +655,28 @@ export function ContentProvider({
   );
 
   useEffect(() => {
-    const draft = loadFormDraft(user?.id);
     const publicDraft = consumePublicTestSignupDraft();
     const today = new Date().toISOString().slice(0, 10);
-    if (draft || publicDraft) {
+    if (publicDraft) {
       const merged = sanitizeFormInputIndustryScope(
         {
           ...DEFAULT_BLOG_INPUT,
-          ...draft,
-          contentDate: draft?.contentDate || today,
+          contentDate: today,
         },
-        resolveBriclogIndustryKey(draft || {})
+        resolveBriclogIndustryKey(publicDraft || {})
       );
-      if (publicDraft) {
-        setSignupDraftRestored(true);
-        if (!merged.brandName?.trim() && publicDraft.brandName) {
-          merged.brandName = publicDraft.brandName;
-        }
-        if (!merged.region?.trim() && publicDraft.region) {
-          merged.region = publicDraft.region;
-        }
-        if (!merged.topic?.trim() && publicDraft.topic) {
-          merged.topic = publicDraft.topic;
-        }
-        if (!merged.mainKeyword?.trim() && publicDraft.topic) {
-          merged.mainKeyword = publicDraft.topic;
-        }
+      setSignupDraftRestored(true);
+      if (!merged.brandName?.trim() && publicDraft.brandName) {
+        merged.brandName = publicDraft.brandName;
+      }
+      if (!merged.region?.trim() && publicDraft.region) {
+        merged.region = publicDraft.region;
+      }
+      if (!merged.topic?.trim() && publicDraft.topic) {
+        merged.topic = publicDraft.topic;
+      }
+      if (!merged.mainKeyword?.trim() && publicDraft.topic) {
+        merged.mainKeyword = publicDraft.topic;
       }
       setBlogInput(merged);
       emitBrandFormSync(merged);
@@ -695,6 +691,26 @@ export function ContentProvider({
       });
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    const brandId = brandHooks?.activeBrandId;
+    if (!user?.id || !brandId || brandHooks?.blankBrandMode) return;
+    const draft = loadFormDraft(user.id, brandId);
+    if (!draft) return;
+    setBlogInput((prev) => {
+      if (prev.brandId && prev.brandId !== brandId) return prev;
+      const today = new Date().toISOString().slice(0, 10);
+      return sanitizeFormInputIndustryScope(
+        {
+          ...prev,
+          ...draft,
+          brandId,
+          contentDate: draft.contentDate || prev.contentDate || today,
+        },
+        resolveBriclogIndustryKey(draft || prev)
+      );
+    });
+  }, [user?.id, brandHooks?.activeBrandId, brandHooks?.blankBrandMode]);
 
   useEffect(() => {
     const handler = () => {
@@ -731,7 +747,7 @@ export function ContentProvider({
       });
       setBlogInput(merged);
       emitBrandFormSync(merged);
-      saveFormDraft(merged, user?.id);
+      saveFormDraft(merged, user?.id, event?.detail?.brandId);
       setBlogContent(null);
       setPlaceContent(null);
       setInstagramContent(null);
@@ -752,6 +768,7 @@ export function ContentProvider({
     const today = new Date().toISOString().slice(0, 10);
     setBlogInput((prev) => {
       if (
+        prev.brandId === brandId &&
         prev.brandName?.trim() &&
         !brandNamesMatch(prev.brandName, brand.brandName)
       ) {
@@ -759,37 +776,35 @@ export function ContentProvider({
       }
       const seeded = brandMemoryToFormInput(brand);
       const brandSwitched = prev.brandId !== brandId;
-      const merged = brandSwitched
-        ? {
-            ...seeded,
-            brandId,
-            contentDate: prev.contentDate || today,
-          }
-        : {
-            ...seeded,
-            ...prev,
-            brandId,
-            brandName: prev.brandName?.trim() || brand.brandName?.trim() || seeded.brandName,
-            region: prev.region?.trim() || seeded.region || brand.region,
-            industry: prev.industry?.trim() || seeded.industry,
-            topic: prev.topic?.trim() || seeded.topic,
-            mainKeyword: prev.mainKeyword?.trim() || seeded.mainKeyword,
-            subKeyword: prev.subKeyword?.trim() || seeded.subKeyword,
-            tone: prev.tone || seeded.tone,
-            excludePhrases: prev.excludePhrases?.trim()
-              ? prev.excludePhrases
-              : seeded.excludePhrases,
-          };
+      const merged = {
+        ...seeded,
+        ...prev,
+        brandId,
+        brandName:
+          brand.brandName?.trim() ||
+          prev.brandName?.trim() ||
+          seeded.brandName,
+        region: prev.region?.trim() || seeded.region || brand.region,
+        industry: prev.industry?.trim() || seeded.industry,
+        topic: prev.topic?.trim() || seeded.topic,
+        mainKeyword: prev.mainKeyword?.trim() || seeded.mainKeyword,
+        subKeyword: prev.subKeyword?.trim() || seeded.subKeyword,
+        tone: prev.tone || seeded.tone,
+        excludePhrases: prev.excludePhrases?.trim()
+          ? prev.excludePhrases
+          : seeded.excludePhrases,
+        contentDate: prev.contentDate || today,
+      };
       const ensured = ensureChannelGenerateInput(merged, brand);
       if (
         !brandSwitched &&
         ensured.values.brandName === prev.brandName &&
         ensured.values.region === prev.region &&
-        ensured.values.brandId === prev.brandId
+        ensured.values.brandId === prev.brandId &&
+        ensured.values.topic === prev.topic
       ) {
         return prev;
       }
-      queueMicrotask(() => emitBrandFormSync(ensured.values));
       return ensured.values;
     });
   }, [
@@ -810,15 +825,28 @@ export function ContentProvider({
     const pending = restorePendingBlogResult(user.id);
 
     if (pending?.blog) {
-      setBlogContent(pending.blog);
-      if (pending.baseContentLabel) setBaseContentLabel(pending.baseContentLabel);
-      if (pending.sourceChannel) setSourceChannel(pending.sourceChannel);
+      startTransition(() => {
+        setBlogContent(pending.blog);
+        if (pending.baseContentLabel) setBaseContentLabel(pending.baseContentLabel);
+        if (pending.sourceChannel) setSourceChannel(pending.sourceChannel);
+        setPlaceContent(null);
+        setInstagramContent(null);
+        setMemoryContentIds({ blog: null, place: null, instagram: null });
+        setBlogWithholdUi(null);
+        setBlogGenHint(null);
+        setBlogGenHintSoft(false);
+      });
     } else {
-      setBlogContent(null);
+      startTransition(() => {
+        setBlogContent(null);
+        setPlaceContent(null);
+        setInstagramContent(null);
+        setMemoryContentIds({ blog: null, place: null, instagram: null });
+        setBlogWithholdUi(null);
+        setBlogGenHint(null);
+        setBlogGenHintSoft(false);
+      });
     }
-    setPlaceContent(null);
-    setInstagramContent(null);
-    setMemoryContentIds({ blog: null, place: null, instagram: null });
 
     void (async () => {
       try {
@@ -847,10 +875,12 @@ export function ContentProvider({
     if (!intent?.topic) return;
     const topic = String(intent.topic).trim();
     if (!topic) return;
+    const dateKey = String(intent.dateKey || "").trim();
     setBlogInput((prev) => ({
       ...prev,
       topic,
       mainKeyword: topic.split(/[,，]/)[0]?.trim() || topic,
+      ...(dateKey ? { contentDate: dateKey } : {}),
     }));
     brandHooks?.consumePlanLaunchIntent?.();
   }, [brandHooks?.planLaunchIntent, brandHooks?.consumePlanLaunchIntent]);
@@ -1352,7 +1382,21 @@ export function ContentProvider({
         if (sensitive.isSensitive) {
           setPipelineStep(SENSITIVE_VERIFY_STEP.text);
         }
+        const escapedPublishReady = Boolean(
+          result.blogContent?._meta?.writerFirstOrchestratorEscape &&
+            result.blogContent?._meta?.publishReady
+        );
         if (
+          escapedPublishReady &&
+          result.blogContent?.sections?.length
+        ) {
+          result = {
+            ...result,
+            ok: true,
+            withheld: false,
+            userMessage: null,
+          };
+        } else if (
           result.blogContent?.sections?.length &&
           (result.ok === false || result.withheld) &&
           isLlmOriginatedPack(result.blogContent, result) &&
@@ -1394,6 +1438,11 @@ export function ContentProvider({
             setBlogGenHintSoft(
               hasFilledBlogAxes(pipelineInput) || Boolean(result.userMessage)
             );
+            setBlogContent(null);
+            setBlogWithholdUi({ message: failMsg, withheld: true });
+            blogGenLock.current = false;
+            setGenerationSessionActive(false);
+            setGenerating((g) => ({ ...g, blog: false }));
             finishLoadingOverlay("blog", startedAt, {
               success: false,
               message: failMsg,
@@ -1433,6 +1482,11 @@ export function ContentProvider({
             setBlogGenHintSoft(
               hasFilledBlogAxes(pipelineInput) || Boolean(result.userMessage)
             );
+            setBlogContent(null);
+            setBlogWithholdUi({ message: failMsg, withheld: true });
+            blogGenLock.current = false;
+            setGenerationSessionActive(false);
+            setGenerating((g) => ({ ...g, blog: false }));
             finishLoadingOverlay("blog", startedAt, {
               success: false,
               message: failMsg,

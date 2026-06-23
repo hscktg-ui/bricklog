@@ -53,7 +53,7 @@ import {
 } from "@/lib/landing/vision2030Styles";
 
 const NAV_LINKS = [
-  { id: "public-brand-test", label: "무료 테스트", show: "hidden sm:inline-flex" },
+  { id: "public-brand-test", label: "샘플 체험", show: "hidden sm:inline-flex" },
   { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
   { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
   { id: "pricing", label: "요금", show: "hidden lg:inline-flex" },

@@ -78,7 +78,6 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { stopBgm } from "@/lib/audio/briclogBgm";
 import DebugStatePublisher from "@/components/dev/DebugStatePublisher";
 import { isFastOnboarding } from "@/lib/config/productFlags";
-import { emitBrandFormSync } from "@/lib/workspace/brandFormSync";
 
 export default function Dashboard({
   user,
@@ -193,14 +192,17 @@ export default function Dashboard({
       } catch {
         /* ignore */
       }
-      const list = await fetchGenerations(user.id, { sinceIso });
+      const list = await fetchGenerations(user.id, {
+        sinceIso,
+        brandId: activeBrandId || undefined,
+      });
       setHistoryRecords(list);
     } catch (err) {
       showToast(err.message || "기록을 불러오지 못했습니다.", "error");
     } finally {
       setHistoryLoading(false);
     }
-  }, [user.id, showToast, demoMode]);
+  }, [user.id, showToast, demoMode, activeBrandId]);
 
   useEffect(() => {
     if (activeMenu === "history") loadHistory();
@@ -439,7 +441,7 @@ function DashboardLayout({
     loadMemoryContentIntoWorkspace,
   } = useContentPipeline();
   const {
-    applyBrandToForm,
+    switchBrand,
     activeBrandId,
     activeBrand,
     brandsLoading,
@@ -585,15 +587,9 @@ function DashboardLayout({
 
   const handleBrandChange = useCallback(
     (brandId) => {
-      const form = applyBrandToForm(brandId);
-      if (form) {
-        startTransition(() => {
-          setBlogInput(form);
-          emitBrandFormSync(form);
-        });
-      }
+      switchBrand(brandId);
     },
-    [applyBrandToForm, setBlogInput]
+    [switchBrand]
   );
 
   const handleChannelSelect = useCallback(

@@ -293,7 +293,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
     >
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="max-w-lg">
-          <p className={VISION_EYEBROW}>무료 테스트</p>
+          <p className={VISION_EYEBROW}>샘플 체험</p>
           <h2 className="mt-4 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold leading-[1.12] tracking-tight text-[var(--vision-ink)]">
             {PUBLIC_TEST_HERO.headline}
             <span className="block text-[var(--vision-muted)]">
@@ -308,7 +308,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
           </p>
           {quota.remaining > 0 ? (
             <p className="mt-4 text-[13px] text-[var(--vision-muted)]">
-              오늘 남은 무료 테스트 {quota.remaining}회
+              오늘 남은 샘플 {quota.remaining}회
             </p>
           ) : null}
         </div>

@@ -151,6 +151,16 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
     [userId, demoMode]
   );
 
+  const switchBrand = useCallback(
+    (brandId) => {
+      if (!brandId) return;
+      const brand = findBrand(brands, brandId);
+      if (!brand) return;
+      selectBrand(brandId);
+    },
+    [brands, selectBrand]
+  );
+
   const startBlankBrandSession = useCallback(async () => {
     setBlankBrandMode(true);
     setActiveBrandId(null);
@@ -170,9 +180,16 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       const saved = upsertBrand(draft);
       reloadLocal();
       setActiveBrandId(saved.id);
+      if (userId && !demoMode) {
+        writeBrandWorkspaceSession(userId, {
+          choice: "brand",
+          brandId: saved.id,
+          at: Date.now(),
+        });
+      }
       return saved;
     },
-    [reloadLocal]
+    [reloadLocal, userId, demoMode]
   );
 
   const addBrand = useCallback(
@@ -190,6 +207,13 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
           const saved = data.brand;
           setBrands((prev) => [saved, ...prev]);
           setActiveBrandId(saved.id);
+          if (userId && !demoMode) {
+            writeBrandWorkspaceSession(userId, {
+              choice: "brand",
+              brandId: saved.id,
+              at: Date.now(),
+            });
+          }
           return saved;
         } catch (err) {
           if (isMissingBrandsTable(err)) {
@@ -267,7 +291,17 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
           if (!isMissingBrandsTable(err)) throw err;
         }
         setBrands((prev) => prev.filter((b) => b.id !== id));
-        setActiveBrandId((prev) => (prev === id ? null : prev));
+        setActiveBrandId((prev) => {
+          if (prev !== id) return prev;
+          if (userId && !demoMode) {
+            writeBrandWorkspaceSession(userId, {
+              choice: "blank",
+              brandId: null,
+              at: Date.now(),
+            });
+          }
+          return null;
+        });
         const list = loadAllBrands().filter((b) => b.id !== id);
         saveAllBrands(list);
         return;
@@ -275,9 +309,19 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       const list = loadAllBrands().filter((b) => b.id !== id);
       saveAllBrands(list);
       reloadLocal();
-      setActiveBrandId((prev) => (prev === id ? null : prev));
+      setActiveBrandId((prev) => {
+        if (prev !== id) return prev;
+        if (userId && !demoMode) {
+          writeBrandWorkspaceSession(userId, {
+            choice: "blank",
+            brandId: null,
+            at: Date.now(),
+          });
+        }
+        return null;
+      });
     },
-    [activeBrandId, useServer, reloadLocal]
+    [activeBrandId, useServer, reloadLocal, userId, demoMode]
   );
 
   const applyActiveBrandToForm = useCallback(() => {
@@ -458,6 +502,7 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       brandWorkspaceGateOpen,
       brandSessionReady,
       selectBrand,
+      switchBrand,
       confirmBrandWorkspaceSelection,
       startBlankBrandSession,
       addBrand,
@@ -492,6 +537,7 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       brandWorkspaceGateOpen,
       brandSessionReady,
       selectBrand,
+      switchBrand,
       confirmBrandWorkspaceSelection,
       startBlankBrandSession,
       addBrand,

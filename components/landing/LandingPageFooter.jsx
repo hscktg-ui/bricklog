@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BRICLOG_SLOGAN, SITE_FOOTER_TAGLINE } from "@/lib/brand/copy";
+import { BRICLOG_SLOGAN, BRAND_PHILOSOPHY, SITE_FOOTER_TAGLINE } from "@/lib/brand/copy";
 import LandingFooterAudio from "@/components/landing/LandingFooterAudio";
 import LandingFooterSocial from "@/components/landing/LandingFooterSocial";
 
@@ -14,10 +14,10 @@ export default function LandingPageFooter() {
           <div className="max-w-lg space-y-8">
             <div>
               <p className="text-[15px] font-semibold tracking-tight text-[var(--vision-ink)]">
-                {SITE_FOOTER_TAGLINE || BRICLOG_SLOGAN}
+                {SITE_FOOTER_TAGLINE}
               </p>
               <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
-                {BRICLOG_SLOGAN}
+                {BRAND_PHILOSOPHY}
               </p>
             </div>
 
