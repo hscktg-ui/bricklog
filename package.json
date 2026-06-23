@@ -297,6 +297,7 @@
     "test:briclog-engine-score": "node --import ./scripts/register-alias.mjs scripts/test-briclog-engine-score.mjs",
     "mission:overnight": "node --import ./scripts/register-alias.mjs scripts/run-mission-overnight.mjs",
     "overnight:improvement": "node --import ./scripts/register-alias.mjs scripts/run-overnight-improvement.mjs",
+    "overnight:growth": "node --import ./scripts/register-alias.mjs scripts/run-overnight-improvement.mjs",
     "check:gemini": "node --import ./scripts/register-alias.mjs scripts/check-gemini.mjs",
     "check:research-stack": "node --import ./scripts/register-alias.mjs scripts/check-research-stack.mjs",
     "test:delivery-soft-pass": "node --import ./scripts/register-alias.mjs scripts/test-delivery-soft-pass.mjs",

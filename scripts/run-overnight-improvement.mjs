@@ -1,29 +1,35 @@
 /**
- * 야간 품질 개선 오케스트레이터 — 배치·회귀 테스트·커밋·배포 반복
- * Run: npm run overnight:improvement
+ * 야간 품질·성장 오케스트레이터 — 페이즈 게이트·배치·회귀·커밋·배포 반복
+ * Run: npm run overnight:growth  (alias: overnight:improvement)
  *
  * Env:
- *   OVERNIGHT_DURATION_MS — 전체 실행 시간 (default 4h)
+ *   OVERNIGHT_DURATION_MS — 전체 실행 시간 (default 8h)
  *   OVERNIGHT_CYCLE_MS — 사이클 간격 (default 30m)
- *   BRICLOG_PERSONA_LIMIT — thousand-feedback 건수 (default 200)
+ *   BRICLOG_PERSONA_LIMIT — thousand-feedback 건수 (default 120)
  *   OVERNIGHT_SKIP_DEPLOY=1 — 배포 생략
+ *   OVERNIGHT_PROD_GATE=1 — 4사이클마다 prod phase-gate (default 1)
+ *   BASE_URL — prod gate 대상 (default https://briclog.ai)
  */
 import { spawnSync } from "child_process";
 import { execSync } from "child_process";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DURATION_MS = Number(process.env.OVERNIGHT_DURATION_MS || 4 * 60 * 60 * 1000);
+const GROWTH_DIR = join(ROOT, "artifacts", "overnight-growth");
+const GROWTH_LOG = join(GROWTH_DIR, "growth-log.jsonl");
+const GROWTH_SUMMARY = join(GROWTH_DIR, "latest-summary.json");
+const DURATION_MS = Number(process.env.OVERNIGHT_DURATION_MS || 8 * 60 * 60 * 1000);
 const CYCLE_MS = Number(process.env.OVERNIGHT_CYCLE_MS || 30 * 60 * 1000);
 const SKIP_DEPLOY = process.env.OVERNIGHT_SKIP_DEPLOY === "1";
+const PROD_GATE = process.env.OVERNIGHT_PROD_GATE !== "0";
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function run(label, command, args = []) {
+function run(label, command, args = [], envExtra = {}) {
   console.log(`\n[overnight] ▶ ${label}`);
   console.log(`[overnight]   ${command} ${args.join(" ")}`);
   const started = Date.now();
@@ -33,7 +39,8 @@ function run(label, command, args = []) {
     shell: true,
     env: {
       ...process.env,
-      BRICLOG_PERSONA_LIMIT: process.env.BRICLOG_PERSONA_LIMIT || "200",
+      ...envExtra,
+      BRICLOG_PERSONA_LIMIT: envExtra.BRICLOG_PERSONA_LIMIT || process.env.BRICLOG_PERSONA_LIMIT || "120",
       BRICLOG_PERSONA_CONCURRENCY: process.env.BRICLOG_PERSONA_CONCURRENCY || "16",
     },
   });
@@ -84,6 +91,45 @@ function commitAndDeploy(cycle) {
   }
 }
 
+function readJsonSafe(path) {
+  try {
+    if (!existsSync(path)) return null;
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function readProductScore() {
+  const data = readJsonSafe(join(ROOT, "config", "product-readiness-score.json"));
+  if (!data) return null;
+  return {
+    score: data.score ?? data.totalScore,
+    band: data.band ?? data.productionBand,
+    publishReady: data.publishReadyRate ?? data.kpis?.publishReadyRate,
+  };
+}
+
+function readPhaseGateSummary() {
+  const data = readJsonSafe(join(ROOT, "artifacts", "overnight-phase-gate", "latest-summary.json"));
+  if (!data) return null;
+  return {
+    pass: data.pass ?? data.passed,
+    total: data.total ?? data.steps?.length,
+    failed: data.failed,
+  };
+}
+
+function appendGrowthLog(entry) {
+  mkdirSync(GROWTH_DIR, { recursive: true });
+  appendFileSync(GROWTH_LOG, `${JSON.stringify(entry)}\n`, "utf8");
+}
+
+function writeGrowthSummary(payload) {
+  mkdirSync(GROWTH_DIR, { recursive: true });
+  writeFileSync(GROWTH_SUMMARY, JSON.stringify(payload, null, 2), "utf8");
+}
+
 function readThousandSummary() {
   try {
     const path = join(ROOT, "artifacts", "thousand-persona-batch", "latest-summary.json");
@@ -109,14 +155,26 @@ function readThousandSummary() {
 const startedAt = Date.now();
 let cycle = 0;
 
-console.log("=== BRICLOG OVERNIGHT IMPROVEMENT ===");
+console.log("=== BRICLOG OVERNIGHT GROWTH ===");
 console.log(
-  `Duration: ${Math.round(DURATION_MS / 3600000)}h · Cycle: ${Math.round(CYCLE_MS / 60000)}m · Started: ${new Date().toISOString()}`
+  `Duration: ${Math.round(DURATION_MS / 3600000)}h · Cycle: ${Math.round(CYCLE_MS / 60000)}m · Prod gate: ${PROD_GATE ? "on" : "off"} · Started: ${new Date().toISOString()}`
 );
+mkdirSync(GROWTH_DIR, { recursive: true });
 
 while (Date.now() - startedAt < DURATION_MS) {
   cycle += 1;
+  const cycleStarted = Date.now();
   console.log(`\n========== CYCLE ${cycle} ${new Date().toLocaleString("ko-KR")} ==========`);
+
+  run("test:phase-gate", "npm", ["run", "test:phase-gate"]);
+  if (PROD_GATE && cycle % 4 === 0) {
+    run("test:phase-gate:prod", "npm", ["run", "test:phase-gate:prod"], {
+      PHASE_GATE_PROD: "1",
+      BASE_URL: process.env.BASE_URL || "https://briclog.ai",
+    });
+  }
+  run("test:product-score", "npm", ["run", "test:product-score"]);
+  run("test:publish-ready-kpi", "npm", ["run", "test:publish-ready-kpi"]);
 
   run("test:channel-sqv-delivery", "npm", ["run", "test:channel-sqv-delivery"]);
   run("test:sqv-user-display", "npm", ["run", "test:sqv-user-display"]);
@@ -149,6 +207,24 @@ while (Date.now() - startedAt < DURATION_MS) {
   } catch (err) {
     console.error("[overnight] commit/deploy failed:", err?.message || err);
   }
+
+  const cycleRecord = {
+    cycle,
+    at: new Date().toISOString(),
+    durationMs: Date.now() - cycleStarted,
+    phaseGate: readPhaseGateSummary(),
+    productScore: readProductScore(),
+    thousand: summary,
+  };
+  appendGrowthLog(cycleRecord);
+  writeGrowthSummary({
+    lastCycle: cycle,
+    startedAt: new Date(startedAt).toISOString(),
+    updatedAt: cycleRecord.at,
+    cyclesCompleted: cycle,
+    latest: cycleRecord,
+  });
+  console.log("[overnight] growth log:", GROWTH_SUMMARY);
 
   const elapsed = Date.now() - startedAt;
   if (elapsed >= DURATION_MS) break;
