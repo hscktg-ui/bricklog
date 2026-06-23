@@ -379,7 +379,7 @@ function DashboardWithBrands({
       billingPlanId={billingPlanId}
       billingBypassQuotas={billingBypassQuotas}
       onToast={showToast}
-      onBillingPlanRefresh={refreshBillingPlan}
+      onBillingPlanRefresh={onBillingPlanRefresh}
       brandHooks={brandHooks}
     >
       <BrandWorkspaceGate />
