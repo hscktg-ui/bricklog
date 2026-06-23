@@ -6,7 +6,8 @@ import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { fetchGenerationsForSchedule } from "@/lib/generations";
 import { buildContentOperatingPlan } from "@/lib/product/briclogBrandContentOS";
 import { buildContentScheduleView } from "@/lib/product/contentScheduleCalendar";
-import SimpleWeeklyPlan from "@/components/workspace/SimpleWeeklyPlan";
+import SimpleMonthlyPlan from "@/components/workspace/SimpleMonthlyPlan";
+import { CONTENT_HISTORY_SAVED_EVENT } from "@/lib/history/contentHistoryEvents";
 import {
   VISION_EYEBROW,
   VISION_PANEL,
@@ -110,6 +111,15 @@ export default function ContentPlanWorkspace({
     loadHistory();
   }, [loadHistory, scheduleRefreshTick]);
 
+  useEffect(() => {
+    const onSaved = (e) => {
+      const id = brandId || activeBrand?.id;
+      if (!id || e.detail?.brandId === id) loadHistory();
+    };
+    window.addEventListener(CONTENT_HISTORY_SAVED_EVENT, onSaved);
+    return () => window.removeEventListener(CONTENT_HISTORY_SAVED_EVENT, onSaved);
+  }, [loadHistory, brandId, activeBrand?.id]);
+
   const openChannel = (opts = {}) => {
     const channel = opts.channel || "blog";
     const menu =
@@ -151,20 +161,23 @@ export default function ContentPlanWorkspace({
       <header className="mx-auto w-full max-w-lg">
         <p className={VISION_EYEBROW}>{plan.month}</p>
         <h1 className="mt-2 text-[clamp(1.25rem,3vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
-          이번 주 글 일정
+          이번 달 운영
         </h1>
         <p className={`mt-2 ${VISION_SUB}`}>
           {input.brandName}
-          {input.region ? ` · ${input.region}` : ""} — 날짜를 고르고 바로 글쓰기로
+          {input.region ? ` · ${input.region}` : ""} — 주차별로 날짜를 고르고 글쓰기로
           이어가세요.
         </p>
       </header>
 
       <div className="mx-auto mt-6 w-full max-w-lg">
-        <SimpleWeeklyPlan
+        <SimpleMonthlyPlan
           brandName={input.brandName}
+          monthLabel={scheduleView.calendar?.monthLabel || plan.month}
+          calendar={scheduleView.calendar}
           weekTopics={weekTopics}
           historyByDay={scheduleView.historyByDay}
+          gapTip={scheduleView.tips?.[0]?.body || scheduleView.tips?.[0]?.title || ""}
           onWrite={openChannel}
           loading={historyLoading}
         />

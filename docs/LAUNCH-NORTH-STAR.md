@@ -38,4 +38,4 @@
 
 - **Phase 0** (완료): publish-first mode, 주간 캘린더, withhold 제거, async job
 - **Phase 1** (진행): usage·히스토리 SSOT, async job Supabase 영속
-- **Phase 2**: 월간 운영 OS — 글 품질 50%+ 안정 후
+- **Phase 2** (진행): 월간 4주 운영 UI, publish-ready KPI 측정
