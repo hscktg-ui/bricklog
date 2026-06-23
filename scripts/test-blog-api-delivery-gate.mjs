@@ -5,7 +5,9 @@ import assert from "node:assert/strict";
 import { alignBlogApiDeliveryResponse } from "../lib/product/blogApiDeliveryGate.js";
 
 const prev = process.env.BRICLOG_RESET_QUALITY;
+const prevLaunch = process.env.BRICLOG_LAUNCH_PUBLISH_FIRST;
 process.env.BRICLOG_RESET_QUALITY = "true";
+process.env.BRICLOG_LAUNCH_PUBLISH_FIRST = "false";
 
 try {
   const pack = {
@@ -58,8 +60,18 @@ try {
   assert.equal(rescueAligned.ok, true);
   assert.equal(rescueAligned.withheld, false);
 
+  process.env.BRICLOG_LAUNCH_PUBLISH_FIRST = "true";
+  const launchAligned = alignBlogApiDeliveryResponse(
+    { ok: true, withheld: false, mode: "llm", blogContent: pack },
+    { brandName: "테스트샵", region: "서울" }
+  );
+  assert.equal(launchAligned.ok, true);
+  assert.equal(launchAligned.withheld, false);
+
   console.log("test-blog-api-delivery-gate: PASS");
 } finally {
+  if (prevLaunch === undefined) delete process.env.BRICLOG_LAUNCH_PUBLISH_FIRST;
+  else process.env.BRICLOG_LAUNCH_PUBLISH_FIRST = prevLaunch;
   if (prev === undefined) delete process.env.BRICLOG_RESET_QUALITY;
   else process.env.BRICLOG_RESET_QUALITY = prev;
 }
