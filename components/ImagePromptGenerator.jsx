@@ -171,6 +171,7 @@ export default function ImagePromptGenerator({ onGoBlog, onCopy }) {
 
         <button
           type="button"
+          data-briclog-generate="image"
           disabled={!canGenerate || generating.image}
           onClick={() => runImageGenerate({ preferStandalone })}
           className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#03C75A] py-3 text-[14px] font-semibold text-white hover:bg-[#02B350] disabled:opacity-50"

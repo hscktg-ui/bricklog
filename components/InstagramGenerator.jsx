@@ -227,6 +227,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
         <>
           <button
             type="button"
+            data-briclog-generate="insta"
             disabled={generating.instagram}
             onClick={() =>
               hasFullBlog && blogContent
@@ -299,6 +300,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
           <div className={CHANNEL_MOBILE_CTA_FOOTER}>
             <button
               type="button"
+              data-briclog-generate="insta"
               disabled={generating.instagram}
               onClick={() =>
                 hasFullBlog && blogContent

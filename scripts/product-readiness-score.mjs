@@ -96,53 +96,80 @@ async function probePublicTest() {
   }
 }
 
+function pickFreshSpeedSignal(maxAgeMs) {
+  const candidates = [];
+
+  const realGen = readJson(join(root, "config", "real-generate-report.json"));
+  const realAgeMs = realGen?.at
+    ? Date.now() - new Date(realGen.at).getTime()
+    : Infinity;
+  if (
+    realGen?.elapsedMs != null &&
+    realAgeMs <= maxAgeMs &&
+    (realGen.status === "pass" || realGen.status === "pass_with_warnings")
+  ) {
+    candidates.push({
+      blogSlaMs: realGen.elapsedMs,
+      source: "real-generate",
+      passCount: 1,
+    });
+  }
+
+  const publicTest = readJson(join(root, "config", "public-brand-test-report.json"));
+  const publicAgeMs = publicTest?.at
+    ? Date.now() - new Date(publicTest.at).getTime()
+    : Infinity;
+  if (
+    publicTest?.elapsedMs != null &&
+    publicAgeMs <= maxAgeMs &&
+    (publicTest.status === "pass" || publicTest.ok)
+  ) {
+    candidates.push({
+      blogSlaMs: publicTest.elapsedMs,
+      source: "public-brand-test",
+      passCount: 1,
+    });
+  }
+
+  if (!candidates.length) return null;
+  return candidates.sort((a, b) => a.blogSlaMs - b.blogSlaMs)[0];
+}
+
 function summarizeChannelSla(report) {
   const maxAgeMs =
     Number(process.env.PRODUCT_SCORE_SLA_MAX_AGE_MS) || 7 * 24 * 60 * 60 * 1000;
+  const customerSlaMs = Number(process.env.BRICLOG_ALL_CHANNEL_SLA_MS) || 30_000;
   const reportAgeMs = report?.at
     ? Date.now() - new Date(report.at).getTime()
     : Infinity;
-  const stale = !report?.runs?.length || reportAgeMs > maxAgeMs;
+  const legacyBudget = Number(report?.slaMs) >= 120_000;
+  const stale =
+    !report?.runs?.length || reportAgeMs > maxAgeMs || legacyBudget;
+
+  const pass = report?.runs?.length
+    ? report.runs.filter(
+        (r) => r.status === "pass" || r.status === "pass_with_warnings"
+      ).length
+    : 0;
+  const blog = report?.runs?.find((r) => r.channel === "blog");
+  const channelBlogMs = blog?.elapsedMs ?? null;
+  const fresh = pickFreshSpeedSignal(maxAgeMs);
+
+  const preferFresh =
+    stale ||
+    (channelBlogMs != null && channelBlogMs > customerSlaMs * 4 && fresh);
+
+  if (preferFresh && fresh) {
+    return {
+      channelSlaPassCount: Math.max(pass, fresh.passCount),
+      channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
+      blogSlaMs: fresh.blogSlaMs,
+      slaReportStale: stale,
+      slaSource: fresh.source,
+    };
+  }
 
   if (stale) {
-    const realGen = readJson(join(root, "config", "real-generate-report.json"));
-    const realAgeMs = realGen?.at
-      ? Date.now() - new Date(realGen.at).getTime()
-      : Infinity;
-    if (
-      realGen?.elapsedMs != null &&
-      realAgeMs <= maxAgeMs &&
-      (realGen.status === "pass" || realGen.status === "pass_with_warnings")
-    ) {
-      return {
-        channelSlaPassCount: 1,
-        channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
-        blogSlaMs: realGen.elapsedMs,
-        slaReportStale: true,
-        slaSource: "real-generate",
-      };
-    }
-
-    const publicTest = readJson(
-      join(root, "config", "public-brand-test-report.json")
-    );
-    const publicAgeMs = publicTest?.at
-      ? Date.now() - new Date(publicTest.at).getTime()
-      : Infinity;
-    if (
-      publicTest?.elapsedMs != null &&
-      publicAgeMs <= maxAgeMs &&
-      (publicTest.status === "pass" || publicTest.ok)
-    ) {
-      return {
-        channelSlaPassCount: 1,
-        channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
-        blogSlaMs: publicTest.elapsedMs,
-        slaReportStale: true,
-        slaSource: "public-brand-test",
-      };
-    }
-
     return {
       channelSlaPassCount: 0,
       channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
@@ -151,14 +178,10 @@ function summarizeChannelSla(report) {
     };
   }
 
-  const pass = report.runs.filter(
-    (r) => r.status === "pass" || r.status === "pass_with_warnings"
-  ).length;
-  const blog = report.runs.find((r) => r.channel === "blog");
   return {
     channelSlaPassCount: pass,
     channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
-    blogSlaMs: blog?.elapsedMs ?? null,
+    blogSlaMs: channelBlogMs,
     slaReportStale: false,
     slaSource: "channel-sla",
   };

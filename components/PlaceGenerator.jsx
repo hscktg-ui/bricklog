@@ -209,6 +209,7 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
         <>
           <button
             type="button"
+            data-briclog-generate="place"
             disabled={generating.place}
             onClick={() =>
               hasFullBlog && blogContent
@@ -277,6 +278,7 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
           <div className={CHANNEL_MOBILE_CTA_FOOTER}>
             <button
               type="button"
+              data-briclog-generate="place"
               disabled={generating.place}
               onClick={() =>
                 hasFullBlog && blogContent
