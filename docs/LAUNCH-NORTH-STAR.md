@@ -16,17 +16,17 @@
 
 `lib/config/launchPublishMode.js` — 기본 ON (`BRICLOG_LAUNCH_PUBLISH_FIRST=false`로 끔)
 
-- Writer **1-pass**, 루프 **45초** 상한
+- Writer **1-pass**, 루프 **75초** 상한
 - 고객 **withhold 금지** — 섹션이 있으면 항상 화면에 표시
-- 후처리 **경량화** — placeholder·금지어만 제거
-- 클라이언트 fetch **52초**
+- 후처리 **경량화** — placeholder·금지어만 제거 + GPT 화자 마감
+- 클라이언트 fetch **120초** (async job 폴링 기본)
 
 ## 제품 방향
 
 1. **복붙 엔진** — GPT 경쟁 아님, 브랜드·지역·말투 매번 붙이기 귀찮음 해소
 2. **캘린더** — 이번 주 7칸 + 만든 날 체크만 (`SimpleWeeklyPlan`)
 3. **UI** — 브랜드·주제·글 받기·복사. 점수·OS 문구는 접기
-4. **서버** — 동기 45초 cap, 초과 시 job queue (Phase 1)
+4. **서버** — async job (start/run/poll) + 동기 fallback 120s
 
 ## 하지 말 것 (출시 전)
 

@@ -25,11 +25,11 @@ function assert(cond, msg) {
 
 assert(isLaunchPublishFirstMode(), "launch publish first default on");
 assert(!shouldWithholdCustomerDelivery(), "customer withhold off");
-assert(getLaunchPublishTimeBudgetMs() === 45_000, "45s budget");
+assert(getLaunchPublishTimeBudgetMs() === 75_000, "75s budget");
 assert(getLaunchPublishMaxAttempts() === 1, "1 attempt");
-assert(getGenerationTimeBudgetMs() === 45_000, "pipeline gen budget");
+assert(getGenerationTimeBudgetMs() === 75_000, "pipeline gen budget");
 assert(getCoreMaxRewrites() === 1, "core rewrites 1");
-assert(getBlogClientFetchTimeoutMs() === 52_000, "client fetch 52s");
+assert(getBlogClientFetchTimeoutMs() === 120_000, "client fetch 120s");
 
 const pack = {
   sections: [

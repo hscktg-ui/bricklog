@@ -29,14 +29,14 @@ delete process.env.BRICLOG_MAX_QUALITY;
 const SLA = getAllChannelSlaBudgetMs();
 assert(SLA <= 30_000, `SLA budget ${SLA} <= 30s`);
 if (isLaunchPublishFirstMode()) {
-  assert(getGenerationTimeBudgetMs() <= 50_000, "launch gen budget");
+  assert(getGenerationTimeBudgetMs() <= 90_000, "launch gen budget");
 } else {
   assert(getGenerationTimeBudgetMs() <= SLA, "generation budget within SLA");
 }
 assert(getLlmLoopBudgetMs() <= getGenerationTimeBudgetMs(), "LLM loop <= total");
 if (isLaunchPublishFirstMode()) {
   assert(getBlogClientFetchTimeoutMs() === LAUNCH_PUBLISH_CLIENT_FETCH_MS, "launch publish fetch cap");
-  assert(getGenerationTimeBudgetMs() <= 45_000, "launch gen budget <= 45s");
+  assert(getGenerationTimeBudgetMs() <= 90_000, "launch gen budget <= 90s");
 } else if (isGpt55WriterDominant()) {
   assert(getBlogClientFetchTimeoutMs() >= 120_000, "gpt55 blog fetch >= 120s");
 } else {
