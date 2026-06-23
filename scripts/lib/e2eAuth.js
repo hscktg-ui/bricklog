@@ -388,7 +388,7 @@ export async function isWorkspaceReady(page) {
     .count()
     .catch(() => 0);
   const planReady = await page
-    .getByText(/운영 계획|이번 주|콘텐츠 계획/)
+    .getByText(/운영 계획|이번 달 운영|이번 주|콘텐츠 계획/)
     .first()
     .count()
     .catch(() => 0);
@@ -403,7 +403,7 @@ export async function navigateWorkspaceChannel(page, channel = "blog") {
     place: /^플레이스$/,
     insta: /^인스타$/,
     image: /^썸네일/,
-    plan: /^운영 계획$|^계획$/,
+    plan: /^운영 계획$|^계획$|^이번 달/,
   };
   const pattern = labels[channel] || labels.blog;
   const btn = page.getByRole("button", { name: pattern }).first();

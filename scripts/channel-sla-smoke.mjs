@@ -157,11 +157,21 @@ async function openWorkspace(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissIntro(page);
   await dismissWorkspaceModals(page);
+  const smokeForm = CHANNEL_SLA_PERSONAS[0]?.form || {
+    brandName: "SLA모닝브루",
+    region: "서울 강남",
+    topic: "봄 시즌 브런치",
+    industry: "카페",
+  };
+  await ensureSmokeBrand(page, BASE, smokeForm);
   await navigateWorkspaceChannel(page, "blog");
+  await prepareChannelWorkspace(page, BASE, "blog").catch(() => null);
   let ready = await waitForWorkspaceReady(page, 45_000);
   if (!ready.ok) {
     await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
     await dismissWorkspaceModals(page);
+    await ensureSmokeBrand(page, BASE, smokeForm);
+    await navigateWorkspaceChannel(page, "blog");
     ready = await waitForWorkspaceReady(page, 30_000);
   }
   return {
