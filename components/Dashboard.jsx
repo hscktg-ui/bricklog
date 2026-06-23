@@ -283,7 +283,7 @@ export default function Dashboard({
           setMobileOpen={setMobileOpen}
           historyRecords={historyRecords}
           historyLoading={historyLoading}
-          loadHistory={loadHistoryForBrand}
+          loadHistory={loadHistory}
           selectedHistoryId={selectedHistoryId}
           setSelectedHistoryId={setSelectedHistoryId}
           selectedRecord={selectedRecord}
@@ -393,7 +393,7 @@ function DashboardWithBrands({
         setMobileOpen={setMobileOpen}
         historyRecords={historyRecords}
         historyLoading={historyLoading}
-        loadHistory={loadHistory}
+        loadHistory={loadHistoryForBrand}
         selectedHistoryId={selectedHistoryId}
         setSelectedHistoryId={setSelectedHistoryId}
         selectedRecord={selectedRecord}
