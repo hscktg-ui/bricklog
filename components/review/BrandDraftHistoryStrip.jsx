@@ -47,7 +47,7 @@ export default function BrandDraftHistoryStrip({
     }
     setLoading(true);
     try {
-      const list = await fetchBrandContentHistory({
+      const { items: list } = await fetchBrandContentHistory({
         brandId,
         contentArchive,
         channelFilter: filterChannel,

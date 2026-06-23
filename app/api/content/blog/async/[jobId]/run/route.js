@@ -25,7 +25,11 @@ export async function POST(request, { params }) {
   }
 
   const { jobId } = await params;
-  const job = getBlogAsyncJob(jobId, auth.user.id);
+  const job = await getBlogAsyncJob({
+    supabase: auth.supabase,
+    jobId,
+    userId: auth.user.id,
+  });
   if (!job) {
     return NextResponse.json(
       { ok: false, userMessage: "생성 작업을 찾을 수 없습니다. 다시 시도해 주세요." },
@@ -56,7 +60,7 @@ export async function POST(request, { params }) {
     );
   }
 
-  if (job.running) {
+  if (job.running || job.status === "running") {
     return NextResponse.json({
       ok: true,
       mode: "async_job",
@@ -66,14 +70,23 @@ export async function POST(request, { params }) {
     });
   }
 
-  const locked = markBlogAsyncJobRunning(jobId, auth.user.id);
-  if (!locked) {
+  const locked = await markBlogAsyncJobRunning({
+    supabase: auth.supabase,
+    jobId,
+    userId: auth.user.id,
+  });
+  if (!locked || locked.status !== "running") {
+    const current = await getBlogAsyncJob({
+      supabase: auth.supabase,
+      jobId,
+      userId: auth.user.id,
+    });
     return NextResponse.json({
       ok: true,
       mode: "async_job",
       jobId,
-      status: job.status,
-      snapshot: blogAsyncJobSnapshot(job),
+      status: current?.status || job.status,
+      snapshot: blogAsyncJobSnapshot(current || job),
     });
   }
 
@@ -82,16 +95,26 @@ export async function POST(request, { params }) {
       route: `/api/content/blog/async/${jobId}/run`,
       planId: locked.planId,
     });
-    completeBlogAsyncJob(jobId, auth.user.id, body);
+    const done = await completeBlogAsyncJob({
+      supabase: auth.supabase,
+      jobId,
+      userId: auth.user.id,
+      resultBody: body,
+    });
     return NextResponse.json({
       ok: body?.ok !== false,
       mode: "async_job",
       jobId,
-      snapshot: blogAsyncJobSnapshot(getBlogAsyncJob(jobId, auth.user.id)),
+      snapshot: blogAsyncJobSnapshot(done),
       ...body,
     });
   } catch (err) {
-    failBlogAsyncJob(jobId, auth.user.id, err?.message || "server_error");
+    await failBlogAsyncJob({
+      supabase: auth.supabase,
+      jobId,
+      userId: auth.user.id,
+      message: err?.message || "server_error",
+    });
     return NextResponse.json(
       {
         ok: false,

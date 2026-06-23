@@ -18,7 +18,11 @@ export async function GET(request, { params }) {
   }
 
   const { jobId } = await params;
-  const job = getBlogAsyncJob(jobId, auth.user.id);
+  const job = await getBlogAsyncJob({
+    supabase: auth.supabase,
+    jobId,
+    userId: auth.user.id,
+  });
   if (!job) {
     return NextResponse.json(
       { ok: false, userMessage: "생성 작업을 찾을 수 없습니다." },

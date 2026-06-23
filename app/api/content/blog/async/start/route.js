@@ -56,7 +56,8 @@ export async function POST(request) {
   }
 
   const rawInput = await request.json();
-  const job = createBlogAsyncJob({
+  const job = await createBlogAsyncJob({
+    supabase: auth.supabase,
     userId: auth.user.id,
     rawInput,
     planId: entitlement.usage?.planId || "free",

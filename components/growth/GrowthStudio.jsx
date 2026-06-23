@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { trackContentEvent } from "@/lib/feedback/trackEvent";
-import { itemsFromBrandArchive } from "@/lib/growth/brandArchiveHistory";
-import { mergeDraftHistoryItems } from "@/lib/growth/mergeDraftHistoryItems";
+import { fetchBrandContentHistory } from "@/lib/history/fetchBrandContentHistory";
+import { CONTENT_HISTORY_SAVED_EVENT } from "@/lib/history/contentHistoryEvents";
 import { REVIEW_DRAFT_SAVED_EVENT } from "@/lib/review/persistReviewDraft";
 import { normalizePlanId } from "@/lib/billing/plans";
 import BrandMemoryPanel from "@/components/BrandMemoryPanel";
@@ -87,32 +87,24 @@ export default function GrowthStudio({
     }
     setLoading(true);
     try {
-      const q = new URLSearchParams({ brandId });
-      if (channelFilter) q.set("channel", channelFilter);
-      const data = await fetchWithAuth(`/api/memory/content?${q}`);
-      const list = data.items || [];
-      const archiveFallback = itemsFromBrandArchive(contentArchive, {
-        brandId,
-        channelFilter,
-      });
-      const merged = mergeDraftHistoryItems(list, archiveFallback);
-      setItems(merged);
-      setMemoryReady(data.memoryReady !== false && list.length > 0);
-      setUsingArchiveFallback(
-        merged.length > 0 && list.length === 0 && archiveFallback.length > 0
-      );
+      const { items, memoryReady: ready, usingArchiveFallback } =
+        await fetchBrandContentHistory({
+          brandId,
+          contentArchive,
+          channelFilter,
+          limit: 200,
+        });
+      setItems(items);
+      setMemoryReady(ready);
+      setUsingArchiveFallback(usingArchiveFallback);
     } catch {
       setMemoryReady(false);
-      const fallback = itemsFromBrandArchive(contentArchive, {
-        brandId,
-        channelFilter,
-      });
-      setItems(fallback);
-      setUsingArchiveFallback(fallback.length > 0);
+      setItems([]);
+      setUsingArchiveFallback(false);
     } finally {
       setLoading(false);
     }
-  }, [brandId, channelFilter, contentArchive, notify]);
+  }, [brandId, channelFilter, contentArchive]);
 
   const loadDetail = useCallback(
     async (id) => {
@@ -219,12 +211,18 @@ export default function GrowthStudio({
   }, [channelFilter, tab, loadItems]);
 
   useEffect(() => {
-    const onReviewSaved = () => {
-      if (tab === "history") loadItems();
+    const onHistorySaved = (e) => {
+      if (!brandId || e.detail?.brandId === brandId) {
+        if (tab === "history") loadItems();
+      }
     };
-    window.addEventListener(REVIEW_DRAFT_SAVED_EVENT, onReviewSaved);
-    return () => window.removeEventListener(REVIEW_DRAFT_SAVED_EVENT, onReviewSaved);
-  }, [tab, loadItems]);
+    window.addEventListener(REVIEW_DRAFT_SAVED_EVENT, onHistorySaved);
+    window.addEventListener(CONTENT_HISTORY_SAVED_EVENT, onHistorySaved);
+    return () => {
+      window.removeEventListener(REVIEW_DRAFT_SAVED_EVENT, onHistorySaved);
+      window.removeEventListener(CONTENT_HISTORY_SAVED_EVENT, onHistorySaved);
+    };
+  }, [tab, loadItems, brandId]);
 
   const handleDeleteItem = async (id) => {
     if (String(id).startsWith("archive-")) {
