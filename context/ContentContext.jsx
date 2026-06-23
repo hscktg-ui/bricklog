@@ -188,6 +188,10 @@ import { blogGenerateCtaInlineRetry } from "@/lib/product/blogCtaCopy";
 import { applyProdBlogBeliefBoost } from "@/lib/product/prodBeliefBoost";
 import { shouldAllowMissionUiRescue } from "@/lib/product/brandContentCustomerGate";
 import { enforceCustomerBlogOutput } from "@/lib/product/brandContentCustomerGate";
+import {
+  isLaunchPublishFirstMode,
+  finalizeLaunchPublishBlogPack,
+} from "@/lib/config/launchPublishMode";
 
 function allowBlogUiRescue(pipelineInput = {}) {
   return shouldAllowMissionUiRescue(pipelineInput);
@@ -819,6 +823,12 @@ export function ContentProvider({
     const brandId = brandHooks?.activeBrandId;
     if (demoMode || !user?.id || !brandId) return undefined;
     if (hydratedBrandRef.current === brandId) return undefined;
+
+    if (blogGenLock.current) {
+      hydratedBrandRef.current = brandId;
+      return undefined;
+    }
+
     hydratedBrandRef.current = brandId;
 
     let cancelled = false;
@@ -1372,6 +1382,7 @@ export function ContentProvider({
         if (ensuredBrand?.id) {
           pipelineInput.brandId = ensuredBrand.id;
           pipelineInput.brandMemory = ensuredBrand;
+          hydratedBrandRef.current = ensuredBrand.id;
         }
         if (result.blogContent) {
           setPipelineStep("최종 검수 중…");
@@ -1387,6 +1398,20 @@ export function ContentProvider({
             result.blogContent?._meta?.publishReady
         );
         if (
+          isLaunchPublishFirstMode() &&
+          result.blogContent?.sections?.length
+        ) {
+          result = {
+            ...result,
+            ok: true,
+            withheld: false,
+            userMessage: null,
+            blogContent: finalizeLaunchPublishBlogPack(
+              result.blogContent,
+              pipelineInput
+            ),
+          };
+        } else if (
           escapedPublishReady &&
           result.blogContent?.sections?.length
         ) {
@@ -1538,6 +1563,21 @@ export function ContentProvider({
 
         const deliverBlogResult = () => {
           let delivery = resolveBlogUiDelivery(blog, pipelineInput, result);
+          if (
+            !delivery.ok &&
+            isLaunchPublishFirstMode() &&
+            blog?.sections?.length
+          ) {
+            delivery = {
+              ok: true,
+              pack: finalizeLaunchPublishBlogPack(
+                ensureBlogDisplayPack(blog, pipelineInput),
+                pipelineInput
+              ),
+              preview: false,
+              userMessage: null,
+            };
+          }
           if (
             !delivery.ok &&
             allowBlogUiRescue(pipelineInput) &&
@@ -1696,6 +1736,8 @@ export function ContentProvider({
             setBlogGenHintIsAuth(false);
             setBlogResultRevealPending(false);
             setGenerating((g) => ({ ...g, blog: false }));
+            hydratedBrandRef.current =
+              pipelineInput.brandId || brandHooks?.activeBrandId || null;
           });
           blogOnScreenRef.current = true;
           overlaySuccess = true;
