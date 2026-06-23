@@ -12,6 +12,7 @@ import {
   shouldUseDerivedChannelLocalOnly,
   shouldSkipHeavyPostLlmExpansion,
   isChannelPackDeferred,
+  shouldSkipClientAxisResearch,
 } from "../lib/config/briclogFastPipeline.js";
 import { estimateBlogGenerationMs } from "../lib/loading/estimateGenerationMs.js";
 import { ensureChannelDelivery } from "../lib/generation/ensureChannelDelivery.js";
@@ -47,6 +48,21 @@ assert(
   "no local-only without blog"
 );
 assert(shouldSkipHeavyPostLlmExpansion(), "heavy post-LLM skipped in fast mission");
+assert(
+  shouldSkipClientAxisResearch({ brandName: "A", topic: "B", region: "C" }),
+  "skip duplicate client axis research in fast mode"
+);
+assert(
+  !shouldSkipClientAxisResearch({
+    brandName: "A",
+    topic: "B",
+    region: "C",
+    v2ResearchReady: true,
+    v2PreWriteVerified: true,
+    v2AxisVerified: true,
+  }),
+  "keep client path when research already complete"
+);
 
 const blog = {
   sections: [

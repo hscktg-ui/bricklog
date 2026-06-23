@@ -155,7 +155,7 @@ import {
 } from "@/lib/constants";
 import { AUTO_RUN_PROMPT_ON_BLOG } from "@/lib/channels/channelProducts";
 import { isAutoPipelineAfterBlog } from "@/lib/config/productFlags";
-import { isChannelPackDeferred } from "@/lib/config/briclogFastPipeline";
+import { isChannelPackDeferred, shouldSkipClientAxisResearch } from "@/lib/config/briclogFastPipeline";
 import { setGenerationSessionActive } from "@/lib/generation/generationSession";
 import {
   stashPendingBlogResult,
@@ -1271,6 +1271,9 @@ export function ContentProvider({
           pipelineInput.v2PreWriteVerified = true;
           pipelineInput.v2PipelineStage =
             pipelineInput.v2PipelineStage || "information_research_verified";
+        } else if (shouldSkipClientAxisResearch(pipelineInput)) {
+          setPipelineStep("조사·작성 중…");
+          pipelineInput.serverAxisResearchOnly = true;
         } else {
           const axis = await applyV2AxisResearch({
             pipelineInput,
