@@ -108,10 +108,15 @@ export async function dismissWorkspaceModals(page) {
   if (await welcome.count()) {
     await welcome.first().click({ timeout: 5000 }).catch(() => null);
   }
-  const profileLater = page.getByRole("button", { name: /나중에/i });
-  if (await profileLater.count()) {
-    await profileLater.first().click({ timeout: 5000 }).catch(() => null);
+  const profileDefer = page.getByRole("button", {
+    name: /나중에 하기|나중에 — 바로 글쓰기/i,
+  });
+  if (await profileDefer.count()) {
+    await profileDefer.first().click({ timeout: 5000 }).catch(() => null);
+    await page.waitForTimeout(500);
   }
+  await page.keyboard.press("Escape").catch(() => null);
+  await page.waitForTimeout(300);
   const idleHintClose = page
     .locator("div")
     .filter({ hasText: /맞춤 개인화|계정 습관/ })

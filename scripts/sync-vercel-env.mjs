@@ -56,8 +56,8 @@ function parseEnvFile(path) {
   out.set("BRICLOG_CHANNEL_PACK_DEFER", "true");
   out.set("BRICLOG_CHANNEL_STANDALONE_FAST", "true");
   out.set("BRICLOG_LOCAL_FINISH_MS", "2000");
-  out.set("BRICLOG_GENERATION_BUDGET_MS", "24000");
-  out.set("BRICLOG_LLM_LOOP_BUDGET_MS", "18000");
+  out.set("BRICLOG_GENERATION_BUDGET_MS", "26000");
+  out.set("BRICLOG_LLM_LOOP_BUDGET_MS", "22000");
   out.set("BRICLOG_ALL_CHANNEL_SLA_MS", "30000");
   out.set("BRICLOG_QUALITY_TARGET", "100");
   return out;
