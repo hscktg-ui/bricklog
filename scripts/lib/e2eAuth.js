@@ -388,11 +388,13 @@ export async function isWorkspaceReady(page) {
     .count()
     .catch(() => 0);
   const planReady = await page
-    .getByText(/운영 계획|이번 달 운영|이번 주|콘텐츠 계획/)
+    .getByText(/운영 계획|이번 달 운영|이번 주|콘텐츠 계획|브랜드를 선택하면|주차별 글 일정/)
     .first()
     .count()
     .catch(() => 0);
   if (workspaceNav > 0 && planReady > 0) return true;
+  if (planReady > 0 && workspaceNav > 0) return true;
+  if (planReady > 0) return true;
   return brandLabel > 0 || brandPh > 0 || workspaceNav > 0;
 }
 

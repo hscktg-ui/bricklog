@@ -157,26 +157,45 @@ async function openWorkspace(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissIntro(page);
   await dismissWorkspaceModals(page);
+  await page
+    .waitForFunction(
+      () => {
+        const t = document.body?.innerText || "";
+        if (/작업실을 여는 중/.test(t)) return false;
+        if (/본문 바로가기/.test(t)) return false;
+        return true;
+      },
+      undefined,
+      { timeout: 60_000 }
+    )
+    .catch(() => null);
   const smokeForm = CHANNEL_SLA_PERSONAS[0]?.form || {
     brandName: "SLA모닝브루",
     region: "서울 강남",
     topic: "봄 시즌 브런치",
     industry: "카페",
   };
-  await ensureSmokeBrand(page, BASE, smokeForm);
+  const brandRes = await ensureSmokeBrand(page, BASE, smokeForm);
+  if (!brandRes.ok) {
+    await syncE2eSessionToPage(page, BASE);
+    await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
+    await dismissWorkspaceModals(page);
+    await ensureSmokeBrand(page, BASE, smokeForm);
+  }
   await navigateWorkspaceChannel(page, "blog");
   await prepareChannelWorkspace(page, BASE, "blog").catch(() => null);
-  let ready = await waitForWorkspaceReady(page, 45_000);
+  let ready = await waitForWorkspaceReady(page, 60_000);
   if (!ready.ok) {
     await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
     await dismissWorkspaceModals(page);
     await ensureSmokeBrand(page, BASE, smokeForm);
     await navigateWorkspaceChannel(page, "blog");
-    ready = await waitForWorkspaceReady(page, 30_000);
+    ready = await waitForWorkspaceReady(page, 45_000);
   }
   return {
     ok: ready.ok,
     reason: ready.ok ? "supabase_session" : ready.reason,
+    brand: brandRes.ok ? smokeForm.brandName : null,
   };
 }
 
