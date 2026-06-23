@@ -119,6 +119,9 @@ async function runApiDirect() {
   report.sectionCount = body.blogContent?.sections?.length || 0;
   report.charCount = sectionChars(body.blogContent);
   report.publishReady = extractPublishReady(body);
+  report.withheld = body.withheld === true;
+  report.bodyOk = body.ok !== false && !report.withheld;
+  report.deliveryGrade = body.blogContent?._meta?.deliveryGrade || null;
   report.pipelineVerified = Boolean(
     body.meta?.v2PipelineVerified || body.meta?.v3PipelineVerified
   );
@@ -126,17 +129,31 @@ async function runApiDirect() {
   if (body.mode === "research_gate") {
     report.status = "gate_blocked";
     report.errors.push(body.userMessage || "research_gate");
+  } else if (report.withheld || body.ok === false) {
+    report.status = "withheld";
+    report.errors.push(
+      body.userMessage ||
+        body.blogContent?._meta?.withholdReason ||
+        (body.blogContent?._meta?.failReasons || []).slice(0, 3).join(", ") ||
+        "delivery_withheld"
+    );
   } else if (
     res.ok &&
+    report.bodyOk &&
+    report.publishReady &&
     report.sectionCount >= 2 &&
     report.charCount >= 400 &&
     report.elapsedMs <= SLA_MS
   ) {
     report.status = "pass";
   } else {
-    report.errors.push(
-      body.userMessage || body.error || `sections=${report.sectionCount}`
-    );
+    if (!report.publishReady) report.errors.push("publish_ready_false");
+    if (report.elapsedMs > SLA_MS) report.errors.push(`sla_exceeded_${report.elapsedMs}ms`);
+    if (report.sectionCount < 2 || report.charCount < 400) {
+      report.errors.push(
+        body.userMessage || body.error || `sections=${report.sectionCount}`
+      );
+    }
   }
 
   writeReport(report);
@@ -221,7 +238,11 @@ function printSummary(report) {
       "chars:",
       report.charCount,
       "publishReady:",
-      report.publishReady
+      report.publishReady,
+      "withheld:",
+      report.withheld ?? false,
+      "grade:",
+      report.deliveryGrade ?? "—"
     );
   }
   if (report.errors?.length) console.log("errors:", report.errors.join("; "));

@@ -13,6 +13,7 @@ import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.j
 import { finalizeContentQualityForDelivery } from "../lib/product/contentQualityDelivery.js";
 import { getBlogFullText } from "../utils/qualityCheck.js";
 import { hasUsableResearchFacts } from "../lib/content/researchGroundedHumanPack.js";
+import { researchGateBlockedResult } from "../lib/content/v2PipelineGate.js";
 
 process.env.BRICLOG_MISSION = "true";
 process.env.BRICLOG_RESET_QUALITY = "true";
@@ -82,6 +83,18 @@ assert(
 assert(
   "withhold message",
   /다시 받기/.test(buildWriterFirstWithholdMessage(INPUT))
+);
+
+const gateBlocked = researchGateBlockedResult(
+  INPUT,
+  { reasons: ["golden_gate_fail"], userMessage: null },
+  mission
+);
+assert(
+  "research gate blocks mission rescue",
+  gateBlocked.withheld === true &&
+    gateBlocked.mode === "writer_first_withheld" &&
+    !gateBlocked.blogContent?.sections?.length
 );
 
 const heavy = finalizeContentQualityForDelivery(llmPack, INPUT, "blog", {

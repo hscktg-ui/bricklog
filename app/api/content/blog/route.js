@@ -38,6 +38,7 @@ import { ensureServerAxisResearch } from "@/lib/generation/serverAxisResearch";
 import { attachServerTrendSnapshot } from "@/lib/trends/serverTrendHints";
 import { isBriclogFastPipelineEnabled } from "@/lib/config/briclogFastPipeline";
 import { finalizeGpt55BlogPackForUi } from "@/lib/product/gpt55LightDelivery";
+import { isWriterFirstRescueBlocked } from "@/lib/product/writerFirstDelivery";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -203,7 +204,8 @@ export async function POST(request) {
 
     if (
       hasFilledBlogAxes(hydratedInput) &&
-      (!result?.blogContent?.sections?.length || result.withheld)
+      (!result?.blogContent?.sections?.length || result.withheld) &&
+      !isWriterFirstRescueBlocked(hydratedInput)
     ) {
       const rescued = buildMissionRescueApiDelivery(
         hydratedInput,
