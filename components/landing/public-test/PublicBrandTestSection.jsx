@@ -349,6 +349,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
           ) : null}
           <form
             onSubmit={handleSubmit}
+            data-briclog-public-test-form-ready={sampleReady ? "1" : undefined}
             className={`${VISION_PANEL} p-6 md:p-7`}
           >
             <label className="block">
@@ -454,6 +455,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
             ) : (
               <button
                 type="submit"
+                data-briclog-public-test-submit="1"
                 disabled={loading}
                 className={`${VISION_CTA_ACCENT} mt-6 w-full min-h-[52px] disabled:opacity-50`}
               >

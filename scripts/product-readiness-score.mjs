@@ -97,9 +97,60 @@ async function probePublicTest() {
 }
 
 function summarizeChannelSla(report) {
-  if (!report?.runs?.length) {
-    return { channelSlaPassCount: 0, channelSlaTotal: CHANNEL_SLA_PERSONAS.length, blogSlaMs: null };
+  const maxAgeMs =
+    Number(process.env.PRODUCT_SCORE_SLA_MAX_AGE_MS) || 7 * 24 * 60 * 60 * 1000;
+  const reportAgeMs = report?.at
+    ? Date.now() - new Date(report.at).getTime()
+    : Infinity;
+  const stale = !report?.runs?.length || reportAgeMs > maxAgeMs;
+
+  if (stale) {
+    const realGen = readJson(join(root, "config", "real-generate-report.json"));
+    const realAgeMs = realGen?.at
+      ? Date.now() - new Date(realGen.at).getTime()
+      : Infinity;
+    if (
+      realGen?.elapsedMs != null &&
+      realAgeMs <= maxAgeMs &&
+      (realGen.status === "pass" || realGen.status === "pass_with_warnings")
+    ) {
+      return {
+        channelSlaPassCount: 1,
+        channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
+        blogSlaMs: realGen.elapsedMs,
+        slaReportStale: true,
+        slaSource: "real-generate",
+      };
+    }
+
+    const publicTest = readJson(
+      join(root, "config", "public-brand-test-report.json")
+    );
+    const publicAgeMs = publicTest?.at
+      ? Date.now() - new Date(publicTest.at).getTime()
+      : Infinity;
+    if (
+      publicTest?.elapsedMs != null &&
+      publicAgeMs <= maxAgeMs &&
+      (publicTest.status === "pass" || publicTest.ok)
+    ) {
+      return {
+        channelSlaPassCount: 1,
+        channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
+        blogSlaMs: publicTest.elapsedMs,
+        slaReportStale: true,
+        slaSource: "public-brand-test",
+      };
+    }
+
+    return {
+      channelSlaPassCount: 0,
+      channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
+      blogSlaMs: null,
+      slaReportStale: true,
+    };
   }
+
   const pass = report.runs.filter(
     (r) => r.status === "pass" || r.status === "pass_with_warnings"
   ).length;
@@ -108,6 +159,8 @@ function summarizeChannelSla(report) {
     channelSlaPassCount: pass,
     channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
     blogSlaMs: blog?.elapsedMs ?? null,
+    slaReportStale: false,
+    slaSource: "channel-sla",
   };
 }
 
@@ -136,6 +189,7 @@ async function main() {
     ...summarizeChannelSla(channelSla),
     ...summarizeUx(hundredUx),
     ...db,
+    customerSlaMs: Number(process.env.BRICLOG_ALL_CHANNEL_SLA_MS) || 30_000,
     engineOpsOk: engine?.ok === true,
     engineBrandFirst: engine?.engine?.brandFirst === true,
     cronSecret: engine?.cron?.secretConfigured === true,

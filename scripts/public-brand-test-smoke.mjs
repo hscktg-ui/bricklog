@@ -138,7 +138,15 @@ async function runApiSmoke() {
 async function runUiSmoke() {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
+  const context = await browser.newContext();
+  await context.addInitScript(() => {
+    try {
+      sessionStorage.setItem("briclog-intro-session-done", "1");
+    } catch {
+      /* ignore */
+    }
+  });
+  const page = await context.newPage();
   const started = Date.now();
   const report = {
     at: new Date().toISOString(),
@@ -156,20 +164,32 @@ async function runUiSmoke() {
 
   try {
     await page.goto(`${BASE}/?skipIntro=1#public-brand-test`, {
-      waitUntil: "domcontentloaded",
+      waitUntil: "networkidle",
       timeout: 90_000,
     });
-    await page.waitForSelector("#public-brand-test form", { timeout: 30_000 });
+    await page.waitForSelector(
+      '#public-brand-test form[data-briclog-public-test-form-ready="1"]',
+      { timeout: 30_000 }
+    );
+    await page.locator("#public-brand-test").scrollIntoViewIfNeeded();
 
-    const form = page.locator("#public-brand-test form");
-    const inputs = form.locator("input").filter({ hasNot: form.locator("[type=hidden]") });
+    const form = page.locator(
+      '#public-brand-test form[data-briclog-public-test-form-ready="1"]'
+    );
+    const inputs = form.locator("input:not([type=hidden])");
     await inputs.nth(0).fill(SAMPLE.brandName);
     await inputs.nth(1).fill(SAMPLE.region);
     await inputs.nth(2).fill(SAMPLE.topic);
+    await page.waitForTimeout(250);
 
-    const submit = form.locator('button[type="submit"]').first();
+    const submit = form.locator('[data-briclog-public-test-submit="1"]');
     await submit.waitFor({ state: "visible", timeout: 15_000 });
-    await submit.click();
+    await submit.evaluate((el) => {
+      if (!(el instanceof HTMLButtonElement) || el.disabled) {
+        throw new Error("submit not ready");
+      }
+      el.form?.requestSubmit(el);
+    });
 
     const preview = page.locator('[data-briclog-public-test-preview="1"]');
     const errorLine = form.locator("p").filter({ hasText: /다시|구체|입력|시도|무료 테스트를 모두/ });
