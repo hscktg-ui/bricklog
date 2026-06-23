@@ -37,5 +37,6 @@
 ## 로드맵
 
 - **Phase 0** (완료): publish-first mode, 주간 캘린더, withhold 제거, async job
-- **Phase 1** (진행): usage·히스토리 SSOT, async job Supabase 영속
-- **Phase 2** (진행): 월간 4주 운영 UI, publish-ready KPI 측정
+- **Phase 1** (완료): usage·히스토리 SSOT, async job Supabase 영속
+- **Phase 2** (진행): 월간 4주 운영 UI, publish-ready KPI — `npm run test:phase-gate`
+- **Phase 3** (대기): 결제·70% publish-ready — `docs/BRICLOG-PHASES.md`
