@@ -166,7 +166,13 @@ export async function POST(request) {
     }
     if (result.blogContent?.sections?.length && !result.withheld) {
       if (isBriclogFastPipelineEnabled()) {
-        const blog = finalizeGpt55BlogPackForUi(result.blogContent, hydratedInput);
+        const alreadyEscaped = Boolean(
+          result.blogContent?._meta?.writerFirstOrchestratorEscape &&
+          result.blogContent?._meta?.publishReady
+        );
+        const blog = alreadyEscaped
+          ? result.blogContent
+          : finalizeGpt55BlogPackForUi(result.blogContent, hydratedInput);
         result = {
           ...result,
           ok: true,

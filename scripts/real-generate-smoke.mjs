@@ -103,7 +103,9 @@ async function runApiDirect() {
         Authorization: `Bearer ${auth.token}`,
       },
       body: JSON.stringify(SAMPLE),
-      signal: AbortSignal.timeout(SLA_MS + 30_000),
+      signal: AbortSignal.timeout(
+        API_ONLY ? Math.max(SLA_MS + 60_000, 120_000) : SLA_MS + 30_000
+      ),
     });
   } catch (err) {
     report.elapsedMs = Date.now() - t0;
