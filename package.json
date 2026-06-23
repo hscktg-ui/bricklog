@@ -57,6 +57,7 @@
     "test:writer-first-delivery": "node --import ./scripts/register-alias.mjs scripts/test-writer-first-delivery.mjs",
     "test:launch-publish-mode": "node --import ./scripts/register-alias.mjs scripts/test-launch-publish-mode.mjs",
     "test:briclog-defaults": "node --import ./scripts/register-alias.mjs scripts/test-briclog-defaults.mjs",
+    "test:content-history-ssot": "node --import ./scripts/register-alias.mjs scripts/test-content-history-ssot.mjs",
     "test:column-visit-north-star": "node --import ./scripts/register-alias.mjs scripts/test-column-visit-north-star.mjs",
     "test:channel-visit-north-star": "node --import ./scripts/register-alias.mjs scripts/test-channel-visit-north-star.mjs",
     "test:brand-content-customer-gate": "node --import ./scripts/register-alias.mjs scripts/test-brand-content-customer-gate.mjs",

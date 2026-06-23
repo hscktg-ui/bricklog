@@ -33,6 +33,7 @@ import HistoryWorkspace from "@/components/history/HistoryWorkspace";
 import Sidebar from "@/components/Sidebar";
 import Toast from "@/components/Toast";
 import ConfirmModal from "@/components/ConfirmModal";
+import { CONTENT_HISTORY_SAVED_EVENT } from "@/lib/history/contentHistoryEvents";
 import {
   ContentProvider,
   useContentForm,
@@ -209,6 +210,15 @@ export default function Dashboard({
   }, [activeMenu, loadHistory]);
 
   useEffect(() => {
+    const onHistorySaved = () => {
+      if (activeMenu === "history") void loadHistory();
+    };
+    window.addEventListener(CONTENT_HISTORY_SAVED_EVENT, onHistorySaved);
+    return () =>
+      window.removeEventListener(CONTENT_HISTORY_SAVED_EVENT, onHistorySaved);
+  }, [activeMenu, loadHistory]);
+
+  useEffect(() => {
     if (!selectedHistoryId) {
       setSelectedRecord(null);
       setHistoryResults({
@@ -365,6 +375,7 @@ function DashboardWithBrands({
       billingPlanId={billingPlanId}
       billingBypassQuotas={billingBypassQuotas}
       onToast={showToast}
+      onBillingPlanRefresh={refreshBillingPlan}
       brandHooks={brandHooks}
     >
       <BrandWorkspaceGate />

@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { fetchWithAuth } from "@/lib/api/clientAuth";
-import { itemsFromBrandArchive } from "@/lib/growth/brandArchiveHistory";
-import { mergeDraftHistoryItems } from "@/lib/growth/mergeDraftHistoryItems";
+import { fetchBrandContentHistory } from "@/lib/history/fetchBrandContentHistory";
+import {
+  CONTENT_HISTORY_SAVED_EVENT,
+} from "@/lib/history/contentHistoryEvents";
 import { REVIEW_DRAFT_SAVED_EVENT } from "@/lib/review/persistReviewDraft";
 
 const CHANNEL_LABEL = {
@@ -46,22 +47,13 @@ export default function BrandDraftHistoryStrip({
     }
     setLoading(true);
     try {
-      const q = new URLSearchParams({ brandId });
-      if (filterChannel) q.set("channel", filterChannel);
-      const data = await fetchWithAuth(`/api/memory/content?${q}`);
-      const memoryList = data.items || [];
-      const archiveList = itemsFromBrandArchive(contentArchive, {
+      const list = await fetchBrandContentHistory({
         brandId,
+        contentArchive,
         channelFilter: filterChannel,
+        limit: 8,
       });
-      const list = mergeDraftHistoryItems(memoryList, archiveList);
-      setItems(list.slice(0, 8));
-    } catch {
-      const fallback = itemsFromBrandArchive(contentArchive, {
-        brandId,
-        channelFilter: filterChannel,
-      });
-      setItems(fallback.slice(0, 8));
+      setItems(list);
     } finally {
       setLoading(false);
     }
@@ -76,7 +68,11 @@ export default function BrandDraftHistoryStrip({
       if (!brandId || e.detail?.brandId === brandId) load();
     };
     window.addEventListener(REVIEW_DRAFT_SAVED_EVENT, onSaved);
-    return () => window.removeEventListener(REVIEW_DRAFT_SAVED_EVENT, onSaved);
+    window.addEventListener(CONTENT_HISTORY_SAVED_EVENT, onSaved);
+    return () => {
+      window.removeEventListener(REVIEW_DRAFT_SAVED_EVENT, onSaved);
+      window.removeEventListener(CONTENT_HISTORY_SAVED_EVENT, onSaved);
+    };
   }, [brandId, load]);
 
   if (!brandId) {

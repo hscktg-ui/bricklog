@@ -67,6 +67,8 @@ import {
   ensureChannelGenerateInput,
 } from "@/lib/formValidation";
 import { isClientBetaActive } from "@/lib/billing/betaAccessClient";
+import { requestBillingUsageRefresh } from "@/lib/billing/billingUsageEvents";
+import { notifyContentHistorySaved } from "@/lib/history/contentHistoryEvents";
 import {
   generateResearchAsync,
   rescueChannelViaServerApi,
@@ -348,6 +350,7 @@ export function ContentProvider({
   billingPlanId = "free",
   billingBypassQuotas = false,
   onToast,
+  onBillingPlanRefresh,
   brandHooks = null,
 }) {
   const [blogInput, setBlogInput] = useState(DEFAULT_BLOG_INPUT);
@@ -1776,6 +1779,14 @@ export function ContentProvider({
           return;
         }
 
+        if (!demoMode) {
+          onBillingPlanRefresh?.();
+          requestBillingUsageRefresh({
+            source: "blog_generate",
+            usage: result.usage,
+          });
+        }
+
         if (result.usageWarning) {
           const warnMsg = getUsageWarningToast(
             billingPlanId,
@@ -2034,6 +2045,11 @@ export function ContentProvider({
               if (memResult?.warnings?.length) {
                 onToast?.(memResult.warnings[0].message, "info");
               }
+              notifyContentHistorySaved({
+                brandId: pipelineInput.brandId || null,
+                channel: "blog",
+                source: "generate",
+              });
             } catch (err) {
               onToast?.(
                 err?.message
@@ -2136,6 +2152,7 @@ export function ContentProvider({
     maybeChannelUpgradeHint,
     requireEmailVerified,
     billingPlanId,
+    onBillingPlanRefresh,
     researchResult,
   ]);
 

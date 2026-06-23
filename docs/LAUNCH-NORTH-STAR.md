@@ -36,6 +36,6 @@
 
 ## 로드맵
 
-- **Phase 0** (현재): publish-first mode, 주간 캘린더, withhold 제거
-- **Phase 1**: 정식 MVP — 이야기 히어로, async job
+- **Phase 0** (완료): publish-first mode, 주간 캘린더, withhold 제거, async job
+- **Phase 1** (진행): usage·히스토리 SSOT, 이야기 히어로 카피
 - **Phase 2**: 월간 운영 OS — 글 품질 50%+ 안정 후
