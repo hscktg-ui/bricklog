@@ -18,9 +18,9 @@ function groupByPriority(items = []) {
   const week = [];
   for (const item of items) {
     if (String(item.priority || "").includes("주")) week.push(item);
-    else if (week.length < 3) week.push(item);
+    else if (week.length < 4) week.push(item);
   }
-  return week.slice(0, 3);
+  return week.slice(0, 4);
 }
 
 export default function ContentPlanWorkspace({
@@ -149,7 +149,7 @@ export default function ContentPlanWorkspace({
         <div className={`max-w-md px-6 py-8 text-center ${VISION_PANEL}`}>
           <p className={VISION_EYEBROW}>운영 계획</p>
           <p className={`mt-3 ${VISION_SUB}`}>
-            브랜드를 선택하면 이번 주에 쓸 글 일정이 잡힙니다.
+            브랜드를 선택하면 이번 달 주차별 글 일정이 잡힙니다.
           </p>
         </div>
       </div>

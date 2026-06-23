@@ -1,7 +1,7 @@
 /**
  * Publish-ready KPI — Launch North Star (출시 전 50%+)
  * Run: npm run test:publish-ready-kpi
- * Prod API: $env:BASE_URL='https://briclog.ai'; $env:API_ONLY='1'; npm run test:publish-ready-kpi
+ * Prod API: $env:BASE_URL='https://briclog.ai'; $env:API_ONLY='1'; $env:PUBLISH_READY_API='1'; npm run test:publish-ready-kpi
  */
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
@@ -18,7 +18,10 @@ const root = join(__dirname, "..");
 const OUT = join(root, "artifacts", "publish-ready-kpi", "latest-summary.json");
 const BASE = (process.env.BASE_URL || "http://localhost:3005").replace(/\/$/, "");
 const TARGET_RATE = Number(process.env.PUBLISH_READY_TARGET) || 0.5;
-const API_SAMPLES = Number(process.env.PUBLISH_READY_API_SAMPLES) || 1;
+const runApiSamples =
+  process.env.PUBLISH_READY_API === "1" && process.env.API_ONLY === "1"
+    ? Number(process.env.PUBLISH_READY_API_SAMPLES) || 1
+    : 0;
 
 const FIXTURES = [
   {
@@ -157,8 +160,8 @@ applyE2eTestCredentialsToEnv(process.env);
 
 const localRuns = FIXTURES.map(assessFixture);
 let apiRuns = [];
-if (process.env.API_ONLY === "1" && API_SAMPLES > 0) {
-  for (let i = 0; i < API_SAMPLES; i += 1) {
+if (runApiSamples > 0) {
+  for (let i = 0; i < runApiSamples; i += 1) {
     try {
       apiRuns.push(await runApiSample(i));
     } catch (err) {

@@ -57,7 +57,25 @@ async function probeSupabase(env) {
     dbFeedbackIntents: await ok("content_feedback", "intents,rewrite_round"),
     dbAdminStats: (await ok("profiles", "last_seen_at")) && (await ok("site_visits")),
     dbPublicTestQuota: await ok("public_test_runs"),
+    dbBlogGenerationJobs: await ok("blog_generation_jobs"),
     smsOtpTable: await ok("phone_otp_verifications"),
+  };
+}
+
+function summarizePublishReadyKpi() {
+  const kpi = readJson(
+    join(root, "artifacts", "publish-ready-kpi", "latest-summary.json")
+  );
+  const maxAgeMs =
+    Number(process.env.PRODUCT_SCORE_KPI_MAX_AGE_MS) || 7 * 24 * 60 * 60 * 1000;
+  if (!kpi?.at) return {};
+  const ageMs = Date.now() - new Date(kpi.at).getTime();
+  if (ageMs > maxAgeMs) return { publishReadyKpiStale: true };
+  return {
+    publishReadyRate: kpi.publishReadyRate,
+    publishReadyPercent: kpi.publishReadyPercent,
+    publishReadyKpiPass: kpi.pass === true,
+    publishReadyKpiStale: false,
   };
 }
 
@@ -225,6 +243,7 @@ async function main() {
     uploadGuide: true,
     signupDraftRestore: true,
     ...publicTest,
+    ...summarizePublishReadyKpi(),
   };
 
   const score = computeProductReadinessScore(signals);

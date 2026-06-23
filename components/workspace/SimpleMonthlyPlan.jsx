@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
@@ -50,6 +50,10 @@ export default function SimpleMonthlyPlan({
   }, [weekStats]);
 
   const [openWeek, setOpenWeek] = useState(currentWeekIndex);
+
+  useEffect(() => {
+    setOpenWeek(currentWeekIndex);
+  }, [currentWeekIndex]);
 
   const visibleWeeks = weekStats.filter((w) => w.total > 0);
 
