@@ -379,10 +379,33 @@ export async function isWorkspaceReady(page) {
     .catch(() => 0);
   const workspaceNav = await page
     .locator('nav, [aria-label*="메뉴"], aside')
-    .getByRole("button", { name: /^이야기$|^플레이스$|^인스타$|^썸네일/ })
+    .getByRole("button", { name: /^이야기$|^플레이스$|^인스타$|^썸네일|^운영|^계획/ })
     .count()
     .catch(() => 0);
+  const planReady = await page
+    .getByText(/운영 계획|이번 주|콘텐츠 계획/)
+    .first()
+    .count()
+    .catch(() => 0);
+  if (workspaceNav > 0 && planReady > 0) return true;
   return brandLabel > 0 || brandPh > 0 || workspaceNav > 0;
+}
+
+/** Plan 기본 홈 → 채널 작업 화면 이동 */
+export async function navigateWorkspaceChannel(page, channel = "blog") {
+  const labels = {
+    blog: /^이야기$/,
+    place: /^플레이스$/,
+    insta: /^인스타$/,
+    image: /^썸네일/,
+    plan: /^운영 계획$|^계획$/,
+  };
+  const pattern = labels[channel] || labels.blog;
+  const btn = page.getByRole("button", { name: pattern }).first();
+  if (await btn.count()) {
+    await btn.click({ timeout: 8000 }).catch(() => null);
+    await page.waitForTimeout(700);
+  }
 }
 
 export async function waitForWorkspaceReady(page, timeoutMs = 45_000) {
@@ -439,6 +462,7 @@ export async function waitForWorkspaceGenerateIdle(page, timeoutMs = 120_000) {
 export async function prepareChannelWorkspace(page, baseUrl, channel) {
   await syncE2eSessionToPage(page, baseUrl);
   await dismissLoadingOverlay(page);
+  await navigateWorkspaceChannel(page, channel);
   await waitForWorkspaceGenerateIdle(page, 90_000);
   await page
     .waitForSelector(`[data-briclog-generate="${channel}"]`, { timeout: 45_000 })

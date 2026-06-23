@@ -37,6 +37,7 @@ import {
   prepareChannelWorkspace,
   syncE2eSessionToPage,
   waitForWorkspaceReady,
+  navigateWorkspaceChannel,
 } from "./lib/e2eAuth.js";
 import { loadEnvLocal } from "./lib/loadEnvLocal.mjs";
 
@@ -154,7 +155,9 @@ async function ensureFreshE2eSession(page, context, { forceAuth = false } = {}) 
 async function openWorkspace(page) {
   await refreshE2eSession(page);
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+  await dismissIntro(page);
   await dismissWorkspaceModals(page);
+  await navigateWorkspaceChannel(page, "blog");
   let ready = await waitForWorkspaceReady(page, 45_000);
   if (!ready.ok) {
     await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
