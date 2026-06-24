@@ -153,6 +153,7 @@ import {
 } from "@/lib/generation/postVerifySalvage";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
 import { hasFilledBlogAxes, stampVerifiedGenerationAxes } from "@/lib/product/deliverySoftPass";
+import { countBlogBodyCharsWithSpaces } from "@/lib/prompts/engine/textUtils";
 import {
   GENERATION_CHANNEL_PACK_DEADLINE_MS,
   GENERATION_TIME_BUDGET_MS,
@@ -204,6 +205,12 @@ function allowBlogUiRescue(pipelineInput = {}) {
 
 function resolveBlogGenerationFailMessage(pipelineInput, result) {
   const msg = String(result?.userMessage || "").trim();
+  const usageMsg = String(
+    result?.usageWarning?.message || result?.usage?.message || ""
+  ).trim();
+  if (usageMsg && !isTechnicalErrorMessage(usageMsg)) {
+    return usageMsg;
+  }
   if (
     msg &&
     !isTechnicalErrorMessage(msg) &&
@@ -214,6 +221,12 @@ function resolveBlogGenerationFailMessage(pipelineInput, result) {
   }
   if (!hasFilledBlogAxes(pipelineInput)) {
     return "브랜드 · 지역 · 주제를 모두 입력해 주세요.";
+  }
+  if (
+    msg === "브랜드 · 지역 · 주제를 모두 입력해 주세요." ||
+    msg === "브랜드·지역·주제를 입력해 주세요."
+  ) {
+    return "입력은 확인됐지만 전달 과정에서 값이 빠졌어요. 「입력 확인」에 세 값이 보이는지 확인한 뒤 다시 시도해 주세요.";
   }
   return `이번에는 편집본을 화면에 올리지 못했어요. ${blogGenerateCtaInlineRetry()}`;
 }
@@ -1340,21 +1353,25 @@ export function ContentProvider({
           })
         : Promise.resolve(syncBrand);
 
-    const pipelineInput = {
-      ...input,
-      topic: input.topic?.trim() || topicMain,
-      mainKeyword: topicMain || input.mainKeyword,
-      brandMemory: provisional,
-      v2AxisRequired: true,
-      v2PipelineEnforced: true,
-      v3EngineEnforced: true,
-      brandId: resolveBrandIdForGeneration(input, {
-        syncBrand,
-        activeBrand: brandHooks?.activeBrand,
-        activeBrandId: brandHooks?.activeBrandId,
-        blankBrandMode: brandHooks?.blankBrandMode,
-      }) || provisional?.id,
-    };
+    const pipelineInput = resolveBlogFormAxes(
+      stampVerifiedGenerationAxes({
+        ...input,
+        topic: input.topic?.trim() || topicMain,
+        mainKeyword: topicMain || input.mainKeyword,
+        brandMemory: provisional,
+        v2AxisRequired: true,
+        v2PipelineEnforced: true,
+        v3EngineEnforced: true,
+        brandId:
+          resolveBrandIdForGeneration(input, {
+            syncBrand,
+            activeBrand: brandHooks?.activeBrand,
+            activeBrandId: brandHooks?.activeBrandId,
+            blankBrandMode: brandHooks?.blankBrandMode,
+          }) || provisional?.id,
+      }),
+      brandHooks
+    );
       const blogDerive = resolveDerivationSource("blog", {
         blogContent,
         placeContent,
@@ -1785,6 +1802,76 @@ export function ContentProvider({
           }
           const gated = enforceCustomerBlogOutput(delivery.pack, pipelineInput);
           if (!gated.ok || !gated.pack?.sections?.length) {
+            const canSoftPreview =
+              blog?.sections?.length &&
+              hasFilledBlogAxes(pipelineInput) &&
+              (isLlmOriginatedPack(blog, result) ||
+                countBlogBodyCharsWithSpaces(blog) >= 80);
+            if (canSoftPreview) {
+              const previewPack = ensureBlogDisplayPack(
+                salvageBlogPackForDelivery(blog, pipelineInput),
+                pipelineInput
+              );
+              if (previewPack?.sections?.length) {
+                stashPendingBlogResult(user?.id, {
+                  blog: {
+                    ...previewPack,
+                    _meta: {
+                      ...(previewPack._meta || {}),
+                      deliveryPreview: true,
+                      deliveryPreviewMessage: SOFT_PREVIEW_HINT,
+                      passOutput: false,
+                      softPass: true,
+                      displayReady: true,
+                      customerGateSoftPreview: true,
+                    },
+                  },
+                  baseContentLabel: result.baseContentLabel,
+                  sourceChannel:
+                    blogDerive?.sourceChannel &&
+                    blogDerive.sourceChannel !== "blog"
+                      ? blogDerive.sourceChannel
+                      : "blog",
+                });
+                flushSync(() => {
+                  setBlogContent({
+                    ...previewPack,
+                    _meta: {
+                      ...(previewPack._meta || {}),
+                      deliveryPreview: true,
+                      deliveryPreviewMessage: SOFT_PREVIEW_HINT,
+                      passOutput: false,
+                      softPass: true,
+                      displayReady: true,
+                      customerGateSoftPreview: true,
+                    },
+                  });
+                  setBlogWithholdUi(null);
+                  setBaseContentLabel(result.baseContentLabel);
+                  setSourceChannel(
+                    blogDerive?.sourceChannel &&
+                      blogDerive.sourceChannel !== "blog"
+                      ? blogDerive.sourceChannel
+                      : "blog"
+                  );
+                  clearDerived();
+                  setBlogGenHint(SOFT_PREVIEW_HINT);
+                  setBlogGenHintSoft(true);
+                  setBlogGenHintIsAuth(false);
+                  setBlogResultRevealPending(false);
+                });
+                blogOnScreenRef.current = true;
+                overlaySuccess = true;
+                blogGenLock.current = false;
+                finishLoadingOverlay(overlayChannel, startedAt, {
+                  success: true,
+                  immediate: true,
+                  quietSuccess: true,
+                });
+                onToast?.(SOFT_PREVIEW_HINT, "info");
+                return true;
+              }
+            }
             const failMsg =
               gated.userMessage ||
               delivery.userMessage ||

@@ -10,6 +10,7 @@ import {
   stampVerifiedGenerationAxes,
 } from "@/lib/product/deliverySoftPass.js";
 import { researchGateBlockedResult } from "@/lib/content/v2PipelineGate.js";
+import { detectEmptyInputVars } from "@/lib/content/placeholderContaminationEngine.js";
 
 const base = {
   brandName: "테스트카페",
@@ -78,6 +79,32 @@ const stamped = stampVerifiedGenerationAxes({
 });
 assert.equal(hasFilledBlogAxes({ brandName: "", region: "", topic: "" }), false);
 assert.equal(hasFilledBlogAxes(stamped), true);
+
+const stampedRestore = resolveBlogFormAxes({
+  brandName: "",
+  region: "",
+  topic: "",
+  _verifiedGenerationAxes: {
+    brandName: "E2E카페",
+    region: "서울 마포",
+    topic: "봄 브런치",
+  },
+});
+assert.equal(stampedRestore.brandName, "E2E카페");
+assert.equal(stampedRestore.region, "서울 마포");
+assert.equal(stampedRestore.topic, "봄 브런치");
+
+const emptyWithStamp = detectEmptyInputVars({
+  brandName: "",
+  region: "",
+  topic: "",
+  _verifiedGenerationAxes: {
+    brandName: "E2E카페",
+    region: "서울 마포",
+    topic: "봄 브런치",
+  },
+});
+assert.equal(emptyWithStamp.ok, true);
 
 const rescued = researchGateBlockedResult(
   {
