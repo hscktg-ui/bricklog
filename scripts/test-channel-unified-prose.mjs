@@ -36,7 +36,7 @@ const placePack = {
 const place = applyPlaceUnifiedProsePass(placePack, input);
 assert("place thesis", /안내/.test(buildPlaceNoticeThesis(input)));
 assert("place AI transition removed", !/또한/.test(place.shortNotice || ""));
-assert("place detail structured", /·\s|이어서/.test(place.detailBody || ""));
+assert("place detail structured", /(?:^|\n)\s*·\s+/m.test(place.detailBody || ""));
 assert("place human tone", place._meta?.placeNoticeHumanized === true);
 assert("place process narration removed", !/정성껏 준비하여/.test(place.detailBody || ""));
 assert("place unified meta", place._meta?.channelUnifiedProsePass === true);

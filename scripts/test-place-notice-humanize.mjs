@@ -60,4 +60,31 @@ assert.ok(!/방문\s*후기|다녀(?:왔|온)/.test(grounded.title || ""));
 assert.ok(!detectPlaceReviewLeak(grounded.detailBody || ""));
 assert.ok(/안내|운영|예약|플레이스/.test(grounded.detailBody || ""));
 
+const poolInput = {
+  brandName: "여주 새 브랜드",
+  region: "여주",
+  topic: "수영장 개장",
+  researchFacts: [{ fact: "실내·실외 수영장 이용 시간은 요일별로 다릅니다." }],
+};
+const spammy = humanizePlaceNoticePack(
+  {
+    title: "여주 수영장",
+    shortNotice:
+      "여주 새 브랜드, 수영장 개장 소식 전해드려요 자연스럽게 서비스·예약 일정은 매장·시기마다 달라질 수 있어요.",
+    detailBody:
+      "· 여주 새 브랜드, 수영장 개장 소식 전해드려요 자연스럽게 서비스·예약 일정은 매장·시기마다 달라질 수 있어요. · 방문·예약은 플레이스 공지와 전화 문의로 확인할 수 있으며, 주차·영업 시간도 같은 경로에서 함께 안내드리고 있어요. · 문의는 플레이스·전화로 편하게 남겨 주세요.\n· 수영장 개장 — 자세한 내용은 매장에 문의해 주세요\n· 새 브랜드 방문·예약은 플레이스·전화로 확인\n-",
+  },
+  poolInput
+);
+assert.ok(!/전해(?:드|요)|자연스럽|같은\s*경로/.test(spammy.detailBody || ""));
+assert.ok(!/(?:^|\n)\s*-\s*(?:\n|$)/m.test(spammy.detailBody || ""));
+assert.ok(/수영장\s*개장/.test(spammy.shortNotice || spammy.detailBody || ""));
+assert.ok(
+  (spammy.detailBody || "").split(/\n/).filter((l) => /플레이스|전화/.test(l)).length <= 1
+);
+const poolTone = assessPlaceNoticeHumanTone(
+  `${spammy.shortNotice}\n${spammy.detailBody}`
+);
+assert.equal(poolTone.ok, true);
+
 console.log("OK: place-notice-humanize");
