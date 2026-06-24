@@ -145,6 +145,7 @@
     "test:diagnostic-score-trust": "node --import ./scripts/register-alias.mjs scripts/test-diagnostic-score-trust.mjs",
     "test:region-column-naturalize": "node --import ./scripts/register-alias.mjs scripts/test-region-column-naturalize.mjs",
     "test:yeoju-region-mash": "node --import ./scripts/register-alias.mjs scripts/test-yeoju-region-mash.mjs",
+    "test:yeoju-mokma-visit-review": "node --import ./scripts/register-alias.mjs scripts/test-yeoju-mokma-visit-review.mjs",
     "test:research-heavy-delivery": "node --import ./scripts/register-alias.mjs scripts/test-research-heavy-delivery.mjs",
     "test:gpt55-research-heavy-rescue": "node --import ./scripts/register-alias.mjs scripts/test-gpt55-research-heavy-rescue.mjs",
     "test:gpt55-cafe-fallback-rescue": "node --import ./scripts/register-alias.mjs scripts/test-gpt55-cafe-fallback-rescue.mjs",
