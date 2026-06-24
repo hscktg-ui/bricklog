@@ -42,6 +42,10 @@ import {
   validateForm,
 } from "@/lib/formValidation";
 import { resolveBlogFormAxes } from "@/lib/workspace/brandFormSync";
+import {
+  materializeVerifiedGenerationAxes,
+  stampVerifiedGenerationAxes,
+} from "@/lib/product/deliverySoftPass";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { isGenerationSessionActive } from "@/lib/generation/generationSession";
 import { saveFormDraft } from "@/lib/formDraft";
@@ -265,9 +269,15 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
-      const flushed = flushToCommitted();
-      let next = valuesOverride ? { ...flushed, ...valuesOverride } : flushed;
-      next = resolveBlogFormAxes(next, brandHooksForForm);
+      flushToCommitted();
+      let next = materializeVerifiedGenerationAxes(
+        stampVerifiedGenerationAxes(
+          resolveBlogFormAxes(
+            { ...getLiveFormValues(), ...(valuesOverride || {}) },
+            brandHooksForForm
+          )
+        )
+      );
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
         next.mainKeyword = topic.split(/[,，]/)[0].trim();
@@ -286,6 +296,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       setDraftForm,
       setBlogInput,
       flushToCommitted,
+      getLiveFormValues,
       formApiRef,
       onStartGenerate,
       brandHooksForForm,

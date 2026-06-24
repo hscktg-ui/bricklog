@@ -1353,24 +1353,26 @@ export function ContentProvider({
           })
         : Promise.resolve(syncBrand);
 
-    const pipelineInput = resolveBlogFormAxes(
-      stampVerifiedGenerationAxes({
-        ...input,
-        topic: input.topic?.trim() || topicMain,
-        mainKeyword: topicMain || input.mainKeyword,
-        brandMemory: provisional,
-        v2AxisRequired: true,
-        v2PipelineEnforced: true,
-        v3EngineEnforced: true,
-        brandId:
-          resolveBrandIdForGeneration(input, {
-            syncBrand,
-            activeBrand: brandHooks?.activeBrand,
-            activeBrandId: brandHooks?.activeBrandId,
-            blankBrandMode: brandHooks?.blankBrandMode,
-          }) || provisional?.id,
-      }),
-      brandHooks
+    const pipelineInput = materializeVerifiedGenerationAxes(
+      resolveBlogFormAxes(
+        stampVerifiedGenerationAxes({
+          ...input,
+          topic: input.topic?.trim() || topicMain,
+          mainKeyword: topicMain || input.mainKeyword,
+          brandMemory: provisional,
+          v2AxisRequired: true,
+          v2PipelineEnforced: true,
+          v3EngineEnforced: true,
+          brandId:
+            resolveBrandIdForGeneration(input, {
+              syncBrand,
+              activeBrand: brandHooks?.activeBrand,
+              activeBrandId: brandHooks?.activeBrandId,
+              blankBrandMode: brandHooks?.blankBrandMode,
+            }) || provisional?.id,
+        }),
+        brandHooks
+      )
     );
       const blogDerive = resolveDerivationSource("blog", {
         blogContent,
