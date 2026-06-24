@@ -1,0 +1,15 @@
+{
+  "at": "2026-06-24T23:39:06.504Z",
+  "version": "columnist-sovereign-batch-v1",
+  "batchLimit": 250,
+  "liveLimit": 0,
+  "local": {
+    "total": 250,
+    "pass": 250,
+    "passRate": 100,
+    "failSamples": []
+  },
+  "live": null,
+  "columnistSovereignEnabled": true,
+  "openaiConfigured": true
+}
