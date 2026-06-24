@@ -75,4 +75,28 @@ assert.equal(
   "이미 sovereign LLM 팩은 재작성 불필요"
 );
 
+const donkatsuInput = {
+  brandName: "여주목마",
+  region: "여주",
+  topic: "국수나무 돈까스 소개",
+  industry: "레저/체험",
+  blogLengthTier: "medium",
+};
+
+const donkatsuPack = {
+  title: "여주 여주목마 솔직 후기, 국수나무 돈까스 소개",
+  sections: templatePack.sections,
+};
+
+assert.ok(
+  isVisitReviewSovereignEligible(donkatsuInput, donkatsuPack),
+  "제목 솔직 후기 + 메뉴 주제 → sovereign eligible"
+);
+assert.ok(
+  needsVisitReviewSovereignUpgrade(donkatsuPack, donkatsuInput),
+  "엔진 스팸 + 솔직 후기 제목 → sovereign 업그레이드"
+);
+const donkatsuContam = detectVisitReviewTemplateContamination(donkatsuPack, donkatsuInput);
+assert.equal(donkatsuContam.ok, false, "엔진 스팸 오염 감지 (제목 기반 후기)");
+
 console.log("OK visit-review-sovereign-engine");
