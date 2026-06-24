@@ -42,6 +42,7 @@ import {
   validateForm,
 } from "@/lib/formValidation";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
+import { isGenerationSessionActive } from "@/lib/generation/generationSession";
 import { saveFormDraft } from "@/lib/formDraft";
 import {
   loadBlogOnlyPref,
@@ -138,7 +139,12 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   /** 이전 생성 실패 후 고아 오버레이만 정리 (시작 직후 레이스·진행 중에는 유지) */
   useEffect(() => {
-    if (generating.blog || loadingOverlay?.complete || !loadingOverlay?.active) {
+    if (
+      generating.blog ||
+      isGenerationSessionActive() ||
+      loadingOverlay?.complete ||
+      !loadingOverlay?.active
+    ) {
       return undefined;
     }
     if (
@@ -152,7 +158,12 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     if (ageMs < 4000) return undefined;
 
     const t = window.setTimeout(() => {
-      if (generating.blog || loadingOverlay?.complete || !loadingOverlay?.active) {
+      if (
+        generating.blog ||
+        isGenerationSessionActive() ||
+        loadingOverlay?.complete ||
+        !loadingOverlay?.active
+      ) {
         return;
       }
       window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));

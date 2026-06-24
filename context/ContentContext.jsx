@@ -1775,13 +1775,11 @@ export function ContentProvider({
         };
 
   if (generationEpochRef.current !== genEpoch) {
-          blogGenLock.current = false;
-          setGenerationSessionActive(false);
-          setGenerating((g) => ({ ...g, blog: false }));
           return;
         }
         const blogDelivered = deliverBlogResult();
         if (!blogDelivered) {
+          if (generationEpochRef.current !== genEpoch) return;
           blogGenLock.current = false;
           setGenerationSessionActive(false);
           setGenerating((g) => ({ ...g, blog: false }));
@@ -2097,6 +2095,7 @@ export function ContentProvider({
           toastType: norm.toastType,
         });
       } finally {
+        if (generationEpochRef.current !== genEpoch) return;
         if (!overlaySuccess) {
           blogGenLock.current = false;
           setGenerationSessionActive(false);
