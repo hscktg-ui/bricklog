@@ -753,8 +753,8 @@ export function ContentProvider({
   }, [user?.id]);
 
   useEffect(() => {
+    if (!user?.id || brandHooks?.blankBrandMode) return;
     const brandId = brandHooks?.activeBrandId;
-    if (!user?.id || !brandId || brandHooks?.blankBrandMode) return;
     const draft = loadFormDraft(user.id, brandId);
     if (!draft) return;
     setBlogInput((prev) => {

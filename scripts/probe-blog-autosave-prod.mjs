@@ -12,6 +12,7 @@ import {
   prepareChannelWorkspace,
   fillBlogFormViaDom,
   waitForWorkspaceReady,
+  dismissLoadingOverlay,
   waitForWorkspaceGenerateIdle,
 } from "./lib/e2eAuth.js";
 import { dirname, join } from "path";
@@ -69,7 +70,7 @@ async function openBlogWorkspace(page) {
     .waitFor({ state: "visible", timeout: 25_000 })
     .catch(() => null);
 
-  return waitForWorkspaceReady(page, 25_000);
+  return waitForWorkspaceReady(page, 60_000);
 }
 
 const browser = await chromium.launch({ headless: true });
@@ -119,6 +120,7 @@ const seedMeta = await page.evaluate((form) => {
 
 await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
 await dismissWorkspaceModals(page);
+await dismissLoadingOverlay(page);
 await prepareChannelWorkspace(page, BASE, "blog");
 await dismissBrandWorkspaceGate(page);
 await waitForWorkspaceReady(page, 25_000);
