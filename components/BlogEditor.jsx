@@ -41,7 +41,7 @@ import {
   isFormValid as checkFormValid,
   validateForm,
 } from "@/lib/formValidation";
-import { resolveBlogFormAxes, ensureGenerationAxesOnInput } from "@/lib/workspace/brandFormSync";
+import { resolveBlogFormAxes, ensureGenerationAxesOnInput, mergeLiveFormWithCommitted } from "@/lib/workspace/brandFormSync";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { isGenerationSessionActive } from "@/lib/generation/generationSession";
 import { saveFormDraft } from "@/lib/formDraft";
@@ -199,6 +199,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     formApiRef,
     flushToCommitted,
     patchDraft: patchDraftImmediate,
+    applyExternalForm,
   } = useDeferredWorkspaceForm(blogInput, setBlogInput);
   const debouncedDraftForSave = useDebouncedValue(draftForm, 900);
   const { isMobile } = useEffectiveViewport();
@@ -208,21 +209,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     setBlogOnly(loadBlogOnlyPref());
   }, []);
 
-  useEffect(() => {
-    if (generating.blog) return undefined;
-    const persist = () =>
-      saveFormDraft(
-        debouncedDraftForSave,
-        userId,
-        debouncedDraftForSave?.brandId
-      );
-    if (typeof requestIdleCallback === "function") {
-      const id = requestIdleCallback(persist, { timeout: 2500 });
-      return () => cancelIdleCallback(id);
-    }
-    persist();
-    return undefined;
-  }, [debouncedDraftForSave, userId, generating.blog]);
   const { compact } = useWorkspaceCompact();
   const { layoutMode, setLayoutMode } = useChannelLayoutMode("blog");
 
@@ -254,8 +240,30 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     [activeBrand, brandId, blankBrandMode]
   );
 
+  useEffect(() => {
+    if (generating.blog) return undefined;
+    const persist = () => {
+      const live = formApiRef.current?.getValues?.() ?? draftForm;
+      const merged = ensureGenerationAxesOnInput(
+        mergeLiveFormWithCommitted(live, blogInput),
+        brandHooksForForm
+      );
+      saveFormDraft(merged, userId, merged?.brandId || blogInput?.brandId);
+    };
+    if (typeof requestIdleCallback === "function") {
+      const id = requestIdleCallback(persist, { timeout: 2500 });
+      return () => cancelIdleCallback(id);
+    }
+    persist();
+    return undefined;
+  }, [debouncedDraftForSave, blogInput, userId, generating.blog, brandHooksForForm, draftForm, formApiRef]);
+
   const resolvedFormAxes = useMemo(
-    () => resolveBlogFormAxes(getLiveFormValues(), brandHooksForForm),
+    () =>
+      ensureGenerationAxesOnInput(
+        mergeLiveFormWithCommitted(getLiveFormValues(), blogInput),
+        brandHooksForForm
+      ),
     [draftForm, blogInput, brandHooksForForm, getLiveFormValues]
   );
 
@@ -266,10 +274,14 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
       flushToCommitted();
-      let next = ensureGenerationAxesOnInput(
-        { ...getLiveFormValues(), ...(valuesOverride || {}) },
-        brandHooksForForm
-      );
+      const live = {
+        ...mergeLiveFormWithCommitted(
+          formApiRef.current?.getValues?.() ?? draftForm,
+          blogInput
+        ),
+        ...(valuesOverride || {}),
+      };
+      let next = ensureGenerationAxesOnInput(live, brandHooksForForm);
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
         next.mainKeyword = topic.split(/[,，]/)[0].trim();
@@ -277,6 +289,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       formApiRef.current?.replaceAll?.(next);
       setDraftForm(next);
       setBlogInput(next);
+      applyExternalForm?.(next);
       setTouched(true);
       onStartGenerate?.();
       generateBlog(next, { blogOnly });
@@ -289,6 +302,8 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       setBlogInput,
       flushToCommitted,
       getLiveFormValues,
+      blogInput,
+      applyExternalForm,
       formApiRef,
       onStartGenerate,
       brandHooksForForm,

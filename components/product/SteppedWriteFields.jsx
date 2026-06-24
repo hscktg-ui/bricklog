@@ -62,6 +62,8 @@ export default function SteppedWriteFields({
               <button
                 type="button"
                 onClick={() => setManualStep(step.id)}
+                aria-label={`${step.label} 입력 단계로 이동`}
+                title="단계 이동만 합니다. 생성은 아래 「조사 후 글 받기」를 눌러 주세요."
                 className={`w-full rounded-lg border px-1.5 py-2 text-center text-[11px] font-semibold leading-tight transition-colors ${
                   isActive
                     ? "border-[#03C75A] bg-[#E8F9EF] text-[#03A94D] ring-2 ring-[#03C75A]/15"

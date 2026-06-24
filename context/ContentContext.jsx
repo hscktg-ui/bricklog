@@ -760,17 +760,22 @@ export function ContentProvider({
     setBlogInput((prev) => {
       if (prev.brandId && prev.brandId !== brandId) return prev;
       const today = new Date().toISOString().slice(0, 10);
-      const merged = coalesceBlogGenerationInput(draft, prev);
-      return sanitizeFormInputIndustryScope(
+      const merged = sanitizeFormInputIndustryScope(
         {
-          ...merged,
+          ...coalesceBlogGenerationInput(draft, prev),
           brandId,
           contentDate: draft.contentDate || prev.contentDate || today,
         },
         resolveBriclogIndustryKey(draft || prev)
       );
+      const synced = ensureGenerationAxesOnInput(
+        mergeWorkspaceBrandIntoInput(merged, brandHooks),
+        brandHooks
+      );
+      emitBrandFormSync(synced);
+      return synced;
     });
-  }, [user?.id, brandHooks?.activeBrandId, brandHooks?.blankBrandMode]);
+  }, [user?.id, brandHooks?.activeBrandId, brandHooks?.blankBrandMode, brandHooks]);
 
   useEffect(() => {
     const handler = () => {

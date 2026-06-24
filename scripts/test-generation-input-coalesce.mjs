@@ -4,6 +4,7 @@ import {
   mergeWorkspaceBrandIntoInput,
   mergeBrandFormSyncPayload,
   resolveBlogFormAxes,
+  mergeLiveFormWithCommitted,
   ensureGenerationAxesOnInput,
 } from "@/lib/workspace/brandFormSync.js";
 import { slimBlogApiPayload } from "@/lib/generation/slimBlogApiPayload.js";
@@ -157,6 +158,14 @@ const slimmed = slimBlogApiPayload({
 assert.equal(slimmed.brandName, "E2E카페");
 assert.equal(slimmed.region, "서울 마포");
 assert.equal(slimmed.topic, "봄 브런치");
+
+const mergedSources = mergeLiveFormWithCommitted(
+  { brandName: "폼브랜드", region: "", topic: "" },
+  { brandName: "", region: "서울", topic: "수영장 오픈" }
+);
+assert.equal(mergedSources.brandName, "폼브랜드");
+assert.equal(mergedSources.region, "서울");
+assert.equal(mergedSources.topic, "수영장 오픈");
 
 const stampedResearchGate = evaluateResearchWriteGate({
   brandName: "",
