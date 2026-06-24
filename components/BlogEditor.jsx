@@ -197,7 +197,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     draft: draftForm,
     setDraft: setDraftForm,
     formApiRef,
-    flushToCommitted,
     patchDraft: patchDraftImmediate,
     applyExternalForm,
   } = useDeferredWorkspaceForm(blogInput, setBlogInput);
@@ -273,14 +272,13 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
-      flushToCommitted();
-      const live = {
-        ...mergeLiveFormWithCommitted(
-          formApiRef.current?.getValues?.() ?? draftForm,
-          blogInput
-        ),
-        ...(valuesOverride || {}),
-      };
+      const live = mergeLiveFormWithCommitted(
+        {
+          ...(formApiRef.current?.getValues?.() ?? draftForm),
+          ...(valuesOverride || {}),
+        },
+        blogInput
+      );
       let next = ensureGenerationAxesOnInput(live, brandHooksForForm);
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
@@ -300,7 +298,6 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       setTouched,
       setDraftForm,
       setBlogInput,
-      flushToCommitted,
       getLiveFormValues,
       blogInput,
       applyExternalForm,
