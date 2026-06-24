@@ -21,6 +21,7 @@ process.env.BRICLOG_RESET_QUALITY = "true";
 process.env.BRICLOG_WRITER_FIRST = "true";
 process.env.BRICLOG_WRITER_SOVEREIGN = "true";
 process.env.BRICLOG_FAST_PIPELINE = "true";
+process.env.BRICLOG_LAUNCH_PUBLISH_FIRST = "false";
 
 const INPUT = {
   brandName: "티카페",

@@ -431,11 +431,15 @@ export function ContentProvider({
     overlayFinishTimers.current = [];
   }, []);
 
-  const dismissLoadingOverlay = useCallback(() => {
+  const dismissLoadingOverlay = useCallback((opts = {}) => {
     clearOverlayFinishTimers();
-    blogGenLock.current = false;
-    setGenerationSessionActive(false);
-    setGenerating(INITIAL_GENERATING);
+    if (!opts.preserveGenLock) {
+      blogGenLock.current = false;
+    }
+    if (!opts.preserveSession) {
+      setGenerationSessionActive(false);
+      setGenerating(INITIAL_GENERATING);
+    }
     setBlogResultRevealPending(false);
     setLoadingOverlay({
       active: false,
@@ -827,7 +831,7 @@ export function ContentProvider({
     if (demoMode || !user?.id || !brandId) return undefined;
     if (hydratedBrandRef.current === brandId) return undefined;
 
-    if (blogGenLock.current) {
+    if (blogGenLock.current || generating.blog) {
       hydratedBrandRef.current = brandId;
       return undefined;
     }
@@ -881,7 +885,7 @@ export function ContentProvider({
     return () => {
       cancelled = true;
     };
-  }, [demoMode, user?.id, brandHooks?.activeBrandId]);
+  }, [demoMode, user?.id, brandHooks?.activeBrandId, generating.blog]);
 
   useEffect(() => {
     const intent = brandHooks?.planLaunchIntent;
@@ -1180,7 +1184,7 @@ export function ContentProvider({
     }
 
     clearOverlayFinishTimers();
-    dismissLoadingOverlay();
+    dismissLoadingOverlay({ preserveGenLock: true, preserveSession: true });
     generationEpochRef.current += 1;
     const genEpoch = generationEpochRef.current;
 
@@ -1744,6 +1748,7 @@ export function ContentProvider({
           });
           blogOnScreenRef.current = true;
           overlaySuccess = true;
+          blogGenLock.current = false;
           if (runChannelPack) {
             finishLoadingOverlay(overlayChannel, startedAt, {
               success: true,
@@ -1769,7 +1774,12 @@ export function ContentProvider({
           return true;
         };
 
-  if (generationEpochRef.current !== genEpoch) return;
+  if (generationEpochRef.current !== genEpoch) {
+          blogGenLock.current = false;
+          setGenerationSessionActive(false);
+          setGenerating((g) => ({ ...g, blog: false }));
+          return;
+        }
         const blogDelivered = deliverBlogResult();
         if (!blogDelivered) {
           blogGenLock.current = false;

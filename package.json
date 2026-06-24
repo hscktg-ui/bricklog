@@ -75,6 +75,7 @@
     "test:visit-review-unified-prose": "node --import ./scripts/register-alias.mjs scripts/test-visit-review-unified-prose.mjs",
     "test:channel-unified-prose": "node --import ./scripts/register-alias.mjs scripts/test-channel-unified-prose.mjs",
     "test:insta-caption-humanize": "node --import ./scripts/register-alias.mjs scripts/test-insta-caption-humanize.mjs",
+    "test:blog-prose-humanize": "node --import ./scripts/register-alias.mjs scripts/test-blog-prose-humanize.mjs",
     "test:place-notice-humanize": "node --import ./scripts/register-alias.mjs scripts/test-place-notice-humanize.mjs",
     "test:enrich-generation-input": "node --import ./scripts/register-alias.mjs scripts/test-enrich-generation-input.mjs",
     "test:regen-tone-ux": "node --import ./scripts/register-alias.mjs scripts/test-regen-tone-ux.mjs",
