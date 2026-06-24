@@ -256,7 +256,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   const resolvedFormAxes = useMemo(
     () => resolveBlogFormAxes(getLiveFormValues(), brandHooksForForm),
-    [draftForm, brandHooksForForm, getLiveFormValues]
+    [draftForm, blogInput, brandHooksForForm, getLiveFormValues]
   );
 
   const formValidNow = checkFormValid(resolvedFormAxes, {

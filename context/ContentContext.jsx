@@ -723,14 +723,10 @@ export function ContentProvider({
       setBlogInput(merged);
       emitBrandFormSync(merged);
     } else {
-      setBlogInput((prev) => {
-        const next = {
-          ...prev,
-          contentDate: prev.contentDate || today,
-        };
-        emitBrandFormSync(next);
-        return next;
-      });
+      setBlogInput((prev) => ({
+        ...prev,
+        contentDate: prev.contentDate || today,
+      }));
     }
   }, [user?.id]);
 
@@ -742,10 +738,10 @@ export function ContentProvider({
     setBlogInput((prev) => {
       if (prev.brandId && prev.brandId !== brandId) return prev;
       const today = new Date().toISOString().slice(0, 10);
+      const merged = coalesceBlogGenerationInput(draft, prev);
       return sanitizeFormInputIndustryScope(
         {
-          ...prev,
-          ...draft,
+          ...merged,
           brandId,
           contentDate: draft.contentDate || prev.contentDate || today,
         },

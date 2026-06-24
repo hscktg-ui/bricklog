@@ -81,6 +81,19 @@ export default function SteppedWriteFields({
         })}
       </ol>
 
+      {doneCount > 0 && activeId !== "brand" && filled.brand ? (
+        <p className="text-[12px] text-[#4E5968]">
+          <span className="font-medium text-[#03A94D]">브랜드</span>{" "}
+          {values.brandName?.trim()}
+        </p>
+      ) : null}
+      {doneCount > 1 && activeId === "topic" && filled.region ? (
+        <p className="text-[12px] text-[#4E5968]">
+          <span className="font-medium text-[#03A94D]">지역</span>{" "}
+          {values.region?.trim()}
+        </p>
+      ) : null}
+
       {activeId === "brand" ? (
         <label className="block">
           <span className="mb-1.5 flex items-center gap-1 text-[13px] font-medium text-[#4E5968]">
