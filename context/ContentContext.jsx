@@ -59,6 +59,7 @@ import {
   sanitizeFormInputIndustryScope,
 } from "@/lib/workspace/brandScopeGuard";
 import { resolveBriclogIndustryKey } from "@/lib/product/industryContextEngine";
+import { topicRaw } from "@/lib/content/topicFacetEngine";
 import { consumePublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import { brandMemoryToFormInput } from "@/lib/brands/brandMemory";
 import {
@@ -435,10 +436,11 @@ export function ContentProvider({
 
   const dismissLoadingOverlay = useCallback((opts = {}) => {
     clearOverlayFinishTimers();
-    if (!opts.preserveGenLock) {
+    const preserveLock = opts.preserveGenLock || blogGenLock.current;
+    if (!preserveLock) {
       blogGenLock.current = false;
     }
-    if (!opts.preserveSession) {
+    if (!opts.preserveSession && !blogGenLock.current) {
       setGenerationSessionActive(false);
       setGenerating(INITIAL_GENERATING);
     }
@@ -458,18 +460,28 @@ export function ContentProvider({
   }, [clearOverlayFinishTimers]);
 
   useEffect(() => {
-    window.addEventListener("briclog-dismiss-loading-overlay", dismissLoadingOverlay);
+    const handler = (event) => {
+      dismissLoadingOverlay(event?.detail || {});
+    };
+    window.addEventListener("briclog-dismiss-loading-overlay", handler);
     return () =>
       window.removeEventListener(
         "briclog-dismiss-loading-overlay",
-        dismissLoadingOverlay
+        handler
       );
   }, [dismissLoadingOverlay]);
 
+  const authOverlayDismissedRef = useRef(false);
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      authOverlayDismissedRef.current = false;
+      return;
+    }
+    if (authOverlayDismissedRef.current) return;
+    if (blogGenLock.current || generating.blog) return;
+    authOverlayDismissedRef.current = true;
     dismissLoadingOverlay();
-  }, [user?.id, dismissLoadingOverlay]);
+  }, [user?.id, dismissLoadingOverlay, generating.blog]);
 
   useEffect(() => {
     if (!user?.id || blogContent) return;
@@ -491,7 +503,7 @@ export function ContentProvider({
     setGenerating((g) => ({ ...g, blog: false }));
     setGenerationSessionActive(false);
     blogGenLock.current = false;
-    clearPendingBlogResult();
+    window.setTimeout(() => clearPendingBlogResult(), 120_000);
   }, []);
 
   useEffect(() => {
@@ -604,6 +616,8 @@ export function ContentProvider({
             quietSuccess: false,
           });
           if (channel === "blog" || channel === "pipeline") {
+            setGenerating((g) => ({ ...g, blog: false }));
+            setGenerationSessionActive(false);
             const tReveal = window.setTimeout(
               () => setBlogResultRevealPending(false),
               520
@@ -631,6 +645,10 @@ export function ContentProvider({
           peekResults: false,
           quietSuccess: false,
         });
+        if (channel === "blog" || channel === "pipeline") {
+          setGenerating((g) => ({ ...g, blog: false }));
+          setGenerationSessionActive(false);
+        }
         return;
       }
       const wait = Math.max(
@@ -644,22 +662,24 @@ export function ContentProvider({
         } else {
           onToast?.(getCompleteMessage(channel), "success");
         }
-        const t2 = window.setTimeout(
-          () =>
-            setLoadingOverlay({
-              active: false,
-              channel,
-              complete: false,
-              stepLabel: null,
-              startedAt: null,
-              estimatedMs: null,
-              sensitiveIndustry: false,
-              completeMessage: null,
-              peekResults: false,
-              quietSuccess: false,
-            }),
-          1000
-        );
+        const t2 = window.setTimeout(() => {
+          setLoadingOverlay({
+            active: false,
+            channel,
+            complete: false,
+            stepLabel: null,
+            startedAt: null,
+            estimatedMs: null,
+            sensitiveIndustry: false,
+            completeMessage: null,
+            peekResults: false,
+            quietSuccess: false,
+          });
+          if (channel === "blog" || channel === "pipeline") {
+            setGenerating((g) => ({ ...g, blog: false }));
+            setGenerationSessionActive(false);
+          }
+        }, 1000);
         overlayFinishTimers.current.push(t2);
       }, wait);
       overlayFinishTimers.current.push(t1);
@@ -838,7 +858,9 @@ export function ContentProvider({
       return undefined;
     }
 
+    const previousBrandId = hydratedBrandRef.current;
     hydratedBrandRef.current = brandId;
+    const hydrateEpoch = generationEpochRef.current;
 
     let cancelled = false;
     const pending = restorePendingBlogResult(user.id);
@@ -855,7 +877,7 @@ export function ContentProvider({
         setBlogGenHint(null);
         setBlogGenHintSoft(false);
       });
-    } else {
+    } else if (previousBrandId && previousBrandId !== brandId) {
       startTransition(() => {
         setBlogContent(null);
         setPlaceContent(null);
@@ -871,6 +893,9 @@ export function ContentProvider({
       try {
         const hydrated = await hydrateWorkspaceFromMemory(brandId);
         if (cancelled) return;
+        if (blogGenLock.current || planLaunchInFlightRef.current) return;
+        if (generationEpochRef.current !== hydrateEpoch) return;
+
         setMemoryContentIds((prev) => ({ ...prev, ...hydrated.memoryContentIds }));
         if (!pending?.blog && hydrated.contents.blog) {
           setBlogContent(hydrated.contents.blog);
@@ -887,7 +912,7 @@ export function ContentProvider({
     return () => {
       cancelled = true;
     };
-  }, [demoMode, user?.id, brandHooks?.activeBrandId, generating.blog]);
+  }, [demoMode, user?.id, brandHooks?.activeBrandId]);
 
   useEffect(() => {
     const intent = brandHooks?.planLaunchIntent;
@@ -904,7 +929,7 @@ export function ContentProvider({
           region: brand?.region || "",
           brandId: brandHooks?.activeBrandId || "",
           topic,
-          mainKeyword: topic.split(/[,，]/)[0]?.trim() || topic,
+          mainKeyword: topicRaw({ topic, region: brand?.region }) || topic.split(/[,，]/)[0]?.trim() || topic,
           ...(dateKey ? { contentDate: dateKey } : {}),
         },
         brand
@@ -1148,12 +1173,20 @@ export function ContentProvider({
 
   const requireEmailVerified = useCallback(() => Boolean(user), [user]);
 
+  const releasePlanLaunch = useCallback(() => {
+    planLaunchInFlightRef.current = false;
+    pendingPlanGenerateRef.current = null;
+  }, []);
+
   const generateBlog = useCallback((inputOverride, genOpts = {}) => {
     if (blogGenLock.current || generating.blog) {
       onToast?.("이미 생성 중입니다. 잠시만 기다려 주세요.", "info");
       return;
     }
-    if (!requireEmailVerified({ setHint: true })) return;
+    if (!requireEmailVerified({ setHint: true })) {
+      if (genOpts.fromPlanLaunch) releasePlanLaunch();
+      return;
+    }
     let input = mergeWorkspaceBrandIntoInput(
       inputOverride
         ? coalesceBlogGenerationInput(
@@ -1174,10 +1207,7 @@ export function ContentProvider({
     });
     const errors = validateForm(input);
     if (Object.keys(errors).length > 0) {
-      if (genOpts.fromPlanLaunch) {
-        planLaunchInFlightRef.current = false;
-        pendingPlanGenerateRef.current = null;
-      }
+      if (genOpts.fromPlanLaunch) releasePlanLaunch();
       onToast?.(errors[Object.values(errors)[0]], "error");
       return;
     }
@@ -1191,6 +1221,7 @@ export function ContentProvider({
         .filter(Boolean)
         .join(" ");
       if (!fallbackResearchQuery) {
+        if (genOpts.fromPlanLaunch) releasePlanLaunch();
         onToast?.("자료조사를 켠 경우 연구 주제를 입력해 주세요.", "error");
         return;
       }
@@ -1773,7 +1804,6 @@ export function ContentProvider({
             setBlogGenHintSoft(false);
             setBlogGenHintIsAuth(false);
             setBlogResultRevealPending(false);
-            setGenerating((g) => ({ ...g, blog: false }));
             hydratedBrandRef.current =
               pipelineInput.brandId || brandHooks?.activeBrandId || null;
           });
@@ -2126,8 +2156,8 @@ export function ContentProvider({
           toastType: norm.toastType,
         });
       } finally {
-        if (generationEpochRef.current !== genEpoch) return;
         planLaunchInFlightRef.current = false;
+        if (generationEpochRef.current !== genEpoch) return;
         if (!overlaySuccess) {
           blogGenLock.current = false;
           setGenerationSessionActive(false);
@@ -2142,7 +2172,6 @@ export function ContentProvider({
             sensitiveIndustry: false,
           });
         } else {
-          setGenerating((g) => ({ ...g, blog: false }));
           blogGenLock.current = false;
         }
       }
@@ -2192,6 +2221,7 @@ export function ContentProvider({
     allowPipelineChannel,
     maybeChannelUpgradeHint,
     requireEmailVerified,
+    releasePlanLaunch,
     billingPlanId,
     onBillingPlanRefresh,
     researchResult,
@@ -2218,7 +2248,10 @@ export function ContentProvider({
       }
     );
     input = ensureChannelGenerateInput(input, brand).values;
-    if (!isFormValid(input)) return undefined;
+    if (!isFormValid(input)) {
+      releasePlanLaunch();
+      return undefined;
+    }
     pendingPlanGenerateRef.current = null;
     const id = window.requestAnimationFrame(() => {
       generateBlog(input, { blogOnly: true, fromPlanLaunch: true });
@@ -2231,6 +2264,7 @@ export function ContentProvider({
     brandHooks?.activeBrandId,
     generating.blog,
     generateBlog,
+    releasePlanLaunch,
   ]);
 
   const persistChannelMemory = useCallback(

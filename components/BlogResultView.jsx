@@ -133,13 +133,18 @@ export default function BlogResultView({
   };
 
   if (!draft) return null;
-  if (draft._meta?.outputWithheld) return null;
 
   const copyText =
     String(draft.fullCopyText || "").trim() ||
     formatBlogFullCopy(draft, {
       includeSubheadings: draft._meta?.includeSubheadings !== false,
     });
+
+  const hasDisplayableCopy =
+    Boolean(copyText) ||
+    (draft.sections || []).some((s) => String(s.body || "").trim().length > 0);
+
+  if (draft._meta?.outputWithheld && !hasDisplayableCopy) return null;
 
   const simWarn = similarity?.warning || draft._meta?.similarity?.warning;
 

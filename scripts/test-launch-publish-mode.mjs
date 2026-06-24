@@ -55,5 +55,7 @@ assert(orch.ok && orch.blogContent?.sections?.length, "orchestrator delivers");
 
 const finalized = finalizeLaunchPublishBlogPack(pack, input);
 assert(finalized._meta?.publishReady, "publishReady stamped");
+assert(finalized._meta?.outputWithheld === false, "outputWithheld cleared");
+assert(String(finalized.fullCopyText || "").trim().length > 20, "fullCopyText set");
 
 console.log("PASS: launch-publish-mode");

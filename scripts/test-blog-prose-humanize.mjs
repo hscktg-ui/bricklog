@@ -37,6 +37,7 @@ const polished = finalizeLaunchPublishBlogPack(
         body: "이어서 이어서 강남 테스트카페 원두 추천 글입니다. 싱글오리진 원두를 매주 로스팅해 향이 선명하고, 아메리카노 한 잔으로도 쓴맛과 산미 균형이 좋았습니다.",
       },
     ],
+    _meta: { outputWithheld: true, withholdReason: "stale_gate" },
   },
   {
     brandName: "테스트카페",
@@ -48,5 +49,26 @@ const polished = finalizeLaunchPublishBlogPack(
 assert.ok(polished.sections?.length >= 1);
 assert.ok(!/(?:이어서\s*){2,}/.test(polished.sections.map((s) => s.body).join("\n")));
 assert.ok(polished._meta?.launchPublishFirst === true);
+assert.equal(polished._meta?.outputWithheld, false);
+assert.ok(String(polished.fullCopyText || "").trim().length > 20);
+
+const blogSpammy = humanizeBlogProsePack(
+  {
+    sections: [
+      {
+        heading: "이어서 소개",
+        body: "📍 여주, 문득 수영장 개장이 떠올라서 여주, 수영장 개장. 🔎 여주 새 브랜드 왜 매장 안내를 찾게 됐는지 방문·상담 때문에 이야기 나누기 전에 기준부터 정리했어요. ✔ 현장 새 브랜드에 직접 들어가 확인했어요 — 마음에 들해요 · 쇼룸 · 프로필 확인.",
+      },
+    ],
+  },
+  {
+    brandName: "새 브랜드",
+    region: "여주",
+    topic: "여주, 수영장 개장",
+  }
+);
+assert.ok(!/새\s*브랜드|들해요|🔎|찾게\s*됐/.test(blogSpammy.sections.map((s) => s.body).join("\n")));
+assert.ok(String(blogSpammy.fullCopyText || "").trim().length > 30);
+assert.ok(!/(?:이어서\s*){2,}/.test(blogSpammy.fullCopyText || ""));
 
 console.log("test-blog-prose-humanize: OK");

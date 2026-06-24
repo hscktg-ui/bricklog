@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   VISION_STATUS_NEUTRAL,
   VISION_STATUS_OK,
@@ -140,6 +140,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   /** 이전 생성 실패 후 고아 오버레이만 정리 (시작 직후 레이스·진행 중에는 유지) */
   useEffect(() => {
     if (
+      loadingOverlay?.peekResults ||
       generating.blog ||
       isGenerationSessionActive() ||
       loadingOverlay?.complete ||
@@ -166,7 +167,11 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       ) {
         return;
       }
-      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+      window.dispatchEvent(
+      new CustomEvent("briclog-dismiss-loading-overlay", {
+        detail: { preserveGenLock: true, preserveSession: true },
+      })
+    );
     }, 600);
     return () => window.clearTimeout(t);
   }, [
@@ -716,6 +721,11 @@ const BlogEditorResults = memo(function BlogEditorResults({
     Boolean(blogContent?.sections?.length) ||
     Boolean(String(blogContent?.fullCopyText || "").trim());
 
+  const hasSubstantiveBlogCopy =
+    Boolean(
+      blogContent?.sections?.some((s) => String(s.body || "").trim().length > 0)
+    ) || Boolean(String(blogContent?.fullCopyText || "").trim());
+
   const pipelineBusy =
     Boolean(loadingOverlay?.active) &&
     loadingOverlay?.channel === "pipeline";
@@ -735,7 +745,11 @@ const BlogEditorResults = memo(function BlogEditorResults({
     ) {
       return;
     }
-    window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    window.dispatchEvent(
+      new CustomEvent("briclog-dismiss-loading-overlay", {
+        detail: { preserveGenLock: true, preserveSession: true },
+      })
+    );
     resultScrollRef.current?.scrollIntoView?.({
       behavior: "smooth",
       block: "start",
@@ -824,7 +838,8 @@ const BlogEditorResults = memo(function BlogEditorResults({
             <DeliveryTrustBadge pack={blogContent} channel="blog" className="mb-4" />
             {blogContent?._meta?.completeDraft &&
             !blogContent?._meta?.deliveryPreview &&
-            !blogContent?._meta?.softPass ? (
+            !blogContent?._meta?.softPass &&
+            hasSubstantiveBlogCopy ? (
               <div className={`${VISION_STATUS_OK} mb-4 px-4 py-3`}>
                 <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
                   {RESULT_VIEW.completeBannerTitle}
@@ -1095,9 +1110,14 @@ export default function BlogEditor({
 
   useGenerationLeaveGuard(leaveGuardActive);
   const { isMobile } = useEffectiveViewport();
-  const [formOpen, setFormOpen] = useState(true);
+  const hasInitialResult =
+    Boolean(blogContent?.sections?.length) ||
+    Boolean(String(blogContent?.fullCopyText || "").trim()) ||
+    Boolean(placeContent) ||
+    Boolean(instagramContent);
+  const [formOpen, setFormOpen] = useState(() => !(isMobile && hasInitialResult));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if ((blogContent || placeContent || instagramContent) && isMobile) {
       setFormOpen(false);
     }
@@ -1123,6 +1143,11 @@ export default function BlogEditor({
   const hasDeliveredBlog =
     Boolean(blogContent?.sections?.length) ||
     Boolean(String(blogContent?.fullCopyText || "").trim());
+
+  const hasSubstantiveBlogCopy =
+    Boolean(
+      blogContent?.sections?.some((s) => String(s.body || "").trim().length > 0)
+    ) || Boolean(String(blogContent?.fullCopyText || "").trim());
 
   const hasAnyChannelResult =
     hasDeliveredBlog || Boolean(placeContent) || Boolean(instagramContent);

@@ -60,6 +60,15 @@ assert.ok(!/방문\s*후기|다녀(?:왔|온)/.test(grounded.title || ""));
 assert.ok(!detectPlaceReviewLeak(grounded.detailBody || ""));
 assert.ok(/안내|운영|예약|플레이스/.test(grounded.detailBody || ""));
 
+import { topicRaw } from "../lib/content/topicFacetEngine.js";
+import { resolveChannelBrandName } from "../lib/content/channelBrandResolve.js";
+
+assert.equal(topicRaw({ region: "여주", topic: "여주, 수영장 개장" }), "수영장 개장");
+assert.equal(
+  resolveChannelBrandName({ brandName: "새 브랜드", region: "여주", topic: "수영장 개장" }),
+  "수영장"
+);
+
 const poolInput = {
   brandName: "여주 새 브랜드",
   region: "여주",
@@ -86,5 +95,15 @@ const poolTone = assessPlaceNoticeHumanTone(
   `${spammy.shortNotice}\n${spammy.detailBody}`
 );
 assert.equal(poolTone.ok, true);
+
+const commaTopicGrounded = buildResearchGroundedPlacePack({
+  brandName: "새 브랜드",
+  region: "여주",
+  topic: "여주, 수영장 개장",
+  researchFacts: [{ fact: "실내·실외 수영장을 함께 운영합니다." }],
+});
+assert.ok(!/새\s*브랜드/.test(commaTopicGrounded.title || ""));
+assert.ok(/수영장\s*개장|수영/.test(`${commaTopicGrounded.title} ${commaTopicGrounded.shortNotice}`));
+assert.ok(!/찾게\s*됐|🔎|매장\s*안내를\s*찾게/.test(commaTopicGrounded.detailBody || ""));
 
 console.log("OK: place-notice-humanize");
