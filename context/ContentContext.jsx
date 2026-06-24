@@ -1205,11 +1205,8 @@ export function ContentProvider({
     let input = resolveBlogFormAxes(
       mergeWorkspaceBrandIntoInput(
         inputOverride
-          ? coalesceBlogGenerationInput(
-              { ...DEFAULT_BLOG_INPUT, ...blogInput },
-              inputOverride
-            )
-          : blogInput,
+          ? { ...DEFAULT_BLOG_INPUT, ...inputOverride }
+          : { ...DEFAULT_BLOG_INPUT, ...blogInput },
         {
           ...brandHooks,
           blankBrandMode: brandHooks?.blankBrandMode,

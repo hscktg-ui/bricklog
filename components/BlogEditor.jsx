@@ -497,9 +497,29 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               compact={compact}
               simpleMode={simpleMode}
               mobileSimplified={isMobile}
-              deferParentSync
+              deferParentSync={false}
             />
           </div>
+
+          {resolvedFormAxes.brandName?.trim() ||
+          resolvedFormAxes.region?.trim() ||
+          resolvedFormAxes.topic?.trim() ? (
+            <div
+              className="mt-4 rounded-lg border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5"
+              role="status"
+            >
+              <p className="text-[11px] font-semibold text-[#8B95A1]">입력 확인</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-[#191F28]">
+                {[
+                  resolvedFormAxes.brandName?.trim(),
+                  resolvedFormAxes.region?.trim(),
+                  resolvedFormAxes.topic?.trim(),
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "—"}
+              </p>
+            </div>
+          ) : null}
 
           {!generating.blog && (
             <ChannelPackToggle

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   coalesceBlogGenerationInput,
   mergeWorkspaceBrandIntoInput,
+  mergeBrandFormSyncPayload,
   resolveBlogFormAxes,
 } from "@/lib/workspace/brandFormSync.js";
 import {
@@ -60,6 +61,15 @@ const typedWins = resolveBlogFormAxes(
   }
 );
 assert.equal(typedWins.brandName, "폼에적은이름");
+
+const syncKeep = mergeBrandFormSyncPayload(
+  { brandName: "", region: "", topic: "", brandId: "new" },
+  { brandName: "모닝브루", region: "서울", topic: "브런치" }
+);
+assert.equal(syncKeep.brandName, "모닝브루");
+assert.equal(syncKeep.region, "서울");
+assert.equal(syncKeep.topic, "브런치");
+assert.equal(syncKeep.brandId, "new");
 
 const stamped = stampVerifiedGenerationAxes({
   brandName: "카페",
