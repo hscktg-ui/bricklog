@@ -128,6 +128,30 @@ export async function dismissWorkspaceModals(page) {
   await page.waitForTimeout(600);
 }
 
+/** 브랜드 작업실 게이트 — 폼·생성 클릭을 가로막음 */
+export async function dismissBrandWorkspaceGate(page) {
+  const gate = page.getByRole("dialog", { name: /어떤 브랜드로 시작할까요/i });
+  if (!(await gate.count())) {
+    const blankOnly = page.getByRole("button", {
+      name: /빈 브랜드로 시작/i,
+    });
+    if (await blankOnly.count()) {
+      await blankOnly.click({ timeout: 8000 }).catch(() => null);
+      await page.waitForTimeout(600);
+    }
+    return;
+  }
+  const blank = page.getByRole("button", { name: /빈 브랜드로 시작/i });
+  if (await blank.count()) {
+    await blank.click({ timeout: 8000 });
+  } else {
+    const firstBrand = page.locator('[role="dialog"] ul button').first();
+    if (await firstBrand.count()) await firstBrand.click({ timeout: 8000 });
+  }
+  await gate.waitFor({ state: "hidden", timeout: 10_000 }).catch(() => null);
+  await page.waitForTimeout(600);
+}
+
 /** @returns {Promise<{ ok: boolean, token?: string, email?: string, reason?: string }>} */
 export async function getE2eBearerToken() {
   loadEnvLocal(root);
@@ -254,62 +278,68 @@ export async function ensureSmokeBrand(page, baseUrl, form) {
 
 /** 브랜드 → 지역 → 주제 순서형(SteppedWriteFields) 폼 채우기 */
 export async function fillBlogSteppedFormViaDom(page, form) {
-  return page.evaluate((f) => {
-    const fire = (el, value) => {
-      if (!el) return false;
-      const proto =
-        el.tagName === "TEXTAREA"
-          ? window.HTMLTextAreaElement.prototype
-          : window.HTMLInputElement.prototype;
-      const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
-      setter?.call(el, value);
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-      el.dispatchEvent(new Event("blur", { bubbles: true }));
-      return true;
-    };
-    const stepButtons = [
-      ...document.querySelectorAll('ol[aria-label="작성 단계"] button'),
-    ];
-    const clickStep = (index) => {
-      if (stepButtons[index]) {
-        stepButtons[index].click();
-        return true;
-      }
-      return false;
-    };
-    const fillByPlaceholder = (re, value) => {
-      if (!value) return false;
-      for (const el of document.querySelectorAll("input, textarea")) {
-        const ph = el.placeholder || "";
-        if (!re.test(ph)) continue;
-        return fire(el, value);
-      }
-      return false;
-    };
+  const fillStep = async (stepIndex, placeholderRe, value) => {
+    if (!value) return false;
+    await page.evaluate((idx) => {
+      const btn = document.querySelectorAll('ol[aria-label="작성 단계"] button')[idx];
+      btn?.click();
+    }, stepIndex);
+    await page.waitForTimeout(180);
+    return page.evaluate(
+      ({ reSource, val }) => {
+        const re = new RegExp(reSource, "i");
+        const fire = (el, v) => {
+          if (!el) return false;
+          const proto =
+            el.tagName === "TEXTAREA"
+              ? window.HTMLTextAreaElement.prototype
+              : window.HTMLInputElement.prototype;
+          const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+          setter?.call(el, v);
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+          el.dispatchEvent(new Event("blur", { bubbles: true }));
+          return true;
+        };
+        for (const el of document.querySelectorAll("input, textarea")) {
+          const ph = el.placeholder || "";
+          if (!re.test(ph)) continue;
+          return fire(el, val);
+        }
+        return false;
+      },
+      { reSource: placeholderRe.source, val: value }
+    );
+  };
 
-    clickStep(0);
-    const brandOk = fillByPlaceholder(/매장·브랜드|팀 이름/i, f.brandName || "");
-    clickStep(1);
-    const regionOk =
-      fillByPlaceholder(/서울 마포|용인|지역/i, f.region || "") ||
-      fillByPlaceholder(/예:/i, f.region || "");
-    clickStep(2);
-    const topicOk = fillByPlaceholder(/오늘 전하고|이야기|장면/i, f.topic || "");
+  const brandOk = await fillStep(0, /매장·브랜드|팀 이름/, form.brandName || "");
+  const regionOk = await fillStep(
+    1,
+    /서울 마포|용인|예:/,
+    form.region || ""
+  );
+  const topicOk = await fillStep(
+    2,
+    /오늘 전하고|이야기|장면/,
+    form.topic || ""
+  );
 
-    if (f.industry) {
+  let industryOk = false;
+  if (form.industry) {
+    industryOk = await page.evaluate((name) => {
       for (const btn of document.querySelectorAll("button")) {
-        if (btn.textContent?.trim() === f.industry) {
+        if (btn.textContent?.trim() === name) {
           btn.click();
-          break;
+          return true;
         }
       }
-    }
+      return false;
+    }, form.industry);
+  }
 
-    const done = [f.brandName, f.region, f.topic].filter(Boolean).length;
-    const filled = [brandOk, regionOk, topicOk].filter(Boolean).length;
-    return { brandOk, regionOk, topicOk, filled, done };
-  }, form);
+  const done = [form.brandName, form.region, form.topic].filter(Boolean).length;
+  const filled = [brandOk, regionOk, topicOk].filter(Boolean).length;
+  return { brandOk, regionOk, topicOk, industryOk, filled, done };
 }
 
 export async function fillBlogFormViaDom(page, form) {

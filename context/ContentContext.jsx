@@ -756,9 +756,12 @@ export function ContentProvider({
       clearFormDraft(user?.id);
       personalizationRef.current = null;
       hydratedBrandRef.current = null;
-      const fresh = { ...DEFAULT_BLOG_INPUT, contentDate: today };
-      setBlogInput(fresh);
-      emitBrandFormSync(fresh);
+      setBlogInput((prev) => {
+        const fresh = { ...DEFAULT_BLOG_INPUT, contentDate: today };
+        const merged = coalesceBlogGenerationInput(fresh, prev);
+        emitBrandFormSync(merged);
+        return merged;
+      });
       setBlogContent(null);
       setPlaceContent(null);
       setInstagramContent(null);
