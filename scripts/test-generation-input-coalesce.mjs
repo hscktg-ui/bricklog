@@ -8,6 +8,7 @@ import {
 import {
   hasFilledBlogAxes,
   stampVerifiedGenerationAxes,
+  materializeVerifiedGenerationAxes,
 } from "@/lib/product/deliverySoftPass.js";
 import { researchGateBlockedResult } from "@/lib/content/v2PipelineGate.js";
 import { detectEmptyInputVars } from "@/lib/content/placeholderContaminationEngine.js";
@@ -105,6 +106,20 @@ const emptyWithStamp = detectEmptyInputVars({
   },
 });
 assert.equal(emptyWithStamp.ok, true);
+
+const materialized = materializeVerifiedGenerationAxes({
+  brandName: "",
+  region: "",
+  topic: "",
+  _verifiedGenerationAxes: {
+    brandName: "E2E카페",
+    region: "서울 마포",
+    topic: "봄 브런치",
+  },
+});
+assert.equal(materialized.brandName, "E2E카페");
+assert.equal(materialized.region, "서울 마포");
+assert.equal(materialized.topic, "봄 브런치");
 
 const rescued = researchGateBlockedResult(
   {

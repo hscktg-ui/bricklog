@@ -152,7 +152,7 @@ import {
   salvageBlogPackForDelivery,
 } from "@/lib/generation/postVerifySalvage";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
-import { hasFilledBlogAxes, stampVerifiedGenerationAxes } from "@/lib/product/deliverySoftPass";
+import { hasFilledBlogAxes, stampVerifiedGenerationAxes, materializeVerifiedGenerationAxes } from "@/lib/product/deliverySoftPass";
 import { countBlogBodyCharsWithSpaces } from "@/lib/prompts/engine/textUtils";
 import {
   GENERATION_CHANNEL_PACK_DEADLINE_MS,
@@ -1460,6 +1460,15 @@ export function ContentProvider({
             v2PipelineStage: pipelineInput.v2PipelineStage,
           }));
         }
+
+        Object.assign(
+          pipelineInput,
+          materializeVerifiedGenerationAxes(
+            stampVerifiedGenerationAxes(
+              resolveBlogFormAxes(pipelineInput, brandHooks)
+            )
+          )
+        );
 
         setPipelineStep("콘텐츠 작성 중…");
         const sensitive = resolveSensitiveCompliance(pipelineInput);
