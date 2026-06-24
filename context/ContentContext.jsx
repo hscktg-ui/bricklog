@@ -60,6 +60,7 @@ import {
 } from "@/lib/workspace/brandScopeGuard";
 import { resolveBriclogIndustryKey } from "@/lib/product/industryContextEngine";
 import { topicRaw } from "@/lib/content/topicFacetEngine";
+import { isPlaceholderBrandName } from "@/lib/content/channelBrandResolve";
 import { consumePublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 import { brandMemoryToFormInput } from "@/lib/brands/brandMemory";
 import {
@@ -169,6 +170,7 @@ import {
   emitBrandFormSync,
   coalesceBlogGenerationInput,
   mergeWorkspaceBrandIntoInput,
+  resolveBlogFormAxes,
 } from "@/lib/workspace/brandFormSync";
 import {
   enrichGenerationInput,
@@ -814,8 +816,14 @@ export function ContentProvider({
         ...prev,
         brandId,
         brandName:
-          brand.brandName?.trim() ||
+          (prev.brandName?.trim() && !isPlaceholderBrandName(prev.brandName)
+            ? prev.brandName.trim()
+            : null) ||
+          (brand.brandName?.trim() && !isPlaceholderBrandName(brand.brandName)
+            ? brand.brandName.trim()
+            : null) ||
           prev.brandName?.trim() ||
+          brand.brandName?.trim() ||
           seeded.brandName,
         region: prev.region?.trim() || seeded.region || brand.region,
         industry: prev.industry?.trim() || seeded.industry,
@@ -1187,17 +1195,20 @@ export function ContentProvider({
       if (genOpts.fromPlanLaunch) releasePlanLaunch();
       return;
     }
-    let input = mergeWorkspaceBrandIntoInput(
-      inputOverride
-        ? coalesceBlogGenerationInput(
-            { ...DEFAULT_BLOG_INPUT, ...blogInput },
-            inputOverride
-          )
-        : blogInput,
-      {
-        ...brandHooks,
-        blankBrandMode: brandHooks?.blankBrandMode,
-      }
+    let input = resolveBlogFormAxes(
+      mergeWorkspaceBrandIntoInput(
+        inputOverride
+          ? coalesceBlogGenerationInput(
+              { ...DEFAULT_BLOG_INPUT, ...blogInput },
+              inputOverride
+            )
+          : blogInput,
+        {
+          ...brandHooks,
+          blankBrandMode: brandHooks?.blankBrandMode,
+        }
+      ),
+      brandHooks
     );
     input = enrichGenerationInput(input, brandHooks, {
       regen: Boolean(genOpts.regen),
@@ -1205,7 +1216,7 @@ export function ContentProvider({
       regenVariation: genOpts.regenVariation,
       channel: "blog",
     });
-    const errors = validateForm(input);
+    const errors = validateForm(input, { brandHooks });
     if (Object.keys(errors).length > 0) {
       if (genOpts.fromPlanLaunch) releasePlanLaunch();
       onToast?.(errors[Object.values(errors)[0]], "error");
@@ -2237,18 +2248,21 @@ export function ContentProvider({
       return undefined;
     }
     const brand = brandHooks?.activeBrand;
-    let input = mergeWorkspaceBrandIntoInput(
-      coalesceBlogGenerationInput(
-        { ...DEFAULT_BLOG_INPUT, ...blogInput },
-        pending.input
+    let input = resolveBlogFormAxes(
+      mergeWorkspaceBrandIntoInput(
+        coalesceBlogGenerationInput(
+          { ...DEFAULT_BLOG_INPUT, ...blogInput },
+          pending.input
+        ),
+        {
+          ...brandHooks,
+          blankBrandMode: brandHooks?.blankBrandMode,
+        }
       ),
-      {
-        ...brandHooks,
-        blankBrandMode: brandHooks?.blankBrandMode,
-      }
+      brandHooks
     );
     input = ensureChannelGenerateInput(input, brand).values;
-    if (!isFormValid(input)) {
+    if (!isFormValid(input, { brandHooks })) {
       releasePlanLaunch();
       return undefined;
     }

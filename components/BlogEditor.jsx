@@ -41,6 +41,7 @@ import {
   isFormValid as checkFormValid,
   validateForm,
 } from "@/lib/formValidation";
+import { resolveBlogFormAxes } from "@/lib/workspace/brandFormSync";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { isGenerationSessionActive } from "@/lib/generation/generationSession";
 import { saveFormDraft } from "@/lib/formDraft";
@@ -95,6 +96,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   userId,
   brandId,
   activeBrand,
+  blankBrandMode = false,
   hideFormPanel,
   mobileIdleFull = false,
   onStartGenerate,
@@ -195,6 +197,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     draft: draftForm,
     setDraft: setDraftForm,
     formApiRef,
+    flushToCommitted,
     patchDraft: patchDraftImmediate,
   } = useDeferredWorkspaceForm(blogInput, setBlogInput);
   const debouncedDraftForSave = useDebouncedValue(draftForm, 900);
@@ -242,28 +245,56 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     [draftForm]
   );
 
-  const formValidNow = checkFormValid(getLiveFormValues());
+  const brandHooksForForm = useMemo(
+    () => ({
+      activeBrand,
+      activeBrandId: brandId,
+      blankBrandMode,
+    }),
+    [activeBrand, brandId, blankBrandMode]
+  );
+
+  const resolvedFormAxes = useMemo(
+    () => resolveBlogFormAxes(getLiveFormValues(), brandHooksForForm),
+    [draftForm, brandHooksForForm, getLiveFormValues]
+  );
+
+  const formValidNow = checkFormValid(resolvedFormAxes, {
+    brandHooks: brandHooksForForm,
+  });
 
   const commitAndGenerate = useCallback(
-    (values) => {
-      const topic = values.topic?.trim();
-      const next = { ...values };
+    (valuesOverride) => {
+      const flushed = flushToCommitted();
+      const next = valuesOverride ? { ...flushed, ...valuesOverride } : flushed;
+      const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
         next.mainKeyword = topic.split(/[,，]/)[0].trim();
       }
-      formApiRef.current?.replaceAll?.(next);
-      setDraftForm(next);
-      setBlogInput(next);
+      if (valuesOverride) {
+        formApiRef.current?.replaceAll?.(next);
+        setDraftForm(next);
+        setBlogInput(next);
+      }
       setTouched(true);
       onStartGenerate?.();
       generateBlog(next, { blogOnly });
     },
-    [generateBlog, blogOnly, setTouched, setDraftForm, onStartGenerate]
+    [
+      generateBlog,
+      blogOnly,
+      setTouched,
+      setDraftForm,
+      setBlogInput,
+      flushToCommitted,
+      formApiRef,
+      onStartGenerate,
+    ]
   );
 
   const runGenerate = useCallback(() => {
-    commitAndGenerate(getLiveFormValues());
-  }, [commitAndGenerate, getLiveFormValues]);
+    commitAndGenerate();
+  }, [commitAndGenerate]);
 
   const runQuickDemo = useCallback(async () => {
     if (generating.blog) return;
@@ -325,8 +356,11 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   };
 
   const draftErrors = useMemo(
-    () => (touched ? validateForm(getLiveFormValues()) : {}),
-    [touched, draftForm, getLiveFormValues]
+    () =>
+      touched
+        ? validateForm(resolvedFormAxes, { brandHooks: brandHooksForForm })
+        : {},
+    [touched, resolvedFormAxes, brandHooksForForm]
   );
 
   const disabledReason =
@@ -363,7 +397,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
                   : WORKSPACE_BLOG.tagline
             }
             warning={
-              !activeBrand?.brandName && !draftForm.brandName?.trim()
+              !resolvedFormAxes.brandName?.trim()
                 ? "사이드바 「+ 브랜드 추가」 또는 아래 브랜드명을 입력해 주세요"
                 : null
             }
@@ -1091,7 +1125,7 @@ export default function BlogEditor({
   brandId,
   onPlanChange,
 }) {
-  const { activeBrand } = useBrandWorkspace();
+  const { activeBrand, blankBrandMode } = useBrandWorkspace();
   const {
     blogContent,
     placeContent,
@@ -1197,6 +1231,7 @@ export default function BlogEditor({
         userId={userId}
         brandId={brandId}
         activeBrand={activeBrand}
+        blankBrandMode={blankBrandMode}
         hideFormPanel={hideFormPanel}
         mobileIdleFull={mobileIdleEmpty}
         onStartGenerate={() => {

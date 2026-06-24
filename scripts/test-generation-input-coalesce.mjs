@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   coalesceBlogGenerationInput,
   mergeWorkspaceBrandIntoInput,
+  resolveBlogFormAxes,
 } from "@/lib/workspace/brandFormSync.js";
 import { researchGateBlockedResult } from "@/lib/content/v2PipelineGate.js";
 
@@ -36,6 +37,25 @@ const fromBrand = mergeWorkspaceBrandIntoInput(
 assert.equal(fromBrand.brandName, "모닝브루");
 assert.equal(fromBrand.region, "부산 해운대");
 assert.ok(fromBrand.topic?.includes("모닝브루"));
+
+const sidebarOnly = resolveBlogFormAxes(
+  { brandName: "", region: "서울 마포", topic: "봄 메뉴" },
+  {
+    activeBrandId: "b2",
+    activeBrand: { id: "b2", brandName: "달빛베이커리", region: "서울 마포" },
+  }
+);
+assert.equal(sidebarOnly.brandName, "달빛베이커리");
+assert.equal(sidebarOnly.region, "서울 마포");
+
+const typedWins = resolveBlogFormAxes(
+  { brandName: "폼에적은이름", region: "경기", topic: "오픈" },
+  {
+    activeBrandId: "b3",
+    activeBrand: { id: "b3", brandName: "사이드바이름", region: "서울" },
+  }
+);
+assert.equal(typedWins.brandName, "폼에적은이름");
 
 const rescued = researchGateBlockedResult(
   {
