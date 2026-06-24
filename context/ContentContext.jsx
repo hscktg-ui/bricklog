@@ -152,7 +152,7 @@ import {
   salvageBlogPackForDelivery,
 } from "@/lib/generation/postVerifySalvage";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
-import { hasFilledBlogAxes } from "@/lib/product/deliverySoftPass";
+import { hasFilledBlogAxes, stampVerifiedGenerationAxes } from "@/lib/product/deliverySoftPass";
 import {
   GENERATION_CHANNEL_PACK_DEADLINE_MS,
   GENERATION_TIME_BUDGET_MS,
@@ -204,7 +204,14 @@ function allowBlogUiRescue(pipelineInput = {}) {
 
 function resolveBlogGenerationFailMessage(pipelineInput, result) {
   const msg = String(result?.userMessage || "").trim();
-  if (msg && !isTechnicalErrorMessage(msg)) return msg;
+  if (
+    msg &&
+    !isTechnicalErrorMessage(msg) &&
+    msg !== "브랜드 · 지역 · 주제를 모두 입력해 주세요." &&
+    msg !== "브랜드·지역·주제를 입력해 주세요."
+  ) {
+    return msg;
+  }
   if (!hasFilledBlogAxes(pipelineInput)) {
     return "브랜드 · 지역 · 주제를 모두 입력해 주세요.";
   }
@@ -1222,6 +1229,7 @@ export function ContentProvider({
       onToast?.(errors[Object.values(errors)[0]], "error");
       return;
     }
+    input = stampVerifiedGenerationAxes(input);
     setBlogWithholdUi(null);
     if (input.researchEnabled && !String(input.researchQuery || "").trim()) {
       const fallbackResearchQuery = [

@@ -4,6 +4,10 @@ import {
   mergeWorkspaceBrandIntoInput,
   resolveBlogFormAxes,
 } from "@/lib/workspace/brandFormSync.js";
+import {
+  hasFilledBlogAxes,
+  stampVerifiedGenerationAxes,
+} from "@/lib/product/deliverySoftPass.js";
 import { researchGateBlockedResult } from "@/lib/content/v2PipelineGate.js";
 
 const base = {
@@ -56,6 +60,14 @@ const typedWins = resolveBlogFormAxes(
   }
 );
 assert.equal(typedWins.brandName, "폼에적은이름");
+
+const stamped = stampVerifiedGenerationAxes({
+  brandName: "카페",
+  region: "서울",
+  topic: "봄 메뉴",
+});
+assert.equal(hasFilledBlogAxes({ brandName: "", region: "", topic: "" }), false);
+assert.equal(hasFilledBlogAxes(stamped), true);
 
 const rescued = researchGateBlockedResult(
   {

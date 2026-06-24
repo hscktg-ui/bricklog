@@ -266,16 +266,15 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
       const flushed = flushToCommitted();
-      const next = valuesOverride ? { ...flushed, ...valuesOverride } : flushed;
+      let next = valuesOverride ? { ...flushed, ...valuesOverride } : flushed;
+      next = resolveBlogFormAxes(next, brandHooksForForm);
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
         next.mainKeyword = topic.split(/[,，]/)[0].trim();
       }
-      if (valuesOverride) {
-        formApiRef.current?.replaceAll?.(next);
-        setDraftForm(next);
-        setBlogInput(next);
-      }
+      formApiRef.current?.replaceAll?.(next);
+      setDraftForm(next);
+      setBlogInput(next);
       setTouched(true);
       onStartGenerate?.();
       generateBlog(next, { blogOnly });
@@ -289,6 +288,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       flushToCommitted,
       formApiRef,
       onStartGenerate,
+      brandHooksForForm,
     ]
   );
 
