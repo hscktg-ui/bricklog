@@ -374,6 +374,8 @@ export function ContentProvider({
   const [channelOptionLockStatus, setChannelOptionLockStatus] = useState(null);
   const blogGenLock = useRef(false);
   const generationEpochRef = useRef(0);
+  const pendingPlanGenerateRef = useRef(null);
+  const planLaunchInFlightRef = useRef(false);
   const channelUpgradeHintShown = useRef(false);
   const hydratedBrandRef = useRef(null);
 
@@ -831,7 +833,7 @@ export function ContentProvider({
     if (demoMode || !user?.id || !brandId) return undefined;
     if (hydratedBrandRef.current === brandId) return undefined;
 
-    if (blogGenLock.current || generating.blog) {
+    if (blogGenLock.current || generating.blog || planLaunchInFlightRef.current) {
       hydratedBrandRef.current = brandId;
       return undefined;
     }
@@ -892,15 +894,39 @@ export function ContentProvider({
     if (!intent?.topic) return;
     const topic = String(intent.topic).trim();
     if (!topic) return;
+    const brand = brandHooks?.activeBrand;
     const dateKey = String(intent.dateKey || "").trim();
+    const seeded = sanitizeFormInputIndustryScope(
+      ensureChannelGenerateInput(
+        {
+          ...DEFAULT_BLOG_INPUT,
+          brandName: brand?.brandName || "",
+          region: brand?.region || "",
+          brandId: brandHooks?.activeBrandId || "",
+          topic,
+          mainKeyword: topic.split(/[,，]/)[0]?.trim() || topic,
+          ...(dateKey ? { contentDate: dateKey } : {}),
+        },
+        brand
+      ).values,
+      resolveBriclogIndustryKey(brand || {})
+    );
+    planLaunchInFlightRef.current = true;
     setBlogInput((prev) => ({
       ...prev,
-      topic,
-      mainKeyword: topic.split(/[,，]/)[0]?.trim() || topic,
-      ...(dateKey ? { contentDate: dateKey } : {}),
+      ...seeded,
+      brandId: seeded.brandId || prev.brandId || brandHooks?.activeBrandId || "",
     }));
     brandHooks?.consumePlanLaunchIntent?.();
-  }, [brandHooks?.planLaunchIntent, brandHooks?.consumePlanLaunchIntent]);
+    if (intent.autoGenerate !== false) {
+      pendingPlanGenerateRef.current = { input: seeded, at: Date.now() };
+    }
+  }, [
+    brandHooks?.planLaunchIntent,
+    brandHooks?.consumePlanLaunchIntent,
+    brandHooks?.activeBrand,
+    brandHooks?.activeBrandId,
+  ]);
 
   const hasBlog = !!blogContent;
   const hasChannelPack =
@@ -1148,6 +1174,10 @@ export function ContentProvider({
     });
     const errors = validateForm(input);
     if (Object.keys(errors).length > 0) {
+      if (genOpts.fromPlanLaunch) {
+        planLaunchInFlightRef.current = false;
+        pendingPlanGenerateRef.current = null;
+      }
       onToast?.(errors[Object.values(errors)[0]], "error");
       return;
     }
@@ -1189,6 +1219,7 @@ export function ContentProvider({
     const genEpoch = generationEpochRef.current;
 
     blogGenLock.current = true;
+    planLaunchInFlightRef.current = true;
     setBlogGenHint(null);
     setBlogGenHintIsAuth(false);
     setBlogResultRevealPending(false);
@@ -2096,6 +2127,7 @@ export function ContentProvider({
         });
       } finally {
         if (generationEpochRef.current !== genEpoch) return;
+        planLaunchInFlightRef.current = false;
         if (!overlaySuccess) {
           blogGenLock.current = false;
           setGenerationSessionActive(false);
@@ -2163,6 +2195,42 @@ export function ContentProvider({
     billingPlanId,
     onBillingPlanRefresh,
     researchResult,
+  ]);
+
+  useEffect(() => {
+    const pending = pendingPlanGenerateRef.current;
+    if (!pending) return undefined;
+    if (blogGenLock.current || generating.blog) return undefined;
+    if (Date.now() - pending.at > 20_000) {
+      pendingPlanGenerateRef.current = null;
+      planLaunchInFlightRef.current = false;
+      return undefined;
+    }
+    const brand = brandHooks?.activeBrand;
+    let input = mergeWorkspaceBrandIntoInput(
+      coalesceBlogGenerationInput(
+        { ...DEFAULT_BLOG_INPUT, ...blogInput },
+        pending.input
+      ),
+      {
+        ...brandHooks,
+        blankBrandMode: brandHooks?.blankBrandMode,
+      }
+    );
+    input = ensureChannelGenerateInput(input, brand).values;
+    if (!isFormValid(input)) return undefined;
+    pendingPlanGenerateRef.current = null;
+    const id = window.requestAnimationFrame(() => {
+      generateBlog(input, { blogOnly: true, fromPlanLaunch: true });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [
+    blogInput,
+    brandHooks,
+    brandHooks?.activeBrand,
+    brandHooks?.activeBrandId,
+    generating.blog,
+    generateBlog,
   ]);
 
   const persistChannelMemory = useCallback(

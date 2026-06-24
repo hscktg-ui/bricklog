@@ -153,7 +153,10 @@ export default function SimpleMonthlyPlan({
                             onClick={() =>
                               onWrite?.({
                                 channel: "blog",
-                                topic: primaryTopic,
+                                topic:
+                                  weekTopics[visIdx]?.topic ||
+                                  weekTopics[0]?.topic ||
+                                  primaryTopic,
                                 dateKey: row.dateKey,
                               })
                             }

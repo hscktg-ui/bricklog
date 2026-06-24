@@ -128,19 +128,25 @@ export default function ContentPlanWorkspace({
         : channel === "instagram" || channel === "insta"
           ? "insta"
           : "blog";
-    const topic = String(opts.topic || weekTopics[0]?.topic || "").trim();
-    if (topic) {
-      launchFromPlan?.({
-        channel: menu,
-        topic,
-        dateKey: opts.dateKey || "",
-      });
+    const topic = String(
+      opts.topic || weekTopics[0]?.topic || input.topic || ""
+    ).trim();
+    if (!topic) {
+      onNavigate?.(menu);
+      onToast?.(
+        "주제가 아직 없어요. 아래 「이번 달 제안 주제」에서 고르거나 이야기 폼에 주제를 입력해 주세요.",
+        "info"
+      );
+      return;
     }
+    launchFromPlan?.({
+      channel: menu,
+      topic,
+      dateKey: opts.dateKey || "",
+      autoGenerate: true,
+    });
     onNavigate?.(menu);
-    onToast?.(
-      topic ? `「${topic}」주제로 글쓰기를 열었어요.` : "글쓰기 화면으로 이동했어요.",
-      "info"
-    );
+    onToast?.(`「${topic}」주제로 조사·글쓰기를 시작합니다.`, "info");
   };
 
   if (!input.brandName) {

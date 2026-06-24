@@ -435,6 +435,7 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
       channel: intent.channel,
       topic: String(intent.topic || "").trim(),
       dateKey: intent.dateKey || "",
+      autoGenerate: intent.autoGenerate !== false,
       at: Date.now(),
     });
   }, []);
