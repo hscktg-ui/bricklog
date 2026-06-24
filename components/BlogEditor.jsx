@@ -41,11 +41,7 @@ import {
   isFormValid as checkFormValid,
   validateForm,
 } from "@/lib/formValidation";
-import { resolveBlogFormAxes } from "@/lib/workspace/brandFormSync";
-import {
-  materializeVerifiedGenerationAxes,
-  stampVerifiedGenerationAxes,
-} from "@/lib/product/deliverySoftPass";
+import { resolveBlogFormAxes, ensureGenerationAxesOnInput } from "@/lib/workspace/brandFormSync";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { isGenerationSessionActive } from "@/lib/generation/generationSession";
 import { saveFormDraft } from "@/lib/formDraft";
@@ -270,13 +266,9 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
       flushToCommitted();
-      let next = materializeVerifiedGenerationAxes(
-        stampVerifiedGenerationAxes(
-          resolveBlogFormAxes(
-            { ...getLiveFormValues(), ...(valuesOverride || {}) },
-            brandHooksForForm
-          )
-        )
+      let next = ensureGenerationAxesOnInput(
+        { ...getLiveFormValues(), ...(valuesOverride || {}) },
+        brandHooksForForm
       );
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
@@ -731,6 +723,16 @@ const BlogEditorResults = memo(function BlogEditorResults({
     clearBlogWithholdUi,
   } = useContentPipelineState();
   const { blogInput, setBlogInput } = useContentForm();
+  const { activeBrand: workspaceBrand, activeBrandId, blankBrandMode } =
+    useBrandWorkspace();
+  const resultBrandHooks = useMemo(
+    () => ({
+      activeBrand: workspaceBrand || activeBrand,
+      activeBrandId: activeBrandId || brandId,
+      blankBrandMode,
+    }),
+    [workspaceBrand, activeBrand, activeBrandId, brandId, blankBrandMode]
+  );
 
   const [resultTab, setResultTab] = useState("blog");
   const resultScrollRef = useRef(null);
@@ -759,13 +761,20 @@ const BlogEditorResults = memo(function BlogEditorResults({
 
   const handleRegenerate = useCallback(() => {
     clearBlogWithholdUi?.();
-    generateBlog(blogInput, {
+    const next = ensureGenerationAxesOnInput(blogInput, resultBrandHooks);
+    generateBlog(next, {
       blogOnly: loadBlogOnlyPref(),
       regen: true,
       regenVariation: Date.now(),
       priorRewriteCount: blogContent?._meta?.rewriteCount || 0,
     });
-  }, [clearBlogWithholdUi, generateBlog, blogInput, blogContent]);
+  }, [
+    clearBlogWithholdUi,
+    generateBlog,
+    blogInput,
+    resultBrandHooks,
+    blogContent,
+  ]);
 
   const handleToneRequestChange = useCallback(
     (toneRequest) => {
@@ -847,13 +856,14 @@ const BlogEditorResults = memo(function BlogEditorResults({
   }, [researchResult]);
 
   const handleHintRetry = useCallback(() => {
-    generateBlog(blogInput, {
+    const next = ensureGenerationAxesOnInput(blogInput, resultBrandHooks);
+    generateBlog(next, {
       blogOnly: loadBlogOnlyPref(),
       regen: true,
       regenVariation: Date.now(),
       priorRewriteCount: blogContent?._meta?.rewriteCount || 0,
     });
-  }, [generateBlog, blogInput, blogContent]);
+  }, [generateBlog, blogInput, resultBrandHooks, blogContent]);
 
   if (mobileHidden) return null;
 

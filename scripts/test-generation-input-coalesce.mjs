@@ -4,7 +4,9 @@ import {
   mergeWorkspaceBrandIntoInput,
   mergeBrandFormSyncPayload,
   resolveBlogFormAxes,
+  ensureGenerationAxesOnInput,
 } from "@/lib/workspace/brandFormSync.js";
+import { slimBlogApiPayload } from "@/lib/generation/slimBlogApiPayload.js";
 import {
   hasFilledBlogAxes,
   stampVerifiedGenerationAxes,
@@ -121,6 +123,40 @@ const materialized = materializeVerifiedGenerationAxes({
 assert.equal(materialized.brandName, "E2E카페");
 assert.equal(materialized.region, "서울 마포");
 assert.equal(materialized.topic, "봄 브런치");
+
+const ensured = ensureGenerationAxesOnInput(
+  {
+    brandName: "",
+    region: "",
+    topic: "",
+    _verifiedGenerationAxes: {
+      brandName: "E2E카페",
+      region: "서울 마포",
+      topic: "봄 브런치",
+    },
+  },
+  {
+    activeBrandId: "b1",
+    activeBrand: { id: "b1", brandName: "사이드바", region: "부산" },
+  }
+);
+assert.equal(ensured.brandName, "E2E카페");
+assert.equal(ensured.region, "서울 마포");
+assert.equal(ensured.topic, "봄 브런치");
+
+const slimmed = slimBlogApiPayload({
+  brandName: "",
+  region: "",
+  topic: "",
+  _verifiedGenerationAxes: {
+    brandName: "E2E카페",
+    region: "서울 마포",
+    topic: "봄 브런치",
+  },
+});
+assert.equal(slimmed.brandName, "E2E카페");
+assert.equal(slimmed.region, "서울 마포");
+assert.equal(slimmed.topic, "봄 브런치");
 
 const stampedResearchGate = evaluateResearchWriteGate({
   brandName: "",

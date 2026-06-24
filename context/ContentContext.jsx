@@ -152,7 +152,7 @@ import {
   salvageBlogPackForDelivery,
 } from "@/lib/generation/postVerifySalvage";
 import { ensureBlogDisplayPack } from "@/lib/generation/ensureBlogDisplayPack";
-import { hasFilledBlogAxes, stampVerifiedGenerationAxes, materializeVerifiedGenerationAxes } from "@/lib/product/deliverySoftPass";
+import { hasFilledBlogAxes } from "@/lib/product/deliverySoftPass";
 import { countBlogBodyCharsWithSpaces } from "@/lib/prompts/engine/textUtils";
 import {
   GENERATION_CHANNEL_PACK_DEADLINE_MS,
@@ -172,6 +172,7 @@ import {
   coalesceBlogGenerationInput,
   mergeWorkspaceBrandIntoInput,
   resolveBlogFormAxes,
+  ensureGenerationAxesOnInput,
 } from "@/lib/workspace/brandFormSync";
 import {
   enrichGenerationInput,
@@ -201,6 +202,14 @@ import {
 
 function allowBlogUiRescue(pipelineInput = {}) {
   return shouldAllowMissionUiRescue(pipelineInput);
+}
+
+function isAxisTransmissionFailMessage(msg = "") {
+  const m = String(msg || "").trim();
+  return (
+    m === "브랜드 · 지역 · 주제를 모두 입력해 주세요." ||
+    m === "브랜드·지역·주제를 입력해 주세요."
+  );
 }
 
 function resolveBlogGenerationFailMessage(pipelineInput, result) {
@@ -1238,7 +1247,7 @@ export function ContentProvider({
       onToast?.(errors[Object.values(errors)[0]], "error");
       return;
     }
-    input = stampVerifiedGenerationAxes(input);
+    input = ensureGenerationAxesOnInput(input, brandHooks);
     setBlogWithholdUi(null);
     if (input.researchEnabled && !String(input.researchQuery || "").trim()) {
       const fallbackResearchQuery = [
@@ -1353,26 +1362,24 @@ export function ContentProvider({
           })
         : Promise.resolve(syncBrand);
 
-    const pipelineInput = materializeVerifiedGenerationAxes(
-      resolveBlogFormAxes(
-        stampVerifiedGenerationAxes({
-          ...input,
-          topic: input.topic?.trim() || topicMain,
-          mainKeyword: topicMain || input.mainKeyword,
-          brandMemory: provisional,
-          v2AxisRequired: true,
-          v2PipelineEnforced: true,
-          v3EngineEnforced: true,
-          brandId:
-            resolveBrandIdForGeneration(input, {
-              syncBrand,
-              activeBrand: brandHooks?.activeBrand,
-              activeBrandId: brandHooks?.activeBrandId,
-              blankBrandMode: brandHooks?.blankBrandMode,
-            }) || provisional?.id,
-        }),
-        brandHooks
-      )
+    const pipelineInput = ensureGenerationAxesOnInput(
+      {
+        ...input,
+        topic: input.topic?.trim() || topicMain,
+        mainKeyword: topicMain || input.mainKeyword,
+        brandMemory: provisional,
+        v2AxisRequired: true,
+        v2PipelineEnforced: true,
+        v3EngineEnforced: true,
+        brandId:
+          resolveBrandIdForGeneration(input, {
+            syncBrand,
+            activeBrand: brandHooks?.activeBrand,
+            activeBrandId: brandHooks?.activeBrandId,
+            blankBrandMode: brandHooks?.blankBrandMode,
+          }) || provisional?.id,
+      },
+      brandHooks
     );
       const blogDerive = resolveDerivationSource("blog", {
         blogContent,
@@ -1465,11 +1472,7 @@ export function ContentProvider({
 
         Object.assign(
           pipelineInput,
-          materializeVerifiedGenerationAxes(
-            stampVerifiedGenerationAxes(
-              resolveBlogFormAxes(pipelineInput, brandHooks)
-            )
-          )
+          ensureGenerationAxesOnInput(pipelineInput, brandHooks)
         );
 
         setPipelineStep("콘텐츠 작성 중…");
@@ -1491,6 +1494,21 @@ export function ContentProvider({
           }),
           brandEnsureTask,
         ]);
+        if (
+          result?.ok === false &&
+          !result?.blogContent?.sections?.length &&
+          hasFilledBlogAxes(pipelineInput) &&
+          isAxisTransmissionFailMessage(result?.userMessage)
+        ) {
+          Object.assign(
+            pipelineInput,
+            ensureGenerationAxesOnInput(pipelineInput, brandHooks)
+          );
+          result = await ensureBlogDelivery(pipelineInput, {
+            setPipelineStep,
+            onRetry: () => setPipelineStep("입력값을 다시 맞추는 중…"),
+          });
+        }
         if (ensuredBrand?.id) {
           pipelineInput.brandId = ensuredBrand.id;
           pipelineInput.brandMemory = ensuredBrand;
