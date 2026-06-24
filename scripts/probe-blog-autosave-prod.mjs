@@ -12,6 +12,7 @@ import {
   prepareChannelWorkspace,
   fillBlogFormViaDom,
   waitForWorkspaceReady,
+  waitForWorkspaceGenerateIdle,
 } from "./lib/e2eAuth.js";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -55,6 +56,22 @@ async function readSnap(page) {
   });
 }
 
+async function openBlogWorkspace(page) {
+  await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
+  await dismissWorkspaceModals(page);
+  await prepareChannelWorkspace(page, BASE, "blog");
+  await dismissWorkspaceModals(page);
+  await dismissBrandWorkspaceGate(page);
+
+  await page
+    .locator('ol[aria-label="작성 단계"]')
+    .first()
+    .waitFor({ state: "visible", timeout: 25_000 })
+    .catch(() => null);
+
+  return waitForWorkspaceReady(page, 25_000);
+}
+
 const browser = await chromium.launch({ headless: true });
 const ctxRes = await createAuthenticatedContext(browser, BASE);
 if (!ctxRes.ok) {
@@ -76,13 +93,7 @@ page.on("request", (req) => {
   }
 });
 
-await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
-await dismissWorkspaceModals(page);
-await prepareChannelWorkspace(page, BASE, "blog");
-await dismissWorkspaceModals(page);
-await dismissBrandWorkspaceGate(page);
-await waitForWorkspaceReady(page, 25_000);
-
+const ready = await openBlogWorkspace(page);
 const fillRes = await fillBlogFormViaDom(page, FORM);
 await page.waitForTimeout(3500);
 
@@ -108,7 +119,10 @@ const seedMeta = await page.evaluate((form) => {
 
 await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
 await dismissWorkspaceModals(page);
+await prepareChannelWorkspace(page, BASE, "blog");
 await dismissBrandWorkspaceGate(page);
+await waitForWorkspaceReady(page, 25_000);
+await waitForWorkspaceGenerateIdle(page, 120_000);
 await page
   .locator('ol[aria-label="작성 단계"]')
   .first()
@@ -134,6 +148,7 @@ const snapAfterGen = clicked ? await readSnap(page) : null;
 
 const report = {
   base: BASE,
+  ready,
   fillRes,
   seedMeta,
   snapAfterReload,

@@ -247,7 +247,12 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         mergeLiveFormWithCommitted(live, blogInput),
         brandHooksForForm
       );
-      saveFormDraft(merged, userId, merged?.brandId || blogInput?.brandId);
+      const persistBrandId = brandId || merged.brandId || blogInput?.brandId;
+      saveFormDraft(
+        persistBrandId ? { ...merged, brandId: persistBrandId } : merged,
+        userId,
+        persistBrandId
+      );
     };
     if (typeof requestIdleCallback === "function") {
       const id = requestIdleCallback(persist, { timeout: 2500 });
@@ -255,7 +260,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     }
     persist();
     return undefined;
-  }, [debouncedDraftForSave, blogInput, userId, generating.blog, brandHooksForForm, draftForm, formApiRef]);
+  }, [debouncedDraftForSave, blogInput, userId, generating.blog, brandHooksForForm, draftForm, formApiRef, brandId]);
 
   const resolvedFormAxes = useMemo(
     () =>
@@ -280,6 +285,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         blogInput
       );
       let next = ensureGenerationAxesOnInput(live, brandHooksForForm);
+      if (brandId && !next.brandId) next = { ...next, brandId };
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
         next.mainKeyword = topic.split(/[,，]/)[0].trim();
