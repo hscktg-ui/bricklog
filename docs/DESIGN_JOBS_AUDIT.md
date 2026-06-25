@@ -55,10 +55,17 @@
 
 ## 남은 P2 (기능 확장 최소)
 
-- [ ] 생성 중 **취소** 버튼
+- [x] 생성 중 **취소** 버튼 (Vision 2030 — `GenerationLoadingOverlay` + `cancelBlogGeneration`)
 - [ ] SMS 미설정 시 가입 경로 배너
-- [ ] 주요 모달 포커스 트랩 a11y 1회 점검
-- [ ] `QualityScorePanel.jsx` orphan 제거 (정리만)
+- [x] 주요 모달 포커스 트랩 a11y 1회 점검 (`ConfirmModal`)
+- [x] `QualityScorePanel.jsx` orphan 제거
+
+## Vision 2030 (2026-06-26)
+
+- [x] 축 정렬(axis align) 생성 **전** 인라인 안내 — `AxisAlignHint` · CTA 차단
+- [x] 작업실 CTA `VISION_CTA_ACCENT` 통일 (블로그·플레이스·인스타·GenerateButton)
+- [x] BlogForm 입력 `VISION_INPUT` 토큰
+- [x] 생성 오버레이: 「화면만 닫기」 / 「생성 취소」 분리
 
 ---
 

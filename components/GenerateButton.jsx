@@ -1,4 +1,5 @@
 import Icon from "./Icon";
+import { VISION_CTA_ACCENT, VISION_SPINNER } from "@/lib/landing/vision2030Styles";
 
 export default function GenerateButton({
   isGenerating,
@@ -12,12 +13,12 @@ export default function GenerateButton({
         type="button"
         onClick={onClick}
         disabled={disabled || isGenerating}
-        className="briclog-btn-primary"
+        className={VISION_CTA_ACCENT}
       >
         {isGenerating ? (
           <span className="inline-flex items-center justify-center gap-2">
             <span
-              className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
+              className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
               aria-hidden
             />
             <span>채널별 초안 작성 중...</span>

@@ -17,6 +17,7 @@ import { LOADING } from "@/lib/product/craft";
 import { formatDurationKo } from "@/lib/loading/estimateGenerationMs";
 import { useMobileWriteUx } from "@/hooks/useMobileWriteUx";
 import {
+  VISION_GHOST_BTN,
   VISION_LOADING_PANEL,
   VISION_SPINNER,
 } from "@/lib/landing/vision2030Styles";
@@ -39,6 +40,8 @@ export default function GenerationLoadingOverlay({
   completeMessage = null,
   peekResults = false,
   quietSuccess = false,
+  onCancel = null,
+  onDismiss = null,
 }) {
   const [stepIndex, setStepIndex] = useState(0);
   const [elapsedLabel, setElapsedLabel] = useState("00:00");
@@ -56,7 +59,19 @@ export default function GenerationLoadingOverlay({
       : getGenerationSteps(channel, { sensitiveIndustry });
 
   const dismissOverlay = () => {
-    window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    if (onDismiss) {
+      onDismiss();
+      return;
+    }
+    window.dispatchEvent(
+      new CustomEvent("briclog-dismiss-loading-overlay", {
+        detail: { preserveGenLock: true, preserveSession: true },
+      })
+    );
+  };
+
+  const handleCancel = () => {
+    onCancel?.();
   };
 
   useEffect(() => {
@@ -180,13 +195,25 @@ export default function GenerationLoadingOverlay({
       <div
         className={`${VISION_LOADING_PANEL} pointer-events-auto relative z-10 mx-4 w-full max-w-sm px-6 py-8 md:max-w-md md:px-8 md:py-9`}
       >
-        <button
-          type="button"
-          onClick={dismissOverlay}
-          className="briclog-pressable absolute right-3 top-3 rounded-full px-3 py-1 text-[12px] font-medium text-[var(--vision-muted)] hover:bg-[var(--vision-paper)] hover:text-[var(--vision-ink)]"
-        >
-          <span>닫기</span>
-        </button>
+        {!complete && onCancel ? (
+          <div className="absolute right-3 top-3 flex items-center gap-1">
+            <button
+              type="button"
+              onClick={dismissOverlay}
+              className={`${VISION_GHOST_BTN} !min-h-[36px] !px-3 !py-1.5 !text-[12px]`}
+            >
+              화면만 닫기
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={dismissOverlay}
+            className="briclog-pressable absolute right-3 top-3 rounded-full px-3 py-1 text-[12px] font-medium text-[var(--vision-muted)] hover:bg-[var(--vision-paper)] hover:text-[var(--vision-ink)]"
+          >
+            <span>닫기</span>
+          </button>
+        )}
         {complete ? (
           <p className="text-center text-[15px] font-semibold leading-relaxed tracking-[-0.02em] text-[var(--vision-ink)] sm:text-[16px]">
             {doneMsg}
@@ -214,9 +241,18 @@ export default function GenerationLoadingOverlay({
                 : LOADING.generationSub}
             </p>
             {isMobileWrite ? (
-              <p className="mt-3 text-center text-[11px] font-medium leading-relaxed text-[#8A6D00]">
+              <p className="mt-3 text-center text-[11px] font-medium leading-relaxed text-[var(--vision-muted)]">
                 {LOADING.generationMobileWake}
               </p>
+            ) : null}
+            {onCancel && !complete ? (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className={`${VISION_GHOST_BTN} mt-5 w-full !min-h-[44px] !text-[13px] text-[var(--vision-muted)]`}
+              >
+                생성 취소
+              </button>
             ) : null}
             {!stepLabel && (
               <div className="mt-4 flex justify-center gap-1.5">

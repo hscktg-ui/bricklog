@@ -180,6 +180,12 @@ import {
 } from "@/lib/workspace/enrichGenerationInput";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
 import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
+import {
+  beginBlogGenerationAbort,
+  cancelBlogGenerationAbort,
+  clearBlogGenerationAbort,
+  isBlogGenerationAbortError,
+} from "@/lib/generation/blogGenerationAbort";
 import { shouldBlockClientBlogPromotion } from "@/lib/product/columnistClientDeliveryGate";
 import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
 import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
@@ -492,6 +498,17 @@ export function ContentProvider({
       quietSuccess: false,
     });
   }, [clearOverlayFinishTimers]);
+
+  const cancelBlogGeneration = useCallback(() => {
+    generationEpochRef.current += 1;
+    cancelBlogGenerationAbort();
+    blogGenLock.current = false;
+    planLaunchInFlightRef.current = false;
+    setGenerationSessionActive(false);
+    setGenerating((g) => ({ ...g, blog: false }));
+    dismissLoadingOverlay();
+    onToast?.("생성을 취소했습니다.", "info");
+  }, [dismissLoadingOverlay, onToast]);
 
   useEffect(() => {
     const handler = (event) => {
@@ -1342,6 +1359,7 @@ export function ContentProvider({
       input.mainKeyword?.trim() ||
       "";
     const runGeneration = async () => {
+    beginBlogGenerationAbort();
     if (
       brandHooks?.blankBrandMode ||
       (input.brandName?.trim() &&
@@ -2304,6 +2322,10 @@ export function ContentProvider({
         void runPostBlogTail();
       } catch (err) {
         if (generationEpochRef.current !== genEpoch) return;
+        if (isBlogGenerationAbortError(err)) {
+          clearBlogGenerationAbort();
+          return;
+        }
         const norm = normalizeBlogGenerationFailure(err);
         setBlogGenHint(norm.message);
         setBlogGenHintSoft(norm.soft);
@@ -2319,6 +2341,7 @@ export function ContentProvider({
         });
       } finally {
         planLaunchInFlightRef.current = false;
+        clearBlogGenerationAbort();
         if (generationEpochRef.current !== genEpoch) return;
         if (!overlaySuccess) {
           blogGenLock.current = false;
@@ -3927,6 +3950,7 @@ export function ContentProvider({
       editorImprove: applyEditorImprove,
       editorImproving,
       loadingOverlay,
+      cancelBlogGeneration,
       blogResultRevealPending,
       acknowledgeBlogResultDisplayed,
       researchResult,
@@ -3986,6 +4010,7 @@ export function ContentProvider({
       applyEditorImprove,
       editorImproving,
       loadingOverlay,
+      cancelBlogGeneration,
       blogResultRevealPending,
       acknowledgeBlogResultDisplayed,
       clearDerived,

@@ -44,9 +44,11 @@ import {
 } from "@/lib/product/missionUi";
 import { isDeferFormUntilCommit } from "@/lib/config/productFlags";
 import { detectBrandIndustryMismatch } from "@/lib/product/brandIndustryMismatch";
+import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
+import AxisAlignHint from "@/components/product/AxisAlignHint";
+import { VISION_INPUT, VISION_STATUS_WARN } from "@/lib/landing/vision2030Styles";
 
-const fieldClass =
-  "w-full rounded-lg border border-[#E8EBED] bg-white px-3 py-2.5 text-[14px] text-[#191F28] placeholder:text-[#B0B8C1] focus:border-[#03C75A] focus:outline-none focus:ring-2 focus:ring-[#03C75A]/15";
+const fieldClass = `${VISION_INPUT} !mt-0 text-[14px]`;
 
 function Field({ label, error, children, required }) {
   return (
@@ -244,6 +246,22 @@ function BlogForm({
     ]
   );
 
+  const axisAlign = useMemo(
+    () =>
+      assessGenerationAxisAlignment({
+        brandName: formValues.brandName,
+        topic: debouncedTopic,
+        mainKeyword: debouncedMainKeyword,
+        industry: debouncedIndustry,
+      }),
+    [
+      formValues.brandName,
+      debouncedTopic,
+      debouncedMainKeyword,
+      debouncedIndustry,
+    ]
+  );
+
   const resolvedPerspective =
     formValues.contentPerspective === "auto"
       ? resolveContentPerspective({
@@ -299,11 +317,13 @@ function BlogForm({
         )}
         {brandIndustryMismatch.mismatch && (
           <p
-            className="mt-2 rounded-lg border border-[#FFE0B2] bg-[#FFF8E6] px-3 py-2 text-[12px] leading-relaxed text-[#4E5968]"
+            className={`mt-2 ${VISION_STATUS_WARN} px-3 py-2 text-[12px] leading-relaxed text-[var(--vision-ink)]`}
             role="status"
           >
-            <span className="font-semibold text-[#E67700]">업종 확인</span>
-            <span className="mt-1 block">{brandIndustryMismatch.message}</span>
+            <span className="font-semibold">업종 확인</span>
+            <span className="mt-1 block text-[var(--vision-muted)]">
+              {brandIndustryMismatch.message}
+            </span>
           </p>
         )}
       </Field>
@@ -376,6 +396,10 @@ function BlogForm({
         onRegionCompositionEnd={onRegionCompositionEnd}
         compact={compact}
       />
+
+      {!axisAlign.ok && axisAlign.hints?.length ? (
+        <AxisAlignHint hints={axisAlign.hints} />
+      ) : null}
 
       {formValues.brandName?.trim() && formValues.topic?.trim() ? (
         <ChannelAiRecommendCard channel="blog" card={blogAiCard} compact={compact} />

@@ -15,6 +15,7 @@ import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import StickyCopyBar from "@/components/StickyCopyBar";
 import MobileSecondaryAccordion from "@/components/MobileSecondaryAccordion";
 import Icon from "@/components/Icon";
+import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import {
   useContentForm,
@@ -234,7 +235,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
                 ? runInstaGenerate({ preferStandalone: false })
                 : runInstaGenerate({ preferStandalone })
             }
-            className="briclog-btn-primary mt-5 disabled:opacity-50"
+            className={`${VISION_CTA_ACCENT} mt-5 disabled:opacity-50`}
           >
             {generating.instagram
               ? "만드는 중…"
@@ -307,7 +308,7 @@ export default function InstagramGenerator({ onGoBlog, onCopy, userId, brandId }
                   ? runInstaGenerate({ preferStandalone: false })
                   : runInstaGenerate({ preferStandalone })
               }
-              className="briclog-btn-primary w-full disabled:opacity-50"
+              className={`${VISION_CTA_ACCENT} w-full disabled:opacity-50`}
             >
               {generating.instagram
                 ? "만드는 중…"

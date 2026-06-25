@@ -1,6 +1,12 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Icon from "@/components/Icon";
+import {
+  VISION_CTA_ACCENT,
+  VISION_GHOST_BTN,
+  VISION_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 /**
  * @param {{
@@ -26,12 +32,40 @@ export default function ConfirmModal({
   onCancel,
   busy = false,
 }) {
+  const dialogRef = useRef(null);
+  const cancelBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    cancelBtnRef.current?.focus();
+    const root = dialogRef.current;
+    if (!root) return undefined;
+    const onKey = (e) => {
+      if (e.key !== "Tab") return;
+      const focusable = root.querySelectorAll(
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    root.addEventListener("keydown", onKey);
+    return () => root.removeEventListener("keydown", onKey);
+  }, [open]);
+
   if (!open) return null;
 
   const confirmClass =
     variant === "danger"
-      ? "bg-[#E42939] hover:bg-[#C91F2E]"
-      : "bg-[#03C75A] hover:bg-[#02B350]";
+      ? "relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full bg-[#E42939] px-4 text-[13px] font-semibold text-white transition hover:bg-[#C91F2E] disabled:opacity-50"
+      : `${VISION_CTA_ACCENT} flex-1 !min-h-[44px] !text-[13px]`;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[70] flex items-center justify-center p-4">
@@ -42,10 +76,12 @@ export default function ConfirmModal({
         onClick={busy ? undefined : onCancel}
       />
       <div
+        ref={dialogRef}
         role="alertdialog"
+        aria-modal="true"
         aria-labelledby="confirm-modal-title"
         aria-describedby="confirm-modal-desc"
-        className="pointer-events-auto relative z-10 w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl"
+        className={`${VISION_PANEL} pointer-events-auto relative z-10 w-full max-w-sm p-5`}
       >
         <div className="flex items-start justify-between gap-2">
           <h2
@@ -71,10 +107,11 @@ export default function ConfirmModal({
         </p>
         <div className="mt-5 flex gap-2">
           <button
+            ref={cancelBtnRef}
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="flex-1 rounded-xl border border-[#E8EBED] py-2.5 text-[13px] font-semibold text-[#4E5968] hover:bg-[#F7F8FA] disabled:opacity-50"
+            className={`${VISION_GHOST_BTN} flex-1 !min-h-[44px]`}
           >
             {cancelLabel}
           </button>
@@ -82,7 +119,7 @@ export default function ConfirmModal({
             type="button"
             onClick={onConfirm}
             disabled={busy}
-            className={`flex-1 rounded-xl py-2.5 text-[13px] font-semibold text-white disabled:opacity-50 ${confirmClass}`}
+            className={`${confirmClass} disabled:opacity-50`}
           >
             {busy ? "처리 중…" : confirmLabel}
           </button>

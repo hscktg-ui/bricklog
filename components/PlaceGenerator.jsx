@@ -16,6 +16,7 @@ import ChannelLayoutToggle from "@/components/ChannelLayoutToggle";
 import StickyCopyBar from "@/components/StickyCopyBar";
 import MobileSecondaryAccordion from "@/components/MobileSecondaryAccordion";
 import Icon from "@/components/Icon";
+import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import {
   useContentForm,
@@ -216,7 +217,7 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
                 ? runPlaceGenerate({ preferStandalone: false })
                 : runPlaceGenerate({ preferStandalone })
             }
-            className="briclog-btn-primary mt-5 disabled:opacity-50"
+            className={`${VISION_CTA_ACCENT} mt-5 disabled:opacity-50`}
           >
             {generating.place ? "만드는 중…" : placeContent ? RETRY.cta : CHANNEL_PRODUCTS.place.generateLabel}
           </button>
@@ -285,7 +286,7 @@ export default function PlaceGenerator({ onGoBlog, onCopy, userId, brandId }) {
                   ? runPlaceGenerate({ preferStandalone: false })
                   : runPlaceGenerate({ preferStandalone })
               }
-              className="briclog-btn-primary w-full disabled:opacity-50"
+              className={`${VISION_CTA_ACCENT} w-full disabled:opacity-50`}
             >
               {generating.place
                 ? "만드는 중…"

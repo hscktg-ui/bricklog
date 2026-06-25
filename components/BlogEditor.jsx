@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
+  VISION_CTA_ACCENT,
   VISION_STATUS_NEUTRAL,
   VISION_STATUS_OK,
   VISION_STATUS_WARN,
@@ -42,6 +43,7 @@ import {
   validateForm,
 } from "@/lib/formValidation";
 import { resolveBlogFormAxes, ensureGenerationAxesOnInput, mergeLiveFormWithCommitted } from "@/lib/workspace/brandFormSync";
+import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { isGenerationSessionActive } from "@/lib/generation/generationSession";
 import { saveFormDraft } from "@/lib/formDraft";
@@ -275,6 +277,12 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     brandHooks: brandHooksForForm,
   });
 
+  const axisAlign = useMemo(
+    () => assessGenerationAxisAlignment(resolvedFormAxes),
+    [resolvedFormAxes]
+  );
+  const axisAlignBlocked = !axisAlign.ok;
+
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
       const live = mergeLiveFormWithCommitted(
@@ -314,8 +322,9 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   );
 
   const runGenerate = useCallback(() => {
+    if (axisAlignBlocked) return;
     commitAndGenerate();
-  }, [commitAndGenerate]);
+  }, [commitAndGenerate, axisAlignBlocked]);
 
   const runQuickDemo = useCallback(async () => {
     if (generating.blog) return;
@@ -345,7 +354,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   useEffect(() => {
     const onKey = (e) => {
       if (e.key !== "Enter" || !(e.ctrlKey || e.metaKey)) return;
-      if (!formValidNow || generating.blog) return;
+      if (!formValidNow || generating.blog || axisAlignBlocked) return;
       e.preventDefault();
       runGenerate();
     };
@@ -385,12 +394,15 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   );
 
   const disabledReason =
-    !generating.blog && !formValidNow
-      ? draftErrors.region ||
-        draftErrors.topic ||
-        draftErrors.brandName ||
-        "브랜드 · 지역 · 주제를 입력해 주세요"
-      : null;
+    !generating.blog && axisAlignBlocked
+      ? axisAlign.hints?.[0] ||
+        "브랜드·지역·주제가 서로 맞지 않아요. 주제를 이 브랜드에 맞게 수정해 주세요."
+      : !generating.blog && !formValidNow
+        ? draftErrors.region ||
+          draftErrors.topic ||
+          draftErrors.brandName ||
+          "브랜드 · 지역 · 주제를 입력해 주세요"
+        : null;
 
   const generatingNote = isMobile
     ? MOBILE_STORY.generatingNote
@@ -568,16 +580,17 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               data-briclog-generate="blog"
               disabled={
                 !formValidNow ||
+                axisAlignBlocked ||
                 storyBusy ||
                 quotaExhausted
               }
               onClick={runGenerate}
-              className="briclog-btn-primary mt-6 disabled:opacity-50"
+              className={`${VISION_CTA_ACCENT} mt-6 disabled:opacity-50`}
             >
               {storyBusy ? (
                 <span className="inline-flex items-center justify-center gap-2">
                   <span
-                    className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
+                    className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
                     aria-hidden
                   />
                   <span>{WORKSPACE_BLOG.ctaBusy}</span>
@@ -668,16 +681,17 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               data-briclog-generate="blog"
               disabled={
                 !formValidNow ||
+                axisAlignBlocked ||
                 storyBusy ||
                 quotaExhausted
               }
               onClick={runGenerate}
-              className="briclog-btn-primary w-full disabled:opacity-50"
+              className={`${VISION_CTA_ACCENT} w-full disabled:opacity-50`}
             >
               {storyBusy ? (
                 <span className="inline-flex items-center justify-center gap-2">
                   <span
-                    className="briclog-spinner h-4 w-4 border-white/30 border-t-white"
+                    className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
                     aria-hidden
                   />
                   <span>{WORKSPACE_BLOG.ctaBusy}</span>

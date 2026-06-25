@@ -5,7 +5,9 @@ import { useContentPipelineState } from "@/context/ContentContext";
 
 /** 생성 오버레이만 구독 — 폼 입력 시 대시보드 전체 리렌더 방지 */
 export default function GenerationLoadingOverlayHost() {
-  const { loadingOverlay } = useContentPipelineState();
+  const { loadingOverlay, cancelBlogGeneration } = useContentPipelineState();
+  const busy =
+    Boolean(loadingOverlay?.active) && !loadingOverlay?.complete;
   return (
     <GenerationLoadingOverlay
       active={Boolean(loadingOverlay?.active)}
@@ -18,6 +20,13 @@ export default function GenerationLoadingOverlayHost() {
       completeMessage={loadingOverlay?.completeMessage}
       peekResults={loadingOverlay?.peekResults}
       quietSuccess={loadingOverlay?.quietSuccess}
+      onCancel={
+        busy &&
+        (loadingOverlay?.channel === "blog" ||
+          loadingOverlay?.channel === "pipeline")
+          ? cancelBlogGeneration
+          : null
+      }
     />
   );
 }
