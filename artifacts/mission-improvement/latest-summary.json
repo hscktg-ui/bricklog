@@ -1,11 +1,133 @@
 {
-  "startedAt": "2026-06-14T00:48:30.143Z",
+  "startedAt": "2026-06-23T20:24:53.237Z",
   "total": 115,
-  "pass": 115,
-  "fail": 0,
+  "pass": 51,
+  "fail": 64,
   "errors": 0,
-  "passRate": 100,
-  "beliefAvg": 83.8,
-  "failReasons": {},
-  "failedSamples": []
+  "passRate": 44.3,
+  "beliefAvg": 73.4,
+  "regionColumnOk": 78,
+  "regionColumnOkRate": 67.8,
+  "avgRegionMentions": 4.2,
+  "failReasons": {
+    "region_over_cap": 37,
+    "checklist_voice": 31,
+    "sections_thin": 14,
+    "human_belief_low": 6,
+    "delivery_blocked": 25
+  },
+  "failedSamples": [
+    {
+      "id": "cat_0_0",
+      "label": "카페 · 강남",
+      "beliefAfter": 93,
+      "issues": []
+    },
+    {
+      "id": "cat_0_1",
+      "label": "카페 · 홍대",
+      "beliefAfter": 84,
+      "issues": []
+    },
+    {
+      "id": "cat_0_2",
+      "label": "카페 · 부산 해운대",
+      "beliefAfter": 79,
+      "issues": [
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "cat_1_0",
+      "label": "꽃집 · 홍대",
+      "beliefAfter": 100,
+      "issues": []
+    },
+    {
+      "id": "cat_1_3",
+      "label": "꽃집 · 인천 송도",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_1_4",
+      "label": "꽃집 · 제주 연동",
+      "beliefAfter": 88,
+      "issues": []
+    },
+    {
+      "id": "cat_2_4",
+      "label": "음식점 · 광주 상무",
+      "beliefAfter": 56,
+      "issues": [
+        "persona_misaligned",
+        "checklist_template_high"
+      ]
+    },
+    {
+      "id": "cat_3_3",
+      "label": "미용실 · 광주 상무",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_4_2",
+      "label": "학원 · 광주 상무",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_4_4",
+      "label": "학원 · 강남",
+      "beliefAfter": 97,
+      "issues": []
+    },
+    {
+      "id": "cat_5_1",
+      "label": "가구점 · 광주 상무",
+      "beliefAfter": 60,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_5_3",
+      "label": "가구점 · 강남",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_5_4",
+      "label": "가구점 · 홍대",
+      "beliefAfter": 69,
+      "issues": [
+        "checklist_template_high",
+        "checklist_voice"
+      ]
+    },
+    {
+      "id": "cat_6_0",
+      "label": "인테리어 · 광주 상무",
+      "beliefAfter": 66,
+      "issues": [
+        "persona_misaligned"
+      ]
+    },
+    {
+      "id": "cat_6_2",
+      "label": "인테리어 · 강남",
+      "beliefAfter": 72,
+      "issues": [
+        "persona_misaligned"
+      ]
+    }
+  ]
 }

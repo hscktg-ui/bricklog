@@ -1,0 +1,30 @@
+{
+  "lastCycle": 9,
+  "startedAt": "2026-06-23T12:53:25.007Z",
+  "updatedAt": "2026-06-23T21:04:00.316Z",
+  "cyclesCompleted": 9,
+  "latest": {
+    "cycle": 9,
+    "at": "2026-06-23T21:04:00.316Z",
+    "durationMs": 2525517,
+    "phaseGate": {
+      "pass": true,
+      "total": 10,
+      "failed": 0
+    },
+    "productScore": {
+      "band": "production"
+    },
+    "thousand": {
+      "publishReady": 118,
+      "total": 120,
+      "humanVoiceMet": 27,
+      "avgChars": 974,
+      "regionColumnOkRate": 99.2,
+      "avgRegionMentions": 1.2,
+      "regionOverCap": 1,
+      "flowerPublishReady": 14,
+      "flowerTotal": 14
+    }
+  }
+}

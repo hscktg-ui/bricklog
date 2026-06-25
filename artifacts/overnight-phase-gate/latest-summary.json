@@ -1,0 +1,133 @@
+{
+  "at": "2026-06-24T04:49:07.321Z",
+  "prod": true,
+  "total": 10,
+  "passed": 9,
+  "failed": 1,
+  "pass": false,
+  "results": [
+    {
+      "phase": 0,
+      "id": "briclog-defaults",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:briclog-defaults"
+      ],
+      "ok": true,
+      "ms": 695,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 0,
+      "id": "launch-publish-mode",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:launch-publish-mode"
+      ],
+      "ok": true,
+      "ms": 2656,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 0,
+      "id": "all-channel-sla",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:all-channel-sla"
+      ],
+      "ok": true,
+      "ms": 2842,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 0,
+      "id": "blog-async-job",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:blog-async-job"
+      ],
+      "ok": true,
+      "ms": 535,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 1,
+      "id": "content-history-ssot",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:content-history-ssot"
+      ],
+      "ok": true,
+      "ms": 526,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 2,
+      "id": "publish-ready-kpi",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:publish-ready-kpi"
+      ],
+      "ok": true,
+      "ms": 3571,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 2,
+      "id": "ui-delivery-smoke",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:ui-delivery-smoke"
+      ],
+      "ok": false,
+      "ms": 96571,
+      "exitCode": 1,
+      "stderr": "\nFAILURES: 1\n"
+    },
+    {
+      "phase": 2,
+      "id": "writer-first-delivery",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:writer-first-delivery"
+      ],
+      "ok": true,
+      "ms": 15944,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 2,
+      "id": "prod-http",
+      "ok": true,
+      "ms": 4248
+    },
+    {
+      "phase": 2,
+      "id": "product-score",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:product-score:prod"
+      ],
+      "ok": true,
+      "ms": 3998,
+      "exitCode": 0,
+      "stderr": ""
+    }
+  ]
+}

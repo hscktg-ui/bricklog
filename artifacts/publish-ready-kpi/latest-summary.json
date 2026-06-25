@@ -1,0 +1,28 @@
+{
+  "at": "2026-06-24T04:47:06.522Z",
+  "base": "https://briclog.ai",
+  "targetRate": 0.5,
+  "publishReadyRate": 1,
+  "publishReadyPercent": 100,
+  "deliveryOkRate": 1,
+  "total": 2,
+  "publishReadyCount": 2,
+  "deliveryOkCount": 2,
+  "runs": [
+    {
+      "id": "cafe-brunch",
+      "ok": true,
+      "publishReady": true,
+      "sections": 4,
+      "withheld": false
+    },
+    {
+      "id": "flower-gift",
+      "ok": true,
+      "publishReady": true,
+      "sections": 4,
+      "withheld": false
+    }
+  ],
+  "pass": true
+}

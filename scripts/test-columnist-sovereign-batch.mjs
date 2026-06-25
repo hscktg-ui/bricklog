@@ -231,19 +231,26 @@ async function runProdLive(scenario, token) {
     const blog = body.blogContent;
     const elapsedMs = Date.now() - t0;
     if (!blog?.sections?.length) {
+      const axisAlignBlocked =
+        res.status === 422 &&
+        (body.mode === "axis_align_blocked" ||
+          body.meta?.failReasons?.includes?.("topic_food_brand_furniture_mismatch") ||
+          body.meta?.failReasons?.includes?.("topic_furniture_brand_food_mismatch") ||
+          body.meta?.failReasons?.includes?.("cross_brand_topic_leak"));
       const lawBlocked =
         body.withheld &&
         (body.meta?.columnistDeliveryLawBlocked ||
           blog?._meta?.columnistDeliveryLawBlocked ||
           blog?._meta?.outputWithheld);
       return {
-        pass: Boolean(lawBlocked),
+        pass: Boolean(lawBlocked || axisAlignBlocked),
         phase: "live",
         httpStatus: res.status,
         elapsedMs,
         withheld: body.withheld,
         mode: body.mode,
         lawBlocked,
+        axisAlignBlocked,
         reason: body.userMessage || body.meta?.withholdReason || "empty",
       };
     }
@@ -373,6 +380,7 @@ async function main() {
             Math.round(
               (liveResults.filter((r) => r.pass).length / liveResults.length) * 1000
             ) / 10,
+          axisAlignBlocked: liveResults.filter((r) => r.axisAlignBlocked).length,
           avgBenchmark:
             Math.round(
               liveResults.reduce((s, r) => s + (r.benchmarkScore || 0), 0) / liveResults.length

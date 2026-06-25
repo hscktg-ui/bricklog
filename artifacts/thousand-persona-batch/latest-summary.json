@@ -1,0 +1,378 @@
+{
+  "at": "2026-06-23T21:03:30.452Z",
+  "elapsedSec": 1176,
+  "personaCount": 120,
+  "target": 100,
+  "llmMode": "template",
+  "summary": {
+    "total": 120,
+    "deliveryOk": 109,
+    "deliveryRate": 90.8,
+    "withheld": 11,
+    "publishReady": 118,
+    "publishReadyRate": 98.3,
+    "humanVoiceMet": 27,
+    "trainingPass": 29,
+    "trainingPassRate": 24.2,
+    "avgTraining": 93,
+    "avgCore": 100,
+    "avgChars": 974,
+    "avgGolden": 90,
+    "regionColumnOk": 119,
+    "regionColumnOkRate": 99.2,
+    "avgRegionMentions": 1.2,
+    "regionOverCap": 1,
+    "modes": {
+      "research_grounded_human": 106,
+      "form_proxy": 14
+    },
+    "byIndustry": {
+      "cafe": {
+        "n": 12,
+        "deliveryOk": 11,
+        "publishReady": 12
+      },
+      "flower": {
+        "n": 14,
+        "deliveryOk": 14,
+        "publishReady": 14
+      },
+      "medical": {
+        "n": 12,
+        "deliveryOk": 12,
+        "publishReady": 12
+      },
+      "beauty": {
+        "n": 12,
+        "deliveryOk": 12,
+        "publishReady": 12
+      },
+      "academy": {
+        "n": 14,
+        "deliveryOk": 11,
+        "publishReady": 14
+      },
+      "restaurant": {
+        "n": 12,
+        "deliveryOk": 12,
+        "publishReady": 12
+      },
+      "retail": {
+        "n": 12,
+        "deliveryOk": 10,
+        "publishReady": 12
+      },
+      "fitness": {
+        "n": 12,
+        "deliveryOk": 11,
+        "publishReady": 11
+      },
+      "professional": {
+        "n": 10,
+        "deliveryOk": 10,
+        "publishReady": 10
+      },
+      "lodging": {
+        "n": 10,
+        "deliveryOk": 6,
+        "publishReady": 9
+      }
+    },
+    "bySpeaker": {
+      "brand_intro": {
+        "n": 20,
+        "deliveryOk": 19,
+        "publishReady": 19
+      },
+      "local_blogger": {
+        "n": 20,
+        "deliveryOk": 16,
+        "publishReady": 19
+      },
+      "real_use": {
+        "n": 26,
+        "deliveryOk": 26,
+        "publishReady": 26
+      },
+      "magazine": {
+        "n": 14,
+        "deliveryOk": 13,
+        "publishReady": 14
+      },
+      "expert_info": {
+        "n": 26,
+        "deliveryOk": 21,
+        "publishReady": 26
+      },
+      "plain_review": {
+        "n": 14,
+        "deliveryOk": 14,
+        "publishReady": 14
+      }
+    },
+    "byTier": {
+      "short": {
+        "n": 40,
+        "deliveryOk": 35,
+        "publishReady": 38
+      },
+      "medium": {
+        "n": 40,
+        "deliveryOk": 39,
+        "publishReady": 40
+      },
+      "long": {
+        "n": 40,
+        "deliveryOk": 35,
+        "publishReady": 40
+      }
+    },
+    "topBlockers": [
+      {
+        "blocker": "length",
+        "count": 191
+      },
+      {
+        "blocker": "quality_score",
+        "count": 120
+      },
+      {
+        "blocker": "length_under_min",
+        "count": 118
+      },
+      {
+        "blocker": "ai_heading",
+        "count": 77
+      },
+      {
+        "blocker": "scenes_insufficient",
+        "count": 73
+      },
+      {
+        "blocker": "repetition_detected",
+        "count": 41
+      },
+      {
+        "blocker": "duplicate",
+        "count": 41
+      },
+      {
+        "blocker": "duplicate_sentence",
+        "count": 41
+      },
+      {
+        "blocker": "information_yield_low",
+        "count": 34
+      },
+      {
+        "blocker": "region_density_low",
+        "count": 22
+      },
+      {
+        "blocker": "outline_only_output",
+        "count": 14
+      },
+      {
+        "blocker": "industry_density_low",
+        "count": 12
+      },
+      {
+        "blocker": "brand_under_reflected",
+        "count": 10
+      },
+      {
+        "blocker": "emotion_thin",
+        "count": 9
+      },
+      {
+        "blocker": "brand_presence_missing",
+        "count": 9
+      }
+    ],
+    "failedSamples": [
+      {
+        "id": "t0071",
+        "industry": "fitness",
+        "v4Speaker": "brand_intro",
+        "mode": "research_grounded_human",
+        "chars": 73,
+        "goldenScore": 78,
+        "regionMentionCount": 2,
+        "regionColumnOk": true,
+        "blockers": [
+          "topic_drift",
+          "brand_under_reflected",
+          "region_density_low",
+          "emotion_thin"
+        ]
+      },
+      {
+        "id": "t0361",
+        "industry": "retail",
+        "v4Speaker": "local_blogger",
+        "mode": "form_proxy",
+        "chars": 18,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "brand_presence_missing",
+          "information_yield_low"
+        ]
+      },
+      {
+        "id": "t0391",
+        "industry": "lodging",
+        "v4Speaker": "local_blogger",
+        "mode": "research_grounded_human",
+        "chars": 195,
+        "goldenScore": 76,
+        "regionMentionCount": 2,
+        "regionColumnOk": true,
+        "blockers": [
+          "topic_dominance_low",
+          "region_density_low",
+          "information_yield_low",
+          "length"
+        ]
+      },
+      {
+        "id": "t0941",
+        "industry": "academy",
+        "v4Speaker": "local_blogger",
+        "mode": "form_proxy",
+        "chars": 18,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "search_intent_missing",
+          "customer_questions_missing"
+        ]
+      },
+      {
+        "id": "t0991",
+        "industry": "lodging",
+        "v4Speaker": "local_blogger",
+        "mode": "form_proxy",
+        "chars": 17,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "industry_density_low",
+          "region_density_low",
+          "brand_under_reflected",
+          "search_intent_missing"
+        ]
+      },
+      {
+        "id": "t0406",
+        "industry": "cafe",
+        "v4Speaker": "magazine",
+        "mode": "form_proxy",
+        "chars": 20,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "industry_density_low",
+          "region_density_low",
+          "brand_under_reflected",
+          "search_intent_missing"
+        ]
+      },
+      {
+        "id": "t0243",
+        "industry": "academy",
+        "v4Speaker": "expert_info",
+        "mode": "form_proxy",
+        "chars": 20,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "brand_presence_missing",
+          "information_yield_low"
+        ]
+      },
+      {
+        "id": "t0250",
+        "industry": "academy",
+        "v4Speaker": "expert_info",
+        "mode": "form_proxy",
+        "chars": 20,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "brand_presence_missing",
+          "information_yield_low"
+        ]
+      },
+      {
+        "id": "t0264",
+        "industry": "retail",
+        "v4Speaker": "expert_info",
+        "mode": "form_proxy",
+        "chars": 19,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "brand_presence_missing",
+          "information_yield_low"
+        ]
+      },
+      {
+        "id": "t0292",
+        "industry": "lodging",
+        "v4Speaker": "expert_info",
+        "mode": "form_proxy",
+        "chars": 19,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "brand_presence_missing",
+          "information_yield_low"
+        ]
+      },
+      {
+        "id": "t0299",
+        "industry": "lodging",
+        "v4Speaker": "expert_info",
+        "mode": "form_proxy",
+        "chars": 19,
+        "goldenScore": null,
+        "regionMentionCount": 0,
+        "regionColumnOk": true,
+        "blockers": [
+          "region_density_low",
+          "brand_under_reflected",
+          "brand_presence_missing",
+          "information_yield_low"
+        ]
+      }
+    ],
+    "regionOverCapSamples": [
+      {
+        "id": "t0774",
+        "industry": "fitness",
+        "regionMentionCount": 3
+      }
+    ]
+  }
+}

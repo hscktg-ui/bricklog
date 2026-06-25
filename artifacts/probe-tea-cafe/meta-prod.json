@@ -1,11 +1,11 @@
 {
   "meta": {
     "httpStatus": 200,
-    "elapsedMs": 5523,
+    "elapsedMs": 14060,
     "ok": false,
     "withheld": true,
-    "mode": "research_gate",
-    "userMessage": "조사·검증 기준에 미달해 글을 작성하지 않습니다. 조사를 보강한 뒤 다시 시도해 주세요.",
+    "mode": "writer_first_withheld",
+    "userMessage": "미완성·업종에 맞지 않는 표현이 있어 화면에 올리지 않았어요.",
     "chars": 0
   },
   "input": {
