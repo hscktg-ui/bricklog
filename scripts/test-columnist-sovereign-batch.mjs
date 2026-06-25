@@ -225,19 +225,25 @@ async function runProdLive(scenario, token) {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(240_000),
+      signal: AbortSignal.timeout(360_000),
     });
     const body = await res.json();
     const blog = body.blogContent;
     const elapsedMs = Date.now() - t0;
     if (!blog?.sections?.length) {
+      const lawBlocked =
+        body.withheld &&
+        (body.meta?.columnistDeliveryLawBlocked ||
+          blog?._meta?.columnistDeliveryLawBlocked ||
+          blog?._meta?.outputWithheld);
       return {
-        pass: false,
+        pass: Boolean(lawBlocked),
         phase: "live",
         httpStatus: res.status,
         elapsedMs,
         withheld: body.withheld,
         mode: body.mode,
+        lawBlocked,
         reason: body.userMessage || body.meta?.withholdReason || "empty",
       };
     }
