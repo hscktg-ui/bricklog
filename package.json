@@ -76,6 +76,7 @@
     "test:visit-review-sovereign-engine": "node --import ./scripts/register-alias.mjs scripts/test-visit-review-sovereign-engine.mjs",
     "test:visit-review-sovereign-eval": "node --import ./scripts/register-alias.mjs scripts/test-visit-review-sovereign-eval.mjs",
     "test:columnist-sovereign-engine": "node --import ./scripts/register-alias.mjs scripts/test-columnist-sovereign-engine.mjs",
+    "test:research-fact-sanitize": "node --import ./scripts/register-alias.mjs scripts/test-research-fact-sanitize.mjs",
     "test:columnist-sovereign-batch": "node --import ./scripts/register-alias.mjs scripts/test-columnist-sovereign-batch.mjs",
     "test:channel-unified-prose": "node --import ./scripts/register-alias.mjs scripts/test-channel-unified-prose.mjs",
     "test:insta-caption-humanize": "node --import ./scripts/register-alias.mjs scripts/test-insta-caption-humanize.mjs",

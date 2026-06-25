@@ -180,6 +180,7 @@ import {
 } from "@/lib/workspace/enrichGenerationInput";
 import { BACKGROUND_OPS } from "@/lib/product/craft";
 import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
+import { shouldBlockClientBlogPromotion } from "@/lib/product/columnistClientDeliveryGate";
 import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
@@ -250,6 +251,7 @@ function missionProseFallbackForUi(pipelineInput) {
     );
     pack = applyV17PostWritePack(pack, { input: pipelineInput }, "blog");
     pack = ensureBlogDisplayPack(pack, pipelineInput);
+    if (shouldBlockClientBlogPromotion({}, pipelineInput, pack)) return null;
     return pack?.sections?.length ? pack : null;
   } catch {
     return null;
@@ -1557,6 +1559,7 @@ export function ContentProvider({
             userMessage: null,
           };
         } else if (
+          !shouldBlockClientBlogPromotion(result, pipelineInput) &&
           result.blogContent?.sections?.length &&
           (result.ok === false || result.withheld) &&
           isLlmOriginatedPack(result.blogContent, result) &&
@@ -1567,7 +1570,10 @@ export function ContentProvider({
             pipelineInput,
             "blog"
           );
-          if (polished?.sections?.length) {
+          if (
+            polished?.sections?.length &&
+            !shouldBlockClientBlogPromotion(result, pipelineInput, polished)
+          ) {
             result = {
               ...result,
               ok: true,

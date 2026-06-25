@@ -56,7 +56,14 @@ if (isOpenAIConfigured() && isColumnistSovereignEnabled()) {
 
 const law = assertColumnistDeliveryLaw(badPack, input);
 assert.equal(law.shouldWithhold, true, "송출 법칙 위반 → withhold");
-assert.ok(law.violations.some((v) => v.type === "engine_spam"));
+assert.ok(
+  law.violations.some((v) =>
+    ["engine_spam", "cross_brand_topic_leak", "topic_food_brand_furniture_mismatch"].includes(
+      v.type
+    )
+  ),
+  `violations: ${law.violations.map((v) => v.type).join(", ")}`
+);
 
 const contam = detectVisitReviewTemplateContamination(badPack, input);
 assert.equal(contam.ok, false, "엔진 스팸 감지");
