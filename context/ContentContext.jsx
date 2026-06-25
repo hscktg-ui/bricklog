@@ -181,6 +181,7 @@ import {
 import { BACKGROUND_OPS } from "@/lib/product/craft";
 import { ensureBlogDelivery, forceLocalBlogPreviewDelivery } from "@/lib/generation/ensureBlogDelivery";
 import { shouldBlockClientBlogPromotion } from "@/lib/product/columnistClientDeliveryGate";
+import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
 import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
@@ -1481,6 +1482,25 @@ export function ContentProvider({
           pipelineInput,
           ensureGenerationAxesOnInput(pipelineInput, brandHooks)
         );
+
+        const axisAlign = assessGenerationAxisAlignment(pipelineInput);
+        if (!axisAlign.ok) {
+          if (generationEpochRef.current !== genEpoch) return;
+          const failMsg =
+            axisAlign.hints?.[0] ||
+            "브랜드·지역·주제가 서로 맞지 않아요. 주제를 이 브랜드에 맞게 수정해 주세요.";
+          setBlogContent(null);
+          setBlogWithholdUi({ message: failMsg, withheld: true });
+          blogGenLock.current = false;
+          setGenerationSessionActive(false);
+          setGenerating((g) => ({ ...g, blog: false }));
+          finishLoadingOverlay(overlayChannel, startedAt, {
+            success: false,
+            message: failMsg,
+            toastType: "info",
+          });
+          return;
+        }
 
         setPipelineStep("콘텐츠 작성 중…");
         const sensitive = resolveSensitiveCompliance(pipelineInput);
