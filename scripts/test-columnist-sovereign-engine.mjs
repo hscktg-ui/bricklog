@@ -68,4 +68,52 @@ assert.ok(
 const contam = detectVisitReviewTemplateContamination(badPack, input);
 assert.equal(contam.ok, false, "엔진 스팸 감지");
 
+const vagueYeojuPack = {
+  title: "여주목마 여름시즌 오픈 소식, 직접 둘러보고 정리해 봤습니다",
+  sections: [
+    {
+      heading: "오픈 소식이 발길을 끌었습니다",
+      body:
+        "검색만 하다 보면 기준이 많아서 어디서부터 볼지 막히는 날이 있다. 여름시즌 오픈 소식을 들으면 괜히 마음이 먼저 움직입니다.",
+    },
+    {
+      heading: "오픈 소식이 발길을 끌었습니다 — 이어서",
+      body:
+        "시즌 오픈은 말만 붙이면 끝나는 일이 아니라, 찾아온 사람이 ‘아, 지금 와볼 만하구나’ 하고 느끼게 만들어야 힘이 생깁니다.",
+    },
+    {
+      heading: "여름이라는 단어가 만든 방문의 리듬",
+      body:
+        "여름시즌 오픈 놀러오세요, 이 한마디는 생각보다 단순하지만 힘이 있습니다. 계절이 바뀌면 브랜드가 보여주는 얼굴도 바뀌어야 합니다.",
+    },
+    {
+      heading: "가기 전에는 기대치를 차분히 잡는 편이 좋겠습니다",
+      body: "궁금한 부분이 있다면 현장으로 향하기 전 최신 소식을 한 번 살펴보는 것이 좋겠습니다.",
+    },
+  ],
+  conclusion: "여름을 시작하는 가벼운 나들이를 찾고 있다면, 이번 소식은 한 번쯤 확인해볼 만합니다.",
+};
+
+const yeojuInput = {
+  brandName: "여주목마",
+  region: "여주",
+  topic: "여름시즌 오픈 소식",
+  industry: "레저/체험",
+  researchFacts: [
+    { fact: "실외 수영장·물놀이 시설 여름 시즌 오픈", source: "research" },
+    { fact: "식당·카페·승마 체험이 한 공간에 연결", source: "research" },
+    { fact: "가족 단위 방문객 동선·휴식 공간 구성", source: "research" },
+  ],
+};
+
+const vagueAssessed = assessVisitReviewBenchmark(vagueYeojuPack, yeojuInput);
+console.log(formatVisitReviewBenchmarkReport(vagueAssessed, "여주목마 추상 시즌 템플릿"));
+assert.equal(vagueAssessed.publishOk, false, "추상 시즌 템플릿은 publishOk=false");
+assert.ok(
+  vagueAssessed.hardFails.some((f) =>
+    ["engine_spam", "duplicate_headings", "research_underwoven"].includes(f)
+  ),
+  `hardFails: ${vagueAssessed.hardFails.join(", ")}`
+);
+
 console.log("OK columnist-sovereign-engine");

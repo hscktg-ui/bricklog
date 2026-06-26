@@ -11,7 +11,7 @@ import {
 } from "@/lib/generation/blogAsyncJob";
 
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 120;
 
 export async function POST(request, { params }) {
   await hydrateGlobalEngineForGeneration();

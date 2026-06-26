@@ -8,6 +8,8 @@ import {
   BRICLOG_PIPELINE_DEFAULTS,
   BRICLOG_TIMING_DEFAULTS,
   BRICLOG_QUALITY_DEFAULTS,
+  getDefaultAsyncPollIntervalMs,
+  getAsyncBlogPollDeadlineMs,
   isDefaultAsyncBlogGeneration,
 } from "../lib/config/briclogDefaults.js";
 import {
@@ -28,7 +30,8 @@ assert(BRICLOG_TIMING_DEFAULTS.launchPublishBudgetMs === 75_000, "launch 75s");
 assert(BRICLOG_QUALITY_DEFAULTS.applyGpt55VoiceFinal === true, "human voice");
 assert(isLaunchPublishFirstMode(), "launch mode active");
 assert(getLaunchPublishTimeBudgetMs() === 75_000, "launch budget wired");
-assert(getBlogClientFetchTimeoutMs() === 120_000, "fetch wired");
+assert(getBlogClientFetchTimeoutMs() === 120_000, "fetch wired (launch mode)");
+assert(getAsyncBlogPollDeadlineMs() === 120_000, "async poll 120s customer SLA");
 assert(isDefaultAsyncBlogGeneration(), "async default on");
 
 console.log("PASS: briclog-defaults", BRICLOG_DEFAULTS_VERSION);
