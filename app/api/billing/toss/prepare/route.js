@@ -37,7 +37,7 @@ export async function POST(request) {
       {
         ok: false,
         userMessage:
-          "토스페이먼츠가 설정되지 않았습니다. 운영자에게 TOSS_PAYMENTS_* 키 설정을 요청하세요.",
+          "KG이니시스 결제가 설정되지 않았습니다. PG 심사·연동 상태를 확인해 주세요.",
       },
       { status: 503 }
     );

@@ -5,6 +5,7 @@ import Icon from "@/components/Icon";
 import PlanComparison from "@/components/billing/PlanComparison";
 import SubscriptionPanel from "@/components/billing/SubscriptionPanel";
 import { useTossCheckout } from "@/components/billing/TossCheckout";
+import { checkoutWindowHint } from "@/lib/billing/paymentProviderUi";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { getPlanRank, normalizePlanId } from "@/lib/billing/plans";
 
@@ -70,6 +71,10 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
   if (!open) return null;
 
   const checkoutReady = Boolean(billingStatus?.checkoutEnabled);
+  const inicisReview = Boolean(
+    billingStatus?.inicisReview || billingStatus?.paymentStatus === "inicis_review"
+  );
+  const providerLabel = billingStatus?.providerLabel || "KG이니시스";
   const betaActive = Boolean(
     billingStatus?.betaActive || subscription?.betaPeriod
   );
@@ -146,13 +151,28 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
           {checkoutReady ? (
             <>
               {" "}
-              상위 플랜을 고르면 <strong>토스페이먼츠 결제창</strong>이 열리고,
-              업그레이드는 결제 후 바로 반영됩니다.
+              {checkoutWindowHint(true, "ready", providerLabel) ||
+                `상위 플랜을 고르면 ${providerLabel} 결제창이 열리고, 업그레이드는 결제 후 바로 반영됩니다.`}
+            </>
+          ) : inicisReview ? (
+            <>
+              {" "}
+              {checkoutWindowHint(false, "inicis_review", providerLabel)}
             </>
           ) : (
             <> 베타·무료 혜택으로도 채널을 이용할 수 있습니다.</>
           )}
         </p>
+
+        {inicisReview && (
+          <div className="mt-4 rounded-xl border border-[#5B6EE1]/25 bg-[#F5F7FF] px-4 py-3 text-[12px] leading-relaxed text-[#3D4DB7]">
+            <p className="font-semibold text-[#191F28]">KG이니시스 PG 심사 중</p>
+            <p className="mt-1">
+              {billingStatus?.userMessage ||
+                "전자결제 심사가 완료되면 브랜드·스튜디오 플랜 결제가 순차 연결됩니다. 무료 플랜은 그대로 이용할 수 있습니다."}
+            </p>
+          </div>
+        )}
 
         {betaActive && (
           <div className="mt-4 rounded-xl border border-[#03C75A]/30 bg-[#F0FFF5] px-4 py-3 text-[12px] leading-relaxed text-[#03A94D]">
@@ -164,7 +184,7 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
           </div>
         )}
 
-        {!checkoutReady && !betaActive && (
+        {!checkoutReady && !betaActive && !inicisReview && (
           <div className="mt-4 rounded-xl border border-[#E8EBED] bg-[#F7F8FA] px-4 py-3 text-[12px] leading-relaxed text-[#4E5968]">
             <p className="font-semibold text-[#191F28]">결제 준비 중</p>
             <p className="mt-1">{paymentNote}</p>
@@ -179,6 +199,9 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
             paymentNote={paymentNote}
             checkoutLoading={loading}
             betaActive={betaActive}
+            paymentStatus={billingStatus?.paymentStatus}
+            providerLabel={providerLabel}
+            inicisReview={inicisReview}
           />
         </div>
 

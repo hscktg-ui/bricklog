@@ -20,12 +20,12 @@ applyE2eTestCredentialsToEnv(process.env);
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
 
 const PERSONA = {
-  brandName: "숲속다람쥐 베이커리",
-  region: "대전 유성",
-  topic: "따뜻한 겨울 군고구마 크림빵 한정 출시",
-  mainKeyword: "군고구마 크림빵",
-  industry: "베이커리",
-  storeFeatures: "직접 구운 빵, 유성호수 근처",
+  brandName: "청춘농장",
+  region: "양평",
+  topic: "딸기체험 수확 시즌 오픈, 직접 다녀왔어요",
+  mainKeyword: "딸기체험",
+  industry: "레저/체험",
+  storeFeatures: "딸기 수확 체험, 가족 나들이",
   blogLengthTier: "medium",
   researchEnabled: true,
   skipAutoPipeline: true,
@@ -85,7 +85,7 @@ async function generateBlogAsync(payload, token) {
     signal: AbortSignal.timeout(30_000),
   });
 
-  const deadline = Date.now() + 125_000;
+  const deadline = Date.now() + 130_000;
   while (Date.now() < deadline) {
     await sleep(startBody.pollIntervalMs || 2000);
     void fetch(`${BASE}${runUrl}`, {
@@ -111,7 +111,7 @@ function formatStoryMarkdown(blog, meta) {
     `# ${blog.representativeTitle || blog.title || "제목 없음"}`,
     "",
     `> 브랜드: ${PERSONA.brandName} · 지역: ${PERSONA.region} · 주제: ${PERSONA.topic}`,
-    `> 생성: ${meta.elapsedMs}ms · mode: ${meta.mode} · 섹션: ${blog.sections?.length || 0} · ${meta.chars}자`,
+    `> 생성: 조사 ${meta.researchMs}ms + 글 ${meta.blogMs}ms = ${meta.totalMs}ms · mode: ${meta.mode} · 섹션: ${blog.sections?.length || 0} · ${meta.chars}자`,
     "",
   ];
   for (const sec of blog.sections || []) {
@@ -133,39 +133,63 @@ if (!auth.ok) {
 console.log("Persona:", PERSONA.brandName, "—", PERSONA.topic);
 
 let pipelineInput = mergeWorkspaceBrandIntoInput(PERSONA);
+const researchT0 = Date.now();
 const axis = await applyV2AxisResearch({
   pipelineInput,
   generateResearchAsync: (fv) => generateResearchAsync(fv, auth.token),
   onStep: (s) => console.log("research:", s),
 });
-console.log("axis ok:", axis.ok, "facts:", axis.factCount);
+const researchMs = Date.now() - researchT0;
+console.log("axis ok:", axis.ok, "facts:", axis.factCount, "researchMs:", researchMs);
 if (!axis.ok) {
   console.error(axis.userMessage);
   process.exit(1);
 }
 Object.assign(pipelineInput, axis.input);
 
+const researchFacts = (pipelineInput.researchFacts || []).map((f) =>
+  typeof f === "string" ? f : f?.fact || f?.text || String(f)
+);
+
 const payload = slimBlogApiPayload(pipelineInput);
 const t0 = Date.now();
 let body;
 try {
-  body = await generateBlogAsync(payload, auth.token);
+  const res = await fetch(`${BASE}/api/content/blog`, {
+    method: "POST",
+    headers: await authHeaders(auth.token),
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(180_000),
+  });
+  body = await res.json();
+  if (!res.ok && !body?.blogContent?.sections?.length) {
+    throw new Error(body.userMessage || `http_${res.status}`);
+  }
 } catch (err) {
   console.error("blog fail:", err.message);
   process.exit(1);
 }
-const elapsedMs = Date.now() - t0;
+const blogMs = Date.now() - t0;
+const totalMs = researchMs + blogMs;
 const blog = body.blogContent;
 const chars = countBlogBodyCharsWithSpaces(blog);
 
 const meta = {
-  elapsedMs,
+  researchMs,
+  blogMs,
+  totalMs,
   mode: body.mode,
   columnistFirst: body.meta?.columnistFirstFastPath,
   benchmark: blog?._meta?.visitReviewBenchmark?.score,
   withheld: body.withheld,
   userMessage: body.userMessage,
   chars,
+  sectionCount: blog?.sections?.length || 0,
+  title: blog?.representativeTitle || blog?.title,
+  topicInterpretation: pipelineInput.topicInterpretation || null,
+  topicAfterInterpret: pipelineInput.topic,
+  researchFactSample: researchFacts.slice(0, 12),
+  researchFactCount: researchFacts.length,
 };
 
 const md = formatStoryMarkdown(blog, meta);
@@ -176,7 +200,7 @@ const outJson = join(outDir, "latest-summary.json");
 writeFileSync(outMd, md, "utf8");
 writeFileSync(
   outJson,
-  JSON.stringify({ persona: PERSONA, meta, title: blog?.title, blog }, null, 2),
+  JSON.stringify({ persona: PERSONA, meta, researchFacts, title: blog?.title, blog }, null, 2),
   "utf8"
 );
 

@@ -133,7 +133,7 @@ async function getPendingCheckoutForUser(userId) {
 export async function POST(request) {
   if (!isTossConfigured()) {
     return NextResponse.json(
-      { ok: false, userMessage: "토스페이먼츠가 설정되지 않았습니다." },
+      { ok: false, userMessage: "결제(PG)가 설정되지 않았습니다." },
       { status: 503 }
     );
   }

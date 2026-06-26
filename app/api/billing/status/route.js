@@ -16,7 +16,13 @@ export async function GET() {
       tossConfigured: status.tossConfigured,
       tossBillingMode: status.tossBillingMode,
       provider: status.provider,
-      clientKey: status.checkoutEnabled ? getTossClientKey() : null,
+      providerId: status.providerId,
+      providerLabel: status.providerLabel,
+      inicisReview: status.inicisReview,
+      clientKey:
+        status.checkoutEnabled && status.providerId === "toss"
+          ? getTossClientKey()
+          : null,
       userMessage: status.userMessage,
       paymentNote: status.paymentNote,
       paymentStatus: status.paymentStatus,

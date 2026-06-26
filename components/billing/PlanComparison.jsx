@@ -8,6 +8,7 @@ import {
   normalizePlanId,
 } from "@/lib/billing/plans";
 import { GREEN_CTA_OUTLINE } from "@/lib/ui/actionButtonStyles";
+import { upgradeButtonLabel } from "@/lib/billing/paymentProviderUi";
 
 export default function PlanComparison({
   compact = false,
@@ -18,6 +19,9 @@ export default function PlanComparison({
   paymentNote = "결제 준비 중 — 가입 후 앱에서 플랜을 확인하고 업그레이드할 수 있습니다.",
   checkoutLoading = false,
   betaActive = false,
+  paymentStatus = null,
+  providerLabel = "KG이니시스",
+  inicisReview = false,
 }) {
   const isLanding = variant === "landing";
 
@@ -44,6 +48,9 @@ export default function PlanComparison({
             variant={variant}
             checkoutLoading={checkoutLoading}
             betaActive={betaActive}
+            paymentStatus={paymentStatus}
+            providerLabel={providerLabel}
+            inicisReview={inicisReview}
           />
         ))}
       </div>
@@ -58,11 +65,13 @@ export default function PlanComparison({
       )}
       {isLanding && (
         <p className="mt-4 text-center text-[11px] leading-relaxed text-[#8B95A1]">
-          무료로 이야기 글부터 쓸 수 있습니다. 유료 전환 시{" "}
+          무료로 이야기 글부터 쓸 수 있습니다. 유료 전환은{" "}
+          <strong className="font-semibold text-[#4E5968]">KG이니시스</strong>
+          를 통해 진행되며, 심사 완료 후{" "}
           <strong className="font-semibold text-[#4E5968]">
             매월 결제일에 자동 갱신
           </strong>
-          되며, 해지는 다음 결제일 전까지 앱에서 변경할 수 있습니다.
+          됩니다. 해지는 다음 결제일 전까지 앱에서 변경할 수 있습니다.
         </p>
       )}
     </div>
@@ -79,6 +88,9 @@ function PlanCard({
   variant,
   checkoutLoading,
   betaActive = false,
+  paymentStatus = null,
+  providerLabel = "KG이니시스",
+  inicisReview = false,
 }) {
   const highlight = plan.highlight;
   const isFree = plan.id === "free";
@@ -96,6 +108,11 @@ function PlanCard({
   const handleLandingCta = () => {
     onStart?.();
   };
+
+  const upgradeLabel = upgradeButtonLabel(
+    Boolean(onSelect) && !inicisReview,
+    inicisReview ? "inicis_review" : paymentStatus
+  );
 
   return (
     <div
@@ -168,7 +185,13 @@ function PlanCard({
               : "border border-[#E8EBED] bg-[#F7F8FA] text-[#191F28] hover:border-[#03C75A]/40"
           }`}
         >
-          <span>{checkoutLoading ? "연결 중…" : "토스로 업그레이드"}</span>
+          <span>
+            {checkoutLoading
+              ? "연결 중…"
+              : inicisReview
+                ? "심사 후 결제 연결"
+                : upgradeLabel.replace("KG이니시스", providerLabel)}
+          </span>
         </button>
       )}
     </div>
