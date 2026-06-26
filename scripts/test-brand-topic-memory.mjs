@@ -9,6 +9,7 @@ import {
   mergeTopicMemoryEntries,
   buildTopicMemoryEntry,
 } from "../lib/memory/brandTopicMemory.js";
+import { stampCoreRulesOnInput } from "../lib/product/briclogCoreRules.js";
 
 const yeojuInput = {
   brandName: "여주목마",
@@ -41,5 +42,16 @@ const withMemory = interpretBrandTopic({
   topicMemoryLearned: learned,
 });
 assert.equal(withMemory.learnedMatch, true, "학습 매칭");
+
+const prevCore = process.env.BRICLOG_CORE_RULES;
+const prevMission = process.env.BRICLOG_MISSION;
+process.env.BRICLOG_CORE_RULES = "false";
+process.env.BRICLOG_MISSION = "false";
+const stampedOff = stampCoreRulesOnInput(yeojuInput);
+assert.ok(stampedOff.topicInterpretation, "core rules off여도 topic 해석 적용");
+if (prevCore === undefined) delete process.env.BRICLOG_CORE_RULES;
+else process.env.BRICLOG_CORE_RULES = prevCore;
+if (prevMission === undefined) delete process.env.BRICLOG_MISSION;
+else process.env.BRICLOG_MISSION = prevMission;
 
 console.log("OK brand-topic-memory");

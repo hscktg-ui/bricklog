@@ -79,6 +79,17 @@ function summarizePublishReadyKpi() {
   };
 }
 
+async function fetchBillingStatus() {
+  try {
+    const res = await fetch(`${BASE}/api/billing/status`, {
+      signal: AbortSignal.timeout(12_000),
+    });
+    const body = await res.json();
+    return body?.billing || null;
+  } catch {
+    return null;
+  }
+}
 async function fetchEngineStatus() {
   try {
     const res = await fetch(`${BASE}/api/public/engine-status`, {
@@ -223,6 +234,7 @@ async function main() {
   const channelSla = readJson(join(root, "config", "channel-sla-report.json"));
   const hundredUx = readJson(join(root, "config", "hundred-user-ux-report.json"));
   const engine = await fetchEngineStatus();
+  const billing = await fetchBillingStatus();
   const db = await probeSupabase(env);
   const publicTest = await probePublicTest();
 
@@ -234,6 +246,9 @@ async function main() {
     engineOpsOk: engine?.ok === true,
     engineBrandFirst: engine?.engine?.brandFirst === true,
     cronSecret: engine?.cron?.secretConfigured === true,
+    pgCheckoutReady: billing?.checkoutEnabled === true,
+    inicisReview: billing?.inicisReview === true,
+    pgProviderLabel: billing?.providerLabel || "KG이니시스",
     tossConfigured: Boolean(
       env.TOSS_CLIENT_KEY?.trim() && env.TOSS_SECRET_KEY?.trim()
     ),
