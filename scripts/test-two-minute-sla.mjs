@@ -22,13 +22,13 @@ process.env.BRICLOG_MAX_QUALITY = "false";
 
 assert.equal(isCustomerTwoMinuteSlaMode(), true, "2min SLA mode on");
 assert.equal(getCustomerBlogSlaMs(), 120_000, "customer blog SLA 120s");
-assert.ok(getCustomerResearchBudgetMs() <= 55_000, "research budget capped");
+assert.ok(getCustomerResearchBudgetMs() <= 48_000, "research budget capped");
 assert.ok(
   getCustomerResearchBudgetMs() + getColumnistSlaGenerationBudgetMs() <= 125_000,
   "research + gen budgets fit 2min"
 );
 assert.equal(getNaverMaxQueries({}), 2, "SLA naver queries capped at 2");
-assert.equal(getColumnistFastMaxTokens(), 3400, "columnist fast tokens capped");
+assert.equal(getColumnistFastMaxTokens(), 2800, "columnist fast tokens capped");
 assert.equal(shouldSkipV3PreWriteForSla(), true, "skip v3 in SLA");
 assert.equal(shouldSkipResearchDepthCascadeForSla(), true, "skip depth cascade in SLA");
 assert.equal(

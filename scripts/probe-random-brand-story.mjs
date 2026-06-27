@@ -32,7 +32,7 @@ const DEFAULT_PERSONA = {
   mainKeyword: "여주목마 수영장",
   industry: "레저/체험",
   storeFeatures: "실외 수영장·물놀이, 식당·카페, 승마 체험, 가족 나들이",
-  blogLengthTier: "medium",
+  blogLengthTier: "short",
   researchEnabled: true,
   skipAutoPipeline: true,
   v2AxisRequired: true,
@@ -178,7 +178,7 @@ try {
     method: "POST",
     headers: await authHeaders(auth.token),
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(180_000),
+    signal: AbortSignal.timeout(125_000),
   });
   body = await res.json();
   if (!res.ok && !body?.blogContent?.sections?.length) {
