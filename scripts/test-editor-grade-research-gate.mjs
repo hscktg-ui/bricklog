@@ -93,4 +93,19 @@ assert.ok(
   `hardFails: ${vague.hardFails.join(", ")}`
 );
 
+const yeojuProbeInput = {
+  brandName: "여주목마",
+  region: "여주",
+  topic: "수영장 여름 시즌 오픈, 직접 다녀왔어요",
+  storeFeatures: "실외 수영장·물놀이, 식당·카페, 승마 체험, 가족 나들이",
+  researchFacts: [
+    { fact: "여주목마 수영장 현장에서 확인한 운영 포인트", source: "research" },
+    { fact: "주제 표기 변형 「수영장」— 검색·조사용 단서", source: "entity_variant" },
+  ],
+};
+const yeojuSubstantive = collectSubstantiveResearchFacts(yeojuProbeInput);
+assert.ok(yeojuSubstantive.length >= 3, `storeFeatures inject: ${yeojuSubstantive.length}`);
+const yeojuGate = evaluateEditorGradeResearchGate(yeojuProbeInput);
+assert.equal(yeojuGate.ok, true, "yeoju probe path passes A research gate");
+
 console.log("OK editor-grade-research-gate");
