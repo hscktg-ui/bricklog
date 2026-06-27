@@ -21,6 +21,7 @@ const input = {
   researchFacts: [
     { fact: "목장 내 식당에서 국수나무 브랜드 돈가스 메뉴 운영", source: "research" },
     { fact: "물놀이·승마 체험 후 식사 동선이 한 공간에 연결", source: "research" },
+    { fact: "가족 단위 방문·주말 예약제 운영", source: "research" },
   ],
 };
 
@@ -111,7 +112,7 @@ console.log(formatVisitReviewBenchmarkReport(vagueAssessed, "여주목마 추상
 assert.equal(vagueAssessed.publishOk, false, "추상 시즌 템플릿은 publishOk=false");
 assert.ok(
   vagueAssessed.hardFails.some((f) =>
-    ["engine_spam", "duplicate_headings", "research_underwoven"].includes(f)
+    ["engine_spam", "duplicate_headings", "research_underwoven", "abstract_season_filler", "concrete_facts_missing"].includes(f)
   ),
   `hardFails: ${vagueAssessed.hardFails.join(", ")}`
 );
