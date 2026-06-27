@@ -17,7 +17,7 @@ import {
   collectSubstantiveResearchFacts,
   evaluateEditorGradeResearchGate,
 } from "../lib/product/editorGradeResearchGate.js";
-import { assessProfessionalEditorDelivery } from "../lib/product/professionalEditorGradeEngine.js";
+import { getCustomerBlogSlaMs } from "../lib/config/briclogDefaults.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 loadEnvLocal(ROOT);
@@ -213,6 +213,8 @@ const meta = {
   substantiveFacts,
   editorDeliveryOk: editorDelivery.ok,
   editorDeliveryScore: editorDelivery.score,
+  slaMs: getCustomerBlogSlaMs(),
+  slaOk: totalMs <= getCustomerBlogSlaMs(),
   withheld: body.withheld,
   userMessage: body.userMessage,
   chars,

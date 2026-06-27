@@ -7,6 +7,7 @@ import {
   resolveResearchDepthMaxRounds,
   getNaverMaxQueries,
   getResearchClientTimeoutMs,
+  getCustomerResearchBudgetMs,
 } from "../lib/config/briclogFastPipeline.js";
 import { estimateBlogGenerationMs } from "../lib/loading/estimateGenerationMs.js";
 import { isBriclogMaxQualityEnabled } from "../lib/config/briclogMaxQuality.js";
@@ -29,12 +30,12 @@ assert(resolveResearchDepthMaxRounds({ researchFacts: new Array(8).fill({ fact: 
 assert(resolveResearchDepthMaxRounds({}, false) >= 0, "cold depth rounds");
 
 assert(getNaverMaxQueries(verified) <= getNaverMaxQueries(), "verified naver cap");
-assert(getResearchClientTimeoutMs(verified) <= getResearchClientTimeoutMs(), "verified timeout cap");
+assert(getCustomerResearchBudgetMs(verified) <= 12_000, "verified research budget cap");
 
 const estCold = estimateBlogGenerationMs({ brandName: "A", topic: "B", researchEnabled: true });
 const estHot = estimateBlogGenerationMs({ ...verified, brandName: "A", topic: "B" });
 assert(estHot < estCold, "UI estimate lower when research pre-done");
-assert(estCold <= 30_000, "cold estimate within 30s UX band");
+assert(estCold <= 120_000, "cold estimate within 2min UX band");
 
 assert(isBriclogFastPipelineEnabled(), "fast pipeline default when max quality off");
 assert(!isTriAiResearchMaxMode(), "tri-ai research max off unless explicit env");

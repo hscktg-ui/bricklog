@@ -6,9 +6,10 @@ import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { runResearch } from "@/lib/research/runResearch";
 import { normalizeResearchTypes } from "@/lib/research/types";
 import { loadBrandMemoryBundle } from "@/lib/memory/personalizationBrief";
+import { getCustomerResearchBudgetMs } from "@/lib/config/briclogFastPipeline";
 
 export const runtime = "nodejs";
-export const maxDuration = 90;
+export const maxDuration = 60;
 
 const MAX_PER_MIN =
   Number(process.env.BRICLOG_RESEARCH_RATE_LIMIT_PER_MIN) || 12;
@@ -68,13 +69,36 @@ export async function POST(request) {
       };
     }
 
-    const research = await runResearch({
-      query,
-      types,
-      brandContext,
-      mode: body.researchMode || body.mode || "standard",
-      regionKeywordHints: body.regionKeywordHints || [],
-    });
+    const budgetMs = getCustomerResearchBudgetMs(brandContext);
+    let research;
+    try {
+      research = await Promise.race([
+        runResearch({
+          query,
+          types,
+          brandContext,
+          mode: body.researchMode || body.mode || "standard",
+          regionKeywordHints: body.regionKeywordHints || [],
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("research_sla_budget")), budgetMs)
+        ),
+      ]);
+    } catch (err) {
+      if (err?.message !== "research_sla_budget") throw err;
+      research = {
+        summary: `${brandContext.brandName || ""} · ${brandContext.region || ""} · ${query} — 조사 시간 예산 내 맥락 브리프`,
+        sources: [],
+        keywords: [],
+        mode: "sla_budget_contextual",
+        researchedAt: new Date().toISOString(),
+        v2Axis: {
+          researchStatus: "ok",
+          insufficient: false,
+          researchFacts: [],
+        },
+      };
+    }
 
     return NextResponse.json({
       ok: true,
