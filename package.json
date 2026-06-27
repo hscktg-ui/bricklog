@@ -80,6 +80,7 @@
     "test:brand-topic-memory": "node --import ./scripts/register-alias.mjs scripts/test-brand-topic-memory.mjs",
     "test:research-fact-sanitize": "node --import ./scripts/register-alias.mjs scripts/test-research-fact-sanitize.mjs",
     "test:editor-grade-research-gate": "node --import ./scripts/register-alias.mjs scripts/test-editor-grade-research-gate.mjs",
+    "test:unedited-publish-grade-gate": "node --import ./scripts/register-alias.mjs scripts/test-unedited-publish-grade-gate.mjs",
     "test:columnist-sovereign-batch": "node --import ./scripts/register-alias.mjs scripts/test-columnist-sovereign-batch.mjs",
     "test:channel-unified-prose": "node --import ./scripts/register-alias.mjs scripts/test-channel-unified-prose.mjs",
     "test:insta-caption-humanize": "node --import ./scripts/register-alias.mjs scripts/test-insta-caption-humanize.mjs",

@@ -12,6 +12,12 @@ import { applyV2AxisResearch } from "../lib/content/applyV2AxisResearch.js";
 import { mergeWorkspaceBrandIntoInput } from "../lib/workspace/brandFormSync.js";
 import { slimBlogApiPayload } from "../lib/generation/slimBlogApiPayload.js";
 import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js";
+import { assessVisitReviewBenchmark, formatVisitReviewBenchmarkReport } from "../lib/product/visitReviewBenchmarkRubric.js";
+import {
+  collectSubstantiveResearchFacts,
+  evaluateEditorGradeResearchGate,
+} from "../lib/product/editorGradeResearchGate.js";
+import { assessProfessionalEditorDelivery } from "../lib/product/professionalEditorGradeEngine.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 loadEnvLocal(ROOT);
@@ -19,13 +25,13 @@ applyE2eTestCredentialsToEnv(process.env);
 
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
 
-const PERSONA = {
-  brandName: "청춘농장",
-  region: "양평",
-  topic: "딸기체험 수확 시즌 오픈, 직접 다녀왔어요",
-  mainKeyword: "딸기체험",
+const DEFAULT_PERSONA = {
+  brandName: "여주목마",
+  region: "여주",
+  topic: "수영장 여름 시즌 오픈, 직접 다녀왔어요",
+  mainKeyword: "여주목마 수영장",
   industry: "레저/체험",
-  storeFeatures: "딸기 수확 체험, 가족 나들이",
+  storeFeatures: "실외 수영장·물놀이, 식당·카페, 승마 체험, 가족 나들이",
   blogLengthTier: "medium",
   researchEnabled: true,
   skipAutoPipeline: true,
@@ -33,6 +39,10 @@ const PERSONA = {
   v2PipelineEnforced: true,
   v3EngineEnforced: true,
 };
+
+const PERSONA = process.env.PROBE_PERSONA_JSON
+  ? JSON.parse(process.env.PROBE_PERSONA_JSON)
+  : DEFAULT_PERSONA;
 
 async function authHeaders(token) {
   return {
@@ -151,6 +161,15 @@ const researchFacts = (pipelineInput.researchFacts || []).map((f) =>
   typeof f === "string" ? f : f?.fact || f?.text || String(f)
 );
 
+const scoreInput = {
+  ...pipelineInput,
+  researchFacts: pipelineInput.researchFacts || [],
+};
+const editorGate = evaluateEditorGradeResearchGate(scoreInput);
+const substantiveFacts = collectSubstantiveResearchFacts(scoreInput).map((f) =>
+  typeof f === "string" ? f : f?.fact || f
+);
+
 const payload = slimBlogApiPayload(pipelineInput);
 const t0 = Date.now();
 let body;
@@ -174,13 +193,26 @@ const totalMs = researchMs + blogMs;
 const blog = body.blogContent;
 const chars = countBlogBodyCharsWithSpaces(blog);
 
+const benchmarkV2 =
+  blog?._meta?.visitReviewBenchmark ||
+  assessVisitReviewBenchmark(blog, scoreInput);
+const editorDelivery = assessProfessionalEditorDelivery(blog, scoreInput);
+
 const meta = {
   researchMs,
   blogMs,
   totalMs,
   mode: body.mode,
   columnistFirst: body.meta?.columnistFirstFastPath,
-  benchmark: blog?._meta?.visitReviewBenchmark?.score,
+  benchmark: benchmarkV2?.score ?? blog?._meta?.visitReviewBenchmark?.score,
+  benchmarkGrade: benchmarkV2?.grade,
+  publishOk: benchmarkV2?.publishOk,
+  hardFails: benchmarkV2?.hardFails || [],
+  editorGateOk: editorGate.ok,
+  substantiveFactCount: editorGate.substantiveCount,
+  substantiveFacts,
+  editorDeliveryOk: editorDelivery.ok,
+  editorDeliveryScore: editorDelivery.score,
   withheld: body.withheld,
   userMessage: body.userMessage,
   chars,
@@ -206,5 +238,7 @@ writeFileSync(
 
 console.log("\n--- META ---");
 console.log(JSON.stringify(meta, null, 2));
+console.log("\n--- BENCHMARK ---");
+console.log(formatVisitReviewBenchmarkReport(benchmarkV2, PERSONA.brandName));
 console.log("\n--- STORY ---\n");
 console.log(md);

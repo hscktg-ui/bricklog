@@ -41,6 +41,8 @@ const pack = {
 };
 const input = { brandName: "모닝브루", region: "여주", topic: "아침 커피" };
 
+process.env.BRICLOG_RESET_QUALITY = "false";
+
 const gated = enforceCustomerBlogOutput(pack, input);
 assert(gated.ok && gated.pack?.sections?.length, "blog gate passes fallback pack");
 
@@ -49,6 +51,14 @@ const api = assessBlogApiDeliveryWithhold(
   input
 );
 assert(!api.withhold, "api withhold off");
+
+process.env.BRICLOG_RESET_QUALITY = "true";
+const apiReset = assessBlogApiDeliveryWithhold(
+  { blogContent: pack, mode: "draft_fallback" },
+  input
+);
+assert(apiReset.withhold, "reset quality blocks sub-A launch fallback");
+process.env.BRICLOG_RESET_QUALITY = "false";
 
 const orch = gateOrchestratorBlogPack(input, pack, { llmAvailable: true });
 assert(orch.ok && orch.blogContent?.sections?.length, "orchestrator delivers");
