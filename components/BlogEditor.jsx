@@ -70,6 +70,13 @@ import ChannelRoadmapStrip from "@/components/product/ChannelRoadmapStrip";
 import { RESULT_VIEW, RETRY } from "@/lib/product/craft";
 import { resolvePublishReadiness } from "@/lib/product/publishUiDisplay";
 import GenerationStayBanner from "@/components/blog/GenerationStayBanner";
+import GenerationContextBeatPanel from "@/components/blog/GenerationContextBeatPanel";
+import {
+  applyContextBeatToInput,
+  generationContextBeatTopicKey,
+  needsGenerationContextBeat,
+  resolveGenerationContextBeat,
+} from "@/lib/product/generationContextBeat";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
 import QuotaExhaustedCallout from "@/components/billing/QuotaExhaustedCallout";
@@ -195,6 +202,9 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [blogOnly, setBlogOnly] = useState(false);
+  const [contextBeatOpen, setContextBeatOpen] = useState(false);
+  const [contextBeatText, setContextBeatText] = useState("");
+  const contextBeatConfirmedRef = useRef("");
   const {
     draft: draftForm,
     setDraft: setDraftForm,
@@ -283,6 +293,19 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
   );
   const axisAlignBlocked = !axisAlign.ok;
 
+  const contextBeatConfig = useMemo(
+    () => resolveGenerationContextBeat(resolvedFormAxes),
+    [resolvedFormAxes]
+  );
+
+  useEffect(() => {
+    const key = generationContextBeatTopicKey(resolvedFormAxes);
+    if (contextBeatConfirmedRef.current && contextBeatConfirmedRef.current !== key) {
+      contextBeatConfirmedRef.current = "";
+      setContextBeatOpen(false);
+    }
+  }, [resolvedFormAxes.brandName, resolvedFormAxes.topic]);
+
   const commitAndGenerate = useCallback(
     (valuesOverride) => {
       const live = mergeLiveFormWithCommitted(
@@ -323,8 +346,57 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
 
   const runGenerate = useCallback(() => {
     if (axisAlignBlocked) return;
+    const live = mergeLiveFormWithCommitted(
+      formApiRef.current?.getValues?.() ?? draftForm,
+      blogInput
+    );
+    let next = ensureGenerationAxesOnInput(live, brandHooksForForm);
+    const topicKey = generationContextBeatTopicKey(next);
+    if (
+      needsGenerationContextBeat(next) &&
+      contextBeatConfirmedRef.current !== topicKey &&
+      !contextBeatOpen
+    ) {
+      setContextBeatText(next.storeFeatures || "");
+      setContextBeatOpen(true);
+      return;
+    }
     commitAndGenerate();
-  }, [commitAndGenerate, axisAlignBlocked]);
+  }, [
+    axisAlignBlocked,
+    commitAndGenerate,
+    contextBeatOpen,
+    draftForm,
+    blogInput,
+    formApiRef,
+    brandHooksForForm,
+  ]);
+
+  const confirmContextBeat = useCallback(() => {
+    const live = mergeLiveFormWithCommitted(
+      formApiRef.current?.getValues?.() ?? draftForm,
+      blogInput
+    );
+    let next = ensureGenerationAxesOnInput(live, brandHooksForForm);
+    next = applyContextBeatToInput(next, contextBeatText);
+    contextBeatConfirmedRef.current = generationContextBeatTopicKey(next);
+    formApiRef.current?.replaceAll?.(next);
+    setDraftForm(next);
+    setBlogInput(next);
+    applyExternalForm?.(next);
+    setContextBeatOpen(false);
+    commitAndGenerate(next);
+  }, [
+    applyExternalForm,
+    blogInput,
+    brandHooksForForm,
+    commitAndGenerate,
+    contextBeatText,
+    draftForm,
+    formApiRef,
+    setBlogInput,
+    setDraftForm,
+  ]);
 
   const runQuickDemo = useCallback(async () => {
     if (generating.blog) return;
@@ -574,6 +646,18 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
             />
           )}
 
+          {contextBeatOpen && !storyBusy ? (
+            <GenerationContextBeatPanel
+              className="mt-4"
+              config={contextBeatConfig}
+              value={contextBeatText}
+              onChange={setContextBeatText}
+              onConfirm={confirmContextBeat}
+              onCancel={() => setContextBeatOpen(false)}
+              busy={generating.blog}
+            />
+          ) : null}
+
           {!isMobile ? (
             <button
               type="button"
@@ -670,6 +754,17 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
           <div className={CHANNEL_MOBILE_CTA_FOOTER}>
             {!demoMode && !quotaExhausted ? (
               <GenerationQuotaHint usage={billingUsage} phase={billingPhase} />
+            ) : null}
+            {contextBeatOpen && !storyBusy ? (
+              <GenerationContextBeatPanel
+                className="mb-3"
+                config={contextBeatConfig}
+                value={contextBeatText}
+                onChange={setContextBeatText}
+                onConfirm={confirmContextBeat}
+                onCancel={() => setContextBeatOpen(false)}
+                busy={generating.blog}
+              />
             ) : null}
             {disabledReason && !generating.blog ? (
               <p className="mb-2 text-center text-[12px] text-[#E67700]">
