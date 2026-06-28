@@ -202,8 +202,8 @@ async function main() {
     try {
       await page.getByRole("button", { name: /로그인/i }).first().click({ timeout: 5000 });
       await page.waitForTimeout(500);
-      await page.getByLabel(/이메일|email/i).fill(email);
-      await page.getByLabel(/비밀번호|password/i).fill(password);
+      await page.locator("#auth-email").fill(email);
+      await page.locator("#auth-password").fill(password);
       await page.getByRole("button", { name: /로그인/i }).last().click();
       await page.waitForTimeout(6000);
       report.phases.post_login = await page.evaluate(diagnoseInPage);

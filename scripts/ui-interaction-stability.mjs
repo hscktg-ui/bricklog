@@ -94,10 +94,29 @@ function diagnoseFn() {
 async function dismissLandingIntro(page) {
   const intro = page.locator('[aria-label="BRICLOG 소개"]');
   if (!(await intro.count())) return;
-  await page.waitForTimeout(1200);
-  await intro.click({ timeout: 3000 }).catch(() => null);
-  await page.keyboard.press("Enter").catch(() => null);
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1500);
+  const skip = page.locator('[data-briclog-intro-skip="1"]');
+  if (await skip.count()) {
+    await skip.click({ timeout: 5000 }).catch(() => null);
+  } else {
+    await intro.click({ timeout: 3000 }).catch(() => null);
+    await page.keyboard.press("Enter").catch(() => null);
+  }
+  await intro.waitFor({ state: "hidden", timeout: 10_000 }).catch(() => null);
+  await page.waitForTimeout(600);
+}
+
+async function openLoginForm(page) {
+  for (const sel of [
+    '[data-briclog-cta="login-nav"]',
+    '[data-briclog-cta="login-sticky"]',
+  ]) {
+    const btn = page.locator(sel);
+    if (!(await btn.count())) continue;
+    await btn.first().click({ timeout: 8000 }).catch(() => null);
+    if (await page.locator("#auth-email").count()) return;
+  }
+  await page.getByRole("button", { name: /로그인/i }).first().click({ timeout: 8000 });
 }
 
 async function runFlow(page, label) {
@@ -167,13 +186,12 @@ async function runFlow(page, label) {
     log.steps.push({ step: stepName, ok: true });
   };
 
-  await page.goto(BASE, { waitUntil: "load", timeout: 90_000 });
+  await page.goto(`${BASE}/?skipIntro=1`, { waitUntil: "load", timeout: 90_000 });
   await dismissLandingIntro(page);
   await snap("landing_after_intro");
 
-  await page.getByRole("button", { name: /로그인|시작/i }).first().click({
-    timeout: 8000,
-  }).catch(() => null);
+  await openLoginForm(page);
+  await page.waitForTimeout(800);
   await snap("landing_cta_click");
 
   const email = process.env.BRICLOG_TEST_EMAIL;
@@ -183,8 +201,8 @@ async function runFlow(page, label) {
     return log;
   }
 
-  await page.getByLabel(/이메일|email/i).fill(email);
-  await page.getByLabel(/비밀번호|password/i).fill(password);
+  await page.locator("#auth-email").fill(email, { timeout: 15_000 });
+  await page.locator("#auth-password").fill(password);
   await page.getByRole("button", { name: /^로그인$/i }).last().click();
   await page.waitForTimeout(5000);
   await snap("post_login");
@@ -247,6 +265,16 @@ async function main() {
   ]) {
     const context = await browser.newContext({
       viewport: { width: vp.width, height: vp.height },
+      reducedMotion: "reduce",
+    });
+    await context.addInitScript(() => {
+      const mq = window.matchMedia;
+      window.matchMedia = (q) => {
+        if (String(q).includes("prefers-reduced-motion")) {
+          return { matches: true, media: q, addEventListener: () => {}, removeEventListener: () => {} };
+        }
+        return mq.call(window, q);
+      };
     });
     const page = await context.newPage();
     try {

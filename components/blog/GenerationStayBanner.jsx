@@ -5,6 +5,7 @@ import {
   VISION_STATUS_WARN,
 } from "@/lib/landing/vision2030Styles";
 import { getGenerationSteps } from "@/lib/loading/generationSteps";
+import { CHANNEL_SPEED_PROMISE } from "@/lib/product/channelHumanVoice";
 
 /** 생성·결과 표시 중 이탈 방지 안내 + 진행 단계 */
 export default function GenerationStayBanner({
@@ -37,7 +38,7 @@ export default function GenerationStayBanner({
       <p className="mt-0.5 text-[var(--vision-muted)]">
         {isResult
           ? "곧 이 화면에 글이 표시됩니다."
-          : "새로고침·뒤로가기·탭 닫기를 하지 마세요. 보통 2~4분 안에 완료됩니다."}
+          : `새로고침·뒤로가기·탭 닫기를 하지 마세요. ${CHANNEL_SPEED_PROMISE}이면 완료됩니다.`}
       </p>
       {!isResult && steps.length > 1 ? (
         <ol className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-[var(--vision-muted)]">
