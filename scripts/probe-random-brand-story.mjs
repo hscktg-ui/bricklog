@@ -18,6 +18,7 @@ import {
   evaluateEditorGradeResearchGate,
 } from "../lib/product/editorGradeResearchGate.js";
 import { getCustomerBlogSlaMs } from "../lib/config/briclogDefaults.js";
+import { assessProfessionalEditorDelivery } from "../lib/product/professionalEditorGradeEngine.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 loadEnvLocal(ROOT);
