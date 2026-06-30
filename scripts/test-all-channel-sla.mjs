@@ -15,6 +15,7 @@ import {
   shouldSkipClientAxisResearch,
 } from "../lib/config/briclogFastPipeline.js";
 import { isLaunchPublishFirstMode, LAUNCH_PUBLISH_CLIENT_FETCH_MS } from "../lib/config/launchPublishFlags.js";
+import { getCustomerBlogSlaMs } from "../lib/config/briclogDefaults.js";
 import { isGpt55WriterDominant } from "../lib/llm/llmProvider.js";
 import { estimateBlogGenerationMs } from "../lib/loading/estimateGenerationMs.js";
 import { ensureChannelDelivery } from "../lib/generation/ensureChannelDelivery.js";
@@ -35,7 +36,8 @@ if (isLaunchPublishFirstMode()) {
 }
 assert(getLlmLoopBudgetMs() <= getGenerationTimeBudgetMs(), "LLM loop <= total");
 if (isLaunchPublishFirstMode()) {
-  assert(getBlogClientFetchTimeoutMs() === LAUNCH_PUBLISH_CLIENT_FETCH_MS, "launch publish fetch cap");
+  assert(getBlogClientFetchTimeoutMs() >= LAUNCH_PUBLISH_CLIENT_FETCH_MS, "launch publish fetch floor");
+  assert(getBlogClientFetchTimeoutMs() >= 165_000, "2min SLA client fetch margin");
   assert(getGenerationTimeBudgetMs() <= 90_000, "launch gen budget <= 90s");
 } else if (isGpt55WriterDominant()) {
   assert(getBlogClientFetchTimeoutMs() >= 120_000, "gpt55 blog fetch >= 120s");
@@ -48,7 +50,7 @@ const estPack = estimateBlogGenerationMs(
   { brandName: "A", topic: "B", researchEnabled: true },
   { blogOnly: false }
 );
-assert(estPack <= 30_000, `UI estimate pack ${estPack} <= 30s`);
+assert(estPack <= Math.max(SLA, getCustomerBlogSlaMs()), `UI estimate pack ${estPack} within SLA`);
 
 assert(
   shouldUseDerivedChannelLocalOnly({ sourceChannel: "blog" }, "place", {

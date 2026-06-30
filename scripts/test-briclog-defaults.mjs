@@ -30,7 +30,7 @@ assert(BRICLOG_TIMING_DEFAULTS.launchPublishBudgetMs === 75_000, "launch 75s");
 assert(BRICLOG_QUALITY_DEFAULTS.applyGpt55VoiceFinal === true, "human voice");
 assert(isLaunchPublishFirstMode(), "launch mode active");
 assert(getLaunchPublishTimeBudgetMs() === 75_000, "launch budget wired");
-assert(getBlogClientFetchTimeoutMs() === 120_000, "fetch wired (launch mode)");
+assert(getBlogClientFetchTimeoutMs() === 165_000, "fetch wired (2min SLA + slow margin)");
 assert(getAsyncBlogPollDeadlineMs() === 120_000, "async poll 120s customer SLA");
 assert(isDefaultAsyncBlogGeneration(), "async default on");
 

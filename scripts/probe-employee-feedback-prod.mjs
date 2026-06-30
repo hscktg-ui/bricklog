@@ -20,6 +20,7 @@ import {
 } from "../lib/product/editorGradeResearchGate.js";
 import { needsGenerationContextBeat } from "../lib/product/generationContextBeat.js";
 import { getCustomerBlogSlaMs } from "../lib/config/briclogDefaults.js";
+import { getBlogGenerationProbeTimeoutMs } from "../lib/config/briclogFastPipeline.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
@@ -177,7 +178,7 @@ for (const scenario of SCENARIOS) {
         body: JSON.stringify(
           slimBlogApiPayload({ ...input, regenVariation: attempt > 1 ? Date.now() + attempt : undefined })
         ),
-        signal: AbortSignal.timeout(130_000),
+        signal: AbortSignal.timeout(getBlogGenerationProbeTimeoutMs()),
       });
       body = await res.json();
       if (body.blogContent?.sections?.length && !body.withheld) break;

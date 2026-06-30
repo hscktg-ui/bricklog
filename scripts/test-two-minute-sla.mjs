@@ -14,6 +14,7 @@ import {
   shouldSkipV3PreWriteForSla,
   shouldSkipResearchDepthCascadeForSla,
   shouldSkipSupplementalResearchForSla,
+  getBlogClientFetchTimeoutMs,
 } from "../lib/config/briclogFastPipeline.js";
 import { getCustomerBlogSlaMs } from "../lib/config/briclogDefaults.js";
 import { estimateBlogGenerationMs } from "../lib/loading/estimateGenerationMs.js";
@@ -31,10 +32,11 @@ assert.ok(
   "research + gen budgets fit 2min"
 );
 assert.equal(getNaverMaxQueries({}), 2, "SLA naver queries capped at 2");
-assert.equal(getColumnistFastMaxTokens(), 2800, "columnist fast tokens capped");
+assert.equal(getColumnistFastMaxTokens(), 2400, "columnist fast tokens capped (channel budget)");
 assert.equal(getColumnistMaxLlmRounds(), 2, "columnist LLM rounds capped at 2 in SLA");
 assert.equal(getColumnistSlaApiRetries(), 1, "SLA API retry once on fast fail");
 assert.equal(shouldUseColumnistSlaSlowFallback(), true, "SLA slow fallback on");
+assert.equal(getBlogClientFetchTimeoutMs(), 165_000, "client fetch covers slow fallback");
 assert.equal(shouldSkipV3PreWriteForSla(), true, "skip v3 in SLA");
 assert.equal(shouldSkipResearchDepthCascadeForSla(), true, "skip depth cascade in SLA");
 assert.equal(

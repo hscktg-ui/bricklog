@@ -14,6 +14,7 @@ import { getEnabledOAuthProviders } from "@/lib/auth/providers";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import PasswordField from "@/components/auth/PasswordField";
 import PhoneSmsVerifyFields from "@/components/auth/PhoneSmsVerifyFields";
+import SmsSignupConfigBanner from "@/components/auth/SmsSignupConfigBanner";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import {
   AUTH_FIELD_CLASS,
@@ -635,6 +636,10 @@ export default function AuthForm({
           {signupLimitMessage ||
             "지금은 품질 안정화 기간이라 신규 가입을 잠시 받지 않습니다."}
         </p>
+      ) : null}
+
+      {mode === MODES.signup && !signupLimited ? (
+        <SmsSignupConfigBanner phoneRequired={!phoneOptional} />
       ) : null}
 
       {mode === MODES.signup && !signupLimited ? (

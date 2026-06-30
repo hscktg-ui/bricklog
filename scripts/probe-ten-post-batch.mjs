@@ -22,6 +22,10 @@ import {
   evaluateEditorGradeResearchGate,
 } from "../lib/product/editorGradeResearchGate.js";
 import { getCustomerBlogSlaMs } from "../lib/config/briclogDefaults.js";
+import {
+  getBlogGenerationProbeTimeoutMs,
+  getProbeBatchGapMs,
+} from "../lib/config/briclogFastPipeline.js";
 import { needsGenerationContextBeat } from "../lib/product/generationContextBeat.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -173,7 +177,8 @@ process.env.BRICLOG_RESET_QUALITY = "true";
 
 const SLA_MS = getCustomerBlogSlaMs();
 const MAX_ATTEMPTS = Math.max(1, Number(process.env.PROBE_MAX_ATTEMPTS) || 3);
-const BATCH_GAP_MS = Math.max(0, Number(process.env.PROBE_BATCH_GAP_MS) || 15_000);
+const BATCH_GAP_MS = getProbeBatchGapMs();
+const PROBE_TIMEOUT_MS = getBlogGenerationProbeTimeoutMs();
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -278,7 +283,7 @@ for (const scenario of SCENARIOS) {
         body: JSON.stringify(
           slimBlogApiPayload({ ...input, regenVariation: attempt > 1 ? Date.now() + attempt : undefined })
         ),
-        signal: AbortSignal.timeout(130_000),
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
       });
       body = await res.json();
       if (body.blogContent?.sections?.length && !body.withheld) break;
