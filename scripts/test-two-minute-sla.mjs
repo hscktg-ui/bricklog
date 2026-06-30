@@ -9,6 +9,7 @@ import {
   getColumnistFastMaxTokens,
   getColumnistMaxLlmRounds,
   getColumnistSlaApiRetries,
+  shouldUseColumnistSlaSlowFallback,
   getNaverMaxQueries,
   shouldSkipV3PreWriteForSla,
   shouldSkipResearchDepthCascadeForSla,
@@ -33,6 +34,7 @@ assert.equal(getNaverMaxQueries({}), 2, "SLA naver queries capped at 2");
 assert.equal(getColumnistFastMaxTokens(), 2800, "columnist fast tokens capped");
 assert.equal(getColumnistMaxLlmRounds(), 2, "columnist LLM rounds capped at 2 in SLA");
 assert.equal(getColumnistSlaApiRetries(), 1, "SLA API retry once on fast fail");
+assert.equal(shouldUseColumnistSlaSlowFallback(), true, "SLA slow fallback on");
 assert.equal(shouldSkipV3PreWriteForSla(), true, "skip v3 in SLA");
 assert.equal(shouldSkipResearchDepthCascadeForSla(), true, "skip depth cascade in SLA");
 assert.equal(

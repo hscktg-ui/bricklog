@@ -81,6 +81,8 @@
     "test:research-fact-sanitize": "node --import ./scripts/register-alias.mjs scripts/test-research-fact-sanitize.mjs",
     "test:editor-grade-research-gate": "node --import ./scripts/register-alias.mjs scripts/test-editor-grade-research-gate.mjs",
     "test:generation-context-beat": "node --import ./scripts/register-alias.mjs scripts/test-generation-context-beat.mjs",
+    "test:employee-feedback-verify": "node --import ./scripts/register-alias.mjs scripts/test-employee-feedback-verify.mjs",
+    "test:columnist-failure-diagnostic": "node --import ./scripts/register-alias.mjs scripts/test-columnist-failure-diagnostic.mjs",
     "test:unedited-publish-grade-gate": "node --import ./scripts/register-alias.mjs scripts/test-unedited-publish-grade-gate.mjs",
     "test:two-minute-sla": "node --import ./scripts/register-alias.mjs scripts/test-two-minute-sla.mjs",
     "test:columnist-sovereign-batch": "node --import ./scripts/register-alias.mjs scripts/test-columnist-sovereign-batch.mjs",
