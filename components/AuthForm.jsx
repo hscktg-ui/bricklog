@@ -653,6 +653,14 @@ export default function AuthForm({
                 {signupTrust.planHint}
               </p>
             ) : null}
+            {signupTrust.onboardingHint ? (
+              <p className="font-medium text-[var(--vision-ink,#0f1a14)]">
+                {signupTrust.onboardingHint}
+              </p>
+            ) : null}
+            {signupTrust.workshopHint ? (
+              <p>{signupTrust.workshopHint}</p>
+            ) : null}
           </div>
         </div>
       ) : null}

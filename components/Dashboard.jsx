@@ -712,6 +712,10 @@ function DashboardLayout({
     if (showChannelWelcome) setWelcomeOpen(false);
   }, [showChannelWelcome]);
 
+  useEffect(() => {
+    setRhythmTab("studio");
+  }, [activeMenu]);
+
   return (
     <div className="briclog-vision-workspace relative flex h-full min-h-0 flex-1 overflow-hidden">
       <GenerationLoadingOverlayHost />

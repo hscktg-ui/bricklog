@@ -323,6 +323,14 @@ export async function fillBlogSteppedFormViaDom(page, form) {
     /오늘 전하고|이야기|장면/,
     form.topic || ""
   );
+  let sceneOk = false;
+  if (form.storeFeatures) {
+    sceneOk = await fillStep(
+      3,
+      /오션뷰|시그니처|체험|루프탑|현장/,
+      form.storeFeatures
+    );
+  }
 
   let industryOk = false;
   if (form.industry) {
@@ -339,7 +347,7 @@ export async function fillBlogSteppedFormViaDom(page, form) {
 
   const done = [form.brandName, form.region, form.topic].filter(Boolean).length;
   const filled = [brandOk, regionOk, topicOk].filter(Boolean).length;
-  return { brandOk, regionOk, topicOk, industryOk, filled, done };
+  return { brandOk, regionOk, topicOk, sceneOk, industryOk, filled, done };
 }
 
 export async function fillBlogFormViaDom(page, form) {

@@ -36,6 +36,7 @@ import { resolveContentPerspective } from "@/lib/content/perspectiveEngine";
 import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories";
 import ResearchModePanel from "@/components/research/ResearchModePanel";
 import SteppedWriteFields from "@/components/product/SteppedWriteFields";
+import KeywordTopicGuide from "@/components/product/KeywordTopicGuide";
 import ChannelAiRecommendCard from "@/components/product/ChannelAiRecommendCard";
 import { resolveBlogAiRecommendCard } from "@/lib/product/channelAiDefaults";
 import {
@@ -396,6 +397,8 @@ function BlogForm({
         onRegionCompositionEnd={onRegionCompositionEnd}
         compact={compact}
       />
+
+      {effectiveSimple ? <KeywordTopicGuide compact={compact} /> : null}
 
       {!axisAlign.ok && axisAlign.hints?.length ? (
         <AxisAlignHint hints={axisAlign.hints} />
