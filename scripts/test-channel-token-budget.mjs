@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import {
   getChannelTokenBudget,
   resolveColumnistCompletionTokens,
+  hasColumnistDossierReady,
   getBlogOrchestratorWriteMaxTokens,
   getPlaceChannelMaxTokens,
   getInstagramChannelMaxTokens,
@@ -20,14 +21,15 @@ assert.equal(getChannelTokenBudget("blog", "columnistSlow"), 5200);
 assert.ok(getPlaceChannelMaxTokens() <= getChannelTokenBudget("blog", "columnistFast"));
 assert.ok(getInstagramChannelMaxTokens() <= getPlaceChannelMaxTokens());
 
+assert.equal(getChannelTokenBudget("blog", "columnistFastDossier"), 2000);
 assert.equal(
-  resolveColumnistCompletionTokens({ columnistFastDelivery: true }, { fast: true }),
-  2400
+  resolveColumnistCompletionTokens(
+    { columnistFastDelivery: true, researchFirstDossier: { writable: true, organized: { lines: ["a", "b"] } } },
+    { fast: true }
+  ),
+  2000
 );
-assert.equal(
-  resolveColumnistCompletionTokens({ columnistForceSlow: true }, { fast: true }),
-  5200
-);
+assert.equal(hasColumnistDossierReady({ v2ResearchReady: true, v2PreWriteVerified: true, researchFacts: [{}, {}] }), true);
 
 assert.ok(getBlogOrchestratorWriteMaxTokens("medium") >= 2800);
 

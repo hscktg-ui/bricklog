@@ -17,6 +17,7 @@ import {
   assessVisitReviewBenchmark,
 } from "../lib/product/visitReviewBenchmarkRubric.js";
 import { assessProfessionalEditorDelivery } from "../lib/product/professionalEditorGradeEngine.js";
+import { assessUnifiedBlogDelivery } from "../lib/product/unifiedDeliveryGate.js";
 import {
   collectSubstantiveResearchFacts,
   evaluateEditorGradeResearchGate,
@@ -26,6 +27,7 @@ import {
   getBlogGenerationProbeTimeoutMs,
   getProbeBatchGapMs,
 } from "../lib/config/briclogFastPipeline.js";
+import { summarizeEngineHealthFromBatch } from "./engine-health-report.mjs";
 import { needsGenerationContextBeat } from "../lib/product/generationContextBeat.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -314,7 +316,13 @@ for (const scenario of SCENARIOS) {
     const editor = assessProfessionalEditorDelivery(pack, input);
     const substantive = collectSubstantiveResearchFacts(input);
 
-    row.pass = bench.publishOk && bench.score >= 76 && editor.ok;
+    const unified = assessUnifiedBlogDelivery(pack, input);
+
+    row.pass = unified.pass;
+    row.unified = {
+      pass: unified.pass,
+      reasons: unified.reasons,
+    };
     row.chars = countBlogBodyCharsWithSpaces(pack);
     row.sections = pack.sections?.length || 0;
     row.title = (pack.title || pack.representativeTitle || "").slice(0, 80);
@@ -322,6 +330,10 @@ for (const scenario of SCENARIOS) {
     row.editor = { score: editor.score, ok: editor.ok };
     row.substantiveFacts = substantive.length;
     row.generationMode = pack._meta?.generationMode || body.meta?.generationMode;
+    row.deliveryValue = body.meta?.deliveryValue || pack._meta?.deliveryValueExposure || null;
+    row.deliveryValueChecksOk = Boolean(
+      row.deliveryValue?.checks?.filter((c) => c.id === "research" && c.ok).length
+    );
 
     report.results.push(row);
     const mark = row.pass ? "✓" : "△";
@@ -370,6 +382,11 @@ report.comparison = {
 
 writeFileSync(join(OUT_DIR, "latest.json"), JSON.stringify(report, null, 2), "utf8");
 writeFileSync(join(OUT_DIR, "latest-summary.json"), JSON.stringify(report.summary, null, 2), "utf8");
+
+const healthDir = join(root, "artifacts", "engine-health");
+mkdirSync(healthDir, { recursive: true });
+const health = summarizeEngineHealthFromBatch(report);
+writeFileSync(join(healthDir, "latest-summary.json"), JSON.stringify(health, null, 2), "utf8");
 
 console.log("\n=== SUMMARY ===");
 console.log(JSON.stringify(report.summary, null, 2));

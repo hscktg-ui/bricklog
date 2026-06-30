@@ -47,6 +47,7 @@ import ResultCopyHero, {
   ResultCopyGhostButton,
 } from "@/components/workspace/ResultCopyHero";
 import DeliveryTrustBadge from "@/components/workspace/DeliveryTrustBadge";
+import DeliveryValueBlocks from "@/components/product/DeliveryValueBlocks";
 
 export default function BlogResultView({
   blog,
@@ -425,6 +426,12 @@ export default function BlogResultView({
       ) : null}
       {!isBriefOnly ? (
         <DeliveryTrustBadge pack={draft} channel="blog" className="mb-3" compact={mobileSimple} />
+      ) : null}
+      {!isBriefOnly && draft._meta?.deliveryValueExposure ? (
+        <DeliveryValueBlocks
+          exposure={draft._meta.deliveryValueExposure}
+          compact={mobileSimple}
+        />
       ) : null}
       {onRegenerate && !isBriefOnly ? (
         <RegenTonePanel
