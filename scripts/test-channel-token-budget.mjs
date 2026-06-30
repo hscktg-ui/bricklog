@@ -16,18 +16,18 @@ import {
 const summary = summarizeChannelTokenBudgets();
 assert.equal(summary.version, "channel-token-v1");
 
-assert.equal(getChannelTokenBudget("blog", "columnistFast"), 2400);
+assert.equal(getChannelTokenBudget("blog", "columnistFast"), 2800);
 assert.equal(getChannelTokenBudget("blog", "columnistSlow"), 5200);
 assert.ok(getPlaceChannelMaxTokens() <= getChannelTokenBudget("blog", "columnistFast"));
 assert.ok(getInstagramChannelMaxTokens() <= getPlaceChannelMaxTokens());
 
-assert.equal(getChannelTokenBudget("blog", "columnistFastDossier"), 2000);
+assert.equal(getChannelTokenBudget("blog", "columnistFastDossier"), 2600);
 assert.equal(
   resolveColumnistCompletionTokens(
     { columnistFastDelivery: true, researchFirstDossier: { writable: true, organized: { lines: ["a", "b"] } } },
     { fast: true }
   ),
-  2000
+  2600
 );
 assert.equal(hasColumnistDossierReady({ v2ResearchReady: true, v2PreWriteVerified: true, researchFacts: [{}, {}] }), true);
 

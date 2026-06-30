@@ -169,6 +169,7 @@ for (const scenario of SCENARIOS) {
     if (body.withheld || !body.blogContent?.sections?.length) {
       row.pass = false;
       row.error = body.userMessage || body.mode;
+      row.columnistFailDiagnostic = body.meta?.columnistFailDiagnostic || null;
       report.results.push(row);
       console.log(`✗ ${scenario.label}: ${row.error} (${row.ms}ms sla=${row.slaOk ? "OK" : "SLOW"})\n`);
       if (GAP_MS > 0) await sleep(GAP_MS);
