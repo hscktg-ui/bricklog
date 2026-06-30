@@ -30,7 +30,9 @@ export default function WorkspaceRhythmTabs({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={on ? VISION_NAV_ITEM_ACTIVE : VISION_NAV_ITEM_IDLE}
+              className={`briclog-pressable min-h-[44px] rounded-full px-4 py-2 text-[13px] font-semibold transition ${
+                on ? VISION_NAV_ITEM_ACTIVE : VISION_NAV_ITEM_IDLE
+              }`}
               aria-current={on ? "page" : undefined}
             >
               {tab.label}

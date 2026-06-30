@@ -66,6 +66,8 @@
 - [x] 작업실 CTA `VISION_CTA_ACCENT` 통일 (블로그·플레이스·인스타·GenerateButton)
 - [x] BlogForm 입력 `VISION_INPUT` 토큰
 - [x] 생성 오버레이: 「화면만 닫기」 / 「생성 취소」 분리
+- [x] 4필드 순서형 입력 `SteppedWriteFields` Vision 2030 (칩·진행바·패널)
+- [x] `KeywordTopicGuide` Vision 토큰 · rhythm 탭 44px 터치
 
 ---
 
