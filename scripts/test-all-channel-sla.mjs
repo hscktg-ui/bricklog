@@ -37,7 +37,7 @@ if (isLaunchPublishFirstMode()) {
 assert(getLlmLoopBudgetMs() <= getGenerationTimeBudgetMs(), "LLM loop <= total");
 if (isLaunchPublishFirstMode()) {
   assert(getBlogClientFetchTimeoutMs() >= LAUNCH_PUBLISH_CLIENT_FETCH_MS, "launch publish fetch floor");
-  assert(getBlogClientFetchTimeoutMs() >= 165_000, "2min SLA client fetch margin");
+  assert(getBlogClientFetchTimeoutMs() >= 130_000, "2min SLA client fetch margin");
   assert(getGenerationTimeBudgetMs() <= 90_000, "launch gen budget <= 90s");
 } else if (isGpt55WriterDominant()) {
   assert(getBlogClientFetchTimeoutMs() >= 120_000, "gpt55 blog fetch >= 120s");

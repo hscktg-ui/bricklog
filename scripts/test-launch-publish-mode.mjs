@@ -29,7 +29,7 @@ assert(getLaunchPublishTimeBudgetMs() === 75_000, "75s budget");
 assert(getLaunchPublishMaxAttempts() === 1, "1 attempt");
 assert(getGenerationTimeBudgetMs() === 75_000, "pipeline gen budget");
 assert(getCoreMaxRewrites() === 1, "core rewrites 1");
-assert(getBlogClientFetchTimeoutMs() === 165_000, "client fetch 165s (2min SLA + slow margin)");
+assert(getBlogClientFetchTimeoutMs() === 130_000, "client fetch 130s (2min UX)");
 
 const pack = {
   sections: [

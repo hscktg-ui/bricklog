@@ -88,6 +88,7 @@
     "test:unified-delivery-gate": "node --import ./scripts/register-alias.mjs scripts/test-unified-delivery-gate.mjs",
     "test:delivery-value-exposure": "node --import ./scripts/register-alias.mjs scripts/test-delivery-value-exposure.mjs",
     "test:engine-health-report": "node --import ./scripts/register-alias.mjs scripts/engine-health-report.mjs",
+    "test:probe-new-signup-sla": "node --import ./scripts/register-alias.mjs scripts/probe-new-signup-sla.mjs",
     "test:furniture-finish-relax": "node --import ./scripts/register-alias.mjs scripts/test-furniture-finish-relax.mjs",
     "test:unedited-publish-grade-gate": "node --import ./scripts/register-alias.mjs scripts/test-unedited-publish-grade-gate.mjs",
     "test:two-minute-sla": "node --import ./scripts/register-alias.mjs scripts/test-two-minute-sla.mjs",
