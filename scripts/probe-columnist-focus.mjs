@@ -107,14 +107,17 @@ for (const scenario of SCENARIOS) {
   });
   if (!axis.ok) {
     results.push({ id: scenario.id, pass: false, error: axis.userMessage });
+    if (GAP > 0) await sleep(GAP);
     continue;
   }
-  input = axis.input;
+  Object.assign(input, axis.input);
   const t0 = Date.now();
   const res = await fetch(`${BASE}/api/content/blog`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
-    body: JSON.stringify(slimBlogApiPayload(input)),
+    body: JSON.stringify(
+      slimBlogApiPayload({ ...input, regenVariation: undefined })
+    ),
     signal: AbortSignal.timeout(180_000),
   });
   const body = await res.json();
