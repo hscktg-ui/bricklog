@@ -33,7 +33,7 @@ assert.ok(
 );
 assert.equal(getNaverMaxQueries({}), 2, "SLA naver queries capped at 2");
 assert.equal(getColumnistFastMaxTokens(), 2400, "columnist fast tokens capped (channel budget)");
-assert.equal(getColumnistMaxLlmRounds(), 1, "columnist LLM 1 round in 2min SLA");
+assert.equal(getColumnistMaxLlmRounds(), 2, "columnist LLM 2 rounds in 2min SLA (tier retry)");
 assert.equal(getColumnistSlaApiRetries(), 0, "SLA API retry off for 1~2min UX");
 assert.equal(shouldUseColumnistSlaSlowFallback(), false, "SLA slow fallback off by default");
 assert.equal(getBlogClientFetchTimeoutMs(), 130_000, "client fetch 130s (2min + 10s margin)");
