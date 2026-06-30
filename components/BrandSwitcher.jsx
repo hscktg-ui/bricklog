@@ -55,7 +55,14 @@ export default function BrandSwitcher({
     setBusy(true);
     try {
       const b = await addBrand("새 브랜드");
+      if (!b?.id) {
+        throw new Error("브랜드를 추가하지 못했습니다.");
+      }
       handleSelect(b.id);
+    } catch (err) {
+      window.alert(
+        err?.message || "브랜드를 추가하지 못했습니다. 로그인·요금제 한도를 확인해 주세요."
+      );
     } finally {
       setBusy(false);
     }

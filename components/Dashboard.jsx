@@ -64,6 +64,8 @@ import {
 } from "@/lib/auth/profilePersonalization";
 import ProfileSetupBanner from "@/components/ProfileSetupBanner";
 import BriclogNextHomeStrip from "@/components/BriclogNextHomeStrip";
+import BriclogNextPanel from "@/components/BriclogNextPanel";
+import WorkspaceRhythmTabs from "@/components/workspace/WorkspaceRhythmTabs";
 import { WorkspacePreviewProvider } from "@/context/WorkspacePreviewContext";
 import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
@@ -470,6 +472,7 @@ function DashboardLayout({
   const [profileBannerDismissed, setProfileBannerDismissed] = useState(false);
   const [visitCount, setVisitCount] = useState(1);
   const [lastPost, setLastPost] = useState(null);
+  const [rhythmTab, setRhythmTab] = useState("studio");
   const welcomeInitRef = useRef(false);
   const resetAllBrandsRef = useRef(resetAllBrands);
   resetAllBrandsRef.current = resetAllBrands;
@@ -690,6 +693,8 @@ function DashboardLayout({
   const navigate = (menu) => setActiveMenu(normalizeWorkspaceMenuId(menu));
 
   const workspaceMenus = new Set(["blog", "place", "insta", "plan", "growth"]);
+  const showRhythmTabs =
+    !showChannelWelcome && ["blog", "place", "insta", "growth"].includes(activeMenu);
   const idleHintActive =
     !showChannelWelcome && workspaceMenus.has(activeMenu);
   const showProfileSetupBanner =
@@ -781,7 +786,7 @@ function DashboardLayout({
           />
         )}
 
-        {!showChannelWelcome && (
+        {!showChannelWelcome && rhythmTab === "studio" && (
           <BriclogNextHomeStrip
             activeMenu={activeMenu}
             blogInput={blogInput}
@@ -792,6 +797,10 @@ function DashboardLayout({
             generationBusy={generationBusy}
           />
         )}
+
+        {showRhythmTabs ? (
+          <WorkspaceRhythmTabs active={rhythmTab} onChange={setRhythmTab} />
+        ) : null}
 
         <WorkspaceIdleHint active={idleHintActive} />
 
@@ -806,6 +815,31 @@ function DashboardLayout({
               industryLabel={activeBrand?.industry || ""}
               brandName={activeBrand?.brandName || ""}
             />
+          ) : rhythmTab === "next" && showRhythmTabs ? (
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-5 sm:px-6 md:px-8">
+              <div className="mx-auto w-full max-w-3xl">
+                <BriclogNextPanel
+                  blogInput={blogInput}
+                  meta={blogContent?._meta}
+                  hero
+                  hasPlace={Boolean(placeContent)}
+                  hasInsta={Boolean(instagramContent)}
+                  blogTopic={
+                    blogContent?.title ||
+                    blogContent?.representativeTitle ||
+                    blogInput?.topic ||
+                    ""
+                  }
+                  onChannelAction={(channel) => {
+                    setRhythmTab("studio");
+                    if (channel === "place") navigate("place");
+                    else if (channel === "instagram" || channel === "insta")
+                      navigate("insta");
+                    else navigate("blog");
+                  }}
+                />
+              </div>
+            </div>
           ) : activeMenu === "blog" ? (
             <BlogEditor
               onNavigate={navigate}

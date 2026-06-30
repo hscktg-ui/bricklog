@@ -6,6 +6,10 @@ import {
   VISION_PANEL,
   VISION_STATUS_WARN,
 } from "@/lib/landing/vision2030Styles";
+import {
+  splitContextBeatParts,
+  toggleContextBeatChip,
+} from "@/lib/product/generationContextBeat";
 
 /**
  * 생성 직전 1비트 — 업종 맞춤 칩 + 한 줄 (3칸 약속 유지)
@@ -21,19 +25,10 @@ export default function GenerationContextBeatPanel({
 }) {
   if (!config) return null;
 
+  const parts = splitContextBeatParts(value);
+
   const toggleChip = (chip) => {
-    const parts = String(value || "")
-      .split(/[,，·/\n|]+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-    const has = parts.some((p) => p === chip || p.includes(chip));
-    if (has) {
-      onChange?.(
-        parts.filter((p) => p !== chip && !p.includes(chip)).join(" · ")
-      );
-      return;
-    }
-    onChange?.(parts.length ? `${parts.join(" · ")} · ${chip}` : chip);
+    onChange?.(toggleContextBeatChip(value, chip));
   };
 
   const canConfirm = String(value || "").trim().length >= 6;
@@ -60,7 +55,7 @@ export default function GenerationContextBeatPanel({
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {config.chips.map((chip) => {
-            const active = String(value || "").includes(chip);
+            const active = parts.includes(chip);
             return (
               <button
                 key={chip}

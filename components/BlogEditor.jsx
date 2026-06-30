@@ -77,6 +77,7 @@ import {
   needsGenerationContextBeat,
   resolveGenerationContextBeat,
 } from "@/lib/product/generationContextBeat";
+import { applySimpleWorkspaceDefaults } from "@/lib/product/simpleWorkspaceDefaults";
 import { useGenerationLeaveGuard } from "@/hooks/useGenerationLeaveGuard";
 import GenerationQuotaHint from "@/components/billing/GenerationQuotaHint";
 import QuotaExhaustedCallout from "@/components/billing/QuotaExhaustedCallout";
@@ -138,6 +139,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
     billingPlanId,
     billingBypassQuotas,
     loadingOverlay,
+    resetToHome,
   } = useContentPipelineState();
 
   const storyBusy =
@@ -316,6 +318,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
         blogInput
       );
       let next = ensureGenerationAxesOnInput(live, brandHooksForForm);
+      if (simpleMode) next = applySimpleWorkspaceDefaults(next);
       if (brandId && !next.brandId) next = { ...next, brandId };
       const topic = next.topic?.trim();
       if (topic && !next.mainKeyword?.trim()) {
@@ -341,8 +344,40 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
       formApiRef,
       onStartGenerate,
       brandHooksForForm,
+      simpleMode,
     ]
   );
+
+  const handleNewStory = useCallback(() => {
+    resetToHome?.();
+    contextBeatConfirmedRef.current = "";
+    setContextBeatOpen(false);
+    setContextBeatText("");
+    const base = formApiRef.current?.getValues?.() ?? draftForm;
+    const next = {
+      ...blogInput,
+      ...base,
+      topic: "",
+      mainKeyword: "",
+      subKeyword: "",
+      storeFeatures: "",
+      benefit: "",
+    };
+    formApiRef.current?.replaceAll?.(next);
+    setDraftForm(next);
+    setBlogInput(next);
+    applyExternalForm?.(next);
+    setTouched(false);
+  }, [
+    resetToHome,
+    blogInput,
+    draftForm,
+    formApiRef,
+    setBlogInput,
+    setDraftForm,
+    applyExternalForm,
+    setTouched,
+  ]);
 
   const runGenerate = useCallback(() => {
     if (axisAlignBlocked) return;
@@ -715,6 +750,17 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
               {getRecentBlogTitle(activeBrand)
                 ? ` · ${getRecentBlogTitle(activeBrand)}`
                 : ""}
+            </button>
+          )}
+
+          {(blogContent || generationCount > 0) && (
+            <button
+              type="button"
+              onClick={handleNewStory}
+              disabled={storyBusy}
+              className="mt-2 w-full rounded-xl border border-[var(--vision-line)] bg-white py-2.5 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:border-[var(--vision-accent,#03c75a)] hover:text-[var(--vision-ink)] disabled:opacity-50"
+            >
+              {EMPTY_STORY.newStoryCta}
             </button>
           )}
 

@@ -205,8 +205,13 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
             body: JSON.stringify(brandDraftToApiBody(draft)),
           });
           const saved = data.brand;
+          if (!saved?.id) {
+            throw new Error("브랜드를 저장하지 못했습니다. 다시 시도해 주세요.");
+          }
           setBrands((prev) => [saved, ...prev]);
+          setBlankBrandMode(false);
           setActiveBrandId(saved.id);
+          setBrandWorkspaceGateOpen(false);
           if (userId && !demoMode) {
             writeBrandWorkspaceSession(userId, {
               choice: "brand",
@@ -214,6 +219,7 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
               at: Date.now(),
             });
           }
+          emitBrandWorkspaceSelected(saved.id, brandMemoryToFormInput(saved));
           return saved;
         } catch (err) {
           if (isMissingBrandsTable(err)) {
@@ -225,14 +231,20 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
             } catch {
               /* ignore */
             }
-            return saveBrandLocally(draft);
+            const local = saveBrandLocally(draft);
+            setBrandWorkspaceGateOpen(false);
+            emitBrandWorkspaceSelected(local.id, brandMemoryToFormInput(local));
+            return local;
           }
           throw err;
         }
       }
-      return saveBrandLocally(draft);
+      const local = saveBrandLocally(draft);
+      setBrandWorkspaceGateOpen(false);
+      emitBrandWorkspaceSelected(local.id, brandMemoryToFormInput(local));
+      return local;
     },
-    [useServer, saveBrandLocally]
+    [useServer, saveBrandLocally, userId, demoMode]
   );
 
   const updateActiveBrand = useCallback(

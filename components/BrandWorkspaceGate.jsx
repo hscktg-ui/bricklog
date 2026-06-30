@@ -11,6 +11,7 @@ export default function BrandWorkspaceGate() {
     brandWorkspaceGateOpen,
     confirmBrandWorkspaceSelection,
     startBlankBrandSession,
+    addBrand,
     isDemoWorkspace,
   } = useBrandWorkspace();
   const [busy, setBusy] = useState(false);
@@ -40,6 +41,21 @@ export default function BrandWorkspaceGate() {
     setBusy(true);
     try {
       await startBlankBrandSession();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleAddBrand = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const saved = await addBrand("새 브랜드");
+      if (saved?.id) await confirmBrandWorkspaceSelection(saved.id);
+    } catch (err) {
+      window.alert(
+        err?.message || "브랜드를 추가하지 못했습니다. 로그인·요금제 한도를 확인해 주세요."
+      );
     } finally {
       setBusy(false);
     }
@@ -116,7 +132,15 @@ export default function BrandWorkspaceGate() {
           )}
         </div>
 
-        <div className="border-t border-[#E5E8EB] px-5 py-4">
+        <div className="border-t border-[#E5E8EB] px-5 py-4 space-y-2">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={handleAddBrand}
+            className="w-full rounded-xl bg-[#03C75A] px-4 py-3 text-[14px] font-semibold text-white transition hover:bg-[#02B350] disabled:opacity-60"
+          >
+            + 새 브랜드 추가
+          </button>
           <button
             type="button"
             disabled={busy}
