@@ -127,3 +127,19 @@ FAIL: 조사 없음 · 업종 정보 부족 · 브랜드 없음 · placeholder (
 - **회귀**: `npm run test:core-rules` · `npm run test:channel-sqv-delivery`
 - **비활성**: `BRICLOG_CORE_RULES=false` (mission off와 별도)
 <!-- END:briclog-core-rules -->
+
+<!-- BEGIN:briclog-quality-north-star -->
+## 대원칙 SSOT (`lib/product/qualityNorthStar.js`)
+
+| 원칙 | SSOT·측정 |
+|------|-----------|
+| 사람이 쓴 글 | `humanBeliefEngine` · `qualityLeapFinish` · columnist 프롬프트 humanBelief 블록 |
+| 2분 SLA | `briclogFastPipeline` · async run 300s · poll 180s |
+| 무조건 결과·우수 | `sovereignAlwaysDeliver` — columnist 실패 → 조사 기반 leap (quota/rate-limit만 withhold) |
+| Vision 2030 UX | `vision2030Styles.js` · `DeliveryValueBlocks` · `GenerationContextBeatPanel` |
+| 송출 판정 단일화 | `unifiedDeliveryGate.js` |
+
+**회귀:** `npm run test:quality-leap-finish` · `test:core-rules` · `test:unified-delivery-gate` · `test:probe-async-signup-sla` (phase-gate prod)
+
+**Cursor 미활용 → 권장:** Bugbot/Security Review on PR · Canvas for quality KPI · `.cursor/rules` quality-north-star · GitHub Actions phase-gate · nightly cross-channel artifact → cron evolution
+<!-- END:briclog-quality-north-star -->

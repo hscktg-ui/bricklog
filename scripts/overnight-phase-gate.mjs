@@ -20,6 +20,9 @@ const STEPS = [
   { phase: 0, id: "all-channel-sla", cmd: "npm", args: ["run", "test:all-channel-sla"] },
   { phase: 0, id: "blog-async-job", cmd: "npm", args: ["run", "test:blog-async-job"] },
   { phase: 1, id: "content-history-ssot", cmd: "npm", args: ["run", "test:content-history-ssot"] },
+  { phase: 1, id: "quality-leap-finish", cmd: "npm", args: ["run", "test:quality-leap-finish"] },
+  { phase: 1, id: "core-rules", cmd: "npm", args: ["run", "test:core-rules"] },
+  { phase: 1, id: "unified-delivery-gate", cmd: "npm", args: ["run", "test:unified-delivery-gate"] },
   { phase: 2, id: "publish-ready-kpi", cmd: "npm", args: ["run", "test:publish-ready-kpi"] },
   { phase: 2, id: "ui-delivery-smoke", cmd: "npm", args: ["run", "test:ui-delivery-smoke"] },
   { phase: 2, id: "writer-first-delivery", cmd: "npm", args: ["run", "test:writer-first-delivery"] },
@@ -27,6 +30,7 @@ const STEPS = [
 
 const PROD_STEPS = [
   { phase: 2, id: "prod-http", fn: probeProd },
+  { phase: 2, id: "probe-async-signup-sla", cmd: "npm", args: ["run", "test:probe-async-signup-sla"] },
   { phase: 2, id: "product-score", cmd: "npm", args: ["run", "test:product-score:prod"] },
 ];
 
