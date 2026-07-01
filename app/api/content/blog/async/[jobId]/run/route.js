@@ -11,7 +11,8 @@ import {
 } from "@/lib/generation/blogAsyncJob";
 
 export const runtime = "nodejs";
-export const maxDuration = 120;
+/** sync /api/content/blog 와 동일 — columnist+재시도 130s+ 여유 */
+export const maxDuration = 300;
 
 export async function POST(request, { params }) {
   await hydrateGlobalEngineForGeneration();

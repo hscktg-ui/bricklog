@@ -36,7 +36,7 @@ assert.equal(getColumnistFastMaxTokens(), 2800, "columnist fast tokens capped (c
 assert.equal(getColumnistMaxLlmRounds(), 2, "columnist LLM 2 rounds in 2min SLA (tier retry)");
 assert.equal(getColumnistSlaApiRetries(), 1, "SLA API retry once for empty/finish without slow fallback");
 assert.equal(shouldUseColumnistSlaSlowFallback(), false, "SLA slow fallback off by default");
-assert.equal(getBlogClientFetchTimeoutMs(), 130_000, "client fetch 130s (2min + 10s margin)");
+assert.equal(getBlogClientFetchTimeoutMs(), 150_000, "client fetch 150s (2min + 30s margin)");
 assert.equal(shouldSkipV3PreWriteForSla(), true, "skip v3 in SLA");
 assert.equal(shouldSkipResearchDepthCascadeForSla(), true, "skip depth cascade in SLA");
 assert.equal(
