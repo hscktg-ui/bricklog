@@ -23,6 +23,7 @@ import { countBlogBodyCharsWithSpaces } from "../lib/prompts/engine/textUtils.js
 import { resolveBlogLengthTier } from "../lib/constants.js";
 import { GENERAL_CATEGORIES, SENSITIVE_CATEGORIES, REGIONS, TRAINING_PERSONAS } from "../lib/quality/training/constants.js";
 import { applyBatchEvolutionFromReport } from "../lib/evolution/batchEvolutionFromReport.js";
+import { saveBatchSnapshot, BATCH_SNAPSHOT_KEYS } from "../lib/ops/batchSummaryStore.js";
 import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
 import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogPassProxy, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
 import { assessFirstDeliveryQuality } from "../lib/product/firstDeliveryQuality.js";
@@ -197,7 +198,7 @@ function runOne(scenario) {
   }
 }
 
-export function runCrossChannelQualityBatch(options = {}) {
+export async function runCrossChannelQualityBatch(options = {}) {
   mkdirSync(OUT_DIR, { recursive: true });
   const scenarios = buildScenarios();
   const startedAt = new Date().toISOString();
@@ -268,6 +269,11 @@ export function runCrossChannelQualityBatch(options = {}) {
 
   writeFileSync(SUMMARY_JSON, JSON.stringify(summary, null, 2), "utf8");
 
+  const persisted = await saveBatchSnapshot(BATCH_SNAPSHOT_KEYS.crossChannel, summary);
+  if (persisted?.persisted === "supabase") {
+    console.log("  persisted: supabase ops_batch_snapshots");
+  }
+
   const evolution = applyBatchEvolutionFromReport(summary);
 
   console.log(
@@ -289,6 +295,6 @@ if (isMain) {
   if (process.argv.includes("--clear")) {
     writeFileSync(REPORT_JSONL, "", "utf8");
   }
-  const { summary } = runCrossChannelQualityBatch({ append: !process.argv.includes("--clear") });
+  const { summary } = await runCrossChannelQualityBatch({ append: !process.argv.includes("--clear") });
   if (summary.pass < summary.total * 0.8) process.exit(1);
 }

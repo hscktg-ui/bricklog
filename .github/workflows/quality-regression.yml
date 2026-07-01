@@ -1,0 +1,49 @@
+name: Quality Regression
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: quality-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phase-gate:
+    name: Phase gate (local)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run test:phase-gate
+        env:
+          BRICLOG_RESET_QUALITY: "true"
+          BRICLOG_FAST_PIPELINE: "true"
+
+  prod-async-probe:
+    name: Prod async signup SLA
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: phase-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run test:probe-async-signup-sla
+        env:
+          BASE_URL: https://briclog.ai
+          BRICLOG_RESET_QUALITY: "true"
+          BRICLOG_TEST_EMAIL: ${{ secrets.BRICLOG_TEST_EMAIL }}
+          BRICLOG_TEST_PASSWORD: ${{ secrets.BRICLOG_TEST_PASSWORD }}
+          PROBE_BATCH_GAP_MS: "0"

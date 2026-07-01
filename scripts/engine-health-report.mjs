@@ -59,6 +59,12 @@ function main() {
   const health = summarizeEngineHealthFromBatch(report);
   mkdirSync(outDir, { recursive: true });
   writeFileSync(outPath, JSON.stringify(health, null, 2), "utf8");
+
+  const { saveBatchSnapshot, BATCH_SNAPSHOT_KEYS } = await import(
+    "../lib/ops/batchSummaryStore.js"
+  );
+  await saveBatchSnapshot(BATCH_SNAPSHOT_KEYS.engineHealth, health);
+
   console.log(JSON.stringify(health, null, 2));
   console.log("\nWrote", outPath);
 }

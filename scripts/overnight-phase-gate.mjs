@@ -22,6 +22,7 @@ const STEPS = [
   { phase: 1, id: "content-history-ssot", cmd: "npm", args: ["run", "test:content-history-ssot"] },
   { phase: 1, id: "quality-leap-finish", cmd: "npm", args: ["run", "test:quality-leap-finish"] },
   { phase: 1, id: "core-rules", cmd: "npm", args: ["run", "test:core-rules"] },
+  { phase: 1, id: "unified-pass-min", cmd: "npm", args: ["run", "test:unified-pass-min"] },
   { phase: 1, id: "unified-delivery-gate", cmd: "npm", args: ["run", "test:unified-delivery-gate"] },
   { phase: 2, id: "publish-ready-kpi", cmd: "npm", args: ["run", "test:publish-ready-kpi"] },
   { phase: 2, id: "ui-delivery-smoke", cmd: "npm", args: ["run", "test:ui-delivery-smoke"] },
