@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
+import { after } from "next/server";
 import { requireVerifiedUser } from "@/lib/api/auth";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
-import { runBlogApiGeneration } from "@/lib/generation/blogApiHandler";
 import {
   getBlogAsyncJob,
   markBlogAsyncJobRunning,
-  completeBlogAsyncJob,
-  failBlogAsyncJob,
   blogAsyncJobSnapshot,
 } from "@/lib/generation/blogAsyncJob";
+import { executeBlogAsyncJobRun } from "@/lib/generation/executeBlogAsyncJobRun";
+import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
-/** sync /api/content/blog 와 동일 — columnist+재시도 130s+ 여유 */
+/** background after() worker — sync blog 와 동일 상한 */
 export const maxDuration = 300;
 
 export async function POST(request, { params }) {
@@ -91,39 +91,30 @@ export async function POST(request, { params }) {
     });
   }
 
-  try {
-    const { body } = await runBlogApiGeneration(auth, locked.rawInput, {
-      route: `/api/content/blog/async/${jobId}/run`,
-      planId: locked.planId,
-    });
-    const done = await completeBlogAsyncJob({
-      supabase: auth.supabase,
-      jobId,
-      userId: auth.user.id,
-      resultBody: body,
-    });
-    return NextResponse.json({
-      ok: body?.ok !== false,
+  const userId = auth.user.id;
+  const bgSupabase = createServiceSupabase() || auth.supabase;
+  const runCtx = {
+    supabase: bgSupabase,
+    userId,
+    jobId,
+    rawInput: locked.rawInput,
+    planId: locked.planId,
+    route: `/api/content/blog/async/${jobId}/run`,
+  };
+
+  after(async () => {
+    await executeBlogAsyncJobRun(runCtx);
+  });
+
+  return NextResponse.json(
+    {
+      ok: true,
       mode: "async_job",
       jobId,
-      snapshot: blogAsyncJobSnapshot(done),
-      ...body,
-    });
-  } catch (err) {
-    await failBlogAsyncJob({
-      supabase: auth.supabase,
-      jobId,
-      userId: auth.user.id,
-      message: err?.message || "server_error",
-    });
-    return NextResponse.json(
-      {
-        ok: false,
-        mode: "async_job",
-        jobId,
-        userMessage: "글 생성 중 오류가 났어요. 다시 시도해 주세요.",
-      },
-      { status: 500 }
-    );
-  }
+      status: "running",
+      accepted: true,
+      snapshot: blogAsyncJobSnapshot(locked),
+    },
+    { status: 202 }
+  );
 }
