@@ -125,13 +125,17 @@ const jobId = start.jobId;
 const pollUrl = start.pollUrl || `/api/content/blog/async/${jobId}`;
 const runUrl = start.runUrl || `/api/content/blog/async/${jobId}/run`;
 
+function fireRun(runUrl, token) {
+  fetchJson(runUrl, token, {
+    method: "POST",
+    body: JSON.stringify({}),
+    timeoutMs: 20_000,
+  }).catch(() => null);
+}
+
 console.log(`  jobId=${jobId}`);
 
-void fetchJson(runUrl, auth.token, {
-  method: "POST",
-  body: JSON.stringify({}),
-  timeoutMs: 20_000,
-});
+fireRun(runUrl, auth.token);
 
 const deadline = Date.now() + POLL_DEADLINE;
 let snap = null;
@@ -145,11 +149,7 @@ while (Date.now() < deadline) {
   if (body.status === "done" || body.blogContent?.sections?.length) break;
   if (body.status === "failed") break;
   if (Date.now() - t0 > 60_000 && Date.now() - t0 < 62_000) {
-    void fetchJson(runUrl, auth.token, {
-      method: "POST",
-      body: JSON.stringify({}),
-      timeoutMs: 20_000,
-    });
+    fireRun(runUrl, auth.token);
   }
 }
 
