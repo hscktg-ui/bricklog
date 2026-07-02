@@ -106,7 +106,7 @@ export async function POST(request, { params }) {
       route: `/api/content/blog/async/${jobId}/run`,
     };
 
-    const scheduleMode = scheduleBlogAsyncJobRun(runCtx);
+    const scheduleMode = await scheduleBlogAsyncJobRun(runCtx);
     if (!scheduleMode) {
       await runBlogAsyncJobInline(runCtx);
       const done = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
