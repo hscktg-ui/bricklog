@@ -1,48 +1,19 @@
 import { NextResponse } from "next/server";
 import { requireVerifiedUser } from "@/lib/api/auth";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
+import { runBlogApiGeneration } from "@/lib/generation/blogApiHandler";
 import {
   getBlogAsyncJob,
   markBlogAsyncJobRunning,
+  completeBlogAsyncJob,
+  failBlogAsyncJob,
   blogAsyncJobSnapshot,
 } from "@/lib/generation/blogAsyncJob";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
+/** sync /api/content/blog 와 동일 — columnist+재시도 130s+ 여유 */
 export const maxDuration = 300;
-
-async function dispatchBackgroundRun(runCtx) {
-  try {
-    const { waitUntil } = await import("@vercel/functions");
-    const { executeBlogAsyncJobRun } = await import(
-      "@/lib/generation/executeBlogAsyncJobRun"
-    );
-    const work = executeBlogAsyncJobRun(runCtx).catch((err) => {
-      console.error("[blog-async-run] background failed", err?.message || err);
-    });
-    waitUntil(work);
-    return "waitUntil";
-  } catch (waitErr) {
-    console.warn("[blog-async-run] waitUntil path failed", waitErr?.message || waitErr);
-  }
-
-  try {
-    const { after } = await import("next/server");
-    const { executeBlogAsyncJobRun } = await import(
-      "@/lib/generation/executeBlogAsyncJobRun"
-    );
-    after(() =>
-      executeBlogAsyncJobRun(runCtx).catch((err) => {
-        console.error("[blog-async-run] after failed", err?.message || err);
-      })
-    );
-    return "after";
-  } catch (afterErr) {
-    console.warn("[blog-async-run] after path failed", afterErr?.message || afterErr);
-  }
-
-  return null;
-}
 
 export async function POST(request, { params }) {
   try {
@@ -60,7 +31,11 @@ export async function POST(request, { params }) {
     const userId = auth.user.id;
     const opsDb = createServiceSupabase() || auth.supabase;
 
-    const job = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
+    const job = await getBlogAsyncJob({
+      supabase: opsDb,
+      jobId,
+      userId,
+    });
     if (!job) {
       return NextResponse.json(
         { ok: false, userMessage: "생성 작업을 찾을 수 없습니다. 다시 시도해 주세요." },
@@ -101,9 +76,17 @@ export async function POST(request, { params }) {
       });
     }
 
-    const locked = await markBlogAsyncJobRunning({ supabase: opsDb, jobId, userId });
+    const locked = await markBlogAsyncJobRunning({
+      supabase: opsDb,
+      jobId,
+      userId,
+    });
     if (!locked || locked.status !== "running") {
-      const current = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
+      const current = await getBlogAsyncJob({
+        supabase: opsDb,
+        jobId,
+        userId,
+      });
       return NextResponse.json({
         ok: true,
         mode: "async_job",
@@ -113,54 +96,52 @@ export async function POST(request, { params }) {
       });
     }
 
-    const runCtx = {
+    const genAuth = {
       supabase: opsDb,
-      userId,
-      jobId,
-      rawInput: locked.rawInput,
-      planId: locked.planId,
-      route: `/api/content/blog/async/${jobId}/run`,
+      user: auth.user,
     };
 
-    const scheduleMode = await dispatchBackgroundRun(runCtx);
-    if (!scheduleMode) {
-      const { executeBlogAsyncJobRun } = await import(
-        "@/lib/generation/executeBlogAsyncJobRun"
-      );
-      await executeBlogAsyncJobRun(runCtx);
-      const done = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
-      if (done?.status === "done" && done.result) {
-        return NextResponse.json({
-          ok: done.result?.ok !== false,
-          mode: "async_job",
-          jobId,
-          status: "done",
-          inline: true,
-          snapshot: blogAsyncJobSnapshot(done),
-          ...done.result,
-        });
-      }
-    }
-
-    return NextResponse.json(
-      {
-        ok: true,
-        mode: "async_job",
-        jobId,
-        status: "running",
-        accepted: true,
-        scheduleMode: scheduleMode || "inline",
-        snapshot: blogAsyncJobSnapshot(locked),
-      },
-      { status: 202 }
-    );
+    const { body } = await runBlogApiGeneration(genAuth, locked.rawInput, {
+      route: `/api/content/blog/async/${jobId}/run`,
+      planId: locked.planId,
+    });
+    const done = await completeBlogAsyncJob({
+      supabase: opsDb,
+      jobId,
+      userId,
+      resultBody: body,
+    });
+    return NextResponse.json({
+      ok: body?.ok !== false,
+      mode: "async_job",
+      jobId,
+      status: "done",
+      snapshot: blogAsyncJobSnapshot(done),
+      ...body,
+    });
   } catch (err) {
     console.error("[blog-async-run]", err);
+    try {
+      const { jobId } = await params;
+      const auth = await requireVerifiedUser(request);
+      if (auth.user?.id && jobId) {
+        const opsDb = createServiceSupabase() || auth.supabase;
+        await failBlogAsyncJob({
+          supabase: opsDb,
+          jobId,
+          userId: auth.user.id,
+          message: err?.message || "server_error",
+        });
+      }
+    } catch {
+      /* ignore secondary fail */
+    }
     return NextResponse.json(
       {
         ok: false,
-        userMessage: "글 생성을 시작하지 못했습니다. 다시 시도해 주세요.",
-        code: "async_run_start_failed",
+        mode: "async_job",
+        userMessage: "글 생성 중 오류가 났어요. 다시 시도해 주세요.",
+        code: "async_run_failed",
         detail: err?.message || String(err),
       },
       { status: 500 }

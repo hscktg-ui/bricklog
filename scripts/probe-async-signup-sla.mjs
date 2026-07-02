@@ -14,7 +14,7 @@ import { applySimpleWorkspaceDefaults } from "../lib/product/simpleWorkspaceDefa
 import {
   getCustomerBlogSlaMs,
   getAsyncBlogPollDeadlineMs,
-  getAsyncRunTriggerTimeoutMs,
+  getAsyncRunAwaitTimeoutMs,
   getDefaultAsyncPollIntervalMs,
 } from "../lib/config/briclogDefaults.js";
 
@@ -24,7 +24,7 @@ const OUT_DIR = join(root, "artifacts", "async-signup-sla");
 const SLA_MS = getCustomerBlogSlaMs();
 const POLL_DEADLINE = getAsyncBlogPollDeadlineMs();
 const POLL_INTERVAL = getDefaultAsyncPollIntervalMs();
-const RUN_TRIGGER_TIMEOUT = getAsyncRunTriggerTimeoutMs();
+const RUN_AWAIT_TIMEOUT = getAsyncRunAwaitTimeoutMs();
 
 const SCENARIO = {
   id: "cafe",
@@ -131,7 +131,7 @@ function fireRun(runUrl, token) {
   fetchJson(runUrl, token, {
     method: "POST",
     body: JSON.stringify({}),
-    timeoutMs: RUN_TRIGGER_TIMEOUT,
+    timeoutMs: RUN_AWAIT_TIMEOUT,
   }).catch(() => null);
 }
 

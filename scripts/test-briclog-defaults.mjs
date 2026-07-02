@@ -10,7 +10,7 @@ import {
   BRICLOG_QUALITY_DEFAULTS,
   getDefaultAsyncPollIntervalMs,
   getAsyncBlogPollDeadlineMs,
-  getAsyncRunTriggerTimeoutMs,
+  getAsyncRunAwaitTimeoutMs,
   isDefaultAsyncBlogGeneration,
 } from "../lib/config/briclogDefaults.js";
 import {
@@ -33,7 +33,7 @@ assert(isLaunchPublishFirstMode(), "launch mode active");
 assert(getLaunchPublishTimeBudgetMs() === 75_000, "launch budget wired");
 assert(getBlogClientFetchTimeoutMs() === 150_000, "client fetch 150s (2min UX margin)");
 assert(getAsyncBlogPollDeadlineMs() === 240_000, "async poll 240s (200s gen + margin)");
-assert(getAsyncRunTriggerTimeoutMs() === 20_000, "async run trigger 20s ack");
+assert(getAsyncRunAwaitTimeoutMs() === 310_000, "async run await 310s (no abort)");
 assert(isDefaultAsyncBlogGeneration(), "async default on");
 
 console.log("PASS: briclog-defaults", BRICLOG_DEFAULTS_VERSION);
