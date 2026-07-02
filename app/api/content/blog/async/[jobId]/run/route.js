@@ -6,15 +6,43 @@ import {
   markBlogAsyncJobRunning,
   blogAsyncJobSnapshot,
 } from "@/lib/generation/blogAsyncJob";
-import {
-  scheduleBlogAsyncJobRun,
-  runBlogAsyncJobInline,
-} from "@/lib/generation/scheduleBlogAsyncJobRun";
 import { createServiceSupabase } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
-/** background worker — sync blog 와 동일 상한 */
 export const maxDuration = 300;
+
+async function dispatchBackgroundRun(runCtx) {
+  try {
+    const { waitUntil } = await import("@vercel/functions");
+    const { executeBlogAsyncJobRun } = await import(
+      "@/lib/generation/executeBlogAsyncJobRun"
+    );
+    const work = executeBlogAsyncJobRun(runCtx).catch((err) => {
+      console.error("[blog-async-run] background failed", err?.message || err);
+    });
+    waitUntil(work);
+    return "waitUntil";
+  } catch (waitErr) {
+    console.warn("[blog-async-run] waitUntil path failed", waitErr?.message || waitErr);
+  }
+
+  try {
+    const { after } = await import("next/server");
+    const { executeBlogAsyncJobRun } = await import(
+      "@/lib/generation/executeBlogAsyncJobRun"
+    );
+    after(() =>
+      executeBlogAsyncJobRun(runCtx).catch((err) => {
+        console.error("[blog-async-run] after failed", err?.message || err);
+      })
+    );
+    return "after";
+  } catch (afterErr) {
+    console.warn("[blog-async-run] after path failed", afterErr?.message || afterErr);
+  }
+
+  return null;
+}
 
 export async function POST(request, { params }) {
   try {
@@ -32,11 +60,7 @@ export async function POST(request, { params }) {
     const userId = auth.user.id;
     const opsDb = createServiceSupabase() || auth.supabase;
 
-    const job = await getBlogAsyncJob({
-      supabase: opsDb,
-      jobId,
-      userId,
-    });
+    const job = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
     if (!job) {
       return NextResponse.json(
         { ok: false, userMessage: "생성 작업을 찾을 수 없습니다. 다시 시도해 주세요." },
@@ -77,17 +101,9 @@ export async function POST(request, { params }) {
       });
     }
 
-    const locked = await markBlogAsyncJobRunning({
-      supabase: opsDb,
-      jobId,
-      userId,
-    });
+    const locked = await markBlogAsyncJobRunning({ supabase: opsDb, jobId, userId });
     if (!locked || locked.status !== "running") {
-      const current = await getBlogAsyncJob({
-        supabase: opsDb,
-        jobId,
-        userId,
-      });
+      const current = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
       return NextResponse.json({
         ok: true,
         mode: "async_job",
@@ -106,9 +122,12 @@ export async function POST(request, { params }) {
       route: `/api/content/blog/async/${jobId}/run`,
     };
 
-    const scheduleMode = await scheduleBlogAsyncJobRun(runCtx);
+    const scheduleMode = await dispatchBackgroundRun(runCtx);
     if (!scheduleMode) {
-      await runBlogAsyncJobInline(runCtx);
+      const { executeBlogAsyncJobRun } = await import(
+        "@/lib/generation/executeBlogAsyncJobRun"
+      );
+      await executeBlogAsyncJobRun(runCtx);
       const done = await getBlogAsyncJob({ supabase: opsDb, jobId, userId });
       if (done?.status === "done" && done.result) {
         return NextResponse.json({
@@ -120,20 +139,6 @@ export async function POST(request, { params }) {
           snapshot: blogAsyncJobSnapshot(done),
           ...done.result,
         });
-      }
-      if (done?.status === "failed") {
-        return NextResponse.json(
-          {
-            ok: false,
-            mode: "async_job",
-            jobId,
-            status: "failed",
-            inline: true,
-            userMessage: done.error || done.result?.userMessage || "생성에 실패했습니다.",
-            snapshot: blogAsyncJobSnapshot(done),
-          },
-          { status: 200 }
-        );
       }
     }
 
@@ -156,6 +161,7 @@ export async function POST(request, { params }) {
         ok: false,
         userMessage: "글 생성을 시작하지 못했습니다. 다시 시도해 주세요.",
         code: "async_run_start_failed",
+        detail: err?.message || String(err),
       },
       { status: 500 }
     );
