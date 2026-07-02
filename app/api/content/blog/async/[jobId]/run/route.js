@@ -8,28 +8,13 @@ import {
   failBlogAsyncJob,
   blogAsyncJobSnapshot,
 } from "@/lib/generation/blogAsyncJob";
+import { runBlogApiGeneration } from "@/lib/generation/blogApiHandler";
 
 export const runtime = "nodejs";
 /** sync /api/content/blog 와 동일 — columnist+재시도 130s+ 여유 */
 export const maxDuration = 300;
 
 export async function POST(request, { params }) {
-  let runBlogApiGeneration;
-  try {
-    ({ runBlogApiGeneration } = await import("@/lib/generation/blogApiHandler"));
-  } catch (err) {
-    console.error("[blog-async-run] import failed", err);
-    return NextResponse.json(
-      {
-        ok: false,
-        code: "blog_handler_import_failed",
-        userMessage: "글 생성 엔진을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
-        detail: err?.message || String(err),
-      },
-      { status: 500 }
-    );
-  }
-
   await hydrateGlobalEngineForGeneration();
 
   const auth = await requireVerifiedUser(request);

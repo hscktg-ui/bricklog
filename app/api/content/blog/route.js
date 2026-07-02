@@ -3,6 +3,7 @@ import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
 import { requireVerifiedUser } from "@/lib/api/auth";
 import { checkContentGeneration } from "@/lib/billing/checkEntitlement";
 import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineLoop";
+import { runBlogApiGeneration } from "@/lib/generation/blogApiHandler";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -11,22 +12,6 @@ const MAX_PER_MIN =
   Number(process.env.BRICLOG_BLOG_RATE_LIMIT_PER_MIN) || 8;
 
 export async function POST(request) {
-  let runBlogApiGeneration;
-  try {
-    ({ runBlogApiGeneration } = await import("@/lib/generation/blogApiHandler"));
-  } catch (err) {
-    console.error("[blog-api] import failed", err);
-    return NextResponse.json(
-      {
-        ok: false,
-        code: "blog_handler_import_failed",
-        userMessage: "글 생성 엔진을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
-        detail: err?.message || String(err),
-      },
-      { status: 500 }
-    );
-  }
-
   await hydrateGlobalEngineForGeneration();
 
   const ip = getClientIp(request);
