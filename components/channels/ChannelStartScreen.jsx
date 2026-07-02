@@ -23,6 +23,8 @@ import ChannelGenPrefToggle, {
 } from "@/components/channels/ChannelGenPrefToggle";
 import ChannelCapabilityCards from "@/components/channels/ChannelCapabilityCards";
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
+import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
+import AxisAlignHint from "@/components/product/AxisAlignHint";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
@@ -96,10 +98,30 @@ export default function ChannelStartScreen({
     [debouncedDraft, activeBrand?.brandName]
   );
 
+  const axisAlign = useMemo(
+    () =>
+      assessGenerationAxisAlignment({
+        brandName: debouncedDraft?.brandName || activeBrand?.brandName,
+        topic: debouncedDraft?.topic,
+        mainKeyword: debouncedDraft?.mainKeyword,
+        industry: debouncedDraft?.industry,
+        storeFeatures: debouncedDraft?.storeFeatures,
+      }),
+    [
+      debouncedDraft?.brandName,
+      debouncedDraft?.topic,
+      debouncedDraft?.mainKeyword,
+      debouncedDraft?.industry,
+      debouncedDraft?.storeFeatures,
+      activeBrand?.brandName,
+    ]
+  );
+
   const commitAndGenerate = useCallback(
     (opts = {}) => {
       const input = flushToCommitted();
       if (!input) return;
+      if (!assessGenerationAxisAlignment(input).ok) return;
       const standalone =
         opts.preferStandalone !== undefined
           ? opts.preferStandalone
@@ -216,6 +238,20 @@ export default function ChannelStartScreen({
           </p>
         )}
 
+        {!axisAlign.ok && axisAlign.hints?.length ? (
+          <AxisAlignHint
+            hints={axisAlign.hints}
+            topicSuggestions={axisAlign.topicSuggestions}
+            onPickTopic={(topic) =>
+              patchDraft({
+                topic,
+                mainKeyword: topic.split(/\s+/)[0] || topic,
+                placeHeadline: debouncedDraft?.placeHeadline || topic,
+              })
+            }
+          />
+        ) : null}
+
         {generating ? (
           <GeneratingResultPlaceholder
             compact={compact}
@@ -287,7 +323,7 @@ export default function ChannelStartScreen({
           <button
             type="button"
             data-briclog-generate={channel}
-            disabled={generating}
+            disabled={generating || !axisAlign.ok}
             onClick={() => commitAndGenerate({ preferStandalone })}
             className={`flex min-h-[48px] w-full items-center justify-center rounded-xl px-4 py-3 text-[14px] font-semibold text-white disabled:opacity-50 ${VISION_CTA_ACCENT}`}
           >

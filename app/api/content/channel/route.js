@@ -27,6 +27,7 @@ import { hydrateGlobalEngineForGeneration } from "@/lib/feedback/feedbackEngineL
 import { buildDeliverableChannelFallback } from "@/lib/llm/channelDeliveryFallback";
 import { isPublishableChannelPack } from "@/lib/content/outlinePackGuard";
 import { finishChannelFallbackHumanProse } from "@/lib/content/humanProseFallbackFinish";
+import { enforceCustomerChannelOutput } from "@/lib/product/brandContentCustomerGate";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -176,7 +177,11 @@ export async function POST(request) {
             deliveryFinalize: true,
           })
         : null;
-      if (pack && isPublishableChannelPack(channel, pack)) {
+      const customerGate = pack
+        ? enforceCustomerChannelOutput(pack, channel, savedInput)
+        : { ok: false, withheld: true, pack: null };
+      const safePack = customerGate.ok ? customerGate.pack : null;
+      if (safePack && isPublishableChannelPack(channel, safePack)) {
         try {
           await incrementContentUsage(auth.supabase, auth.user.id);
         } catch {
@@ -189,7 +194,7 @@ export async function POST(request) {
         );
         return NextResponse.json({
           ok: true,
-          [contentKey]: pack,
+          [contentKey]: safePack,
           channel,
           mode: "fallback",
           softPass: true,

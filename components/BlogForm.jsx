@@ -401,7 +401,11 @@ function BlogForm({
       {effectiveSimple ? <KeywordTopicGuide compact={compact} /> : null}
 
       {!axisAlign.ok && axisAlign.hints?.length ? (
-        <AxisAlignHint hints={axisAlign.hints} />
+        <AxisAlignHint
+          hints={axisAlign.hints}
+          topicSuggestions={axisAlign.topicSuggestions}
+          onPickTopic={(topic) => set("topic", topic)}
+        />
       ) : null}
 
       {formValues.brandName?.trim() && formValues.topic?.trim() ? (
