@@ -45,6 +45,24 @@ const TOPIC_SEEDS = [
 
 const CHANNELS = ["blog", "place", "instagram"];
 
+function buildSubstantiveResearchFacts(region, industry, topic, brandName) {
+  const topicShort = String(topic || "").split(/[,.]/)[0].slice(0, 28).trim();
+  return [
+    {
+      fact: `${region} ${brandName} ${topicShort} — 평일 11시~21시 운영·주말 예약 권장`,
+      source: "research",
+    },
+    {
+      fact: `${brandName} 대표 프로그램·메뉴 체험 동선, 가족 단위 방문 시설 안내`,
+      source: "research",
+    },
+    {
+      fact: `${region} 일대 ${industry} 방문 시 주차·예약·시즌 이벤트 운영 시간 확인`,
+      source: "research",
+    },
+  ];
+}
+
 function pushScenarioRow(out, industry, i, r, region) {
   const topic = `${TOPIC_SEEDS[(i + r) % TOPIC_SEEDS.length]} ${industry}`;
   const persona = TRAINING_PERSONAS[(i + r) % TRAINING_PERSONAS.length];
@@ -55,14 +73,11 @@ function pushScenarioRow(out, industry, i, r, region) {
     topic,
     mainKeyword: topic,
     industry,
+    storeFeatures: `${brandName} 현장 체험·예약·시즌 운영 안내`,
     blogLengthTier: "medium",
     v4Speaker: persona.v4Speaker,
     contentPersona: persona.contentPersona,
-    researchFacts: [
-      { fact: `${region} ${industry} — ${topic} 관련 이번 달 안내`, source: "research" },
-      { fact: `${brandName} 예약·상담·운영 시간은 매장 기준`, source: "research" },
-      { fact: `${industry} 비교 시 ${region} 지역 특성·동선 확인`, source: "research" },
-    ],
+    researchFacts: buildSubstantiveResearchFacts(region, industry, topic, brandName),
     v2PreWriteVerified: true,
     knowledgeExpansionReady: true,
   };

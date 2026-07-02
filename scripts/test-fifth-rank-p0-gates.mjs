@@ -9,6 +9,7 @@ import {
   CHANNEL_FIRST_DELIVERY_BELIEF_OFFSET,
 } from "../lib/product/channelQualityStack.js";
 import { isCustomerSafeChannelPack } from "../lib/product/brandContentCustomerGate.js";
+import { needsGenerationContextBeat } from "../lib/product/generationContextBeat.js";
 import { HUMAN_BELIEF_MIN_SCORE } from "../lib/product/humanBeliefEngine.js";
 
 process.env.BRICLOG_COLUMNIST_SOVEREIGN = "true";
@@ -56,5 +57,16 @@ const derivedFloor = resolveChannelFirstDeliveryBeliefFloor(
 );
 const baseFloor = HUMAN_BELIEF_MIN_SCORE - CHANNEL_FIRST_DELIVERY_BELIEF_OFFSET;
 assert.ok(derivedFloor <= baseFloor, "derived blog lowers belief floor");
+
+assert.equal(
+  needsGenerationContextBeat({
+    brandName: "산책카페",
+    region: "전주",
+    topic: "한옥마을 카페 데이트",
+    industry: "카페",
+  }),
+  true,
+  "thin input needs context beat"
+);
 
 console.log("OK test-fifth-rank-p0-gates");

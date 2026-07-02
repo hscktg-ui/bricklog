@@ -188,6 +188,8 @@ import {
 } from "@/lib/generation/blogGenerationAbort";
 import { shouldBlockClientBlogPromotion } from "@/lib/product/columnistClientDeliveryGate";
 import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
+import { evaluateEditorGradeResearchGate } from "@/lib/product/editorGradeResearchGate";
+import { isColumnistSovereignEligible } from "@/lib/product/columnistSovereignEngine";
 import { normalizeBlogGenerationFailure, isTechnicalErrorMessage } from "@/lib/generation/normalizeGenerationError";
 import { buildMissionProseFallbackPack } from "@/lib/llm/missionProseFallback";
 import { applyV17PostWritePack } from "@/lib/content/v17PostProcess";
@@ -1518,6 +1520,31 @@ export function ContentProvider({
             toastType: "info",
           });
           return;
+        }
+
+        if (isColumnistSovereignEligible(pipelineInput)) {
+          const researchGate = evaluateEditorGradeResearchGate(pipelineInput);
+          if (!researchGate.ok) {
+            if (generationEpochRef.current !== genEpoch) return;
+            const failMsg =
+              researchGate.userMessage ||
+              "현장 포인트를 한 줄 더 적어 주세요.";
+            setBlogContent(null);
+            setBlogWithholdUi({
+              message: failMsg,
+              withheld: true,
+              mode: "research_density_gate",
+            });
+            blogGenLock.current = false;
+            setGenerationSessionActive(false);
+            setGenerating((g) => ({ ...g, blog: false }));
+            finishLoadingOverlay(overlayChannel, startedAt, {
+              success: false,
+              message: failMsg,
+              toastType: "info",
+            });
+            return;
+          }
         }
 
         setPipelineStep("콘텐츠 작성 중…");

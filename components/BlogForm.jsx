@@ -47,6 +47,7 @@ import { isDeferFormUntilCommit } from "@/lib/config/productFlags";
 import { detectBrandIndustryMismatch } from "@/lib/product/brandIndustryMismatch";
 import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
 import AxisAlignHint from "@/components/product/AxisAlignHint";
+import ResearchDensityHint from "@/components/product/ResearchDensityHint";
 import { VISION_INPUT, VISION_STATUS_WARN } from "@/lib/landing/vision2030Styles";
 
 const fieldClass = `${VISION_INPUT} !mt-0 text-[14px]`;
@@ -405,6 +406,14 @@ function BlogForm({
           hints={axisAlign.hints}
           topicSuggestions={axisAlign.topicSuggestions}
           onPickTopic={(topic) => set("topic", topic)}
+        />
+      ) : null}
+
+      {axisAlign.ok ? (
+        <ResearchDensityHint
+          input={formValues}
+          storeFeatures={formValues.storeFeatures}
+          onStoreFeaturesChange={(next) => set("storeFeatures", next)}
         />
       ) : null}
 

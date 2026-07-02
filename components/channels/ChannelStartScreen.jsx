@@ -25,6 +25,7 @@ import ChannelCapabilityCards from "@/components/channels/ChannelCapabilityCards
 import GeneratingResultPlaceholder from "@/components/blog/GeneratingResultPlaceholder";
 import { assessGenerationAxisAlignment } from "@/lib/product/generationAxisAlignGate";
 import AxisAlignHint from "@/components/product/AxisAlignHint";
+import ResearchDensityHint from "@/components/product/ResearchDensityHint";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
@@ -249,6 +250,14 @@ export default function ChannelStartScreen({
                 placeHeadline: debouncedDraft?.placeHeadline || topic,
               })
             }
+          />
+        ) : null}
+
+        {axisAlign.ok ? (
+          <ResearchDensityHint
+            input={debouncedDraft}
+            storeFeatures={debouncedDraft?.storeFeatures}
+            onStoreFeaturesChange={(next) => patchDraft({ storeFeatures: next })}
           />
         ) : null}
 
