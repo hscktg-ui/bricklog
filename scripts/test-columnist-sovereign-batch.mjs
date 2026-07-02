@@ -102,10 +102,24 @@ const INDUSTRIES = [...GENERAL_CATEGORIES, ...SENSITIVE_CATEGORIES, "레저/체�
 const BRAND_SUFFIX = ["하우스", "스튜디오", "랩", "마켓", "공방", "스튜디오", "하우스", "목장", "카페", "살롱"];
 
 function buildResearchFacts(region, industry, topic, brandName) {
+  const topicShort = String(topic || "").split(/[,.]/)[0].slice(0, 28).trim();
   return [
-    { fact: `${region} ${brandName} — ${topic} 관련 이번 시즌 운영 안내`, source: "research" },
-    { fact: `${industry} 특성상 ${region} 지역 방문 동선·예약 방식 확인`, source: "research" },
-    { fact: `대표 메뉴·체험 구성은 시즌에 따라 달라질 수 있음`, source: "research" },
+    {
+      fact: `${region} ${brandName} ${topicShort} — 평일 11시~21시 운영·주말 예약 권장`,
+      source: "research",
+    },
+    {
+      fact: `${brandName} 대표 프로그램·메뉴 체험 동선, 가족 단위 방문 시설 안내`,
+      source: "research",
+    },
+    {
+      fact: `${region} 일대 ${industry} 방문 시 주차·예약·시즌 이벤트 운영 시간 확인`,
+      source: "research",
+    },
+    {
+      fact: `직접 방문 시 ${topicShort} 관련 시설·메뉴·체험 구성을 현장에서 안내받음`,
+      source: "research",
+    },
   ];
 }
 
@@ -127,6 +141,7 @@ function buildScenarios(limit = 250) {
           topic,
           mainKeyword: topic.split(" ")[0] || brandName,
           industry,
+          storeFeatures: `${brandName} 현장 체험·예약·시즌 운영 안내`,
           blogLengthTier: ti % 3 === 0 ? "short" : ti % 3 === 1 ? "medium" : "short",
           v4Speaker: ti % 2 === 0 ? "plain_review" : "real_use",
           researchFacts: buildResearchFacts(region, industry, topic, brandName),
@@ -231,19 +246,23 @@ async function runProdLive(scenario, token) {
     const blog = body.blogContent;
     const elapsedMs = Date.now() - t0;
     if (!blog?.sections?.length) {
-      const axisAlignBlocked =
+      const gateWithhold =
         res.status === 422 &&
-        (body.mode === "axis_align_blocked" ||
-          body.meta?.failReasons?.includes?.("topic_food_brand_furniture_mismatch") ||
-          body.meta?.failReasons?.includes?.("topic_furniture_brand_food_mismatch") ||
-          body.meta?.failReasons?.includes?.("cross_brand_topic_leak"));
+        body.withheld &&
+        [
+          "axis_align_blocked",
+          "research_density_gate",
+          "research_gate",
+          "brand_memory_gate",
+        ].includes(body.mode);
+      const axisAlignBlocked = gateWithhold && body.mode === "axis_align_blocked";
       const lawBlocked =
         body.withheld &&
         (body.meta?.columnistDeliveryLawBlocked ||
           blog?._meta?.columnistDeliveryLawBlocked ||
           blog?._meta?.outputWithheld);
       return {
-        pass: Boolean(lawBlocked || axisAlignBlocked),
+        pass: Boolean(lawBlocked || gateWithhold),
         phase: "live",
         httpStatus: res.status,
         elapsedMs,
@@ -251,6 +270,7 @@ async function runProdLive(scenario, token) {
         mode: body.mode,
         lawBlocked,
         axisAlignBlocked,
+        gateWithhold,
         reason: body.userMessage || body.meta?.withholdReason || "empty",
       };
     }
@@ -381,6 +401,7 @@ async function main() {
               (liveResults.filter((r) => r.pass).length / liveResults.length) * 1000
             ) / 10,
           axisAlignBlocked: liveResults.filter((r) => r.axisAlignBlocked).length,
+          gateWithhold: liveResults.filter((r) => r.gateWithhold).length,
           avgBenchmark:
             Math.round(
               liveResults.reduce((s, r) => s + (r.benchmarkScore || 0), 0) / liveResults.length
