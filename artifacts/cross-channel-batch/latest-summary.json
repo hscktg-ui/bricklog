@@ -1,273 +1,108 @@
 {
-  "startedAt": "2026-06-23T19:48:45.205Z",
+  "startedAt": "2026-07-03T21:15:28.411Z",
   "total": 234,
-  "pass": 191,
-  "fail": 43,
-  "passRate": 81.6,
+  "pass": 228,
+  "fail": 6,
+  "passRate": 97.4,
   "byChannel": {
     "blog": {
       "total": 78,
-      "pass": 76,
-      "passRate": 97.4
+      "pass": 72,
+      "passRate": 92.3
     },
     "place": {
       "total": 78,
-      "pass": 66,
-      "passRate": 84.6
+      "pass": 78,
+      "passRate": 100
     },
     "instagram": {
       "total": 78,
-      "pass": 49,
-      "passRate": 62.8
+      "pass": 78,
+      "passRate": 100
     }
   },
   "failReasons": {
-    "first_delivery_channel_editor": 41,
-    "first_delivery_human_belief": 43,
-    "first_delivery_channel_format": 29,
-    "human_belief_low": 43,
-    "first_delivery_human_editor": 2,
-    "first_delivery_editor_v95": 2,
-    "information_yield_low": 2,
-    "length_tier_under": 2
+    "first_delivery_human_editor": 6,
+    "first_delivery_editor_v95": 6,
+    "first_delivery_human_belief": 6,
+    "human_belief_low": 6,
+    "length_tier_under": 5,
+    "information_yield_low": 2
   },
   "failedSamples": [
     {
-      "id": "카페_0_instagram",
-      "channel": "instagram",
-      "label": "카페 · 강남 · instagram",
+      "id": "음식점_2_blog",
+      "channel": "blog",
+      "label": "음식점 · 인천 송도 · blog",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 38,
-      "chars": 594
-    },
-    {
-      "id": "카페_3_instagram",
-      "channel": "instagram",
-      "label": "카페 · 대구 수성 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 58,
-      "chars": 601
-    },
-    {
-      "id": "카페_4_instagram",
-      "channel": "instagram",
-      "label": "카페 · 인천 송도 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 58,
-      "chars": 571
-    },
-    {
-      "id": "꽃집_2_instagram",
-      "channel": "instagram",
-      "label": "꽃집 · 대구 수성 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 58,
-      "chars": 601
-    },
-    {
-      "id": "꽃집_3_instagram",
-      "channel": "instagram",
-      "label": "꽃집 · 인천 송도 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 58,
-      "chars": 571
-    },
-    {
-      "id": "꽃집_4_place",
-      "channel": "place",
-      "label": "꽃집 · 제주 연동 · place",
-      "failReasons": [
-        "first_delivery_channel_editor",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
-      "belief": 50,
-      "chars": 163
+      "belief": 60,
+      "chars": 388
     },
     {
-      "id": "꽃집_4_instagram",
-      "channel": "instagram",
-      "label": "꽃집 · 제주 연동 · instagram",
+      "id": "광고대행_4_blog",
+      "channel": "blog",
+      "label": "광고대행사 · 인천 송도 · blog",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 27,
-      "chars": 613
-    },
-    {
-      "id": "음식점_3_instagram",
-      "channel": "instagram",
-      "label": "음식점 · 제주 연동 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 42,
-      "chars": 590
-    },
-    {
-      "id": "음식점_4_instagram",
-      "channel": "instagram",
-      "label": "음식점 · 광주 상무 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 46,
-      "chars": 581
-    },
-    {
-      "id": "미용실_2_instagram",
-      "channel": "instagram",
-      "label": "미용실 · 제주 연동 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 42,
-      "chars": 593
-    },
-    {
-      "id": "미용실_3_instagram",
-      "channel": "instagram",
-      "label": "미용실 · 광주 상무 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 46,
-      "chars": 569
-    },
-    {
-      "id": "학원_0_instagram",
-      "channel": "instagram",
-      "label": "학원 · 인천 송도 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 58,
-      "chars": 586
-    },
-    {
-      "id": "학원_1_place",
-      "channel": "place",
-      "label": "학원 · 제주 연동 · place",
-      "failReasons": [
-        "first_delivery_channel_editor",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
-      "belief": 50,
-      "chars": 163
+      "belief": 58,
+      "chars": 268
     },
     {
-      "id": "학원_1_instagram",
-      "channel": "instagram",
-      "label": "학원 · 제주 연동 · instagram",
+      "id": "펜션_2_blog",
+      "channel": "blog",
+      "label": "펜션 · 인천 송도 · blog",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 42,
-      "chars": 559
-    },
-    {
-      "id": "학원_2_place",
-      "channel": "place",
-      "label": "학원 · 광주 상무 · place",
-      "failReasons": [
-        "first_delivery_channel_editor",
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
-      "belief": 66,
-      "chars": 249
+      "belief": 51,
+      "chars": 873
     },
     {
-      "id": "학원_2_instagram",
-      "channel": "instagram",
-      "label": "학원 · 광주 상무 · instagram",
+      "id": "법률_1_blog",
+      "channel": "blog",
+      "label": "법률 · 대전 둔산 · blog",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_human_belief"
       ],
-      "belief": 46,
-      "chars": 559
-    },
-    {
-      "id": "학원_3_instagram",
-      "channel": "instagram",
-      "label": "학원 · 대전 둔산 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 61,
-      "chars": 604
-    },
-    {
-      "id": "학원_4_instagram",
-      "channel": "instagram",
-      "label": "학원 · 강남 · instagram",
-      "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
-      ],
-      "belief": 58,
+      "belief": 54,
       "chars": 552
     },
     {
-      "id": "가구점_1_instagram",
-      "channel": "instagram",
-      "label": "가구점 · 광주 상무 · instagram",
+      "id": "세무_1_blog",
+      "channel": "blog",
+      "label": "세무 · 강남 · blog",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_human_belief"
       ],
-      "belief": 46,
-      "chars": 638
+      "belief": 60,
+      "chars": 451
     },
     {
-      "id": "인테리어_0_instagram",
-      "channel": "instagram",
-      "label": "인테리어 · 광주 상무 · instagram",
+      "id": "노무_0_blog",
+      "channel": "blog",
+      "label": "노무 · 강남 · blog",
       "failReasons": [
-        "first_delivery_channel_editor",
-        "first_delivery_human_belief",
-        "first_delivery_channel_format"
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95",
+        "first_delivery_human_belief"
       ],
-      "belief": 46,
-      "chars": 531
+      "belief": 60,
+      "chars": 451
     }
-  ]
+  ],
+  "snapshotKey": "cross_channel_batch_latest",
+  "storedAt": "2026-07-03T21:34:09.704Z"
 }

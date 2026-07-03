@@ -13,6 +13,7 @@ import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch } from "../
 import { buildResearchGroundedPlacePack } from "../lib/content/researchGroundedHumanPack.js";
 import {
   deriveInstagramFromVerifiedBlog,
+  derivePlaceFromVerifiedBlog,
   stampBatchBlogAsChannelSource,
 } from "../lib/product/deriveChannelFromVerifiedBlog.js";
 import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.js";
@@ -121,6 +122,17 @@ const instaDelivery = assessChannelFirstDeliveryQuality(derivedInsta, "instagram
 assert.ok(
   instaDelivery.displayReady || instaDelivery.northStarFastPass,
   `north star insta fast pass expected, got ${instaDelivery.reasons.join(",")}`
+);
+
+const derivedPlace = finishLocalChannelPackForBatch(
+  derivePlaceFromVerifiedBlog(batchBlog, { ...batchInput, sourceChannel: "blog" }),
+  "place",
+  batchInput
+);
+const placeNorthDelivery = assessChannelFirstDeliveryQuality(derivedPlace, "place", batchInput);
+assert.ok(
+  placeNorthDelivery.displayReady || placeNorthDelivery.northStarFastPass,
+  `north star place batch finish expected, got ${placeNorthDelivery.reasons.join(",")}`
 );
 
 console.log("OK test-fifth-rank-p0-gates");
