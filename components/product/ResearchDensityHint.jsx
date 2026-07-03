@@ -1,6 +1,9 @@
 "use client";
 
-import { VISION_STATUS_WARN } from "@/lib/landing/vision2030Styles";
+import {
+  VISION_CHIP_IDLE,
+  VISION_STATUS_WARN,
+} from "@/lib/landing/vision2030Styles";
 import {
   needsGenerationContextBeat,
   resolveGenerationContextBeat,
@@ -36,7 +39,7 @@ export default function ResearchDensityHint({
           <button
             key={chip}
             type="button"
-            className="rounded-full border border-[var(--vision-line)] bg-white px-2.5 py-1 text-[11px] font-medium text-[var(--vision-ink)] hover:border-[#03A94D]"
+            className={`${VISION_CHIP_IDLE} px-2.5 py-1 text-[11px] font-medium`}
             onClick={() => onStoreFeaturesChange?.(toggleContextBeatChip(value, chip))}
           >
             {chip}

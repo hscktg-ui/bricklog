@@ -6,6 +6,12 @@ import { checkNicknameAvailability } from "@/lib/auth/checkNicknameClient";
 import { validateSignupProfilePayload } from "@/lib/auth/signupProfile";
 import ProfileSetupFields from "@/components/auth/ProfileSetupFields";
 import Logo from "@/components/Logo";
+import {
+  VISION_CTA_ACCENT,
+  VISION_CTA_GHOST,
+  VISION_EYEBROW,
+  VISION_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 const EMPTY = {
   nickname: "",
@@ -107,15 +113,15 @@ export default function ProfileCompletionModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="profile-complete-title"
-        className="pointer-events-auto relative z-10 flex max-h-[min(90dvh,720px)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-[#E8EBED] bg-white shadow-[0_20px_60px_rgba(25,31,40,0.18)]"
+        className={`pointer-events-auto relative z-10 flex max-h-[min(90dvh,720px)] w-full max-w-md flex-col overflow-hidden ${VISION_PANEL}`}
       >
-        <div className="shrink-0 border-b border-[#E8EBED] bg-[#FAFBFC] px-5 py-4">
+        <div className="shrink-0 border-b border-[var(--vision-line)] bg-[var(--vision-paper)] px-5 py-4">
           <button
             type="button"
             aria-label="닫기"
             disabled={loading}
             onClick={() => handleDefer(false)}
-            className="absolute right-3 top-3 rounded-lg p-2 text-[#8B95A1] hover:bg-white disabled:opacity-50"
+            className="absolute right-3 top-3 rounded-lg p-2 text-[var(--vision-muted)] hover:bg-[var(--vision-panel-bg,#fff)] disabled:opacity-50"
           >
             ✕
           </button>
@@ -125,11 +131,11 @@ export default function ProfileCompletionModal({
             <div>
               <h2
                 id="profile-complete-title"
-                className="text-[17px] font-bold text-[#191F28]"
+                className="text-[17px] font-bold text-[var(--vision-ink)]"
               >
                 프로필 (선택)
               </h2>
-              <p className="text-[12px] text-[#8B95A1]">
+              <p className={`${VISION_EYEBROW} !normal-case !tracking-normal`}>
                 30초면 끝나요 · 나중에 해도 됩니다
               </p>
             </div>
@@ -140,7 +146,7 @@ export default function ProfileCompletionModal({
               <button
                 type="button"
                 onClick={() => setExpanded(true)}
-                className="briclog-btn-primary !min-h-0 py-3.5"
+                className={`${VISION_CTA_ACCENT} !min-h-[48px]`}
               >
                 <span>지금 입력하기</span>
               </button>
@@ -148,7 +154,7 @@ export default function ProfileCompletionModal({
                 type="button"
                 disabled={loading}
                 onClick={() => handleDefer(false)}
-                className="briclog-btn-secondary w-full !min-h-0 py-3"
+                className={`${VISION_CTA_GHOST} !min-h-[44px]`}
               >
                 <span>나중에 — 바로 글쓰기 시작</span>
               </button>
@@ -158,7 +164,7 @@ export default function ProfileCompletionModal({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           {!expanded ? (
-            <p className="text-[13px] leading-relaxed text-[#4E5968]">
+            <p className="text-[13px] leading-relaxed text-[var(--vision-muted)]">
               닉네임·호칭은 인사말에만 씁니다. 입력하지 않아도 채널 선택과
               글쓰기는 지금 바로 할 수 있어요.
             </p>
@@ -181,12 +187,12 @@ export default function ProfileCompletionModal({
         </div>
 
         {expanded ? (
-          <div className="shrink-0 space-y-2 border-t border-[#E8EBED] bg-white px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="shrink-0 space-y-2 border-t border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <button
               type="submit"
               form="profile-setup-form"
               disabled={loading || !nicknameOk}
-              className="w-full rounded-xl bg-[#03C75A] py-3.5 text-[15px] font-bold text-white disabled:opacity-60"
+              className={`${VISION_CTA_ACCENT} !min-h-[48px] disabled:opacity-60`}
             >
               {loading ? "저장 중…" : "저장하고 시작"}
             </button>
@@ -194,7 +200,7 @@ export default function ProfileCompletionModal({
               type="button"
               disabled={loading}
               onClick={() => handleDefer(false)}
-              className="w-full py-2 text-center text-[13px] font-medium text-[#6B7684] hover:text-[#03A94D]"
+              className={`${VISION_CTA_GHOST} !min-h-[40px] !border-0 !bg-transparent !shadow-none !text-[13px] text-[var(--vision-muted)] hover:!text-[var(--vision-ink)]`}
             >
               나중에 하기
             </button>
@@ -202,18 +208,18 @@ export default function ProfileCompletionModal({
               type="button"
               disabled={loading}
               onClick={() => handleDefer(true)}
-              className="w-full text-center text-[11px] text-[#8B95A1] hover:underline"
+              className="w-full text-center text-[11px] text-[var(--vision-muted)] hover:underline"
             >
               3일 동안 이 안내 보지 않기
             </button>
           </div>
         ) : (
-          <div className="shrink-0 border-t border-[#E8EBED]/80 px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="shrink-0 border-t border-[var(--vision-line)] px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <button
               type="button"
               disabled={loading}
               onClick={() => handleDefer(true)}
-              className="w-full text-center text-[11px] text-[#8B95A1] hover:underline"
+              className="w-full text-center text-[11px] text-[var(--vision-muted)] hover:underline"
             >
               3일 동안 이 안내 보지 않기
             </button>

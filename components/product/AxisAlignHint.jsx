@@ -1,6 +1,9 @@
 "use client";
 
-import { VISION_STATUS_WARN } from "@/lib/landing/vision2030Styles";
+import {
+  VISION_CHIP_IDLE,
+  VISION_STATUS_WARN,
+} from "@/lib/landing/vision2030Styles";
 
 /** 브랜드·주제·업종 축 불일치 — 생성 전 Vision 2030 인라인 안내 */
 export default function AxisAlignHint({
@@ -31,7 +34,7 @@ export default function AxisAlignHint({
                 {onPickTopic ? (
                   <button
                     type="button"
-                    className="rounded-full border border-[var(--vision-border)] bg-white px-2.5 py-1 text-[11px] font-medium text-[var(--vision-ink)] hover:border-[#03A94D]"
+                    className={`${VISION_CHIP_IDLE} px-2.5 py-1 text-[11px] font-medium`}
                     onClick={() => onPickTopic(topic)}
                   >
                     {topic}
