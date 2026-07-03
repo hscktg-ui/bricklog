@@ -7,7 +7,15 @@ import { isCustomerPreviewDeliverablePack } from "../lib/product/contentQualityD
 import {
   resolveChannelFirstDeliveryBeliefFloor,
   CHANNEL_FIRST_DELIVERY_BELIEF_OFFSET,
+  assessChannelFirstDeliveryQuality,
 } from "../lib/product/channelQualityStack.js";
+import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch } from "../lib/product/localBatchFinish.js";
+import { buildResearchGroundedPlacePack } from "../lib/content/researchGroundedHumanPack.js";
+import {
+  deriveInstagramFromVerifiedBlog,
+  stampBatchBlogAsChannelSource,
+} from "../lib/product/deriveChannelFromVerifiedBlog.js";
+import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.js";
 import { isCustomerSafeChannelPack } from "../lib/product/brandContentCustomerGate.js";
 import { needsGenerationContextBeat } from "../lib/product/generationContextBeat.js";
 import { HUMAN_BELIEF_MIN_SCORE } from "../lib/product/humanBeliefEngine.js";
@@ -67,6 +75,52 @@ assert.equal(
   }),
   true,
   "thin input needs context beat"
+);
+
+const groundedPlace = finishLocalChannelPackForBatch(
+  buildResearchGroundedPlacePack({
+    brandName: "강남카페",
+    region: "강남",
+    topic: "브런치 메뉴",
+    industry: "카페",
+    researchFacts: researchInput.researchFacts,
+  }),
+  "place",
+  {
+    brandName: "강남카페",
+    region: "강남",
+    topic: "브런치 메뉴",
+    industry: "카페",
+    researchFacts: researchInput.researchFacts,
+  }
+);
+const placeDelivery = assessChannelFirstDeliveryQuality(groundedPlace, "place", {
+  brandName: "강남카페",
+  region: "강남",
+  topic: "브런치 메뉴",
+  industry: "카페",
+  researchFacts: researchInput.researchFacts,
+});
+assert.ok(placeDelivery.displayReady, `research place soft pass expected, got ${placeDelivery.reasons.join(",")}`);
+
+const batchInput = {
+  brandName: "강남카페",
+  region: "강남",
+  topic: "브런치 메뉴",
+  industry: "카페",
+  researchFacts: researchInput.researchFacts,
+  batchLocalFinish: true,
+};
+let batchBlog = finishLocalBlogPackForBatch(
+  buildMissionProseFallbackPack(batchInput),
+  batchInput
+);
+batchBlog = stampBatchBlogAsChannelSource(batchBlog, batchInput);
+const derivedInsta = deriveInstagramFromVerifiedBlog(batchBlog, batchInput, "informative");
+const instaDelivery = assessChannelFirstDeliveryQuality(derivedInsta, "instagram", batchInput);
+assert.ok(
+  instaDelivery.displayReady || instaDelivery.northStarFastPass,
+  `north star insta fast pass expected, got ${instaDelivery.reasons.join(",")}`
 );
 
 console.log("OK test-fifth-rank-p0-gates");

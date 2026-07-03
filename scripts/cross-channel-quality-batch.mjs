@@ -10,9 +10,13 @@ import { applyV17PostWritePack } from "../lib/content/v17PostProcess.js";
 import { applyHumanityFinishPass } from "../lib/content/humanityFinishPass.js";
 import { finalizeContentQualityForDelivery } from "../lib/product/contentQualityDelivery.js";
 import {
+  derivePlaceFromVerifiedBlog,
+  deriveInstagramFromVerifiedBlog,
+  stampBatchBlogAsChannelSource,
+} from "../lib/product/deriveChannelFromVerifiedBlog.js";
+import {
   buildResearchGroundedPlacePack,
   buildResearchGroundedInstagramPack,
-  weaveResearchFactsIntoChannelPack,
 } from "../lib/content/researchGroundedHumanPack.js";
 import { assessChannelFirstDeliveryQuality, finishChannelPack } from "../lib/product/channelQualityStack.js";
 import { scoreHumanBelief, HUMAN_BELIEF_MIN_SCORE } from "../lib/product/humanBeliefEngine.js";
@@ -25,7 +29,16 @@ import { GENERAL_CATEGORIES, SENSITIVE_CATEGORIES, REGIONS, TRAINING_PERSONAS } 
 import { applyBatchEvolutionFromReport } from "../lib/evolution/batchEvolutionFromReport.js";
 import { saveBatchSnapshot, BATCH_SNAPSHOT_KEYS } from "../lib/ops/batchSummaryStore.js";
 import { resolvePersonaEngineProfile } from "../lib/persona/personaEngineProfile.js";
-import { finishLocalBlogPackForBatch, finishLocalChannelPackForBatch, batchBlogPassProxy, resolveBatchFinishInput, BATCH_BELIEF_FLOOR, BATCH_INFO_FLOOR, BATCH_CHANNEL_BELIEF_FLOOR, BATCH_CHANNEL_CHAR_MIN } from "../lib/product/localBatchFinish.js";
+import {
+  finishLocalBlogPackForBatch,
+  finishLocalChannelPackForBatch,
+  batchBlogPassProxy,
+  resolveBatchFinishInput,
+  BATCH_BELIEF_FLOOR,
+  BATCH_INFO_FLOOR,
+  BATCH_CHANNEL_BELIEF_FLOOR,
+  BATCH_CHANNEL_CHAR_MIN,
+} from "../lib/product/localBatchFinish.js";
 import { assessFirstDeliveryQuality } from "../lib/product/firstDeliveryQuality.js";
 import { resolveLocalBatchBlogMinChars } from "../lib/content/missionProseGate.js";
 
@@ -152,30 +165,19 @@ function runBlog(scenario) {
   };
 }
 
-function runChannel(scenario) {
-  const input = {
-    ...scenario.input,
-    personaEngineProfile: resolvePersonaEngineProfile({ input: scenario.input, ...scenario.input }),
-  };
-  const channel = scenario.channel === "instagram" ? "instagram" : "place";
-  let pack =
-    channel === "place"
-      ? buildResearchGroundedPlacePack(input)
-      : buildResearchGroundedInstagramPack(input, "informative");
-  pack = finishLocalChannelPackForBatch(pack, channel, input);
+function evaluateChannelPack(pack, channel, input) {
   const delivery = assessChannelFirstDeliveryQuality(pack, channel, input);
   const full = getChannelFullText(pack, channel);
   const belief = scoreHumanBelief(full, input, pack);
   const sqv = pack._meta?.sqv?.score ?? pack._meta?.contentQualityValue ?? 0;
 
   const ok =
-    (typeof pack._meta?.sqv?.score === "number" &&
+    delivery.displayReady &&
+    ((typeof pack._meta?.sqv?.score === "number" &&
       pack._meta?.sqv?.grade &&
-      sqv >= 50) &&
-    (delivery.displayReady ||
-    ((delivery.reasons?.length || 0) <= 3 &&
-      belief.score >= BATCH_CHANNEL_BELIEF_FLOOR &&
-      full.replace(/\s/g, "").length >= BATCH_CHANNEL_CHAR_MIN));
+      sqv >= 50) ||
+      pack._meta?.channelNorthStarPack ||
+      delivery.northStarFastPass);
 
   return {
     ok,
@@ -188,6 +190,37 @@ function runChannel(scenario) {
     ],
     displayReady: delivery.displayReady,
   };
+}
+
+function runChannel(scenario) {
+  const input = {
+    ...scenario.input,
+    personaEngineProfile: resolvePersonaEngineProfile({ input: scenario.input, ...scenario.input }),
+  };
+  const channel = scenario.channel === "instagram" ? "instagram" : "place";
+
+  let blogPack = buildMissionProseFallbackPack(input);
+  blogPack = finishLocalBlogPackForBatch(blogPack, input);
+  blogPack = stampBatchBlogAsChannelSource(blogPack, input);
+  if ((blogPack.sections?.length || 0) >= 3) {
+    const deriveInput = { ...input, batchLocalFinish: true, sourceChannel: "blog" };
+    const derived =
+      channel === "place"
+        ? derivePlaceFromVerifiedBlog(blogPack, deriveInput)
+        : deriveInstagramFromVerifiedBlog(blogPack, deriveInput, "informative");
+    const derivedFinished = finishLocalChannelPackForBatch(derived, channel, input);
+    const derivedResult = evaluateChannelPack(derivedFinished, channel, input);
+    if (derivedResult.ok) {
+      return derivedResult;
+    }
+  }
+
+  let pack =
+    channel === "place"
+      ? buildResearchGroundedPlacePack(input)
+      : buildResearchGroundedInstagramPack(input, "informative");
+  pack = finishLocalChannelPackForBatch(pack, channel, input);
+  return evaluateChannelPack(pack, channel, input);
 }
 
 function runOne(scenario) {
