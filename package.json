@@ -81,6 +81,8 @@
     "test:brand-topic-memory": "node --import ./scripts/register-alias.mjs scripts/test-brand-topic-memory.mjs",
     "test:research-fact-sanitize": "node --import ./scripts/register-alias.mjs scripts/test-research-fact-sanitize.mjs",
     "test:fifth-rank-p0-gates": "node --import ./scripts/register-alias.mjs scripts/test-fifth-rank-p0-gates.mjs",
+    "test:keynote-demo-pack": "node --import ./scripts/register-alias.mjs scripts/run-keynote-demo-pack.mjs",
+    "test:synthesis-five": "node scripts/test-synthesis-five.mjs",
     "test:editor-grade-research-gate": "node --import ./scripts/register-alias.mjs scripts/test-editor-grade-research-gate.mjs",
     "test:generation-context-beat": "node --import ./scripts/register-alias.mjs scripts/test-generation-context-beat.mjs",
     "test:employee-feedback-verify": "node --import ./scripts/register-alias.mjs scripts/test-employee-feedback-verify.mjs",
