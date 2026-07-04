@@ -16,7 +16,7 @@ export default function PlanComparison({
   onSelectPlan,
   onStart,
   variant = "app",
-  paymentNote = "결제 준비 중 — 가입 후 앱에서 플랜을 확인하고 업그레이드할 수 있습니다.",
+  paymentNote = "결제 시스템 준비 중 — 베타 기간에는 무료로 이용할 수 있습니다.",
   checkoutLoading = false,
   betaActive = false,
   paymentStatus = null,

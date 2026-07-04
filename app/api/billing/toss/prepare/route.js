@@ -25,7 +25,7 @@ export async function POST(request) {
         ok: false,
         userMessage:
           frozen.userMessage ||
-          "품질 안정화 기간에는 결제를 받지 않습니다.",
+          "결제 시스템 준비 중입니다. 베타 기간에는 무료로 이용할 수 있습니다.",
         code: "payment_paused",
       },
       { status: 503 }

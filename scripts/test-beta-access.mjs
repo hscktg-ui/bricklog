@@ -9,18 +9,21 @@ function assert(cond, msg) {
 }
 
 console.log("\n=== BETA ACCESS ===\n");
-assert(DEFAULT_BETA_UNTIL === "2026-08-01", "default until 2026-08-01");
+assert(DEFAULT_BETA_UNTIL === "2026-07-15", "default until 2026-07-15");
 
-const end = parseBetaEndExclusive("2026-08-01");
-assert(end.getTime() === new Date("2026-08-02T00:00:00").getTime(), "inclusive Aug 1");
+const end = parseBetaEndExclusive("2026-07-15");
+assert(
+  end.getTime() === new Date("2026-07-16T00:00:00").getTime(),
+  "inclusive Jul 15"
+);
 
 assert(
-  isBetaFullAccessActive(new Date("2026-08-01T12:00:00")),
-  "active on Aug 1 noon"
+  isBetaFullAccessActive(new Date("2026-07-15T12:00:00")),
+  "active on Jul 15 noon"
 );
 assert(
-  !isBetaFullAccessActive(new Date("2026-08-02T00:00:00")),
-  "inactive from Aug 2"
+  !isBetaFullAccessActive(new Date("2026-07-16T00:00:00")),
+  "inactive from Jul 16"
 );
 
 console.log("ALL BETA ACCESS TESTS OK\n");
