@@ -17,6 +17,7 @@
     "apply:schema-v12": "node scripts/apply-schema-v12.mjs",
     "setup:e2e-user": "node scripts/ensure-e2e-test-user.mjs",
     "test:channel-sla:prod": "node scripts/channel-sla-smoke.mjs",
+    "test:probe-prod-channel-sla": "node --import ./scripts/register-alias.mjs scripts/probe-prod-channel-sla.mjs",
     "test:real-generate": "node scripts/real-generate-smoke.mjs",
     "test:real-generate:prod": "node scripts/real-generate-smoke.mjs",
     "apply:schema-v16-phone": "node scripts/apply-schema-v16-phone.mjs",

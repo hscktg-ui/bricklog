@@ -28,6 +28,7 @@ import {
 } from "./ensure-e2e-test-user.mjs";
 import {
   createAuthenticatedContext,
+  dismissBrandWorkspaceGate,
   dismissWorkspaceModals,
   fillBlogFormViaDom,
   fillBlogSteppedFormViaDom,
@@ -200,6 +201,21 @@ async function openWorkspace(page) {
 }
 
 async function openChannel(page, menuPattern) {
+  await dismissWorkspaceModals(page);
+  await dismissBrandWorkspaceGate(page);
+  await page
+    .evaluate(() => {
+      window.dispatchEvent(new CustomEvent("briclog-dismiss-loading-overlay"));
+    })
+    .catch(() => null);
+  await page.waitForTimeout(400);
+  const blockingOverlay = page.locator(
+    'div.fixed.inset-0.z-\\[80\\] div.pointer-events-auto.absolute.inset-0'
+  );
+  if (await blockingOverlay.count()) {
+    await page.keyboard.press("Escape").catch(() => null);
+    await page.waitForTimeout(300);
+  }
   const btn = page.getByRole("button", { name: menuPattern }).first();
   if (await btn.count()) {
     await btn.click({ timeout: 8000 });
