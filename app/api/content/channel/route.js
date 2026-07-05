@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  generateChannelWithLLMFirst,
-  blockUnverifiedChannelApiResponse,
-} from "@/lib/llm/channelOrchestrator";
+import { runChannelApiGeneration } from "@/lib/generation/channelApiHandler";
 import { checkRateLimit, getClientIp } from "@/lib/api/rateLimit";
 import { requireVerifiedUser } from "@/lib/api/auth";
 import { checkContentGeneration } from "@/lib/billing/checkEntitlement";
@@ -109,8 +106,7 @@ export async function POST(request) {
     savedInput = prepared.input;
     const personalization = prepared.personalization;
 
-    const rawResult = await generateChannelWithLLMFirst(channel, savedInput);
-    const result = blockUnverifiedChannelApiResponse(channel, rawResult, savedInput);
+    const result = await runChannelApiGeneration(channel, savedInput);
 
     const contentKey =
       channel === "place"
