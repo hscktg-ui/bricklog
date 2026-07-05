@@ -267,6 +267,7 @@
     "test:blog-generation-gates": "node --import ./scripts/register-alias.mjs scripts/test-blog-generation-gates.mjs",
     "test:generation-input-coalesce": "node --import ./scripts/register-alias.mjs scripts/test-generation-input-coalesce.mjs",
     "test:generations-null-coerce": "node --import ./scripts/register-alias.mjs scripts/test-generations-null-coerce.mjs",
+    "test:brand-depth-p0": "node --import ./scripts/register-alias.mjs scripts/test-brand-depth-p0.mjs",
     "test:slim-blog-api-payload": "node --import ./scripts/register-alias.mjs scripts/test-slim-blog-api-payload.mjs",
     "test:research-verification": "node --import ./scripts/register-alias.mjs scripts/test-research-verification-gate.mjs",
     "test:channel-quality-stack": "node --import ./scripts/register-alias.mjs scripts/test-channel-quality-stack.mjs",

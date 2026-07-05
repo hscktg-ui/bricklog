@@ -47,11 +47,11 @@ export default function GenerationContextBeatPanel({
           {config.headline}
         </p>
         <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-          {config.hint} 브랜드·지역·주제는 그대로 두고,{" "}
+          {config.hint}{" "}
           <strong className="font-semibold text-[var(--vision-ink)]">
-            현장 포인트 한 줄
+            현장 포인트 2가지
           </strong>
-          만 더하면 1~2분 안에 편집본을 받을 수 있어요.
+          만 골라 주시면 브랜드만의 글이 됩니다. (가격·메뉴·좌석·혜택)
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {config.chips.map((chip) => {
