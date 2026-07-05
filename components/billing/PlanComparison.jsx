@@ -7,8 +7,13 @@ import {
   getPlanRank,
   normalizePlanId,
 } from "@/lib/billing/plans";
-import { GREEN_CTA_OUTLINE } from "@/lib/ui/actionButtonStyles";
 import { upgradeButtonLabel } from "@/lib/billing/paymentProviderUi";
+import {
+  VISION_CTA_ACCENT,
+  VISION_CTA_OUTLINE,
+  VISION_GHOST_BTN,
+  VISION_PANEL,
+} from "@/lib/landing/vision2030Styles";
 
 export default function PlanComparison({
   compact = false,
@@ -116,8 +121,8 @@ function PlanCard({
 
   return (
     <div
-      className={`flex flex-col rounded-2xl border border-[#E8EBED] bg-white p-4 transition-shadow hover:shadow-md ${
-        highlight ? "ring-1 ring-[#03C75A]/15" : ""
+      className={`flex flex-col p-4 transition-shadow hover:shadow-md ${VISION_PANEL} ${
+        highlight ? "ring-1 ring-[var(--vision-accent-ring,rgba(3,199,90,0.2))]" : ""
       } ${compact ? "p-3" : ""}`}
     >
       <p className="text-[11px] font-bold uppercase tracking-wide text-[#8B95A1]">
@@ -163,7 +168,7 @@ function PlanCard({
         <button
           type="button"
           onClick={handleLandingCta}
-          className={`mt-4 w-full ${GREEN_CTA_OUTLINE}`}
+          className={`mt-4 w-full ${VISION_CTA_OUTLINE}`}
         >
           <span>{isFree ? "무료로 시작" : "가입 후 이용"}</span>
         </button>
@@ -179,10 +184,10 @@ function PlanCard({
           type="button"
           disabled={checkoutLoading}
           onClick={() => onSelect(plan.id)}
-          className={`briclog-pressable mt-4 w-full min-h-[44px] rounded-xl py-3 text-[13px] font-bold transition active:brightness-[0.97] disabled:opacity-60 ${
+          className={`briclog-pressable mt-4 w-full disabled:opacity-60 ${
             highlight
-              ? "bg-[#03C75A] text-white hover:bg-[#02B350]"
-              : "border border-[#E8EBED] bg-[#F7F8FA] text-[#191F28] hover:border-[#03C75A]/40"
+              ? `${VISION_CTA_ACCENT} !min-h-[44px]`
+              : `${VISION_GHOST_BTN} !min-h-[44px] w-full justify-center`
           }`}
         >
           <span>

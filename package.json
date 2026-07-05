@@ -70,6 +70,7 @@
     "test:brand-content-customer-gate": "node --import ./scripts/register-alias.mjs scripts/test-brand-content-customer-gate.mjs",
     "test:phone-rhythm-schedule": "node --import ./scripts/register-alias.mjs scripts/test-phone-rhythm-schedule.mjs",
     "test:beta-access-prod": "node scripts/test-beta-access-prod.mjs",
+    "test:vision2030-buttons-prod": "node scripts/test-vision2030-buttons-prod.mjs",
     "patch:supabase-auth-signup": "node scripts/patch-supabase-auth-signup.mjs",
     "test:post-signup-session": "node scripts/test-post-signup-session.mjs",
     "test:onboarding-friction": "node --import ./scripts/register-alias.mjs scripts/test-onboarding-friction.mjs",

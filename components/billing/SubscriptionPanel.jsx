@@ -9,6 +9,10 @@ import {
   getPlanRank,
   normalizePlanId,
 } from "@/lib/billing/plans";
+import {
+  VISION_CTA_ACCENT,
+  VISION_GHOST_BTN,
+} from "@/lib/landing/vision2030Styles";
 
 function formatKoDate(iso) {
   if (!iso) return null;
@@ -186,7 +190,7 @@ export default function SubscriptionPanel({
             type="button"
             disabled={actionLoading || checkoutLoading}
             onClick={() => onUpgradePlans?.()}
-            className="w-full rounded-lg bg-[#03C75A] py-2 text-[11px] font-semibold text-white hover:bg-[#02B350] disabled:opacity-60"
+            className={`${VISION_CTA_ACCENT} !min-h-[40px] !w-full !py-2 !text-[11px]`}
           >
             {effective === "free" ? "플랜 업그레이드" : "스튜디오로 업그레이드"}
           </button>
@@ -204,7 +208,7 @@ export default function SubscriptionPanel({
                 message: `다음 결제일(${renewal || "갱신일"})부터 ${PLANS[id].label} 플랜으로 변경합니다. 그때까지 현재 플랜 혜택이 유지됩니다. 계속할까요?`,
               })
             }
-            className="w-full rounded-lg border border-[#E8EBED] py-1.5 text-[10px] font-medium text-[#4E5968] hover:border-[#03C75A]/40"
+            className={`${VISION_GHOST_BTN} !min-h-[36px] !w-full !py-1.5 !text-[10px]`}
           >
             {PLANS[id].label}로 다운그레이드 (다음 결제일부터)
           </button>

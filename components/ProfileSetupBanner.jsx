@@ -1,6 +1,11 @@
 "use client";
 
 import { deferProfileModalUntilNextSignIn } from "@/lib/auth/profilePersonalization";
+import {
+  VISION_CTA_ACCENT,
+  VISION_GHOST_BTN,
+  VISION_STATUS_OK,
+} from "@/lib/landing/vision2030Styles";
 
 /**
  * Compact reminder only — full form lives in ProfileCompletionModal.
@@ -19,12 +24,14 @@ export default function ProfileSetupBanner({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#03C75A]/25 bg-gradient-to-r from-[#E8F9EF] to-white px-4 py-3 md:px-6">
+    <div
+      className={`flex flex-wrap items-center justify-between gap-3 border-b border-[var(--vision-line)] px-4 py-3 md:px-6 ${VISION_STATUS_OK}`}
+    >
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-semibold text-[#191F28]">
+        <p className="text-[13px] font-semibold text-[var(--vision-ink)]">
           닉네임·호칭 (선택)
         </p>
-        <p className="mt-0.5 text-[12px] text-[#6B7684]">
+        <p className="mt-0.5 text-[12px] text-[var(--vision-muted)]">
           화면 인사에만 씁니다 · 입력 없이도 글쓰기는 가능해요
         </p>
       </div>
@@ -32,14 +39,14 @@ export default function ProfileSetupBanner({
         <button
           type="button"
           onClick={handleDismiss}
-          className="rounded-lg border border-[#E8EBED] bg-white px-3 py-2 text-[12px] font-semibold text-[#6B7684] hover:bg-[#F7F8FA]"
+          className={VISION_GHOST_BTN}
         >
           나중에
         </button>
         <button
           type="button"
           onClick={() => onOpenSetup?.()}
-          className="rounded-lg bg-[#03C75A] px-4 py-2 text-[13px] font-bold text-white hover:bg-[#02B350]"
+          className={`${VISION_CTA_ACCENT} !min-h-[40px] !px-4 !py-2 !text-[13px]`}
         >
           입력하기
         </button>

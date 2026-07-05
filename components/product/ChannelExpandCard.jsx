@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { CHANNEL_EXPAND } from "@/lib/product/craft";
+import {
+  VISION_CTA_ACCENT,
+  VISION_GHOST_BTN,
+  VISION_STATUS_OK,
+} from "@/lib/landing/vision2030Styles";
 
 const DISMISS_KEY = "briclog-channel-expand-dismissed";
 
@@ -38,32 +43,34 @@ export default function ChannelExpandCard({
 
   return (
     <div
-      className={`rounded-xl border border-[#03C75A]/30 bg-gradient-to-br from-[#F6FDF9] to-white p-4 ${className}`}
+      className={`p-4 ${VISION_STATUS_OK} ${className}`}
       role="status"
     >
-      <p className="text-[14px] font-bold text-[#191F28]">{CHANNEL_EXPAND.title}</p>
-      <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">
+      <p className="text-[14px] font-bold text-[var(--vision-ink)]">
+        {CHANNEL_EXPAND.title}
+      </p>
+      <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
         {CHANNEL_EXPAND.body}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <button
           type="button"
           onClick={onGoPlace}
-          className="rounded-lg bg-[#03C75A] px-3 py-2 text-[12px] font-semibold text-white hover:bg-[#02B350]"
+          className={`${VISION_CTA_ACCENT} !min-h-[40px] !w-auto !px-4 !py-2 !text-[12px]`}
         >
           {CHANNEL_EXPAND.placeCta}
         </button>
         <button
           type="button"
           onClick={onGoInsta}
-          className="rounded-lg border border-[#03C75A]/40 bg-white px-3 py-2 text-[12px] font-semibold text-[#03A94D] hover:bg-[#F6FDF9]"
+          className={VISION_GHOST_BTN}
         >
           {CHANNEL_EXPAND.instaCta}
         </button>
         <button
           type="button"
           onClick={dismiss}
-          className="rounded-lg px-3 py-2 text-[12px] font-medium text-[#8B95A1] hover:text-[#4E5968]"
+          className="rounded-full px-3 py-2 text-[12px] font-medium text-[var(--vision-muted)] hover:text-[var(--vision-ink)]"
         >
           {CHANNEL_EXPAND.dismiss}
         </button>

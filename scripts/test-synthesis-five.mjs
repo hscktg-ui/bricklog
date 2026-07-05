@@ -8,6 +8,7 @@ const tests = [
   "test:keynote-demo-pack",
   "test:signup-trust-copy",
   "test:ui-delivery-smoke",
+  "test:vision2030-buttons-prod",
   "test:prod-health",
 ];
 
