@@ -28,7 +28,7 @@ if (perspective !== "informational") failures.push(`perspective=${perspective}`)
 if (persona.persona !== "info_intro") failures.push(`persona=${persona.persona}`);
 if (intent.locked !== "guide") failures.push(`intent=${intent.locked}`);
 if (story !== "seasonal_guide") failures.push(`story=${story}`);
-if (/직접\s*가서|비교해\s*봤|들었어요/.test(catalog.join(" "))) {
+if (/직접\s*가서|비교해\s*봤|들었어요|매장\s*문을\s*열고|진열대|다녀왔/.test(catalog.join(" "))) {
   failures.push("mission still has visit voice");
 }
 

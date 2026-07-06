@@ -37,6 +37,8 @@ import { resolveSensitiveCompliance } from "@/lib/compliance/sensitiveCategories
 import ResearchModePanel from "@/components/research/ResearchModePanel";
 import SteppedWriteFields from "@/components/product/SteppedWriteFields";
 import KeywordTopicGuide from "@/components/product/KeywordTopicGuide";
+import WritingContractPreview from "@/components/product/WritingContractPreview";
+import { resolveWritingContract } from "@/lib/content/writingContract";
 import ChannelAiRecommendCard from "@/components/product/ChannelAiRecommendCard";
 import { resolveBlogAiRecommendCard } from "@/lib/product/channelAiDefaults";
 import {
@@ -218,6 +220,7 @@ function BlogForm({
         purposeType: formValues.purposeType,
         brandName: formValues.brandName,
         region: formValues.region,
+        industry: formValues.industry,
         v4Speaker: formValues.v4Speaker,
       }),
     [
@@ -228,6 +231,41 @@ function BlogForm({
       formValues.purposeType,
       formValues.brandName,
       formValues.region,
+      formValues.industry,
+      formValues.v4Speaker,
+    ]
+  );
+
+  const writingContract = useMemo(
+    () =>
+      resolveWritingContract({
+        brandName: formValues.brandName,
+        region: formValues.region,
+        topic: formValues.topic,
+        mainKeyword: formValues.mainKeyword,
+        includePhrases: formValues.includePhrases,
+        storeFeatures: formValues.storeFeatures,
+        industry: formValues.industry,
+        purpose: formValues.purpose,
+        purposeType: formValues.purposeType,
+        contentObjective: formValues.contentObjective,
+        contentPersona: formValues.contentPersona,
+        contentPersonaSubtype: formValues.contentPersonaSubtype,
+        v4Speaker: formValues.v4Speaker,
+      }),
+    [
+      formValues.brandName,
+      formValues.region,
+      formValues.topic,
+      formValues.mainKeyword,
+      formValues.includePhrases,
+      formValues.storeFeatures,
+      formValues.industry,
+      formValues.purpose,
+      formValues.purposeType,
+      formValues.contentObjective,
+      formValues.contentPersona,
+      formValues.contentPersonaSubtype,
       formValues.v4Speaker,
     ]
   );
@@ -399,7 +437,13 @@ function BlogForm({
         compact={compact}
       />
 
-      {effectiveSimple ? <KeywordTopicGuide compact={compact} /> : null}
+      {effectiveSimple && formValues.topic?.trim() ? (
+        <WritingContractPreview input={formValues} compact={compact} />
+      ) : null}
+
+      {effectiveSimple ? (
+        <KeywordTopicGuide compact={compact} contract={writingContract} />
+      ) : null}
 
       {!axisAlign.ok && axisAlign.hints?.length ? (
         <AxisAlignHint
