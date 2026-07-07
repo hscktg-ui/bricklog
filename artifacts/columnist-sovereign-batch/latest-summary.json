@@ -1,15 +1,23 @@
 {
-  "at": "2026-06-25T22:28:59.326Z",
+  "at": "2026-07-02T06:31:30.727Z",
   "version": "columnist-sovereign-batch-v1",
   "batchLimit": 250,
-  "liveLimit": 0,
+  "liveLimit": 20,
   "local": {
     "total": 250,
     "pass": 250,
     "passRate": 100,
     "failSamples": []
   },
-  "live": null,
+  "live": {
+    "total": 20,
+    "pass": 20,
+    "passRate": 100,
+    "axisAlignBlocked": 1,
+    "gateWithhold": 1,
+    "avgBenchmark": 93,
+    "failSamples": []
+  },
   "columnistSovereignEnabled": true,
   "openaiConfigured": true
 }

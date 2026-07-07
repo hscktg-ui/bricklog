@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-07-03T21:15:28.411Z",
+  "startedAt": "2026-07-04T22:29:29.173Z",
   "total": 234,
   "pass": 228,
   "fail": 6,
@@ -22,8 +22,8 @@
     }
   },
   "failReasons": {
-    "first_delivery_human_editor": 6,
-    "first_delivery_editor_v95": 6,
+    "first_delivery_human_editor": 4,
+    "first_delivery_editor_v95": 4,
     "first_delivery_human_belief": 6,
     "human_belief_low": 6,
     "length_tier_under": 5,
@@ -83,8 +83,6 @@
       "channel": "blog",
       "label": "세무 · 강남 · blog",
       "failReasons": [
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
       "belief": 60,
@@ -95,8 +93,6 @@
       "channel": "blog",
       "label": "노무 · 강남 · blog",
       "failReasons": [
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
       "belief": 60,
@@ -104,5 +100,5 @@
     }
   ],
   "snapshotKey": "cross_channel_batch_latest",
-  "storedAt": "2026-07-03T21:34:09.704Z"
+  "storedAt": "2026-07-04T22:49:30.433Z"
 }

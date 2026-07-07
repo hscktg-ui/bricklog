@@ -1,0 +1,352 @@
+{
+  "at": "2026-07-07T04:42:16.554Z",
+  "steps": [
+    {
+      "script": "test:council-brief",
+      "ok": true,
+      "ms": 4968,
+      "exitCode": 0,
+      "tail": "  Case B 제품·라인업 소개 · segmented · mission:작업실에서는 주제만 적어도 조사·맥락 점검 후 채널별 초안을 받는 구조입니다.…\n  Case C 방문·체험 후기 · narrative · mission:현장에서 조도와 좌석 쪽을.…\nReport: D:\\briclog\\artifacts\\council-brief\\latest-summary.json\n"
+    },
+    {
+      "script": "test:writing-contract",
+      "ok": true,
+      "ms": 4499,
+      "exitCode": 0,
+      "tail": "> node --import ./scripts/register-alias.mjs scripts/test-writing-contract.mjs\n\nOK writing-contract (8 cases)\n"
+    },
+    {
+      "script": "test:council-wedge-batch",
+      "ok": true,
+      "ms": 3134,
+      "exitCode": 0,
+      "tail": "\nOK council-wedge-batch (20/20)\nReport: D:\\briclog\\artifacts\\council-wedge-batch\\latest-summary.json\n"
+    },
+    {
+      "script": "test:north-star-kpi",
+      "ok": true,
+      "ms": 3197,
+      "exitCode": 0,
+      "tail": "\nOK north-star-kpi (5/5)\nReport: D:\\briclog\\artifacts\\north-star-kpi\\latest-summary.json\n"
+    },
+    {
+      "script": "test:channel-bundle-consistency",
+      "ok": true,
+      "ms": 3609,
+      "exitCode": 0,
+      "tail": "\nOK channel-bundle-consistency (3/3)\nReport: D:\\briclog\\artifacts\\channel-bundle-consistency\\latest-summary.json\n"
+    },
+    {
+      "script": "test:employee-feedback-verify",
+      "ok": true,
+      "ms": 4096,
+      "exitCode": 0,
+      "tail": "> node --import ./scripts/register-alias.mjs scripts/test-employee-feedback-verify.mjs\n\nOK employee-feedback-verify (9 checks)\n"
+    }
+  ],
+  "pass": 6,
+  "total": 6,
+  "northStar": "붙여넣기율·월간 계획 KPI + contract 축 + 채널 번들 일관성",
+  "artifacts_council-brief_latest-summary": {
+    "version": "council-brief-v1",
+    "at": "2026-07-07T04:41:57.976Z",
+    "total": 3,
+    "pass": 3,
+    "passRate": 100,
+    "northStar": "네이버·플레이스·인스타 붙여넣기 가능 + 이번 달 운영 계획에 기여",
+    "results": [
+      {
+        "id": "A",
+        "label": "정보·제품 소개 (segmented)",
+        "deliverable": true,
+        "axisTag": null,
+        "contract": {
+          "type": "info_guide",
+          "density": "segmented",
+          "visitToneAllowed": false,
+          "label": "가이드·선택 기준"
+        },
+        "persona": "info_intro",
+        "perspective": "informational",
+        "intent": "guide",
+        "missionSample": [
+          "여름철에는 밝은 톤·가벼운 수종이 선물용으로 많이 고려됩니다.",
+          "색감·보관은 꽃 종류마다 달라, 받는 분 공간에 맞춰 고르는 편이 좋았어요."
+        ],
+        "failures": []
+      },
+      {
+        "id": "B",
+        "label": "자사·SaaS 소개 (segmented)",
+        "deliverable": true,
+        "axisTag": null,
+        "contract": {
+          "type": "product_guide",
+          "density": "segmented",
+          "visitToneAllowed": false,
+          "label": "제품·라인업 소개"
+        },
+        "persona": "info_intro",
+        "perspective": "informational",
+        "intent": "product_intro",
+        "missionSample": [
+          "작업실에서는 주제만 적어도 조사·맥락 점검 후 채널별 초안을 받는 구조입니다."
+        ],
+        "failures": []
+      },
+      {
+        "id": "C",
+        "label": "명시 방문 후기 (narrative)",
+        "deliverable": true,
+        "axisTag": null,
+        "contract": {
+          "type": "visit_review",
+          "density": "narrative",
+          "visitToneAllowed": true,
+          "label": "방문·체험 후기"
+        },
+        "persona": "visit_review",
+        "perspective": "review",
+        "intent": "visit_review",
+        "missionSample": [
+          "현장에서 조도와 좌석 쪽을."
+        ],
+        "failures": []
+      }
+    ]
+  },
+  "artifacts_council-wedge-batch_latest-summary": {
+    "version": "council-wedge-v1",
+    "at": "2026-07-07T04:42:05.621Z",
+    "total": 20,
+    "pass": 20,
+    "passRate": 100,
+    "principle": "axis-only — no per-industry rule files",
+    "results": [
+      {
+        "id": "w01",
+        "industry": "꽃집",
+        "contractType": "info_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w02",
+        "industry": "SaaS",
+        "contractType": "product_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w03",
+        "industry": "카페",
+        "contractType": "visit_review",
+        "visitToneAllowed": true,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w04",
+        "industry": "가구",
+        "contractType": "info_compare",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w05",
+        "industry": "학원",
+        "contractType": "brand_story",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w06",
+        "industry": "치과",
+        "contractType": "info_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w07",
+        "industry": "미용실",
+        "contractType": "event_notice",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w08",
+        "industry": "펜션",
+        "contractType": "event_notice",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w09",
+        "industry": "음식점",
+        "contractType": "info_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w10",
+        "industry": "마케팅",
+        "contractType": "product_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w11",
+        "industry": "꽃집",
+        "contractType": "brand_story",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w12",
+        "industry": "카페",
+        "contractType": "visit_review",
+        "visitToneAllowed": true,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w13",
+        "industry": "가구",
+        "contractType": "visit_review",
+        "visitToneAllowed": true,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w14",
+        "industry": "학원",
+        "contractType": "info_compare",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w15",
+        "industry": "병원",
+        "contractType": "info_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w16",
+        "industry": "공방",
+        "contractType": "visit_review",
+        "visitToneAllowed": true,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w17",
+        "industry": "SaaS",
+        "contractType": "brand_philosophy",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w18",
+        "industry": "리테일",
+        "contractType": "product_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w19",
+        "industry": "카페",
+        "contractType": "info_guide",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      },
+      {
+        "id": "w20",
+        "industry": "인테리어",
+        "contractType": "brand_story",
+        "visitToneAllowed": false,
+        "pass": true,
+        "failures": []
+      }
+    ]
+  },
+  "artifacts_north-star-kpi_latest-summary": {
+    "version": "north-star-kpi-v1",
+    "at": "2026-07-07T04:42:08.813Z",
+    "total": 5,
+    "pass": 5,
+    "results": [
+      {
+        "id": "A",
+        "phase": "pre",
+        "pass": true,
+        "score": 100,
+        "contractType": "info_guide"
+      },
+      {
+        "id": "B",
+        "phase": "pre",
+        "pass": true,
+        "score": 100,
+        "contractType": "product_guide"
+      },
+      {
+        "id": "C",
+        "phase": "pre",
+        "pass": true,
+        "score": 100,
+        "contractType": "visit_review"
+      },
+      {
+        "id": "paste_good",
+        "phase": "post",
+        "pass": true,
+        "failReasons": []
+      },
+      {
+        "id": "paste_visit_leak",
+        "phase": "post",
+        "pass": true,
+        "failReasons": [
+          "api_withhold",
+          "visit_leak"
+        ]
+      }
+    ]
+  },
+  "artifacts_channel-bundle-consistency_latest-summary": {
+    "version": "channel-bundle-v1",
+    "at": "2026-07-07T04:42:12.362Z",
+    "cases": [
+      {
+        "id": "good_bundle",
+        "ok": true
+      },
+      {
+        "id": "blog_dump",
+        "ok": true
+      },
+      {
+        "id": "visit_leak",
+        "ok": true
+      }
+    ],
+    "pass": 3,
+    "total": 3
+  }
+}

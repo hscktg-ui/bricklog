@@ -1,10 +1,10 @@
 {
-  "at": "2026-06-24T04:49:07.321Z",
-  "prod": true,
-  "total": 10,
-  "passed": 9,
-  "failed": 1,
-  "pass": false,
+  "at": "2026-07-01T22:08:38.870Z",
+  "prod": false,
+  "total": 12,
+  "passed": 12,
+  "failed": 0,
+  "pass": true,
   "results": [
     {
       "phase": 0,
@@ -15,7 +15,7 @@
         "test:briclog-defaults"
       ],
       "ok": true,
-      "ms": 695,
+      "ms": 545,
       "exitCode": 0,
       "stderr": ""
     },
@@ -28,7 +28,7 @@
         "test:launch-publish-mode"
       ],
       "ok": true,
-      "ms": 2656,
+      "ms": 2822,
       "exitCode": 0,
       "stderr": ""
     },
@@ -41,7 +41,7 @@
         "test:all-channel-sla"
       ],
       "ok": true,
-      "ms": 2842,
+      "ms": 2897,
       "exitCode": 0,
       "stderr": ""
     },
@@ -54,7 +54,7 @@
         "test:blog-async-job"
       ],
       "ok": true,
-      "ms": 535,
+      "ms": 507,
       "exitCode": 0,
       "stderr": ""
     },
@@ -67,7 +67,59 @@
         "test:content-history-ssot"
       ],
       "ok": true,
-      "ms": 526,
+      "ms": 491,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 1,
+      "id": "quality-leap-finish",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:quality-leap-finish"
+      ],
+      "ok": true,
+      "ms": 2980,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 1,
+      "id": "core-rules",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:core-rules"
+      ],
+      "ok": true,
+      "ms": 2806,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 1,
+      "id": "unified-pass-min",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:unified-pass-min"
+      ],
+      "ok": true,
+      "ms": 2707,
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "phase": 1,
+      "id": "unified-delivery-gate",
+      "cmd": "npm",
+      "args": [
+        "run",
+        "test:unified-delivery-gate"
+      ],
+      "ok": true,
+      "ms": 2751,
       "exitCode": 0,
       "stderr": ""
     },
@@ -80,7 +132,7 @@
         "test:publish-ready-kpi"
       ],
       "ok": true,
-      "ms": 3571,
+      "ms": 2869,
       "exitCode": 0,
       "stderr": ""
     },
@@ -92,10 +144,10 @@
         "run",
         "test:ui-delivery-smoke"
       ],
-      "ok": false,
-      "ms": 96571,
-      "exitCode": 1,
-      "stderr": "\nFAILURES: 1\n"
+      "ok": true,
+      "ms": 83472,
+      "exitCode": 0,
+      "stderr": ""
     },
     {
       "phase": 2,
@@ -106,26 +158,7 @@
         "test:writer-first-delivery"
       ],
       "ok": true,
-      "ms": 15944,
-      "exitCode": 0,
-      "stderr": ""
-    },
-    {
-      "phase": 2,
-      "id": "prod-http",
-      "ok": true,
-      "ms": 4248
-    },
-    {
-      "phase": 2,
-      "id": "product-score",
-      "cmd": "npm",
-      "args": [
-        "run",
-        "test:product-score:prod"
-      ],
-      "ok": true,
-      "ms": 3998,
+      "ms": 15201,
       "exitCode": 0,
       "stderr": ""
     }

@@ -1,0 +1,66 @@
+{
+  "at": "2026-07-07T04:42:19.659Z",
+  "base": "https://briclog.ai",
+  "pass": true,
+  "total": 6,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "home",
+      "ok": true,
+      "status": 200,
+      "ms": 585,
+      "snippet": null,
+      "detail": null
+    },
+    {
+      "name": "launch_flags",
+      "ok": true,
+      "status": 200,
+      "ms": 1466,
+      "snippet": "{\"ok\":true,\"defaultsVersion\":\"briclog-defaults-v1\",\"product\":{\"identity\":\"Brand Content OS\",\"tagline\":\"브랜드 블로그 운영 AI\",\"northStarKpi\":\"이 글, 그대로 네이버에 붙여넣을 수 있나?\",",
+      "detail": "Brand Content OS"
+    },
+    {
+      "name": "billing_status",
+      "ok": true,
+      "status": 200,
+      "ms": 1484,
+      "snippet": "{\"ok\":true,\"billing\":{\"checkoutEnabled\":false,\"tossConfigured\":false,\"tossBillingMode\":\"payment\",\"provider\":\"inicis\",\"providerId\":\"inicis\",\"providerLabel\":\"KG이니",
+      "detail": {
+        "provider": "KG이니시스",
+        "checkout": false,
+        "inicisReview": true,
+        "paymentStatus": "beta"
+      }
+    },
+    {
+      "name": "engine_status",
+      "ok": true,
+      "status": 200,
+      "ms": 2600,
+      "snippet": "{\"ok\":true,\"coreEngine\":{\"product\":\"BRICLOG Brand Content OS\",\"version\":\"core-engine-v1\",\"manifestId\":\"briclog-process-v1\",\"fingerprint\":\"8f17c75194cedc6d\",\"lay",
+      "detail": {
+        "ok": true,
+        "cron": true,
+        "memory": true
+      }
+    },
+    {
+      "name": "public_stats",
+      "ok": true,
+      "status": 200,
+      "ms": 130,
+      "snippet": "{\"ok\":true,\"mode\":\"seed\",\"cachedAt\":\"2026-07-07T04:35:05.436Z\",\"hourKey\":\"495388\",\"statsDateKst\":\"2026-07-07\",\"metrics\":[{\"id\":\"weekPosts\",\"label\":\"이번 주 제작된 글\",",
+      "detail": null
+    },
+    {
+      "name": "manifest",
+      "ok": true,
+      "status": 200,
+      "ms": 98,
+      "snippet": "{\"name\":\"브릭로그 | 브랜드 콘텐츠 운영 · 이야기·플레이스·인스타\",\"short_name\":\"브릭로그\",\"description\":\"차곡차곡, 브랜드 글을 쌓아요 — 브랜드·지역·주제로 이번 주·이번 달 운영 계획을 세우고, 조사·맥락 점검 후 이야기·플레이스·인스타 초안을 받습",
+      "detail": null
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "version": "north-star-kpi-v1",
+  "at": "2026-07-07T04:42:08.813Z",
+  "total": 5,
+  "pass": 5,
+  "results": [
+    {
+      "id": "A",
+      "phase": "pre",
+      "pass": true,
+      "score": 100,
+      "contractType": "info_guide"
+    },
+    {
+      "id": "B",
+      "phase": "pre",
+      "pass": true,
+      "score": 100,
+      "contractType": "product_guide"
+    },
+    {
+      "id": "C",
+      "phase": "pre",
+      "pass": true,
+      "score": 100,
+      "contractType": "visit_review"
+    },
+    {
+      "id": "paste_good",
+      "phase": "post",
+      "pass": true,
+      "failReasons": []
+    },
+    {
+      "id": "paste_visit_leak",
+      "phase": "post",
+      "pass": true,
+      "failReasons": [
+        "api_withhold",
+        "visit_leak"
+      ]
+    }
+  ]
+}

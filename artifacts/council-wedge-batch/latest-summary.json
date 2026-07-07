@@ -1,0 +1,170 @@
+{
+  "version": "council-wedge-v1",
+  "at": "2026-07-07T04:42:05.621Z",
+  "total": 20,
+  "pass": 20,
+  "passRate": 100,
+  "principle": "axis-only — no per-industry rule files",
+  "results": [
+    {
+      "id": "w01",
+      "industry": "꽃집",
+      "contractType": "info_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w02",
+      "industry": "SaaS",
+      "contractType": "product_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w03",
+      "industry": "카페",
+      "contractType": "visit_review",
+      "visitToneAllowed": true,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w04",
+      "industry": "가구",
+      "contractType": "info_compare",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w05",
+      "industry": "학원",
+      "contractType": "brand_story",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w06",
+      "industry": "치과",
+      "contractType": "info_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w07",
+      "industry": "미용실",
+      "contractType": "event_notice",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w08",
+      "industry": "펜션",
+      "contractType": "event_notice",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w09",
+      "industry": "음식점",
+      "contractType": "info_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w10",
+      "industry": "마케팅",
+      "contractType": "product_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w11",
+      "industry": "꽃집",
+      "contractType": "brand_story",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w12",
+      "industry": "카페",
+      "contractType": "visit_review",
+      "visitToneAllowed": true,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w13",
+      "industry": "가구",
+      "contractType": "visit_review",
+      "visitToneAllowed": true,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w14",
+      "industry": "학원",
+      "contractType": "info_compare",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w15",
+      "industry": "병원",
+      "contractType": "info_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w16",
+      "industry": "공방",
+      "contractType": "visit_review",
+      "visitToneAllowed": true,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w17",
+      "industry": "SaaS",
+      "contractType": "brand_philosophy",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w18",
+      "industry": "리테일",
+      "contractType": "product_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w19",
+      "industry": "카페",
+      "contractType": "info_guide",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    },
+    {
+      "id": "w20",
+      "industry": "인테리어",
+      "contractType": "brand_story",
+      "visitToneAllowed": false,
+      "pass": true,
+      "failures": []
+    }
+  ]
+}
