@@ -89,6 +89,7 @@
     "test:generation-context-beat": "node --import ./scripts/register-alias.mjs scripts/test-generation-context-beat.mjs",
     "test:employee-feedback-verify": "node --import ./scripts/register-alias.mjs scripts/test-employee-feedback-verify.mjs",
     "test:writing-contract": "node --import ./scripts/register-alias.mjs scripts/test-writing-contract.mjs",
+    "test:council-brief": "node --import ./scripts/register-alias.mjs scripts/test-council-brief.mjs",
     "test:columnist-failure-diagnostic": "node --import ./scripts/register-alias.mjs scripts/test-columnist-failure-diagnostic.mjs",
     "test:columnist-editor-grade-pass": "node --import ./scripts/register-alias.mjs scripts/test-columnist-editor-grade-pass.mjs",
     "test:channel-token-budget": "node --import ./scripts/register-alias.mjs scripts/test-channel-token-budget.mjs",
