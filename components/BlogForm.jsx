@@ -38,6 +38,7 @@ import ResearchModePanel from "@/components/research/ResearchModePanel";
 import SteppedWriteFields from "@/components/product/SteppedWriteFields";
 import KeywordTopicGuide from "@/components/product/KeywordTopicGuide";
 import WritingContractPreview from "@/components/product/WritingContractPreview";
+import MonthlyOperatingPlanPreview from "@/components/product/MonthlyOperatingPlanPreview";
 import { resolveWritingContract } from "@/lib/content/writingContract";
 import ChannelAiRecommendCard from "@/components/product/ChannelAiRecommendCard";
 import { resolveBlogAiRecommendCard } from "@/lib/product/channelAiDefaults";
@@ -439,6 +440,10 @@ function BlogForm({
 
       {effectiveSimple && formValues.topic?.trim() ? (
         <WritingContractPreview input={formValues} compact={compact} />
+      ) : null}
+
+      {effectiveSimple && formValues.brandName?.trim() && formValues.topic?.trim() ? (
+        <MonthlyOperatingPlanPreview input={formValues} compact={compact} />
       ) : null}
 
       {effectiveSimple ? (

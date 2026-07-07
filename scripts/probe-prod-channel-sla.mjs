@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import { applyE2eTestCredentialsToEnv } from "../lib/qa/e2eTestCredentials.js";
 import { getE2eBearerToken } from "./lib/e2eAuth.js";
 import { getChannelFullText } from "../lib/content/channelPack.js";
+import { assessChannelBundleConsistency } from "../lib/product/channelBundleConsistency.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
@@ -129,7 +130,7 @@ async function runCase(id, channel, payload) {
     };
     results.push(row);
     console.log(ok ? `PASS ${ms}ms len=${textLen}` : `FAIL ${status} ${ms}ms ${data.userMessage || data.raw?.slice?.(0, 80) || ""}`);
-    return row;
+    return { row, data };
   } catch (err) {
     const ms = Date.now() - t0;
     const row = {
@@ -142,7 +143,7 @@ async function runCase(id, channel, payload) {
     };
     results.push(row);
     console.log(`FAIL ${row.error}`);
-    return row;
+    return { row, data: null };
   }
 }
 
@@ -191,17 +192,37 @@ if (jobId) {
 }
 
 if (blogPack?.sections?.length) {
-  await runCase("place_derived", "place", {
+  const placeRun = await runCase("place_derived", "place", {
     sourceChannel: "blog",
     _sourceBlogPack: blogPack,
     blogContent: blogPack,
   });
-  await runCase("instagram_derived", "instagram", {
+  const instaRun = await runCase("instagram_derived", "instagram", {
     sourceChannel: "blog",
     _sourceBlogPack: blogPack,
     blogContent: blogPack,
     instaTone: "informative",
   });
+  const bundle = assessChannelBundleConsistency({
+    brandName: blogForm.brandName,
+    topic: blogForm.topic,
+    region: blogForm.region,
+    blogPack,
+    placePack: placeRun?.data?.placeContent,
+    instagramPack: instaRun?.data?.instagramContent,
+    visitToneAllowed: false,
+  });
+  results.push({
+    id: "channel_bundle_consistency",
+    ok: bundle.ok,
+    failReasons: bundle.failReasons,
+    lengths: bundle.lengths,
+  });
+  console.log(
+    bundle.ok
+      ? `  bundle consistency PASS`
+      : `  bundle consistency FAIL ${bundle.failReasons.join(",")}`
+  );
 } else {
   results.push({ id: "place_derived", ok: false, error: "no_blog_source" });
   results.push({ id: "instagram_derived", ok: false, error: "no_blog_source" });

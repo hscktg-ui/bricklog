@@ -173,10 +173,50 @@ P1 UI:
 
 - [ ] `npm run test:council-brief` green (Case A/B/C)
 - [ ] `npm run test:writing-contract` green  
+- [ ] `npm run test:council-wedge-batch` green (20 wedge · 축만)
+- [ ] `npm run test:north-star-kpi` green (붙여넣기·월간 계획)
+- [ ] `npm run test:channel-bundle-consistency` green
+- [ ] `npm run test:council-session` green (위 일괄)
 - [ ] `npm run test:prod-health` green  
 - [ ] Case B(브릭로그) dogfood — 직원 1명 송출 Y/N  
 - [ ] 태그 집계에 **업종명** 없음 (축만)  
 - [ ] 스프린트에 **신규 업종 파일** 없음  
+
+---
+
+## 9. 가상 Council 평가 요약 (2026-07-07 · 합성)
+
+> 실제 인터뷰가 아닌, North Star·축 기준으로 정리한 **내부 합성 평가**. 외부 Council 세션 전 참고용.
+
+### 공통으로 맞다고 본 것
+
+| 관점 | 평가 |
+|------|------|
+| **Brand Content OS** | 「글 생성기」가 아니라 **운영 계획 + 채널 송출** 포지셔닝이 일관됨 |
+| **writingContract** | 제품 소개·정보형·방문 후기를 **입력·미션·톤**에서 한 축으로 묶은 것이 맞음 |
+| **visit 명시 시만** | 정보형·SaaS에 방문 톤이 새는 문제를 **업종 패치 없이** 줄인 방향 |
+
+### 아직 약하다고 본 것 → 이번 스프린트 조치
+
+| 약점 | 조치 |
+|------|------|
+| 「이번 달 운영 계획」이 결과에 안 보임 | `MonthlyOperatingPlanPreview` · `assessPreGenerationNorthStar` |
+| 붙여넣기율 KPI 미측정 | `northStarDeliveryKpi` · `test:north-star-kpi` |
+| 채널 3종 **내용** 일관성 | `channelBundleConsistency` · prod probe 번들 검사 |
+| 20업종 wedge 증명 부족 | `test:council-wedge-batch` (축만, 업종 룰 없음) |
+| Council 회귀 분산 | `test:council-session` 일괄 리포트 |
+
+### Thiel 축 (0→1)
+
+- **좋음:** 좁은 wedge(한국 로컬 브랜드·네이버 생태계) + 운영 OS 내러티브  
+- **리스크:** 아직 **20고객 송출 증명**·실제 Council 녹음 없음 → wedge batch·브리프로 대체 측정
+
+### 측정 명령
+
+```bash
+npm run test:council-session
+npm run test:probe-prod-channel-sla   # SLA + 번들 일관성(derived)
+```
 
 ---
 
