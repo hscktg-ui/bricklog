@@ -53,6 +53,135 @@ function TrafficPeriodCard({ title, data, audited }) {
   );
 }
 
+function TopList({ title, items, emptyLabel = "—" }) {
+  if (!items?.length) {
+    return (
+      <div className="rounded-xl border border-[#E8EBED] bg-white p-4">
+        <p className="text-[12px] font-bold text-[#191F28]">{title}</p>
+        <p className="mt-2 text-[11px] text-[#8B95A1]">{emptyLabel}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-xl border border-[#E8EBED] bg-white p-4">
+      <p className="text-[12px] font-bold text-[#191F28]">{title}</p>
+      <ul className="mt-2 space-y-1">
+        {items.map((row) => (
+          <li
+            key={`${title}-${row.label}`}
+            className="flex items-start justify-between gap-2 text-[11px]"
+          >
+            <span className="line-clamp-2 text-[#4E5968]">{row.label}</span>
+            <span className="shrink-0 font-semibold text-[#191F28]">{row.count}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function PublicBrandTestPanel({ data }) {
+  if (!data) return null;
+  if (!data.tableReady) {
+    return (
+      <div className="rounded-xl border border-dashed border-[#E8EBED] bg-[#FAFBFC] px-4 py-5">
+        <h3 className="text-[14px] font-bold text-[#191F28]">공개 맛보기 (브랜드 테스트)</h3>
+        <p className="mt-1 text-[11px] text-[#8B95A1]">
+          public_test_runs 테이블 미적용 — schema-v19-public-test.sql 적용 후 집계됩니다.
+        </p>
+      </div>
+    );
+  }
+
+  const demoHint =
+    data.landingDemoRuns > 0
+      ? `랜딩 기본(모카하우스·꽃담) ${data.landingDemoRuns}건 · 직접입력 ${data.customRuns ?? 0}건`
+      : `카탈로그 데모 ${data.catalogDemoRuns ?? 0}건 · 직접입력 ${data.customRuns ?? 0}건`;
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <h3 className="text-[14px] font-bold text-[#191F28]">공개 맛보기 (브랜드 테스트)</h3>
+        <p className="mt-0.5 text-[11px] text-[#8B95A1]">
+          비로그인 샘플 생성 성공만 집계 · {data.note}
+        </p>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="누적 샘플"
+          value={data.totalRuns ?? "—"}
+          hint={`순방문자 ~${data.totalSampleUsers ?? "—"} · ${demoHint}`}
+        />
+        <StatCard
+          label="7일 샘플"
+          value={data.runs7d ?? "—"}
+          hint={`오늘 ${data.runsToday ?? 0} · 30일 ${data.runs30d ?? 0}`}
+        />
+        <StatCard
+          label="랜딩 데모 비율"
+          value={data.landingDemoSharePct != null ? `${data.landingDemoSharePct}%` : "—"}
+          hint="모카하우스·꽃담 기본값"
+        />
+        <StatCard
+          label="가입 CTA"
+          value={data.signupCtaClicks ?? "—"}
+          hint="맛보기 → 회원가입 클릭"
+        />
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-3">
+        <TopList title="브랜드 TOP" items={data.topBrands} emptyLabel="샘플 없음" />
+        <TopList title="주제 TOP" items={data.topTopics} emptyLabel="샘플 없음" />
+        <TopList
+          title="직접입력 주제 TOP"
+          items={data.topCustomTopics}
+          emptyLabel="직접입력 샘플 없음"
+        />
+      </div>
+
+      <div>
+        <p className="text-[12px] font-bold text-[#191F28]">최근 샘플</p>
+        {(data.recentSamples || []).length === 0 ? (
+          <p className="mt-2 text-[11px] text-[#8B95A1]">기록 없음</p>
+        ) : (
+          <ul className="mt-2 max-h-[280px] space-y-2 overflow-y-auto">
+            {(data.recentSamples || []).map((row, idx) => (
+              <li
+                key={`${row.at}-${row.brand}-${idx}`}
+                className="rounded-lg border border-[#F2F4F6] px-3 py-2"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-[#191F28]">{row.brand || "—"}</span>
+                  {row.isLandingDemo ? (
+                    <span className="rounded-full bg-[#F2F4F6] px-2 py-0.5 text-[10px] font-semibold text-[#4E5968]">
+                      랜딩 데모
+                    </span>
+                  ) : row.isCustom ? (
+                    <span className="rounded-full bg-[#03C75A]/12 px-2 py-0.5 text-[10px] font-semibold text-[#03A94D]">
+                      직접입력
+                    </span>
+                  ) : null}
+                  <span className="ml-auto text-[10px] text-[#8B95A1]">{formatKst(row.at)}</span>
+                </div>
+                <p className="mt-1 text-[11px] text-[#4E5968]">
+                  {row.region ? `${row.region} · ` : ""}
+                  {row.topic || "—"}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+        {data.firstRunAt || data.lastRunAt ? (
+          <p className="mt-2 text-[10px] text-[#8B95A1]">
+            첫 샘플 {formatKst(data.firstRunAt)} · 최근 {formatKst(data.lastRunAt)}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 /**
  * 회원·순방문·최근 생성 — Admin 운영 SSOT 패널
  */
@@ -164,6 +293,8 @@ export default function AdminAudiencePanel({ onToast }) {
           audited={t21?.uniqueSessionsAudited}
         />
       </div>
+
+      <PublicBrandTestPanel data={snapshot.publicBrandTest} />
 
       <div>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
