@@ -4,6 +4,10 @@ import { createServiceSupabase } from "@/lib/supabase/server";
 import { adminCreateUser } from "@/lib/admin/createUser";
 import { startOfTodayKstIso } from "@/lib/admin/kstTime";
 import { formatUserAcquisitionBrief } from "@/lib/analytics/userAcquisition";
+import {
+  classifyMemberAudience,
+  MEMBER_AUDIENCE_LABELS,
+} from "@/lib/admin/memberAudience";
 
 const PROFILE_FIELDS_FULL =
   "id, email, nickname, display_name, created_at, last_login_at, last_seen_at, role, acquisition_source_channel, acquisition_path, acquisition_referrer, acquisition_utm_source, acquisition_utm_medium, acquisition_utm_campaign, acquisition_recorded_at";
@@ -31,10 +35,16 @@ async function fetchProfileList(db, limit) {
 }
 
 function enrichUsersWithAcquisition(rows = []) {
-  return rows.map((row) => ({
-    ...row,
-    acquisition: formatUserAcquisitionBrief(row),
-  }));
+  return rows.map((row) => {
+    const audience = classifyMemberAudience(row.email);
+    return {
+      ...row,
+      audience,
+      audienceLabel: MEMBER_AUDIENCE_LABELS[audience],
+      isExternal: audience === "external",
+      acquisition: formatUserAcquisitionBrief(row),
+    };
+  });
 }
 
 export const runtime = "nodejs";
@@ -53,7 +63,7 @@ export async function GET(request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit")) || 30));
+  const limit = Math.min(200, Math.max(1, Number(searchParams.get("limit")) || 50));
   const todayIso = startOfTodayKstIso();
 
   const [listRes, signupsTodayRes, totalRes] = await Promise.all([

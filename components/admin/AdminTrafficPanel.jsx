@@ -86,6 +86,7 @@ export default function AdminTrafficPanel({ onToast }) {
   }
 
   const week = traffic?.last7d;
+  const d21 = traffic?.last21d;
   const month = traffic?.last30d;
 
   return (
@@ -114,11 +115,17 @@ export default function AdminTrafficPanel({ onToast }) {
         </p>
       ) : (
         <>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <StatCard
               label="7일 방문"
               value={week?.total ?? "—"}
               hint={`순방문 ${week?.uniqueSessions ?? "—"}`}
+              small
+            />
+            <StatCard
+              label="21일 순방문"
+              value={d21?.uniqueSessions ?? "—"}
+              hint={`PV ${d21?.total ?? "—"}`}
               small
             />
             <StatCard

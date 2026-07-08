@@ -94,6 +94,7 @@
     "test:north-star-kpi": "node --import ./scripts/register-alias.mjs scripts/test-north-star-kpi.mjs",
     "test:channel-bundle-consistency": "node --import ./scripts/register-alias.mjs scripts/test-channel-bundle-consistency.mjs",
     "test:council-session": "node --import ./scripts/register-alias.mjs scripts/run-council-session.mjs",
+    "test:member-audience": "node --import ./scripts/register-alias.mjs scripts/test-member-audience.mjs",
     "test:columnist-failure-diagnostic": "node --import ./scripts/register-alias.mjs scripts/test-columnist-failure-diagnostic.mjs",
     "test:columnist-editor-grade-pass": "node --import ./scripts/register-alias.mjs scripts/test-columnist-editor-grade-pass.mjs",
     "test:channel-token-budget": "node --import ./scripts/register-alias.mjs scripts/test-channel-token-budget.mjs",

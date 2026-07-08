@@ -6,6 +6,7 @@ import { StatCard } from "@/components/admin/AdminCharts";
 import AdminFeedbackPanel from "@/components/admin/AdminFeedbackPanel";
 import AdminSignupFunnelPanel from "@/components/admin/AdminSignupFunnelPanel";
 import AdminTrafficPanel from "@/components/admin/AdminTrafficPanel";
+import AdminAudiencePanel from "@/components/admin/AdminAudiencePanel";
 import {
   ADMIN_GHOST_BTN,
   ADMIN_PANEL,
@@ -37,7 +38,6 @@ function LiveStatsBar({ live, onRefresh, refreshing }) {
         <button
           type="button"
           onClick={onRefresh}
-          disabled={refreshing}
           disabled={refreshing}
           className={`${ADMIN_GHOST_BTN} disabled:opacity-50`}
         >
@@ -245,9 +245,22 @@ function UsersPanel({ onToast }) {
                 key={u.id}
                 className="rounded-lg border border-[#F2F4F6] px-3 py-2 text-[12px]"
               >
-                <p className="font-medium text-[#191F28]">
-                  {u.nickname || u.display_name || u.email}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-medium text-[#191F28]">
+                    {u.nickname || u.display_name || u.email}
+                  </p>
+                  {u.audienceLabel ? (
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        u.isExternal
+                          ? "bg-[#03C75A]/12 text-[#03A94D]"
+                          : "bg-[#94A3B8]/15 text-[#475569]"
+                      }`}
+                    >
+                      {u.audienceLabel}
+                    </span>
+                  ) : null}
+                </div>
                 <p className="text-[#4E5968]">{u.email}</p>
                 <p className="mt-1 text-[#8B95A1]">
                   가입 {formatKst(u.created_at)}
@@ -466,6 +479,7 @@ export default function AdminOpsHub({ onToast, signupFunnel: funnelProp = null }
 
   return (
     <div className="mb-8 space-y-4">
+      <AdminAudiencePanel onToast={onToast} />
       <LiveStatsBar live={live} onRefresh={() => void loadLive()} refreshing={refreshing} />
       <AdminSignupFunnelPanel funnel={funnel} />
       <AdminTrafficPanel onToast={onToast} />
