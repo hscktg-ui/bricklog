@@ -94,6 +94,36 @@ const cases = [
       ],
     },
   },
+  {
+    label: "truncated_fail",
+    input: flowerInput,
+    pack: {
+      title: "여름 꽃",
+      sections: [
+        { heading: "안내", body: "장미와 수국 안내을 보면 분위기을 정리할 수 있습니다." },
+        { heading: "b", body: "내용." },
+        { heading: "c", body: "내용." },
+      ],
+    },
+  },
+  {
+    label: "dry_fact_fail",
+    input: {
+      brandName: "바람언덕 펜션",
+      industry: "pension",
+      region: "강원 평창",
+      storeFeatures: "바베큐장, 온수풀",
+      topic: "주말 바베큐 패키지",
+    },
+    pack: {
+      title: "평창 바람언덕 펜션",
+      sections: [
+        { heading: "패키지", body: "바베큐 패키지는 특징입니다." },
+        { heading: "시설", body: "온수풀은 조절할 수 있습니다." },
+        { heading: "예약", body: "주말 예약은 빠르게 마감됩니다." },
+      ],
+    },
+  },
 ];
 
 const report = measureQualityTrustKpi(
@@ -126,6 +156,12 @@ console.log(
 if (report.results.find((r) => r.label === "placeholder_fail")?.readable) {
   console.error("FAIL: placeholder case must not be readable");
   process.exit(1);
+}
+for (const label of ["truncated_fail", "dry_fact_fail"]) {
+  if (report.results.find((r) => r.label === label)?.readable) {
+    console.error(`FAIL: ${label} must not be readable`);
+    process.exit(1);
+  }
 }
 const goodFlowerGate = assessBriclogResetQualityGate(
   polishPipelineFixture(cases[2].pack, cases[2].input),
