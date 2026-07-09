@@ -12,6 +12,7 @@ export default function Header({
   onPlanChange,
   billingPlanId = "free",
   billingBetaActive = false,
+  billingFreeLaunch = false,
   demoMode = false,
   onOpenProfile,
   onLogout,
@@ -42,6 +43,7 @@ export default function Header({
           <HeaderPlanControl
             planId={billingPlanId}
             betaActive={billingBetaActive}
+            freeLaunchActive={billingFreeLaunch}
             onPlanChange={onPlanChange}
           />
         )}

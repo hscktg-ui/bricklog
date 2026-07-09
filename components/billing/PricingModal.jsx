@@ -78,6 +78,11 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
   const betaActive = Boolean(
     billingStatus?.betaActive || subscription?.betaPeriod
   );
+  const freeLaunchActive = Boolean(
+    billingStatus?.freeLaunchActive ||
+      subscription?.freeLaunch ||
+      billingStatus?.paymentStatus === "free_launch"
+  );
   const paymentNote =
     billingStatus?.paymentNote ||
     billingStatus?.userMessage ||
@@ -119,6 +124,9 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
             {showCurrentPlan && (
               <p className="mt-1 text-[12px] text-[#4E5968]">
                 현재: <strong>{subscription.planLabel}</strong>
+                {subscription.bypassBilling && subscription.freeLaunch && (
+                  <span className="text-[#03A94D]"> · 무료 운영 중</span>
+                )}
                 {subscription.bypassBilling && subscription.betaPeriod && (
                   <span className="text-[#03A94D]">
                     {" "}
@@ -130,9 +138,9 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
                 )}
               </p>
             )}
-            {betaActive && !subscription?.planLabel && (
+            {(betaActive || freeLaunchActive) && !subscription?.planLabel && (
               <p className="mt-1 text-[12px] font-semibold text-[#03A94D]">
-                베타 테스터 · 스튜디오 전 기능
+                {freeLaunchActive ? "무료 · 스튜디오 전 기능" : "베타 테스터 · 스튜디오 전 기능"}
               </p>
             )}
           </div>
@@ -174,17 +182,21 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
           </div>
         )}
 
-        {betaActive && (
+        {(freeLaunchActive || betaActive) && (
           <div className="mt-4 rounded-xl border border-[#03C75A]/30 bg-[#F0FFF5] px-4 py-3 text-[12px] leading-relaxed text-[#03A94D]">
-            <p className="font-semibold text-[#191F28]">베타 테스터</p>
+            <p className="font-semibold text-[#191F28]">
+              {freeLaunchActive ? "무료 운영" : "베타 테스터"}
+            </p>
             <p className="mt-1">
               {billingStatus?.userMessage ||
-                "베타 기간 동안 스튜디오 기능을 결제 없이 이용할 수 있습니다."}
+                (freeLaunchActive
+                  ? "스튜디오 전 기능을 결제 없이 이용할 수 있습니다."
+                  : "베타 기간 동안 스튜디오 기능을 결제 없이 이용할 수 있습니다.")}
             </p>
           </div>
         )}
 
-        {!checkoutReady && !betaActive && !inicisReview && (
+        {!checkoutReady && !betaActive && !freeLaunchActive && !inicisReview && (
           <div className="mt-4 rounded-xl border border-[#E8EBED] bg-[#F7F8FA] px-4 py-3 text-[12px] leading-relaxed text-[#4E5968]">
             <p className="font-semibold text-[#191F28]">결제 준비 중</p>
             <p className="mt-1">{paymentNote}</p>
@@ -198,14 +210,14 @@ export default function PricingModal({ open, onClose, onToast, onPlanActivated }
             onSelectPlan={checkoutReady ? handleSelectPlan : undefined}
             paymentNote={paymentNote}
             checkoutLoading={loading}
-            betaActive={betaActive}
+            betaActive={betaActive || freeLaunchActive}
             paymentStatus={billingStatus?.paymentStatus}
             providerLabel={providerLabel}
             inicisReview={inicisReview}
           />
         </div>
 
-        {!betaActive && (
+        {!betaActive && !freeLaunchActive && (
           <div className="mt-6 rounded-xl border border-[#E8EBED] bg-[#FAFBFC] p-4">
             <p className="text-[12px] font-semibold text-[#191F28]">구독 관리</p>
             <p className="mt-1 text-[11px] leading-relaxed text-[#8B95A1]">

@@ -118,6 +118,7 @@ export default function Dashboard({
 
   const [billingPlanId, setBillingPlanId] = useState("free");
   const [billingBypassQuotas, setBillingBypassQuotas] = useState(false);
+  const [billingFreeLaunch, setBillingFreeLaunch] = useState(false);
   const profileMenuInitRef = useRef(false);
 
   const refreshBillingPlan = useCallback(() => {
@@ -127,6 +128,9 @@ export default function Dashboard({
         if (res?.usage?.planId) setBillingPlanId(res.usage.planId);
         if (res?.usage?.bypassQuotas != null) {
           setBillingBypassQuotas(Boolean(res.usage.bypassQuotas));
+        }
+        if (res?.usage?.freeLaunch != null) {
+          setBillingFreeLaunch(Boolean(res.usage.freeLaunch));
         }
       })
       .catch(() => {});
@@ -278,6 +282,7 @@ export default function Dashboard({
           demoMode={demoMode}
           billingPlanId={billingPlanId}
           billingBypassQuotas={billingBypassQuotas}
+          billingFreeLaunch={billingFreeLaunch}
           showToast={showToast}
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}
@@ -311,6 +316,7 @@ function DashboardWithBrands({
   demoMode,
   billingPlanId = "free",
   billingBypassQuotas = false,
+  billingFreeLaunch = false,
   showToast,
   activeMenu,
   setActiveMenu,
@@ -380,6 +386,7 @@ function DashboardWithBrands({
       demoMode={demoMode}
       billingPlanId={billingPlanId}
       billingBypassQuotas={billingBypassQuotas}
+      billingFreeLaunch={billingFreeLaunch}
       onToast={showToast}
       onBillingPlanRefresh={onBillingPlanRefresh}
       brandHooks={brandHooks}
@@ -413,6 +420,7 @@ function DashboardWithBrands({
         onRequestProfileSetup={onRequestProfileSetup}
         billingPlanId={billingPlanId}
         billingBypassQuotas={billingBypassQuotas}
+        billingFreeLaunch={billingFreeLaunch}
       />
     </ContentProvider>
   );
@@ -445,6 +453,7 @@ function DashboardLayout({
   onRequestProfileSetup,
   billingPlanId = "free",
   billingBypassQuotas = false,
+  billingFreeLaunch = false,
 }) {
   useMobileSidebar(mobileOpen, setMobileOpen);
 
@@ -776,6 +785,7 @@ function DashboardLayout({
           demoMode={demoMode}
           billingPlanId={billingPlanId}
           billingBetaActive={billingBypassQuotas}
+          billingFreeLaunch={billingFreeLaunch}
           onPlanChange={() => setPricingOpen(true)}
           onOpenProfile={onRequestProfileSetup}
           onLogout={handleLogout}

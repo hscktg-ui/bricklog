@@ -16,27 +16,32 @@ const BADGE_CLASS = {
 export default function HeaderPlanControl({
   planId = "free",
   betaActive = false,
+  freeLaunchActive = false,
   onPlanChange,
   disabled = false,
 }) {
-  const badge = getWorkspacePlanBadge(planId, { beta: betaActive });
+  const badge = getWorkspacePlanBadge(planId, {
+    beta: betaActive && !freeLaunchActive,
+    freeLaunch: freeLaunchActive,
+  });
   const badgeClass =
     BADGE_CLASS[badge.variant] || BADGE_CLASS.free;
-  const isBeta = badge.variant === "beta";
+  const isFreeLaunch = freeLaunchActive;
+  const isBeta = badge.variant === "beta" && !isFreeLaunch;
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
       <span
         className={`max-w-[4.5rem] truncate rounded-full px-1.5 py-0.5 text-[9px] font-semibold sm:hidden ${badgeClass}`}
-        title={isBeta ? "베타 기간" : `현재 플랜: ${badge.label}`}
+        title={isFreeLaunch ? "무료 운영" : isBeta ? "베타 기간" : `현재 플랜: ${badge.label}`}
       >
-        {isBeta ? "(베타)" : badge.label}
+        {isFreeLaunch ? "(무료)" : isBeta ? "(베타)" : badge.label}
       </span>
       <span
         className={`hidden max-w-[7.5rem] truncate rounded-full px-2 py-0.5 text-[10px] font-semibold sm:inline-block md:max-w-none md:text-[11px] ${badgeClass}`}
-        title={`현재 플랜: ${isBeta ? "스튜디오 (베타)" : badge.label}`}
+        title={`현재 플랜: ${isFreeLaunch ? "스튜디오 (무료)" : isBeta ? "스튜디오 (베타)" : badge.label}`}
       >
-        {isBeta ? "스튜디오 (베타)" : badge.label}
+        {isFreeLaunch ? "스튜디오 (무료)" : isBeta ? "스튜디오 (베타)" : badge.label}
       </span>
       <button
         type="button"

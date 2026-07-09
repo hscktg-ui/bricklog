@@ -27,6 +27,7 @@ export async function GET() {
       paymentNote: status.paymentNote,
       paymentStatus: status.paymentStatus,
       betaActive: status.betaActive,
+      freeLaunchActive: status.freeLaunchActive,
       betaUntil: status.betaUntil,
       betaUntilLabel: status.betaUntilLabel,
       upgradeDisabledReason: status.upgradeDisabledReason,

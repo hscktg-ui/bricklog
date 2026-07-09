@@ -112,6 +112,11 @@ export default function SubscriptionPanel({
           {sub.planLabel}
           {sub.betaPeriod ? "" : " (관리자)"}
         </p>
+        {sub.freeLaunch && (
+          <p className="mt-1 text-[10px] leading-snug text-[#4E5968]">
+            무료 운영 기간입니다. 스튜디오 전 기능을 결제 없이 이용할 수 있습니다.
+          </p>
+        )}
         {sub.betaPeriod && (
           <p className="mt-1 text-[10px] leading-snug text-[#4E5968]">
             베타 기간 동안 결제 없이 전 기능을 이용할 수 있습니다.
