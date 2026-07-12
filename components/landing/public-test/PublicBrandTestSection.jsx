@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import {
   PUBLIC_TEST_HERO,
   PUBLIC_TEST_SIGNUP_UNLOCKS,
+  PUBLIC_TEST_RESULT_SIGNUP_CTA,
 } from "@/lib/brand/copy";
 import {
   PUBLIC_TEST_QUOTA_EXCEEDED,
@@ -578,13 +579,13 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
                 </ul>
               </div>
 
-              <div className="hidden border-t border-[var(--vision-line)] px-5 py-4 sm:block">
+              <div className="border-t border-[var(--vision-line)] px-5 py-4">
                 <button
                   type="button"
                   onClick={() => signup("public_test_result")}
                   className={`${VISION_CTA_ACCENT} min-h-[48px] w-full`}
                 >
-                  <span>브랜드 작업실 만들기 — 무료로 계속</span>
+                  <span>{PUBLIC_TEST_RESULT_SIGNUP_CTA}</span>
                 </button>
                 <p className="mt-3 text-center text-[12px] text-[var(--vision-muted)]">
                   {PUBLIC_TEST_HERO.signupSave}
