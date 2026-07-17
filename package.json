@@ -222,6 +222,7 @@
     "test:human-grade-finishing": "node --import ./scripts/register-alias.mjs scripts/test-human-grade-finishing.mjs",
     "test:briclog-reset-quality-gate": "node --import ./scripts/register-alias.mjs scripts/test-briclog-reset-quality-gate.mjs",
     "test:quality-trust-kpi": "node --import ./scripts/register-alias.mjs scripts/test-quality-trust-kpi.mjs",
+    "test:structure-score-kpi": "node --import ./scripts/register-alias.mjs scripts/test-structure-score-kpi.mjs",
     "test:content-evaluation-engine": "node --import ./scripts/register-alias.mjs scripts/test-content-evaluation-engine.mjs",
     "test:flower-recommendation-prose": "node --import ./scripts/register-alias.mjs scripts/test-flower-recommendation-prose.mjs",
     "test:flower-persona-publish": "node --import ./scripts/register-alias.mjs scripts/test-flower-persona-publish.mjs",
