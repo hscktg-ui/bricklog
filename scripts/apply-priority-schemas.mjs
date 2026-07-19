@@ -81,6 +81,11 @@ async function probe(db) {
       select: "acquisition_source_channel",
     },
     { id: "site_visits", table: "site_visits", select: "id" },
+    {
+      id: "site_visits_attribution",
+      table: "site_visits",
+      select: "utm_source,utm_medium,utm_campaign,source_channel",
+    },
     { id: "site_visits_user", table: "site_visits", select: "user_id" },
     { id: "feedback_intents", table: "content_feedback", select: "intents,rewrite_round" },
     { id: "public_test_runs", table: "public_test_runs", select: "id" },
@@ -126,7 +131,7 @@ async function main() {
     "supabase/schema-v18-feedback-loop.sql": before.feedback_intents,
     "supabase/schema-v19-public-test.sql": before.public_test_runs,
     "supabase/schema-v20-traffic-attribution.sql":
-      before.site_visits && before.last_seen_at,
+      before.site_visits_attribution,
     "supabase/schema-v21-user-acquisition.sql":
       before.acquisition_source && before.site_visits_user,
     "supabase/schema-v5-billing.sql":

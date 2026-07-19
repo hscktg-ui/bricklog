@@ -8,19 +8,9 @@ import {
   ACQUISITION_SENT_KEY,
   FIRST_TOUCH_STORAGE_KEY,
 } from "@/lib/analytics/userAcquisition";
+import { getUnifiedVisitSessionId } from "@/lib/analytics/visitSessionClient";
 
-const VISIT_KEY = "briclog_visit_sid";
 const VISIT_SENT_KEY = "briclog_visit_sent";
-
-function visitSessionId() {
-  if (typeof window === "undefined") return "";
-  let sid = sessionStorage.getItem(VISIT_KEY);
-  if (!sid) {
-    sid = `v_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
-    sessionStorage.setItem(VISIT_KEY, sid);
-  }
-  return sid;
-}
 
 function readStoredUtm() {
   if (typeof window === "undefined") return {};
@@ -76,7 +66,7 @@ function readFirstTouch() {
 }
 
 async function recordVisit(path, utm = {}) {
-  const sid = visitSessionId();
+  const sid = getUnifiedVisitSessionId();
   if (!sid) return;
   const visitKey = `${path}|${utm.utmSource || ""}|${utm.utmMedium || ""}`;
   const sent = sessionStorage.getItem(VISIT_SENT_KEY);
@@ -117,7 +107,7 @@ async function sendAcquisitionStamp() {
   const token = data?.session?.access_token;
   if (!token) return;
 
-  const sid = visitSessionId();
+  const sid = getUnifiedVisitSessionId();
   const firstTouch = readFirstTouch();
   const body = firstTouch
     ? {
