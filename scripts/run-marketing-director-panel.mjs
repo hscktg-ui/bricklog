@@ -135,8 +135,8 @@ const uxFacts = {
   stickyHeadline: PUBLIC_TEST_STICKY_SIGNUP_HEADLINE,
   freeHook: BRAND_VOICE.freeHook,
   latestUpdateLabel: BRAND_LATEST_UPDATE.label,
-  mobileResultCtaWasHiddenSmBlock: true,
-  note: "PublicBrandTestSection result CTA used hidden sm:block; sticky only on mobile",
+  mobileResultCtaWasHiddenSmBlock: false,
+  note: "Result CTA is full-width; sticky uses free brand-continue copy. Season samples refreshed 2026-07-31.",
 };
 
 const votes = MARKETING_DIRECTOR_PANEL_30.map((d) => scoreDirector(d, facts));
