@@ -175,9 +175,9 @@ const report = {
   ],
   adoptedToday: PANEL_CONSENSUS_FIXED.adoptedToday,
   interpretation: [
-    "엔진 대공사보다 맛보기→가입 전환이 합의 1순위",
-    "무료 런치 메시지·모바일 CTA를 오늘 반영",
-    `실측: CTA ${facts.ctaClicks ?? "?"} / 외부가입 ${facts.externalSignupCount ?? "?"}`,
+    "8/3 대책회의: Eleven식 미디어 스택 보류 · Brand Content OS 선두 경로 유지",
+    "합의 1순위 = Gate A humanReady + Gate B 맛보기→작업실 (CTA→가입)",
+    `실측: 방문 ${facts.landingVisits ?? "?"} · 맛보기 ${facts.publicTestRuns ?? "?"} · CTA ${facts.ctaClicks ?? "?"} · 외부가입 ${facts.externalSignupCount ?? "?"} · 로그인생성 ${facts.generationsTotal ?? "?"}`,
   ],
 };
 
