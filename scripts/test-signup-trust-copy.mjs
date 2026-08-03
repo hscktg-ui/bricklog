@@ -8,6 +8,7 @@ import { getSignupTrustCopy } from "../lib/auth/signupTrustCopy.js";
 const prevPhone = process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 const prevLaunch = process.env.NEXT_PUBLIC_BRICLOG_LAUNCH;
 const prevNodeEnv = process.env.NODE_ENV;
+const prevFree = process.env.BRICLOG_FREE_LAUNCH;
 
 delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = "false";
@@ -29,13 +30,18 @@ assert.equal(isSignupPhoneOptional(), false, "vercel production forces phone req
 
 delete process.env.VERCEL_ENV;
 
-const copy = getSignupTrustCopy({
+process.env.BRICLOG_FREE_LAUNCH = "false";
+const paidCopy = getSignupTrustCopy({
   phoneRequired: true,
   smsSenderLabel: "070-8844-7209",
 });
-assert.match(copy.body, /브릭로그/);
-assert.match(copy.body, /이메일 인증 링크는 보내지 않습니다/);
-assert.match(copy.planHint || "", /월 5회/);
+assert.match(paidCopy.body, /브릭로그/);
+assert.match(paidCopy.body, /이메일 인증 링크는 보내지 않습니다/);
+assert.match(paidCopy.planHint || "", /월 5회/);
+
+process.env.BRICLOG_FREE_LAUNCH = "true";
+const freeCopy = getSignupTrustCopy({ phoneRequired: true });
+assert.match(freeCopy.planHint || "", /무료/);
 
 if (prevPhone === undefined) delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 else process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = prevPhone;
@@ -43,6 +49,8 @@ if (prevLaunch === undefined) delete process.env.NEXT_PUBLIC_BRICLOG_LAUNCH;
 else process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = prevLaunch;
 if (prevNodeEnv === undefined) delete process.env.NODE_ENV;
 else process.env.NODE_ENV = prevNodeEnv;
+if (prevFree === undefined) delete process.env.BRICLOG_FREE_LAUNCH;
+else process.env.BRICLOG_FREE_LAUNCH = prevFree;
 
 void isLaunchBuild;
 

@@ -12,7 +12,7 @@ import {
   PUBLIC_TEST_QUOTA_SIGNUP_SUB,
   PUBLIC_TEST_QUOTA_SIGNUP_CTA,
   PUBLIC_TEST_ERROR_SIGNUP_SUB,
-  PUBLIC_TEST_ERROR_SIGNUP_CTA,
+  resolvePublicTestErrorSignupCta,
   PUBLIC_TEST_BLUR_HINT,
   PUBLIC_TEST_TOPIC_HINT,
   PUBLIC_TEST_TIME_HINT,
@@ -400,29 +400,25 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
                     <p key={line}>{line}</p>
                   ))}
                 </div>
-                {isGateFail ? (
-                  <p className="text-[12px] leading-relaxed text-[var(--vision-muted)]">
-                    {PUBLIC_TEST_ERROR_SIGNUP_SUB}
-                  </p>
-                ) : null}
-                {isGateFail ? (
-                  <ul className="space-y-1.5 text-[12px] text-[var(--vision-muted)]">
-                    {PUBLIC_TEST_SIGNUP_UNLOCKS.slice(0, 2).map((item) => (
-                      <li key={item} className="flex gap-2">
-                        <span className="text-[var(--vision-accent)]" aria-hidden>
-                          ✓
-                        </span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
+                <p className="text-[12px] leading-relaxed text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_ERROR_SIGNUP_SUB}
+                </p>
+                <ul className="space-y-1.5 text-[12px] text-[var(--vision-muted)]">
+                  {PUBLIC_TEST_SIGNUP_UNLOCKS.slice(0, 2).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="text-[var(--vision-accent)]" aria-hidden>
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
                 <button
                   type="button"
                   onClick={() => signup("public_test_error")}
                   className={`${VISION_CTA_ACCENT} w-full min-h-[48px]`}
                 >
-                  <span>{PUBLIC_TEST_ERROR_SIGNUP_CTA}</span>
+                  <span>{resolvePublicTestErrorSignupCta(brandName)}</span>
                 </button>
                 {isGateFail ? (
                   <button
@@ -599,6 +595,19 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
     {result?.preview ? (
       <PublicTestSignupStickyBar
         brandName={brandName}
+        tone="result"
+        onSignup={() => signup("public_test_sticky")}
+      />
+    ) : quotaExhausted ? (
+      <PublicTestSignupStickyBar
+        brandName={brandName}
+        tone="quota"
+        onSignup={() => signup("public_test_sticky")}
+      />
+    ) : error && error !== PUBLIC_TEST_QUOTA_EXCEEDED ? (
+      <PublicTestSignupStickyBar
+        brandName={brandName}
+        tone="error"
         onSignup={() => signup("public_test_sticky")}
       />
     ) : null}

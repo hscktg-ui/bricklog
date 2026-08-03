@@ -6,12 +6,21 @@ import {
 } from "@/lib/brand/copy";
 import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 
-/** 샘플 결과 열람 중 하단 고정 가입 CTA — 모바일·데스크톱 공통 */
-export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
+/** 샘플 결과·쿼터·오류 열람 중 하단 고정 가입 CTA — 모바일·데스크톱 공통 */
+export default function PublicTestSignupStickyBar({ brandName, onSignup, tone = "result" }) {
   if (!onSignup) return null;
-  const label = brandName?.trim()
-    ? `「${brandName.trim()}」 ${PUBLIC_TEST_STICKY_SIGNUP_HEADLINE}`
+  const brand = brandName?.trim() || "";
+  const headline = brand
+    ? `「${brand}」 ${PUBLIC_TEST_STICKY_SIGNUP_HEADLINE}`
     : PUBLIC_TEST_STICKY_SIGNUP_HEADLINE;
+  const cta =
+    tone === "quota"
+      ? "무료로 가입 · 이번 달 운영 이어가기"
+      : tone === "error"
+        ? brand
+          ? `「${brand}」 작업실에서 무료로 이어가기`
+          : "무료로 가입하고 작업실에서 다시 쓰기"
+        : PUBLIC_TEST_STICKY_SIGNUP_CTA;
 
   return (
     <div
@@ -20,17 +29,17 @@ export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
       aria-label="작업실 만들기"
     >
       <div className="pointer-events-auto mx-auto max-w-lg rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-glass-strong)] p-3 shadow-[var(--vision-shadow-panel)] backdrop-blur-xl">
+        <p className="mb-2 text-center text-[12px] font-semibold leading-snug text-[var(--vision-ink)]">
+          {headline}
+        </p>
         <button
           type="button"
           data-briclog-cta="signup-sticky"
           onClick={onSignup}
           className={`${VISION_CTA_ACCENT} w-full !min-h-[48px] !text-[14px]`}
         >
-          <span>{PUBLIC_TEST_STICKY_SIGNUP_CTA}</span>
+          <span>{cta}</span>
         </button>
-        <p className="mt-2 line-clamp-1 text-center text-[11px] font-medium text-[var(--vision-muted)]">
-          {label}
-        </p>
       </div>
     </div>
   );

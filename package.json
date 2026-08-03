@@ -52,7 +52,7 @@
     "test:signup-phone-required-flow": "node scripts/test-signup-phone-required-flow.mjs",
     "test:signup-register-flow": "node scripts/test-signup-register-flow.mjs",
     "test:check-email-server": "node scripts/test-check-email-server.mjs",
-    "test:signup-trust-copy": "node scripts/test-signup-trust-copy.mjs",
+    "test:signup-trust-copy": "node --import ./scripts/register-alias.mjs scripts/test-signup-trust-copy.mjs",
     "test:signup-form-gate": "node scripts/test-signup-form-gate.mjs",
     "test:content-schedule-calendar": "node --import ./scripts/register-alias.mjs scripts/test-content-schedule-calendar.mjs",
     "test:content-schedule-planner": "node --import ./scripts/register-alias.mjs scripts/test-content-schedule-planner.mjs",

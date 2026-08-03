@@ -46,7 +46,9 @@ const gate = evaluateEditorGradeResearchGate(noisyInput);
 assert.equal(gate.ok, true, "3+ substantive facts pass gate");
 
 const thinGate = evaluateEditorGradeResearchGate({
-  ...noisyInput,
+  brandName: "청춘농장",
+  region: "양평",
+  topic: "매장 안내",
   researchFacts: [{ fact: "청춘농장", source: "brand_axis" }],
 });
 assert.equal(thinGate.ok, false, "thin meta-only fails");
