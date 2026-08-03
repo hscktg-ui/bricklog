@@ -42,6 +42,16 @@ assert.ok(pack._meta.koreanOrthography.score >= KOREAN_ORTHOGRAPHY_PASS_SCORE);
 const body = pack.sections[0].body;
 assert.ok(body.includes("꽃다발을") || body.includes("꽃담을"), body);
 
+const annye = applyKoreanOrthographyToText(
+  "모카 브루 안내을 직접 봤어요. 쇼룸 안내을 눈으로 확인했어요. 분위기을 먼저 봤어요.",
+  { brandName: "모카 브루" },
+  "blog"
+);
+assert.ok(annye.includes("안내를"), annye);
+assert.ok(!annye.includes("안내을"), annye);
+assert.ok(annye.includes("분위기를"), annye);
+assert.ok(!annye.includes("분위기을"), annye);
+
 console.log(
   "OK: korean orthography — score",
   pack._meta.koreanOrthography.score,

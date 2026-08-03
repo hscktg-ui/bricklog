@@ -74,14 +74,25 @@ try {
 }
 applyE2eTestCredentialsToEnv(process.env);
 
-const auth = await getE2eBearerToken();
+let auth = await getE2eBearerToken();
 if (!auth.ok) {
   console.error("auth fail", auth.reason);
   process.exit(1);
 }
 console.log("auth ok:", auth.email);
 
+async function refreshAuth(label = "") {
+  const next = await getE2eBearerToken();
+  if (!next.ok) {
+    console.warn(`[auth refresh] fail ${label}:`, next.reason);
+    return auth;
+  }
+  auth = next;
+  return auth;
+}
+
 async function generateResearchAsync(fv) {
+  await refreshAuth("research");
   const res = await fetch(`${BASE}/api/content/research`, {
     method: "POST",
     headers: {
@@ -104,6 +115,7 @@ async function generateResearchAsync(fv) {
 }
 
 async function runScenario(scenario) {
+  await refreshAuth(scenario.label);
   const input = mergeWorkspaceBrandIntoInput({ ...scenario.raw }, null);
 
   await applyV2AxisResearch({
@@ -113,6 +125,7 @@ async function runScenario(scenario) {
     onStep: (s) => console.log(`[${scenario.label}] research:`, s),
   });
 
+  await refreshAuth(`${scenario.label}:blog`);
   const t0 = Date.now();
   const res = await fetch(`${BASE}/api/content/blog`, {
     method: "POST",

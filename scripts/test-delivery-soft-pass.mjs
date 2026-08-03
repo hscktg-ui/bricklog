@@ -17,6 +17,12 @@ const input = enrichMinimalBlogInput({
   blogLengthTier: "medium",
   v2PipelineEnforced: true,
   v3EngineEnforced: true,
+  batchLocalFinish: true,
+  researchFacts: [
+    { fact: "강릉 꽃집 노을 졸업식 하회전 꽃다발 예약·픽업 안내" },
+    { fact: "리본·카드 문구 옵션 확인" },
+    { fact: "당일 픽업·배송 가능 여부 안내" },
+  ],
 });
 Object.assign(input, prepareBriclogPreWriteContext(input));
 input.v2PreWriteVerified = true;

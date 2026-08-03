@@ -13,6 +13,9 @@ const input = {
   brandName: "더건강하개",
   region: "용인",
   topic: "수제 간식",
+  industry: "반려동물",
+  v4Speaker: "plain_review",
+  contentPersona: "visit_review",
 };
 
 const badIntro = detectForbiddenIntro("오늘은 더건강하개를 소개해드리겠습니다.");

@@ -26,6 +26,21 @@ const check = detectPlaceholderContamination(dirty, INPUT);
 assert.ok(check.counts.total >= PLACEHOLDER_CONTAMINATION_FAIL_COUNT);
 assert.ok(check.reasons.includes("placeholder_contamination"));
 
+const natural =
+  "메뉴를 보면 시즌 브런치와 기본 메뉴 차이가 분명했어요. 비교가 수월했습니다.";
+const naturalCheck = detectPlaceholderContamination(natural, INPUT);
+assert.equal(
+  naturalCheck.counts.hits?.broken_bomyeon || 0,
+  0,
+  "natural 메뉴를 보면 must not flag broken_bomyeon"
+);
+assert.equal(
+  naturalCheck.counts.hits?.easy_compare || 0,
+  0,
+  "비교가 수월했습니다 must not flag easy_compare"
+);
+assert.ok(naturalCheck.ok, "natural prose should pass placeholder gate");
+
 const pack = {
   sections: [{ heading: "a", body: dirty }],
   conclusion: "",

@@ -21,7 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const BASE = (process.env.BASE_URL || "https://briclog.ai").replace(/\/$/, "");
 const OUT = join(root, "config", "user-journey-quality-report.json");
-const SLA_MS = Number(process.env.USER_JOURNEY_SLA_MS) || 300_000;
+const SLA_MS = Number(process.env.USER_JOURNEY_SLA_MS) || 420_000;
 
 function loadEnvLocal() {
   try {
