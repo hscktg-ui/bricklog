@@ -6,7 +6,7 @@ import {
 } from "@/lib/brand/copy";
 import { VISION_CTA_ACCENT } from "@/lib/landing/vision2030Styles";
 
-/** 샘플 결과 열람 중 하단 고정 가입 CTA — 모바일 단일 액션 */
+/** 샘플 결과 열람 중 하단 고정 가입 CTA — 모바일·데스크톱 공통 */
 export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
   if (!onSignup) return null;
   const label = brandName?.trim()
@@ -15,7 +15,7 @@ export default function PublicTestSignupStickyBar({ brandName, onSignup }) {
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[38] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[38] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
       role="region"
       aria-label="작업실 만들기"
     >

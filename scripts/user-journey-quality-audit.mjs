@@ -129,10 +129,10 @@ loadEnvLocal();
 const persona = {
   brandName: "품질감사카페",
   region: "서울 강남",
-  topic: "봄 시즌 브런치 메뉴 오픈",
-  mainKeyword: "브런치",
+  topic: "여름 휴가철 아이스 브런치 메뉴",
+  mainKeyword: "아이스 브런치",
   industry: "카페",
-  storeFeatures: "수제 브런치·로스팅 원두",
+  storeFeatures: "아이스 브런치·로스팅 원두",
   blogLengthTier: "short",
   v2AxisRequired: true,
   v2PipelineEnforced: true,

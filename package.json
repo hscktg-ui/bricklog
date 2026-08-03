@@ -73,6 +73,7 @@
     "test:phone-rhythm-schedule": "node --import ./scripts/register-alias.mjs scripts/test-phone-rhythm-schedule.mjs",
     "test:beta-access-prod": "node scripts/test-beta-access-prod.mjs",
     "test:marketing-director-panel": "node --import ./scripts/register-alias.mjs scripts/run-marketing-director-panel.mjs",
+    "test:war-room-funnel": "node --import ./scripts/register-alias.mjs scripts/report-war-room-funnel.mjs",
     "test:free-launch-mode": "node --import ./scripts/register-alias.mjs scripts/test-free-launch-mode.mjs",
     "test:vision2030-buttons-prod": "node scripts/test-vision2030-buttons-prod.mjs",
     "patch:supabase-auth-signup": "node scripts/patch-supabase-auth-signup.mjs",

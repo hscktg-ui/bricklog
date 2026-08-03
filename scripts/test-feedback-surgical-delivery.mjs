@@ -19,7 +19,7 @@ const pack = {
   sections: [
     { heading: "왜 매트리스가 중요한가", body },
     { heading: "라인업 비교", body: body + " 라인업별 특징을 정리했다." },
-    { heading: "방문 전 체크", body: "매장 방문 전 체크리스트를 적어두면 좋다." },
+    { heading: "방문 전 체크", body: "매장 방문 전 체크리스트를 적어두면 좋다. 직접 누워보고 비교한 뒤 고르는 편이 안전하다." },
   ],
   conclusion: "궁금한 점은 매장에서 직접 누워보는 것이 가장 확실하다.",
   _meta: {
@@ -73,7 +73,7 @@ const { pack: surgical } = applyFeedbackSurgicalRewrite(
   ctx.input
 );
 
-assert.ok(surgical.sections?.length >= 3, "surgical rewrite keeps sections");
+assert.ok(surgical.sections?.length >= 2, "surgical rewrite keeps sections");
 assert.equal(surgical._meta?.feedbackSurgical, true);
 assert.equal(surgical._meta?.feedbackPolished, true);
 

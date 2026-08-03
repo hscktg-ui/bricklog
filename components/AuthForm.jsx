@@ -603,7 +603,7 @@ export default function AuthForm({
       {mode === MODES.signup && publicTestDraft?.brandName ? (
         <div className="mt-4 rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.22))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.08))] px-4 py-3 text-center">
           <p className="text-[12px] font-semibold leading-snug text-[var(--vision-ink)]">
-            「{publicTestDraft.brandName}」 테스트 그대로 작업실에 이어집니다
+            「{publicTestDraft.brandName}」 테스트 그대로 이번 달 운영이 이어집니다
           </p>
           {publicTestDraft.topic ? (
             <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-[#4E5968]">

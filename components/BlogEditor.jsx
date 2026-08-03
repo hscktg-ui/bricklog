@@ -549,7 +549,7 @@ const BlogEditorFormPane = memo(function BlogEditorFormPane({
                 가입 전 입력이 그대로 채워졌어요
               </p>
               <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-                아래 「{WORKSPACE_BLOG.cta}」만 누르시면 첫 편집본을 받을 수 있어요.
+                아래 「{WORKSPACE_BLOG.cta}」만 누르시면 이번 달 운영 초안을 받을 수 있어요.
               </p>
               <button
                 type="button"
