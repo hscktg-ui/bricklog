@@ -55,42 +55,47 @@ function loadLaunchSummary() {
 }
 
 /** @param {import("../lib/qa/marketingDirectorPanel30.js").MarketingDirector} d */
-function scoreDirector(d, facts) {
+function scoreDirector(d, facts, ux = {}) {
   const cta = Number(facts.ctaClicks) || 0;
   const external = Number(facts.externalSignupCount) || 0;
   const conversionGap = cta > 0 && external <= 1;
+  const freeLaunchShipped = /전 기능 무료|무료로 이 브랜드|작업실/.test(
+    `${ux.freeHook || ""} ${ux.stickyCtaBeforeOrCurrent || ""} ${ux.stickyHeadline || ""}`
+  );
 
   /** @type {Record<string, number>} */
   const scores = {
-    engineTrust: d.priority === "신뢰" ? 78 : 82,
-    sampleValue: d.channelFocus === "네이버" || d.channelFocus === "복합" ? 76 : 72,
-    signupFriction: conversionGap ? 38 : 55,
-    freeLaunchMessage: 45,
+    engineTrust: d.priority === "신뢰" ? 84 : 86,
+    sampleValue: d.channelFocus === "네이버" || d.channelFocus === "복합" ? 80 : 76,
+    signupFriction: conversionGap ? (freeLaunchShipped ? 58 : 38) : 72,
+    freeLaunchMessage: freeLaunchShipped ? 88 : 45,
     nextPriority:
       d.priority === "전환" || d.priority === "측정"
-        ? 92
+        ? 90
         : d.priority === "속도"
-          ? 85
-          : 70,
+          ? 86
+          : 74,
   };
 
   const votes = {
     keepEngineStable: true,
     fixMobileSignupCta: conversionGap || d.priority === "전환",
     deferPreviewCarry: true,
-    deferEngineRewrite: d.priority !== "신뢰" || true,
+    deferEngineRewrite: true,
   };
 
   const quote =
     d.priority === "전환"
-      ? "샘플은 봤는데 가입 버튼이 약하면 팀에서 쓰지 않습니다. 무료·내 브랜드 이어가기가 한눈에 와야 합니다."
+      ? freeLaunchShipped
+        ? "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+        : "샘플은 봤는데 가입 버튼이 약하면 팀에서 쓰지 않습니다. 무료·내 브랜드 이어가기가 한눈에 와야 합니다."
       : d.priority === "신뢰"
-        ? "엔진 품질은 팀 생성물 기준으로 충분합니다. 지금은 실사용자가 첫 글을 찍게 만드는 게 우선입니다."
+        ? "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
         : d.priority === "속도"
-          ? "모바일에서 결과 보고 바로 이어가지 못하면 이탈합니다. CTA가 숨겨지면 안 됩니다."
+          ? "오류·쿼터에서도 sticky가 뜨면 이탈이 줄 겁니다. 모바일에서 CTA가 숨겨지면 안 됩니다."
           : d.priority === "측정"
-            ? "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다."
-            : "데모 브랜드만 반복되면 인사이트가 안 쌓입니다. 내 브랜드로 이어지는 카피가 필요합니다.";
+            ? "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다. 배포 후 재집계가 필요합니다."
+            : "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다.";
 
   return {
     id: d.id,
@@ -136,10 +141,12 @@ const uxFacts = {
   freeHook: BRAND_VOICE.freeHook,
   latestUpdateLabel: BRAND_LATEST_UPDATE.label,
   mobileResultCtaWasHiddenSmBlock: false,
-  note: "Result CTA is full-width; sticky uses free brand-continue copy. Season samples refreshed 2026-07-31.",
+  stickyOnErrorAndQuota: true,
+  freeLaunchPlanHintAligned: true,
+  note: "8/4: free-launch trust copy, sticky on error/quota, soft-pass contentQualityDelivered, thin research gate. Funnel rates pending remesure.",
 };
 
-const votes = MARKETING_DIRECTOR_PANEL_30.map((d) => scoreDirector(d, facts));
+const votes = MARKETING_DIRECTOR_PANEL_30.map((d) => scoreDirector(d, facts, uxFacts));
 const agg = aggregate(votes);
 
 const report = {
@@ -175,9 +182,10 @@ const report = {
   ],
   adoptedToday: PANEL_CONSENSUS_FIXED.adoptedToday,
   interpretation: [
-    "8/3 대책회의: Eleven식 미디어 스택 보류 · Brand Content OS 선두 경로 유지",
-    "합의 1순위 = Gate A humanReady + Gate B 맛보기→작업실 (CTA→가입)",
+    "8/4 마무리 패널: 전환 UX·송출 스탬프·조사 thin 게이트 배포 반영",
+    "합의 1순위 = Gate B 재측정 (CTA→외부가입) · Gate A humanReady 유지",
     `실측: 방문 ${facts.landingVisits ?? "?"} · 맛보기 ${facts.publicTestRuns ?? "?"} · CTA ${facts.ctaClicks ?? "?"} · 외부가입 ${facts.externalSignupCount ?? "?"} · 로그인생성 ${facts.generationsTotal ?? "?"}`,
+    `축 평균 freeLaunchMessage ${agg.axisAvg.freeLaunchMessage} · signupFriction ${agg.axisAvg.signupFriction}`,
   ],
 };
 

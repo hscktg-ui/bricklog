@@ -1,0 +1,770 @@
+{
+  "at": "2026-08-03T22:54:34.775Z",
+  "panelVersion": "marketing-director-panel-v1",
+  "panelSize": 30,
+  "asOfFacts": {
+    "at": "2026-08-03T22:54:34.216Z",
+    "externalSignupCount": 1,
+    "profileCount": 11,
+    "publicTestRuns": 96,
+    "uniqueSampleVisitors": 88,
+    "lastSampleAt": "2026-07-30T22:24:52.484865+00:00",
+    "ctaClicks": 32,
+    "landingVisits": 2134,
+    "generationsTotal": 10,
+    "contentItemsTotal": 20,
+    "topCtaSources": [
+      {
+        "label": "__funnel/signup:form_submit:public_test_quota",
+        "count": 5
+      },
+      {
+        "label": "__intent/signup:public_test_error",
+        "count": 4
+      },
+      {
+        "label": "__intent/signup:public_test_quota",
+        "count": 4
+      },
+      {
+        "label": "__intent/signup:public_test_result",
+        "count": 4
+      },
+      {
+        "label": "__funnel/signup:form_submit:public_test_result",
+        "count": 4
+      },
+      {
+        "label": "__funnel/signup:modal_open:public_test_result",
+        "count": 3
+      },
+      {
+        "label": "__intent/signup:public_test_sticky",
+        "count": 2
+      },
+      {
+        "label": "__funnel/signup:modal_open:public_test_quota",
+        "count": 2
+      }
+    ]
+  },
+  "uxFacts": {
+    "stickyCtaBeforeOrCurrent": "무료로 이 브랜드 작업실 열기",
+    "stickyHeadline": "무료 · 이번 달 운영 이어가기",
+    "freeHook": "지금은 전 기능 무료입니다. 샘플로 이번 달 운영을 먼저 맞춰 보시고, 마음에 들면 작업실에서 이어가세요.",
+    "latestUpdateLabel": "2026년 8월 업데이트",
+    "mobileResultCtaWasHiddenSmBlock": false,
+    "stickyOnErrorAndQuota": true,
+    "freeLaunchPlanHintAligned": true,
+    "note": "8/4: free-launch trust copy, sticky on error/quota, soft-pass contentQualityDelivered, thin research gate. Funnel rates pending remesure."
+  },
+  "directors": [
+    {
+      "id": "md01",
+      "name": "김서연",
+      "industry": "카페·F&B",
+      "region": "서울 마포",
+      "channelFocus": "네이버",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    },
+    {
+      "id": "md02",
+      "name": "박준호",
+      "industry": "음식점·외식",
+      "region": "부산 해운대",
+      "channelFocus": "복합",
+      "priority": "브랜드일관성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md03",
+      "name": "이하늘",
+      "industry": "의료·클리닉",
+      "region": "인천 송도",
+      "channelFocus": "네이버",
+      "priority": "신뢰",
+      "scores": {
+        "engineTrust": 84,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+    },
+    {
+      "id": "md04",
+      "name": "최유진",
+      "industry": "뷰티·피부",
+      "region": "서울 강남",
+      "channelFocus": "인스타",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    },
+    {
+      "id": "md05",
+      "name": "정민재",
+      "industry": "학원·교육",
+      "region": "대구 수성",
+      "channelFocus": "네이버",
+      "priority": "측정",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다. 배포 후 재집계가 필요합니다."
+    },
+    {
+      "id": "md06",
+      "name": "한소희",
+      "industry": "꽃집·선물",
+      "region": "경기 성남",
+      "channelFocus": "인스타",
+      "priority": "속도",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 86
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "오류·쿼터에서도 sticky가 뜨면 이탈이 줄 겁니다. 모바일에서 CTA가 숨겨지면 안 됩니다."
+    },
+    {
+      "id": "md07",
+      "name": "오세훈",
+      "industry": "숙박·펜션",
+      "region": "제주 애월",
+      "channelFocus": "플레이스",
+      "priority": "지역성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md08",
+      "name": "윤지아",
+      "industry": "리테일·패션",
+      "region": "서울 성수",
+      "channelFocus": "인스타",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    },
+    {
+      "id": "md09",
+      "name": "강태양",
+      "industry": "인테리어·시공",
+      "region": "경기 광주",
+      "channelFocus": "네이버",
+      "priority": "신뢰",
+      "scores": {
+        "engineTrust": 84,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+    },
+    {
+      "id": "md10",
+      "name": "송미래",
+      "industry": "가구·리빙",
+      "region": "경기 용인",
+      "channelFocus": "복합",
+      "priority": "브랜드일관성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md11",
+      "name": "배현우",
+      "industry": "자동차·정비",
+      "region": "대전 유성",
+      "channelFocus": "네이버",
+      "priority": "지역성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md12",
+      "name": "임채원",
+      "industry": "피트니스",
+      "region": "서울 영등포",
+      "channelFocus": "인스타",
+      "priority": "속도",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 86
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "오류·쿼터에서도 sticky가 뜨면 이탈이 줄 겁니다. 모바일에서 CTA가 숨겨지면 안 됩니다."
+    },
+    {
+      "id": "md13",
+      "name": "조은별",
+      "industry": "베이커리",
+      "region": "광주 동구",
+      "channelFocus": "플레이스",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    },
+    {
+      "id": "md14",
+      "name": "신도윤",
+      "industry": "반려동물",
+      "region": "서울 송파",
+      "channelFocus": "인스타",
+      "priority": "브랜드일관성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md15",
+      "name": "문가영",
+      "industry": "치과·의료",
+      "region": "부산 수영",
+      "channelFocus": "네이버",
+      "priority": "신뢰",
+      "scores": {
+        "engineTrust": 84,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+    },
+    {
+      "id": "md16",
+      "name": "황준서",
+      "industry": "이커머스",
+      "region": "서울 중구",
+      "channelFocus": "복합",
+      "priority": "측정",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다. 배포 후 재집계가 필요합니다."
+    },
+    {
+      "id": "md17",
+      "name": "나혜림",
+      "industry": "부동산·중개",
+      "region": "경기 하남",
+      "channelFocus": "네이버",
+      "priority": "신뢰",
+      "scores": {
+        "engineTrust": 84,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+    },
+    {
+      "id": "md18",
+      "name": "유성민",
+      "industry": "주류·F&B",
+      "region": "서울 이태원",
+      "channelFocus": "인스타",
+      "priority": "브랜드일관성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md19",
+      "name": "권다은",
+      "industry": "청소·설비",
+      "region": "대구 동구",
+      "channelFocus": "네이버",
+      "priority": "속도",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 86
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "오류·쿼터에서도 sticky가 뜨면 이탈이 줄 겁니다. 모바일에서 CTA가 숨겨지면 안 됩니다."
+    },
+    {
+      "id": "md20",
+      "name": "홍석진",
+      "industry": "전문서비스·법률",
+      "region": "서울 서초",
+      "channelFocus": "네이버",
+      "priority": "신뢰",
+      "scores": {
+        "engineTrust": 84,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+    },
+    {
+      "id": "md21",
+      "name": "서예준",
+      "industry": "키즈·교육",
+      "region": "세종",
+      "channelFocus": "인스타",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    },
+    {
+      "id": "md22",
+      "name": "노지훈",
+      "industry": "호텔·리조트",
+      "region": "강원 속초",
+      "channelFocus": "복합",
+      "priority": "지역성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md23",
+      "name": "안수빈",
+      "industry": "한의원·웰니스",
+      "region": "대전 서구",
+      "channelFocus": "네이버",
+      "priority": "신뢰",
+      "scores": {
+        "engineTrust": 84,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+    },
+    {
+      "id": "md24",
+      "name": "피도현",
+      "industry": "매트리스·침구",
+      "region": "경기 기흥",
+      "channelFocus": "네이버",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    },
+    {
+      "id": "md25",
+      "name": "탁예린",
+      "industry": "화장품·뷰티",
+      "region": "서울 명동",
+      "channelFocus": "인스타",
+      "priority": "브랜드일관성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md26",
+      "name": "구민호",
+      "industry": "프랜차이즈 본사",
+      "region": "서울 여의도",
+      "channelFocus": "복합",
+      "priority": "측정",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다. 배포 후 재집계가 필요합니다."
+    },
+    {
+      "id": "md27",
+      "name": "라서현",
+      "industry": "전통시장·소상공",
+      "region": "전주 완산",
+      "channelFocus": "플레이스",
+      "priority": "지역성",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 74
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다."
+    },
+    {
+      "id": "md28",
+      "name": "마준혁",
+      "industry": "SaaS·B2B",
+      "region": "판교",
+      "channelFocus": "복합",
+      "priority": "측정",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다. 배포 후 재집계가 필요합니다."
+    },
+    {
+      "id": "md29",
+      "name": "백소율",
+      "industry": "웨딩·이벤트",
+      "region": "서울 청담",
+      "channelFocus": "인스타",
+      "priority": "속도",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 76,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 86
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "오류·쿼터에서도 sticky가 뜨면 이탈이 줄 겁니다. 모바일에서 CTA가 숨겨지면 안 됩니다."
+    },
+    {
+      "id": "md30",
+      "name": "채우진",
+      "industry": "물류·배송",
+      "region": "인천 남동",
+      "channelFocus": "네이버",
+      "priority": "전환",
+      "scores": {
+        "engineTrust": 86,
+        "sampleValue": 80,
+        "signupFriction": 58,
+        "freeLaunchMessage": 88,
+        "nextPriority": 90
+      },
+      "votes": {
+        "keepEngineStable": true,
+        "fixMobileSignupCta": true,
+        "deferPreviewCarry": true,
+        "deferEngineRewrite": true
+      },
+      "quote": "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
+    }
+  ],
+  "aggregate": {
+    "axisAvg": {
+      "engineTrust": 85.6,
+      "sampleValue": 78.4,
+      "signupFriction": 58,
+      "freeLaunchMessage": 88
+    },
+    "voteTally": {
+      "adoptSignupConversionUx": 30,
+      "keepEngineStable": 30,
+      "panelSize": 30
+    }
+  },
+  "consensusTop3": [
+    {
+      "rank": 1,
+      "id": "war_room_2026_08_04_funnel_quality_ship",
+      "title": "8/4 마무리: 무료 런치 가입 카피·오류/쿼터 sticky·송출 soft-pass·조사 thin 게이트 배포",
+      "support": "30/30",
+      "status": "adopted_today"
+    },
+    {
+      "rank": 2,
+      "id": "carry_preview_to_workspace",
+      "title": "맛보기 본문 전체를 가입 후 워크스페이스로 이관",
+      "status": "deferred",
+      "reason": "범위 큼 — Gate B 다음 스프린트"
+    },
+    {
+      "rank": 3,
+      "id": "eleven_media_stack",
+      "title": "보이스·영상·이미지 Eleven식 올인원",
+      "status": "deferred",
+      "reason": "카테고리 이탈 · 품질 KPI 이전 금지"
+    }
+  ],
+  "adoptedToday": {
+    "id": "war_room_2026_08_04_funnel_quality_ship",
+    "title": "8/4 마무리: 무료 런치 가입 카피·오류/쿼터 sticky·송출 soft-pass·조사 thin 게이트 배포",
+    "rationale": "CTA→외부가입 재측정을 위해 전환 UX와 품질 송출 스탬프를 먼저 맞춤. Eleven 미디어 스택·미리보기 이관은 계속 보류."
+  },
+  "interpretation": [
+    "8/4 마무리 패널: 전환 UX·송출 스탬프·조사 thin 게이트 배포 반영",
+    "합의 1순위 = Gate B 재측정 (CTA→외부가입) · Gate A humanReady 유지",
+    "실측: 방문 2134 · 맛보기 96 · CTA 32 · 외부가입 1 · 로그인생성 10",
+    "축 평균 freeLaunchMessage 88 · signupFriction 58"
+  ]
+}

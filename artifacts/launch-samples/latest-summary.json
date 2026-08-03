@@ -1,0 +1,666 @@
+{
+  "at": "2026-08-03T22:54:34.216Z",
+  "periodNote": "런칭=첫 profiles·site_visits·public_test_runs 기준 추정",
+  "launchSignals": {
+    "firstProfileAt": "2026-05-22T04:22:12.463156+00:00",
+    "firstSiteVisitAt": "2026-06-06T05:11:11.248762+00:00",
+    "firstPublicTestAt": "2026-06-06T21:14:27.210559+00:00",
+    "profileCount": 11,
+    "externalSignupCount": 1
+  },
+  "publicBrandTest": {
+    "tableReady": true,
+    "totalRecordedRuns": 96,
+    "uniqueSampleVisitors": 88,
+    "failedOrOther": 0,
+    "firstRun": {
+      "id": "89843868-f56a-4377-93ec-dc6308d3f2b1",
+      "brand_name": "모카하우스",
+      "region": "서울 마포",
+      "topic": "봄 시즌 수제 브런치 메뉴",
+      "succeeded": true,
+      "run_date": "2026-06-07",
+      "client_ip": "222.120.246.36",
+      "session_id": "0d24339e-3557-4bbf-883b-6e9aabddbc6c",
+      "created_at": "2026-06-06T21:14:27.210559+00:00"
+    },
+    "lastRun": {
+      "id": "67351de8-f8f5-4e30-92f5-4c01197a2e6d",
+      "brand_name": "모카하우스",
+      "region": "서울 마포",
+      "topic": "봄 시즌 수제 브런치 메뉴",
+      "succeeded": true,
+      "run_date": "2026-07-31",
+      "client_ip": "118.235.13.120",
+      "session_id": "710307ec-8eca-45b7-87dd-0968a16b55da",
+      "created_at": "2026-07-30T22:24:52.484865+00:00"
+    },
+    "runsPerDayTop": [
+      {
+        "label": "2026-06-17",
+        "count": 12
+      },
+      {
+        "label": "2026-06-07",
+        "count": 10
+      },
+      {
+        "label": "2026-06-14",
+        "count": 6
+      },
+      {
+        "label": "2026-06-08",
+        "count": 5
+      },
+      {
+        "label": "2026-06-15",
+        "count": 5
+      },
+      {
+        "label": "2026-06-16",
+        "count": 5
+      },
+      {
+        "label": "2026-06-22",
+        "count": 5
+      },
+      {
+        "label": "2026-06-23",
+        "count": 5
+      },
+      {
+        "label": "2026-06-24",
+        "count": 5
+      },
+      {
+        "label": "2026-06-21",
+        "count": 4
+      },
+      {
+        "label": "2026-06-25",
+        "count": 4
+      },
+      {
+        "label": "2026-06-13",
+        "count": 3
+      },
+      {
+        "label": "2026-06-28",
+        "count": 3
+      },
+      {
+        "label": "2026-07-09",
+        "count": 3
+      }
+    ],
+    "topBrands": [
+      {
+        "label": "모카하우스",
+        "count": 65
+      },
+      {
+        "label": "꽃담",
+        "count": 18
+      },
+      {
+        "label": "마음편한 내과",
+        "count": 2
+      },
+      {
+        "label": "바람언덕 펜션",
+        "count": 2
+      },
+      {
+        "label": "Draft 128",
+        "count": 2
+      },
+      {
+        "label": "한올베이커리",
+        "count": 1
+      },
+      {
+        "label": "줄눈스케치",
+        "count": 1
+      },
+      {
+        "label": "탱자밧데리",
+        "count": 1
+      },
+      {
+        "label": "팬션",
+        "count": 1
+      },
+      {
+        "label": "큰빛안과",
+        "count": 1
+      },
+      {
+        "label": "유니콘클린설비",
+        "count": 1
+      },
+      {
+        "label": "매트킹",
+        "count": 1
+      }
+    ],
+    "topTopics": [
+      {
+        "label": "봄 시즌 수제 브런치 메뉴",
+        "count": 65
+      },
+      {
+        "label": "어버이날 꽃다발 예약·픽업",
+        "count": 18
+      },
+      {
+        "label": "건강검진 첫 방문·공복 안내",
+        "count": 2
+      },
+      {
+        "label": "주말 바베큐 패키지 예약",
+        "count": 2
+      },
+      {
+        "label": "수제 빵 오픈·당일 픽업",
+        "count": 1
+      },
+      {
+        "label": "줄눈시공이 필요한 고객유치",
+        "count": 1
+      },
+      {
+        "label": "축구",
+        "count": 1
+      },
+      {
+        "label": "야구",
+        "count": 1
+      },
+      {
+        "label": "수입 / 국산 자동차 밧데리 교체",
+        "count": 1
+      },
+      {
+        "label": "수영장펜션",
+        "count": 1
+      },
+      {
+        "label": "병원 신규오픈",
+        "count": 1
+      },
+      {
+        "label": "혁신도시 식당 하수구 막힘 해결",
+        "count": 1
+      },
+      {
+        "label": "카페트 시공 포트폴리오",
+        "count": 1
+      }
+    ],
+    "topRegions": [
+      {
+        "label": "서울 마포",
+        "count": 65
+      },
+      {
+        "label": "부산 해운대",
+        "count": 19
+      },
+      {
+        "label": "인천 송도",
+        "count": 2
+      },
+      {
+        "label": "제주 애월",
+        "count": 2
+      },
+      {
+        "label": "서울 영등포",
+        "count": 2
+      },
+      {
+        "label": "대전 유성",
+        "count": 1
+      },
+      {
+        "label": "화성 평택",
+        "count": 1
+      },
+      {
+        "label": "대부도",
+        "count": 1
+      },
+      {
+        "label": "대구 수성구",
+        "count": 1
+      },
+      {
+        "label": "대구 동구",
+        "count": 1
+      },
+      {
+        "label": "경기도 광주",
+        "count": 1
+      }
+    ],
+    "recentSamples": [
+      {
+        "at": "2026-07-30T22:24:52.484865+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-13T03:55:56.278688+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-10T14:30:04.381685+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-10T04:17:49.791446+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-09T03:09:53.979226+00:00",
+        "brand": "꽃담",
+        "region": "부산 해운대",
+        "topic": "어버이날 꽃다발 예약·픽업"
+      },
+      {
+        "at": "2026-07-09T02:52:35.500975+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-08T22:49:01.221062+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-08T12:04:51.20286+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-08T02:02:47.753351+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-05T05:08:45.363468+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-04T00:47:54.365119+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-07-02T03:49:39.634102+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-06-28T12:20:22.606261+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-06-28T08:58:28.97872+00:00",
+        "brand": "모카하우스",
+        "region": "서울 마포",
+        "topic": "봄 시즌 수제 브런치 메뉴"
+      },
+      {
+        "at": "2026-06-28T05:30:11.331333+00:00",
+        "brand": "매트킹",
+        "region": "경기도 광주",
+        "topic": "카페트 시공 포트폴리오"
+      }
+    ],
+    "note": "public_test_runs = API 성공(runPublicBrandTest ok)만 기록. 쿼터 초과 instant·게이트 실패 미포함"
+  },
+  "funnelSignals": {
+    "landingOrTestPathVisits": 2134,
+    "publicTestSignupCtaClicks": 32,
+    "topPublicTestCtaSources": [
+      {
+        "label": "__funnel/signup:form_submit:public_test_quota",
+        "count": 5
+      },
+      {
+        "label": "__intent/signup:public_test_error",
+        "count": 4
+      },
+      {
+        "label": "__intent/signup:public_test_quota",
+        "count": 4
+      },
+      {
+        "label": "__intent/signup:public_test_result",
+        "count": 4
+      },
+      {
+        "label": "__funnel/signup:form_submit:public_test_result",
+        "count": 4
+      },
+      {
+        "label": "__funnel/signup:modal_open:public_test_result",
+        "count": 3
+      },
+      {
+        "label": "__intent/signup:public_test_sticky",
+        "count": 2
+      },
+      {
+        "label": "__funnel/signup:modal_open:public_test_quota",
+        "count": 2
+      }
+    ]
+  },
+  "loggedInGeneration": {
+    "generationsTotal": 10,
+    "generationsWithBody": 10,
+    "contentItemsTotal": 20,
+    "contentItemsWithBody": 20,
+    "brandsTotal": 0,
+    "blogGenerateUsageLogs": 206,
+    "anyGenerateUsageLogs": 206,
+    "topGenerationKeywords": [
+      {
+        "label": "새 브랜드 소식",
+        "count": 4
+      },
+      {
+        "label": "ㅈ",
+        "count": 1
+      },
+      {
+        "label": "ㄹ",
+        "count": 1
+      },
+      {
+        "label": "ㄴ",
+        "count": 1
+      },
+      {
+        "label": "그랩앤고플라워 소식",
+        "count": 1
+      },
+      {
+        "label": "에싸 포르토 4인 코너형 스윙기능 토그 소가죽 소파",
+        "count": 1
+      },
+      {
+        "label": "카레클린트 001 체어",
+        "count": 1
+      }
+    ],
+    "topContentTitles": [
+      {
+        "label": "기흥구 금성침대 용인 금성 KS 1230 프레임",
+        "count": 4
+      },
+      {
+        "label": "파주 해신기획 솔직 후기, 에 걸맞지 않음",
+        "count": 1
+      },
+      {
+        "label": "충청남도 천안에서 에싸 컨셉스토어 천안점 우드와 sil leather의 조합으로 고풍스러운 분",
+        "count": 1
+      },
+      {
+        "label": "파주 그랩앤고플라워, 여름철 꽃 추천 정리",
+        "count": 1
+      },
+      {
+        "label": "분당 용인 카레클린트 굿바이 최대 45%!",
+        "count": 1
+      },
+      {
+        "label": "📍 여주목마 소식",
+        "count": 1
+      },
+      {
+        "label": "여주목마 · 실내 수영장 오픈 안내",
+        "count": 1
+      },
+      {
+        "label": "📍 여주 여주목마 피드를 넘기다가 눈에 들어올 만한 장면을 먼저 담았어요.",
+        "count": 1
+      },
+      {
+        "label": "여주목마 · 수영장 개장 안내",
+        "count": 1
+      },
+      {
+        "label": "📍 여주, 문득 수영장 개장이 떠올라서 여주, 수영장 개장 — 여주목마 이야기로, 수영장 개장 준비하며 적어봤어요 · 마음에 들해요. ✔ 여주목마 · 프로필 확인. 📍 여주, 직접 들러 보고 정리한 내용을 짧게 남겨봤어요. 플레이스에서 보면 돼요. 생각보다 저장해 두고 싶어지는 순간이했습니다. 🔎 는 순간 📌 매장 분위기 — 여주목마 📍 동선 — 매장 ✔ 쇼룸 — 수영장 개장, 현장 분위기가 사진과 달랐어요 ✔ 여주에서 매장 안내 보며 남긴 오늘의 장면",
+        "count": 1
+      },
+      {
+        "label": "새 브랜드 · 수영장 개장 안내",
+        "count": 1
+      },
+      {
+        "label": "📍 여주, 문득 수영장 개장이 떠올라서 여주, 수영장 개장. 🔎 여주 새 브랜드 왜 매장 안내를 찾게 됐는지 방문·상담 때문에 이야기 나누기 전에 기준부터 정리했어요. ✔ 현장 새 브랜드에 직접 들어가 새 브랜드 안내를 눈으로 확인했어요 근처 매장 매장에서 매장 안내을 직접 확인해 봤어요 — 마음에 들해요 · 쇼룸 · 프로필 확인. 이 지역, 직접 들러 보고 정리한 내용을 짧게 남겨봤어요. 플레이스에서 보면 돼요. ✔ 생각보다 저장해 두고 싶어지는 순간이했습니다.",
+        "count": 1
+      },
+      {
+        "label": "🏊 여주목마 수영장 오픈소식",
+        "count": 1
+      },
+      {
+        "label": "🏊 물놀이의 계절이 돌아왔습니다.",
+        "count": 1
+      },
+      {
+        "label": "파주 그랩앤고플라워, 파주 그랩앤고플라워, 여름철 꽃다발 추천",
+        "count": 1
+      }
+    ],
+    "recentGenerations": [
+      {
+        "at": "2026-07-09T00:25:10.954314+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "카레클린트 001 체어",
+        "region": "청담",
+        "industry": "",
+        "chars": 28227,
+        "excerpt": "{\"title\":\"청담 카레클린트 304 SOFA\",\"representativeTitle\":\"청담 카레클린트 304 SOFA\",\"sections\":[{\"heading\":\"304 S"
+      },
+      {
+        "at": "2026-07-07T00:06:08.917885+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "새 브랜드 소식",
+        "region": "기흥구",
+        "industry": "침대·매트리스",
+        "chars": 26972,
+        "excerpt": "{\"title\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"representativeTitle\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"sections\":"
+      },
+      {
+        "at": "2026-07-07T00:00:28.860572+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "새 브랜드 소식",
+        "region": "기흥구",
+        "industry": "침대·매트리스",
+        "chars": 26971,
+        "excerpt": "{\"title\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"representativeTitle\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"sections\":"
+      },
+      {
+        "at": "2026-07-06T23:55:57.770562+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "새 브랜드 소식",
+        "region": "기흥구",
+        "industry": "침대·매트리스",
+        "chars": 24739,
+        "excerpt": "{\"title\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"representativeTitle\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"sections\":"
+      },
+      {
+        "at": "2026-07-06T23:53:38.797554+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "새 브랜드 소식",
+        "region": "기흥구",
+        "industry": "",
+        "chars": 26895,
+        "excerpt": "{\"title\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"representativeTitle\":\"기흥구 금성침대 용인 금성 KS 1230 프레임\",\"sections\":"
+      },
+      {
+        "at": "2026-07-06T01:50:54.382532+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "에싸 포르토 4인 코너형 스윙기능 토그 소가죽 소파",
+        "region": "수원점",
+        "industry": "",
+        "chars": 27675,
+        "excerpt": "{\"title\":\"수원점 자코모소파 슈렁큰 소가죽 소파\",\"representativeTitle\":\"수원점 자코모소파 슈렁큰 소가죽 소파\",\"sections\":[{\"heading\":"
+      },
+      {
+        "at": "2026-07-05T05:10:11.701062+00:00",
+        "email": "haeshincompany@naver.com",
+        "keyword": "그랩앤고플라워 소식",
+        "region": "파주",
+        "industry": "",
+        "chars": 10401,
+        "excerpt": "{\"title\":\"파주 그랩앤고플라워, 파주 그랩앤고플라워, 여름철 꽃다발 추천\",\"representativeTitle\":\"파주 그랩앤고플라워, 파주 그랩앤고플라워, 여름철 꽃다발"
+      },
+      {
+        "at": "2026-05-21T22:50:00.878304+00:00",
+        "email": "hscktg@gmail.com",
+        "keyword": "ㄴ",
+        "region": "전국",
+        "industry": "게임",
+        "chars": 44655,
+        "excerpt": "{\"titles\":[\"너무재밌어, 리니지를 만나다\",\"게임의 새로운 경험, 너무재밌어\",\"리니지와 함께하는 즐거운 시간\",\"너무재밌어, 당신의 게임 라이프를 변화시킵니다\",\"리니지"
+      },
+      {
+        "at": "2026-05-21T11:48:14.881961+00:00",
+        "email": "hscktg@gmail.com",
+        "keyword": "ㄹ",
+        "region": "서울",
+        "industry": "게임",
+        "chars": 46818,
+        "excerpt": "{\"titles\":[\"리니지 클래식재밌네: 서울에서의 특별한 시간\",\"리니지와 함께하는 봄날의 여유\",\"서울에서 만나는 리니지 클래식의 매력\",\"리니지 클래식재밌네, 일상 속의 즐"
+      },
+      {
+        "at": "2026-05-21T11:13:20.347181+00:00",
+        "email": "hscktg@gmail.com",
+        "keyword": "ㅈ",
+        "region": "전국",
+        "industry": "자동 블로그 작성 ",
+        "chars": 46194,
+        "excerpt": "{\"titles\":[\"봄날의 따뜻함 속에서 만나는 브릭로그\",\"매일의 기록을 쉽고 빠르게, 브릭로그\",\"브릭로그, 자동블로그작성 ai툴로 시작하는 새로운 일상\",\"브릭로그와 함께하"
+      }
+    ],
+    "recentContentItems": [
+      {
+        "at": "2026-07-09T00:25:11.916814+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "청담 카레클린트 304 SOFA",
+        "topic": "304 SOFA",
+        "qualityScore": 100,
+        "excerpt": "청담 카레클린트 304 SOFA 304 SOFA, 카레클린트 안내에서 짚을 포인트 청담 카레클린트 현장을 직접 보고 304 SOFA 시공 범위를 확인했습니다. 왜 304 SOFA를"
+      },
+      {
+        "at": "2026-07-07T00:06:09.739196+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "기흥구 금성침대 용인 금성 KS 1230 프레임",
+        "topic": "금성 KS 1230 프레임 소개",
+        "qualityScore": 100,
+        "excerpt": "기흥구 금성침대 용인 금성 KS 1230 프레임 금성침대 용인 전시 구성·안내 기흥구 금성침대 용인 금성 KS 1230 프레임 일정·비용은 상담 기준으로 확인하시면 돼요. 금성 K"
+      },
+      {
+        "at": "2026-07-07T00:00:30.430543+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "기흥구 금성침대 용인 금성 KS 1230 프레임",
+        "topic": "금성 KS 1230 프레임 소개",
+        "qualityScore": 100,
+        "excerpt": "기흥구 금성침대 용인 금성 KS 1230 프레임 금성침대 용인 전시 구성·안내 기흥구 금성침대 용인 금성 KS 1230 프레임 일정·비용은 상담 기준으로 확인하시면 돼요. 금성 K"
+      },
+      {
+        "at": "2026-07-06T23:55:58.730606+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "기흥구 금성침대 용인 금성 KS 1230 프레임",
+        "topic": "금성 KS 1230 프레임 소개",
+        "qualityScore": 100,
+        "excerpt": "기흥구 금성침대 용인 금성 KS 1230 프레임 금성침대 용인 전시 구성·안내 허리·숙면 불편이 길어지면서 침대부터 손대게 됐고, 왜 금성 KS 1230 프레임을 는지부터 정리해 "
+      },
+      {
+        "at": "2026-07-06T23:53:39.65412+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "기흥구 금성침대 용인 금성 KS 1230 프레임",
+        "topic": "금성 KS 1230 프레임 소개",
+        "qualityScore": 100,
+        "excerpt": "기흥구 금성침대 용인 금성 KS 1230 프레임 금성침대 용인 전시 구성·안내 기흥구 금성침대 용인 금성 KS 1230 프레임 일정·비용은 상담 기준으로 확인하시면 돼요. 금성 K"
+      },
+      {
+        "at": "2026-07-06T01:50:55.639713+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "수원점 자코모소파 슈렁큰 소가죽 소파",
+        "topic": "폰다 4인, 슈렁큰 소가죽 소파",
+        "qualityScore": 100,
+        "excerpt": "수원점 자코모소파 슈렁큰 소가죽 소파 자코모소파 전시 구성·안내 허리·숙면 불편이 길어지면서 침대부터 손대게 됐고, 왜 슈렁큰 소가죽 소파를 는지부터 정리해 봤어요. 자코모소파 슈"
+      },
+      {
+        "at": "2026-07-05T05:10:13.106375+00:00",
+        "email": "haeshincompany@naver.com",
+        "channel": "blog",
+        "title": "파주 그랩앤고플라워, 파주 그랩앤고플라워, 여름철 꽃다발 추천",
+        "topic": "파주 그랩앤고플라워, 여름철 꽃다발 추천",
+        "qualityScore": 100,
+        "excerpt": "파주 그랩앤고플라워, 파주 그랩앤고플라워, 여름철 꽃다발 추천 기념일 꽃다발은 어떻게 고를까? 같은 꽃이라도 보관 환경에 따라 며칠 차이가 나기 때문에, 저희도 여름철에 자주 문의"
+      },
+      {
+        "at": "2026-06-24T09:18:00.94832+00:00",
+        "email": "hscktg@gmail.com",
+        "channel": "instagram",
+        "title": "🏊 물놀이의 계절이 돌아왔습니다.",
+        "topic": "수영장 오픈소식",
+        "qualityScore": null,
+        "excerpt": "여주목마 수영장이 새롭게 오픈했습니다. 햇빛 걱정 없이, 날씨 걱정 없이, 가족과 함께 편하게 즐길 수 있는 공간. 수영 후에는 식사도, 커피 한 잔의 여유도 함께. 올여름, 여주"
+      },
+      {
+        "at": "2026-06-24T09:17:35.7094+00:00",
+        "email": "hscktg@gmail.com",
+        "channel": "place",
+        "title": "🏊 여주목마 수영장 오픈소식",
+        "topic": "수영장 오픈소식",
+        "qualityScore": null,
+        "excerpt": "🏊 여주목마 수영장 오픈소식 날씨 걱정 없이 즐길 수 있는 수영장이 새롭게 오픈했습니다. · 가족 나들이, 물놀이, 휴식을 한 번에 즐길 수 있도록 준비했으며 기존 야외시설과 함"
+      },
+      {
+        "at": "2026-06-24T00:53:24.569156+00:00",
+        "email": "hscktg@gmail.com",
+        "channel": "instagram",
+        "title": "📍 여주, 문득 수영장 개장이 떠올라서 여주, 수영장 개장. 🔎 여주 새 브랜드 왜 매장 안내를 찾게 됐는지 방문·상담 때문에 이야기 나누기 전에 기준부터 정리했어요. ✔ 현장 새 브랜드에 직접 들어가 새 브랜드 안내를 눈으로 확인했어요 근처 매장 매장에서 매장 안내을 직접 확인해 봤어요 — 마음에 들해요 · 쇼룸 · 프로필 확인. 이 지역, 직접 들러 보고 정리한 내용을 짧게 남겨봤어요. 플레이스에서 보면 돼요. ✔ 생각보다 저장해 두고 싶어지는 순간이했습니다.",
+        "topic": "수영장 개장",
+        "qualityScore": null,
+        "excerpt": "📍 여주, 문득 수영장 개장이 떠올라서 여주, 수영장 개장. 🔎 여주 새 브랜드 왜 매장 안내를 찾게 됐는지 방문·상담 때문에 이야기 나누기 전에 기준부터 정리했어요. ✔ 현장"
+      }
+    ]
+  },
+  "interpretation": [
+    "실외부 가입 1명 — 샘플→가입 전환 추적은 CTA 32회"
+  ]
+}

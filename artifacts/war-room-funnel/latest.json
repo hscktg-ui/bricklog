@@ -1,0 +1,64 @@
+{
+  "at": "2026-08-03T22:54:34.250Z",
+  "asOf": "war-room-gate-b",
+  "funnel": {
+    "visits": 2134,
+    "publicTests": 96,
+    "ctaClicks": 32,
+    "externalSignups": 1,
+    "loggedInGenerations": 10,
+    "profiles": 11
+  },
+  "rates": {
+    "visitToTestPct": 4.5,
+    "testToCtaPct": 33.3,
+    "ctaToExternalPct": 3.1,
+    "visitToExternalPct": 0
+  },
+  "targets": {
+    "ctaToExternalPct": 15,
+    "weeklyExternalSignups": 10
+  },
+  "gateB": {
+    "ctaToExternalMet": false,
+    "note": "퍼널 중간 정체 — sticky 전면 노출·운영 계획 카피 강화 후 재측정"
+  },
+  "topCtaSources": [
+    {
+      "label": "__funnel/signup:form_submit:public_test_quota",
+      "count": 5
+    },
+    {
+      "label": "__intent/signup:public_test_error",
+      "count": 4
+    },
+    {
+      "label": "__intent/signup:public_test_quota",
+      "count": 4
+    },
+    {
+      "label": "__intent/signup:public_test_result",
+      "count": 4
+    },
+    {
+      "label": "__funnel/signup:form_submit:public_test_result",
+      "count": 4
+    },
+    {
+      "label": "__funnel/signup:modal_open:public_test_result",
+      "count": 3
+    },
+    {
+      "label": "__intent/signup:public_test_sticky",
+      "count": 2
+    },
+    {
+      "label": "__funnel/signup:modal_open:public_test_quota",
+      "count": 2
+    }
+  ],
+  "interpretation": [
+    "CTA 32 → 외부 가입 1 (3.1%, 목표 15%)",
+    "로그인 생성 10 · profiles 11"
+  ]
+}
