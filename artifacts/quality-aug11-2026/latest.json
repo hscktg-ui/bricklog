@@ -1,0 +1,325 @@
+{
+  "asOf": "2026-08-11",
+  "generatedAt": "2026-08-10T23:08:53.341Z",
+  "stack": {
+    "version": "quality-aug2026-v1",
+    "asOf": "2026-08-11",
+    "enforced": true,
+    "flags": {
+      "resetQuality": true,
+      "masterRebuild": true,
+      "alwaysDeliver": true,
+      "researchFirst": true,
+      "explainV3": true,
+      "experienceOpinion": true,
+      "coreRules": true
+    },
+    "technologies": [
+      "content_evaluation_100",
+      "reset_quality_gate",
+      "quality_trust_kpi",
+      "structure_score_kpi",
+      "human_belief",
+      "research_first",
+      "explain_v3",
+      "experience_opinion",
+      "paragraph_safe_edit",
+      "brand_fact_injection",
+      "industry_pipeline_lock",
+      "placeholder_trace_scrub",
+      "unified_delivery_gate",
+      "quality_leap_finish",
+      "sovereign_always_deliver",
+      "core_rules",
+      "evaluate_first"
+    ],
+    "northStar": "north-star-v1"
+  },
+  "verdict": {
+    "trustRate": 1,
+    "trustTarget": 0.9,
+    "trustTargetMet": true,
+    "readable": 5,
+    "totalGoodCases": 5,
+    "dirtyBlocked": true,
+    "avgEvalScore": 94.4,
+    "avgBelief": 100
+  },
+  "cases": [
+    {
+      "label": "flower",
+      "expectFail": false,
+      "contentEval": {
+        "score": 95,
+        "pass": true,
+        "hardFail": false,
+        "reasons": []
+      },
+      "reset": {
+        "score": 95,
+        "ok": true,
+        "withhold": false,
+        "reasons": []
+      },
+      "trust": {
+        "readable": true,
+        "structureOk": true,
+        "score": 95
+      },
+      "structure": {
+        "score": 100,
+        "ok": true,
+        "parts": {
+          "leadAnswer": true,
+          "experienceSentence": true,
+          "region": true,
+          "brandFact": true
+        }
+      },
+      "belief": {
+        "score": 100,
+        "ok": true
+      },
+      "outputAllowed": true,
+      "augStack": "quality-aug2026-v1"
+    },
+    {
+      "label": "cafe",
+      "expectFail": false,
+      "contentEval": {
+        "score": 95,
+        "pass": true,
+        "hardFail": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "reset": {
+        "score": 95,
+        "ok": true,
+        "withhold": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "trust": {
+        "readable": true,
+        "structureOk": true,
+        "score": 95
+      },
+      "structure": {
+        "score": 100,
+        "ok": true,
+        "parts": {
+          "leadAnswer": true,
+          "experienceSentence": true,
+          "region": true,
+          "brandFact": true
+        }
+      },
+      "belief": {
+        "score": 100,
+        "ok": true
+      },
+      "outputAllowed": true,
+      "augStack": "quality-aug2026-v1"
+    },
+    {
+      "label": "pension",
+      "expectFail": false,
+      "contentEval": {
+        "score": 94,
+        "pass": true,
+        "hardFail": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "reset": {
+        "score": 94,
+        "ok": true,
+        "withhold": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "trust": {
+        "readable": true,
+        "structureOk": true,
+        "score": 94
+      },
+      "structure": {
+        "score": 75,
+        "ok": true,
+        "parts": {
+          "leadAnswer": false,
+          "experienceSentence": true,
+          "region": true,
+          "brandFact": true
+        }
+      },
+      "belief": {
+        "score": 100,
+        "ok": true
+      },
+      "outputAllowed": true,
+      "augStack": "quality-aug2026-v1"
+    },
+    {
+      "label": "salon",
+      "expectFail": false,
+      "contentEval": {
+        "score": 94,
+        "pass": true,
+        "hardFail": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "reset": {
+        "score": 94,
+        "ok": true,
+        "withhold": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "trust": {
+        "readable": true,
+        "structureOk": true,
+        "score": 94
+      },
+      "structure": {
+        "score": 75,
+        "ok": true,
+        "parts": {
+          "leadAnswer": false,
+          "experienceSentence": true,
+          "region": true,
+          "brandFact": true
+        }
+      },
+      "belief": {
+        "score": 100,
+        "ok": true
+      },
+      "outputAllowed": true,
+      "augStack": "quality-aug2026-v1"
+    },
+    {
+      "label": "restaurant",
+      "expectFail": false,
+      "contentEval": {
+        "score": 94,
+        "pass": true,
+        "hardFail": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "reset": {
+        "score": 94,
+        "ok": true,
+        "withhold": false,
+        "reasons": [
+          "explain_quality_low"
+        ]
+      },
+      "trust": {
+        "readable": true,
+        "structureOk": true,
+        "score": 94
+      },
+      "structure": {
+        "score": 75,
+        "ok": true,
+        "parts": {
+          "leadAnswer": false,
+          "experienceSentence": true,
+          "region": true,
+          "brandFact": true
+        }
+      },
+      "belief": {
+        "score": 100,
+        "ok": true
+      },
+      "outputAllowed": true,
+      "augStack": "quality-aug2026-v1"
+    },
+    {
+      "label": "dirty_placeholder",
+      "expectFail": true,
+      "contentEval": {
+        "score": 20,
+        "pass": false,
+        "hardFail": true,
+        "reasons": [
+          "placeholder_contamination",
+          "industry_flower_names_missing",
+          "search_intent_flower_names_missing",
+          "search_intent_low",
+          "brand_fact_presence_low",
+          "experience_opinion_low",
+          "explain_quality_low"
+        ]
+      },
+      "reset": {
+        "score": 12,
+        "ok": false,
+        "withhold": true,
+        "reasons": [
+          "placeholder_contamination",
+          "search_intent_flower_names_missing",
+          "title_answer_insufficient",
+          "title_answer_missing_required",
+          "industry_flower_names_missing",
+          "brand_fact_presence_low"
+        ]
+      },
+      "trust": {
+        "readable": false,
+        "structureOk": false,
+        "score": 12
+      },
+      "structure": {
+        "score": 0,
+        "ok": false,
+        "parts": {
+          "leadAnswer": false,
+          "experienceSentence": false,
+          "region": false,
+          "brandFact": false
+        }
+      },
+      "belief": {
+        "score": 46,
+        "ok": false
+      },
+      "outputAllowed": false,
+      "augStack": null
+    }
+  ],
+  "technologiesImplemented": [
+    "content_evaluation_100",
+    "reset_quality_gate",
+    "quality_trust_kpi",
+    "structure_score_kpi",
+    "human_belief",
+    "research_first",
+    "explain_v3",
+    "experience_opinion",
+    "paragraph_safe_edit",
+    "brand_fact_injection",
+    "industry_pipeline_lock",
+    "placeholder_trace_scrub",
+    "unified_delivery_gate",
+    "quality_leap_finish",
+    "sovereign_always_deliver",
+    "core_rules",
+    "evaluate_first"
+  ],
+  "priorArtifactGap": {
+    "note": "2026-06~07 배치: ten-post pass 60% · SLA 20% · category trust 미달. 본 스택은 평가 축·Safe Edit·업종 일반화·always-deliver salvage를 코드에 고정."
+  }
+}

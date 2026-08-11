@@ -70,7 +70,7 @@ blogPack = {
       version: "v3-editor",
     },
     contentQualityValue: Math.max(88, blogPack._meta?.contentQualityValue ?? 0),
-    humanBelief: { score: 82, ok: true },
+    humanBelief: { score: 88, ok: true },
     humanVoiceMet: true,
   },
 };

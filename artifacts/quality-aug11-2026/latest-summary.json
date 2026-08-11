@@ -1,0 +1,59 @@
+{
+  "asOf": "2026-08-11",
+  "trustRate": 1,
+  "trustTargetMet": true,
+  "avgEvalScore": 94.4,
+  "avgBelief": 100,
+  "dirtyBlocked": true,
+  "techCount": 17,
+  "cases": [
+    {
+      "label": "flower",
+      "eval": 95,
+      "trust": true,
+      "structure": 100,
+      "belief": 100,
+      "outputAllowed": true
+    },
+    {
+      "label": "cafe",
+      "eval": 95,
+      "trust": true,
+      "structure": 100,
+      "belief": 100,
+      "outputAllowed": true
+    },
+    {
+      "label": "pension",
+      "eval": 94,
+      "trust": true,
+      "structure": 75,
+      "belief": 100,
+      "outputAllowed": true
+    },
+    {
+      "label": "salon",
+      "eval": 94,
+      "trust": true,
+      "structure": 75,
+      "belief": 100,
+      "outputAllowed": true
+    },
+    {
+      "label": "restaurant",
+      "eval": 94,
+      "trust": true,
+      "structure": 75,
+      "belief": 100,
+      "outputAllowed": true
+    },
+    {
+      "label": "dirty_placeholder",
+      "eval": 20,
+      "trust": false,
+      "structure": 0,
+      "belief": 46,
+      "outputAllowed": false
+    }
+  ]
+}
