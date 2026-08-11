@@ -8,7 +8,7 @@ import {
   resolveBrandHabitStatusLine,
 } from "@/lib/brands/brandHabitUx";
 
-export default function BrandHabitStrip({ className = "" }) {
+export default function BrandHabitStrip({ className = "", dnaLabels = null }) {
   const {
     activeBrand,
     learned,
@@ -54,6 +54,20 @@ export default function BrandHabitStrip({ className = "" }) {
         ) : null}
       </div>
       <p className="mt-1 text-[12px] leading-relaxed text-[#4E5968]">{line}</p>
+      {Array.isArray(dnaLabels?.labels) && dnaLabels.labels.length ? (
+        <ul className="mt-1.5 flex flex-wrap gap-1">
+          {dnaLabels.labels.slice(0, 6).map((d) => (
+            <li
+              key={d.id}
+              className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                d.avoid ? "bg-[#FFF1F0] text-[#D14343]" : "bg-[#F2F4F6] text-[#4E5968]"
+              }`}
+            >
+              {d.label}
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {continuity ? (
         <p className="mt-1 text-[11px] font-medium text-[#03A94D]">
           {continuity}

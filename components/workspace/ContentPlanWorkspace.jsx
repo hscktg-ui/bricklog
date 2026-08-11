@@ -5,6 +5,7 @@ import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { fetchGenerationsForSchedule } from "@/lib/generations";
 import { buildContentOperatingPlan } from "@/lib/product/briclogBrandContentOS";
+import { resolveIndustryWeek1Template } from "@/lib/product/brandContentOsCenters";
 import { buildContentScheduleView } from "@/lib/product/contentScheduleCalendar";
 import SimpleMonthlyPlan from "@/components/workspace/SimpleMonthlyPlan";
 import { CONTENT_HISTORY_SAVED_EVENT } from "@/lib/history/contentHistoryEvents";
@@ -48,6 +49,7 @@ export default function ContentPlanWorkspace({
   );
 
   const plan = useMemo(() => buildContentOperatingPlan(input), [input]);
+  const week1 = useMemo(() => resolveIndustryWeek1Template(input), [input]);
   const weekTopics = useMemo(
     () => groupByPriority(plan.whatToWrite || []),
     [plan.whatToWrite]
@@ -176,7 +178,41 @@ export default function ContentPlanWorkspace({
         </p>
       </header>
 
-      <div className="mx-auto mt-6 w-full max-w-lg">
+      <div className="mx-auto mt-6 w-full max-w-lg space-y-4">
+        {week1?.days?.length ? (
+          <section className={`${VISION_PANEL} px-4 py-4`} aria-label="1주차 온보딩">
+            <p className={VISION_EYEBROW}>1주차 온보딩 · {week1.label}</p>
+            <p className={`mt-1 ${VISION_SUB}`}>
+              업종 템플릿으로 첫 주를 채우면 운영 리듬이 잡힙니다.
+            </p>
+            <ul className="mt-3 space-y-2">
+              {week1.days.map((d) => (
+                <li
+                  key={`w1-${d.day}-${d.channel}`}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[var(--vision-paper)] px-3 py-2 text-[12px]"
+                >
+                  <span className="text-[var(--vision-ink)]">
+                    <span className="font-semibold text-[var(--vision-accent)]">
+                      D{d.day} · {d.channel}
+                    </span>
+                    {" — "}
+                    {d.topic}
+                  </span>
+                  <button
+                    type="button"
+                    className="shrink-0 rounded-lg bg-[var(--vision-accent,#03C75A)] px-2.5 py-1 text-[11px] font-semibold text-white"
+                    onClick={() =>
+                      openChannel({ channel: d.channel === "plan" ? "blog" : d.channel, topic: d.topic })
+                    }
+                  >
+                    시작
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <SimpleMonthlyPlan
           brandName={input.brandName}
           monthLabel={scheduleView.calendar?.monthLabel || plan.month}

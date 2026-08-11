@@ -139,6 +139,36 @@ export default function BriclogNextPanel({
         ))}
       </ul>
 
+      {snapshot.actions ? (
+        <div className={`${compact ? "mt-2" : "mt-3"} space-y-2 rounded-lg border border-[var(--vision-line)] bg-white/70 px-3 py-2.5`}>
+          <p className="text-[11px] font-semibold text-[var(--vision-muted)]">
+            {snapshot.actions.headline || "다음에 할 일"}
+          </p>
+          {snapshot.actions.nextTopics?.length ? (
+            <ul className="space-y-1">
+              {snapshot.actions.nextTopics.map((t) => (
+                <li key={t} className="text-[12px] text-[var(--vision-ink)] before:mr-1 before:content-['·']">
+                  {t}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {snapshot.actions.avoidPhrases?.length ? (
+            <p className="text-[11px] text-[#D14343]">
+              피하기: {snapshot.actions.avoidPhrases.join(" · ")}
+            </p>
+          ) : null}
+          {snapshot.actions.channelMix?.length ? (
+            <p className="text-[11px] text-[var(--vision-muted)]">
+              채널 믹스:{" "}
+              {snapshot.actions.channelMix
+                .map((c) => `${c.label || c.channel}`)
+                .join(" → ")}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {snapshot.primaryAction && typeof onChannelAction === "function" ? (
         <button
           type="button"

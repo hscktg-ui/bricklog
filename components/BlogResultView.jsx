@@ -543,7 +543,12 @@ export default function BlogResultView({
                 : null}
             </p>
           ) : null}
-          {!mobileSimple ? <BrandHabitStrip className="mt-1" /> : null}
+          {!mobileSimple ? (
+            <BrandHabitStrip
+              className="mt-1"
+              dnaLabels={draft._meta?.deliveryValueExposure?.dna || null}
+            />
+          ) : null}
         </div>
       ) : null}
 

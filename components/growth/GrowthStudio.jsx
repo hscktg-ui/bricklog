@@ -8,6 +8,7 @@ import { CONTENT_HISTORY_SAVED_EVENT } from "@/lib/history/contentHistoryEvents"
 import { REVIEW_DRAFT_SAVED_EVENT } from "@/lib/review/persistReviewDraft";
 import { normalizePlanId } from "@/lib/billing/plans";
 import BrandMemoryPanel from "@/components/BrandMemoryPanel";
+import BrandReferenceSearch from "@/components/BrandReferenceSearch";
 
 const TABS = [
   { id: "history", label: "저장한 글" },
@@ -344,6 +345,12 @@ export default function GrowthStudio({
                   </option>
                 ))}
               </select>
+              <BrandReferenceSearch
+                items={items}
+                onSelect={(r) => {
+                  if (r?.id) loadDetail(r.id);
+                }}
+              />
               {loading && (
                 <p className="text-[12px] text-[#8B95A1]">불러오는 중...</p>
               )}

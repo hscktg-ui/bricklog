@@ -26,7 +26,30 @@ export async function GET(request) {
     const items = await listContentItems(auth.supabase, auth.user.id, {
       brandId: searchParams.get("brandId") || undefined,
       channel: searchParams.get("channel") || undefined,
+      limit: Number(searchParams.get("limit") || 80) || 80,
     });
+    const q = searchParams.get("q") || searchParams.get("query") || "";
+    if (q.trim()) {
+      const { searchBrandContentReferences } = await import(
+        "@/lib/product/brandContentOsCenters"
+      );
+      const ranked = searchBrandContentReferences(items, q, { limit: 40 });
+      return NextResponse.json({
+        ok: true,
+        items: ranked.results.map((r) => ({
+          id: r.id,
+          brand_id: r.brandId,
+          channel: r.channel,
+          title: r.title,
+          full_content: r.fullContent,
+          hashtags: r.hashtags,
+          persona: r.persona,
+          created_at: r.createdAt,
+          _searchScore: r.score,
+        })),
+        query: q,
+      });
+    }
     return NextResponse.json({ ok: true, items });
   } catch (err) {
     if (isMissingMemoryTable(err)) {
