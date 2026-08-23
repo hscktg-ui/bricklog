@@ -8,11 +8,14 @@ import { readFileSync as readSeo } from "node:fs";
 const seoJs = readSeo("lib/brand/seo.js", "utf8");
 const siteMetaJs = readSeo("lib/brand/siteMetadata.js", "utf8");
 assert.ok(seoJs.includes('return raw.replace(/^https:\\/\\/www\\./i'));
+assert.ok(!seoJs.includes("SearchAction"), "no fake SearchAction");
 assert.ok(siteMetaJs.includes("DEFAULT_SITE_URL"));
 const DEFAULT_SITE_URL = "https://briclog.ai";
 
 const page = readFileSync("app/page.js", "utf8");
 assert.ok(page.includes("SeoDiscoverabilityHero"));
+const seoHero = readFileSync("components/seo/SeoDiscoverabilityHero.jsx", "utf8");
+assert.ok(seoHero.includes("<h1"), "crawler h1 on home seo intro");
 assert.ok(page.includes("HomeClientLoader"));
 
 const loader = readFileSync("components/home/HomeClientLoader.jsx", "utf8");

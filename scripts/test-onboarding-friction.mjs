@@ -3,6 +3,7 @@
  */
 import assert from "node:assert/strict";
 import { isSignupPhoneOptional } from "../lib/config/productFlags.js";
+import { scoreSignupFrictionUx } from "../lib/qa/signupFrictionScore.js";
 import {
   profileNeedsSetup,
   profileNeedsSetupModal,
@@ -17,30 +18,22 @@ delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 delete process.env.VERCEL_ENV;
 process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = "false";
 process.env.NODE_ENV = "development";
-assert.equal(isSignupPhoneOptional(), true, "local dev keeps phone optional");
+assert.equal(isSignupPhoneOptional(), true, "default phone optional");
 
 process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = "true";
-assert.equal(isSignupPhoneOptional(), false, "launch build requires phone by default");
+assert.equal(isSignupPhoneOptional(), true, "launch build stays optional");
 
 process.env.VERCEL_ENV = "production";
-assert.equal(
-  isSignupPhoneOptional(),
-  false,
-  "vercel production requires phone even with stale optional env"
-);
-process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
-assert.equal(
-  isSignupPhoneOptional(),
-  false,
-  "vercel production ignores optional=true"
-);
+assert.equal(isSignupPhoneOptional(), true, "production default optional");
+process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "false";
+assert.equal(isSignupPhoneOptional(), true, "legacy false no longer forces SMS");
+
+process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "required";
+assert.equal(isSignupPhoneOptional(), false, "explicit required stays required");
 
 delete process.env.VERCEL_ENV;
 process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
-assert.equal(isSignupPhoneOptional(), true, "explicit true on non-prod");
-
-process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "false";
-assert.equal(isSignupPhoneOptional(), false, "explicit false stays required");
+assert.equal(isSignupPhoneOptional(), true, "explicit true optional");
 
 const skippedProfile = {
   id: "u1",
@@ -73,5 +66,7 @@ if (prevVercelEnv === undefined) delete process.env.VERCEL_ENV;
 else process.env.VERCEL_ENV = prevVercelEnv;
 if (prevNodeEnv === undefined) delete process.env.NODE_ENV;
 else process.env.NODE_ENV = prevNodeEnv;
+
+assert.ok(scoreSignupFrictionUx() >= 95, "signup friction 95+");
 
 console.log("OK: onboarding-friction");

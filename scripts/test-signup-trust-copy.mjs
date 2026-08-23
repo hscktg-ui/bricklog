@@ -16,17 +16,17 @@ process.env.NODE_ENV = "development";
 assert.equal(isSignupPhoneOptional(), true, "dev default keeps phone optional");
 
 process.env.NEXT_PUBLIC_BRICLOG_LAUNCH = "true";
-assert.equal(isSignupPhoneOptional(), false, "launch build requires phone by default");
+assert.equal(isSignupPhoneOptional(), true, "launch build stays optional");
 
 process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
-assert.equal(isSignupPhoneOptional(), true, "explicit true overrides launch");
+assert.equal(isSignupPhoneOptional(), true, "explicit true optional");
 
-process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "false";
-assert.equal(isSignupPhoneOptional(), false, "explicit false stays required");
+process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "required";
+assert.equal(isSignupPhoneOptional(), false, "explicit required stays required");
 
 process.env.VERCEL_ENV = "production";
 process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = "true";
-assert.equal(isSignupPhoneOptional(), false, "vercel production forces phone required");
+assert.equal(isSignupPhoneOptional(), true, "production optional unless required");
 
 delete process.env.VERCEL_ENV;
 
@@ -42,6 +42,13 @@ assert.match(paidCopy.planHint || "", /월 5회/);
 process.env.BRICLOG_FREE_LAUNCH = "true";
 const freeCopy = getSignupTrustCopy({ phoneRequired: true });
 assert.match(freeCopy.planHint || "", /무료/);
+
+const draftCopy = getSignupTrustCopy({
+  phoneRequired: false,
+  publicTestDraft: { brandName: "테스트카페" },
+});
+assert.match(draftCopy.body, /테스트카페/);
+assert.match(draftCopy.onboardingHint || "", /복원/);
 
 if (prevPhone === undefined) delete process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL;
 else process.env.NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL = prevPhone;

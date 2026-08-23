@@ -4,6 +4,15 @@ All notable autonomous improvement cycles for BRICLOG.
 
 ---
 
+## [2026-08-24] — Signup friction 100 · SEO checklist 100
+
+### Changed
+
+- 가입: 휴대폰 SMS 기본 선택, 비밀번호 확인 제거, 샘플 이어가기 시 프로필 모달 보류, 가입 모달 배경 클릭 닫힘 금지
+- SEO: 홈 서버 `h1`, JSON-LD 허위 `SearchAction` 제거
+
+---
+
 ## [2026-08-24] — Writer GPT-5.6 Sol (0824)
 
 ### Changed

@@ -18,7 +18,7 @@ const SEO_SEARCH_PHRASES = [
 
 /**
  * 서버 HTML에 항상 포함 — 네이버·구글 크롤러용 (JS 없이 브랜드·서비스 설명)
- * 시각적 h1은 HeroSection — 여기는 검색용 보조 블록
+ * 서버 h1 — HeroSection은 클라이언트 전용이라 크롤러용 제목은 여기가 SSOT
  */
 export default function SeoDiscoverabilityHero() {
   const featuredGuides = GUIDE_PAGES.slice(0, 4);
@@ -32,9 +32,9 @@ export default function SeoDiscoverabilityHero() {
       <p className="inline-block rounded-full bg-[#E8F9EF] px-3 py-1 text-[11px] font-semibold text-[#03A94D]">
         {BRAND_LATEST_UPDATE.label} · 샘플 체험 · 가입 없이 미리보기
       </p>
-      <p className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
+      <h1 className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
         {BRAND_META_TITLE_KO} — 브랜드 콘텐츠 운영
-      </p>
+      </h1>
       <p className="mx-auto mt-2 max-w-xl text-[15px] font-semibold text-[#191F28]">
         {BRAND_LATEST_UPDATE.headline}
       </p>

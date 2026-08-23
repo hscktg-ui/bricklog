@@ -16,6 +16,10 @@ import {
   PUBLIC_TEST_STICKY_SIGNUP_HEADLINE,
   BRAND_LATEST_UPDATE,
 } from "../lib/brand/copy.js";
+import {
+  collectSignupFrictionUx,
+  scoreSignupFrictionUx,
+} from "../lib/qa/signupFrictionScore.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = resolve(root, "artifacts", "marketing-director-panel");
@@ -62,12 +66,14 @@ function scoreDirector(d, facts, ux = {}) {
   const freeLaunchShipped = /전 기능 무료|무료로 이 브랜드|작업실/.test(
     `${ux.freeHook || ""} ${ux.stickyCtaBeforeOrCurrent || ""} ${ux.stickyHeadline || ""}`
   );
+  const frictionUx = collectSignupFrictionUx();
+  const signupFriction = scoreSignupFrictionUx(frictionUx);
 
   /** @type {Record<string, number>} */
   const scores = {
     engineTrust: d.priority === "신뢰" ? 84 : 86,
     sampleValue: d.channelFocus === "네이버" || d.channelFocus === "복합" ? 80 : 76,
-    signupFriction: conversionGap ? (freeLaunchShipped ? 58 : 38) : 72,
+    signupFriction,
     freeLaunchMessage: freeLaunchShipped ? 88 : 45,
     nextPriority:
       d.priority === "전환" || d.priority === "측정"
@@ -79,23 +85,25 @@ function scoreDirector(d, facts, ux = {}) {
 
   const votes = {
     keepEngineStable: true,
-    fixMobileSignupCta: conversionGap || d.priority === "전환",
+    fixMobileSignupCta: signupFriction < 95 && (conversionGap || d.priority === "전환"),
     deferPreviewCarry: true,
     deferEngineRewrite: true,
   };
 
   const quote =
     d.priority === "전환"
-      ? freeLaunchShipped
-        ? "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
-        : "샘플은 봤는데 가입 버튼이 약하면 팀에서 쓰지 않습니다. 무료·내 브랜드 이어가기가 한눈에 와야 합니다."
+      ? signupFriction >= 95
+        ? "이메일·비밀번호·약관만으로 샘플이 작업실로 이어집니다. 휴대폰 인증은 선택입니다."
+        : "무료·작업실 이어가기 카피는 맞췄습니다. 이제 CTA 클릭이 실제 가입으로 붙는지 숫자로 확인하면 됩니다."
       : d.priority === "신뢰"
-        ? "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
+        ? signupFriction >= 95
+          ? "가입 확인이 문자 대기가 아니라 바로 작업실입니다. 엔진은 유지하고 이 루프를 재집계하면 됩니다."
+          : "엔진·송출 soft-pass는 배포됐습니다. 지금은 실사용자가 첫 글을 찍게 만드는 가입 루프가 우선입니다."
         : d.priority === "속도"
-          ? "오류·쿼터에서도 sticky가 뜨면 이탈이 줄 겁니다. 모바일에서 CTA가 숨겨지면 안 됩니다."
+          ? "오류·쿼터 sticky는 유지되고, 모달은 배경 클릭으로 닫히지 않습니다."
           : d.priority === "측정"
-            ? "CTA 클릭 대비 가입이 거의 없으면 퍼널 상단이 아니라 중간이 문제입니다. 배포 후 재집계가 필요합니다."
-            : "데모만 반복되면 인사이트가 안 쌓입니다. 내 브랜드 작업실로 이어지는 카피가 맞는지 확인합시다.";
+            ? "마찰 게이트는 95+입니다. 이후 CTA→외부가입은 재집계 숫자로만 봅니다."
+            : "샘플이 있으면 브랜드·지역·주제를 다시 넣지 않고 작업실로 이어집니다.";
 
   return {
     id: d.id,
@@ -143,7 +151,9 @@ const uxFacts = {
   mobileResultCtaWasHiddenSmBlock: false,
   stickyOnErrorAndQuota: true,
   freeLaunchPlanHintAligned: true,
-  note: "8/4: free-launch trust copy, sticky on error/quota, soft-pass contentQualityDelivered, thin research gate. Funnel rates pending remesure.",
+  ...collectSignupFrictionUx(),
+  signupFrictionScore: scoreSignupFrictionUx(),
+  note: "0824: phone optional, no password confirm, draft skips profile modal, signup backdrop stays open.",
 };
 
 const votes = MARKETING_DIRECTOR_PANEL_30.map((d) => scoreDirector(d, facts, uxFacts));
@@ -182,8 +192,8 @@ const report = {
   ],
   adoptedToday: PANEL_CONSENSUS_FIXED.adoptedToday,
   interpretation: [
-    "8/4 마무리 패널: 전환 UX·송출 스탬프·조사 thin 게이트 배포 반영",
-    "합의 1순위 = Gate B 재측정 (CTA→외부가입) · Gate A humanReady 유지",
+    "0824: 가입 마찰 게이트 95+ (휴대폰 선택·비밀번호 확인 제거·샘플 이어가기)",
+    "합의 1순위 = 새 가입 루프 재집계 · Gate A humanReady 유지",
     `실측: 방문 ${facts.landingVisits ?? "?"} · 맛보기 ${facts.publicTestRuns ?? "?"} · CTA ${facts.ctaClicks ?? "?"} · 외부가입 ${facts.externalSignupCount ?? "?"} · 로그인생성 ${facts.generationsTotal ?? "?"}`,
     `축 평균 freeLaunchMessage ${agg.axisAvg.freeLaunchMessage} · signupFriction ${agg.axisAvg.signupFriction}`,
   ],
@@ -198,6 +208,10 @@ if (report.panelSize !== 30) {
 }
 if (!report.adoptedToday?.id) {
   console.error("FAIL missing adoptedToday");
+  process.exit(1);
+}
+if ((report.aggregate.axisAvg.signupFriction || 0) < 95) {
+  console.error("FAIL signupFriction below 95", report.aggregate.axisAvg.signupFriction);
   process.exit(1);
 }
 

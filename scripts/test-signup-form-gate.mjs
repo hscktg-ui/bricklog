@@ -24,13 +24,12 @@ const base = {
   phoneBlocksSignup: false,
   phoneAvailabilityBlocks: false,
   password: "secret9",
-  passwordConfirm: "secret9",
 };
 
 assert("ready signup has no block", resolveSignupBlockReason(base) === "");
 assert(
-  "missing password confirm blocks",
-  resolveSignupBlockReason({ ...base, passwordConfirm: "" }).includes("비밀번호 확인")
+  "password confirm is not a gate",
+  resolveSignupBlockReason({ ...base, password: "secret9" }) === ""
 );
 assert(
   "phone required blocks without sms",

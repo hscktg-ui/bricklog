@@ -24,6 +24,7 @@ import PageLoadingState from "@/components/ui/PageLoadingState";
 import Toast from "@/components/Toast";
 import { LOADING } from "@/lib/product/craft";
 import { isFastOnboarding } from "@/lib/config/productFlags";
+import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
 
 const Dashboard = dynamic(() => import("@/components/Dashboard"), {
   ssr: false,
@@ -170,8 +171,9 @@ export default function HomeClient() {
 
   useEffect(() => {
     if (!user?.id || profileLoading) return;
-    if (!isFastOnboarding()) return;
-    if (!profileNeedsSetup(profile)) return;
+    const continueFromSample = Boolean(peekPublicTestSignupDraft()?.brandName);
+    if (!isFastOnboarding() && !continueFromSample) return;
+    if (!profileNeedsSetup(profile) && !continueFromSample) return;
     if (isProfileModalDeferredForUser(user.id)) return;
     if (fastOnboardingDeferRef.current) return;
     fastOnboardingDeferRef.current = true;
@@ -344,7 +346,10 @@ export default function HomeClient() {
               role="presentation"
               aria-hidden
               className="pointer-events-auto absolute inset-0 bg-[rgba(15,26,20,0.42)] backdrop-blur-[2px]"
-              onClick={() => setAuthMode(null)}
+              onClick={() => {
+                if (authMode === "signup") return;
+                setAuthMode(null);
+              }}
             />
             <div className="pointer-events-auto relative z-10 w-full max-w-[440px] max-h-[92dvh] overflow-y-auto overscroll-contain">
               <AuthForm

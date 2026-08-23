@@ -50,7 +50,7 @@ function parseEnvFile(path) {
   if (out.has("NEXT_PUBLIC_APP_URL")) {
     out.set("NEXT_PUBLIC_APP_URL", prodAppUrl);
   }
-  out.set("NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL", "false");
+  out.set("NEXT_PUBLIC_BRICLOG_SIGNUP_PHONE_OPTIONAL", "true");
   out.set("BRICLOG_BRAND_FIRST_ENGINE", "1");
   out.set("BRICLOG_FAST_PIPELINE", "true");
   out.set("BRICLOG_CHANNEL_PACK_DEFER", "true");

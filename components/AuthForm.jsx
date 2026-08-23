@@ -83,7 +83,6 @@ export default function AuthForm({
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [saveEmail, setSaveEmail] = useState(false);
   const [termsAgreed, setTermsAgreed] = useState(false);
@@ -313,7 +312,6 @@ export default function AuthForm({
           signupPhone.trim().length > 0 &&
           phoneRegistered,
         password,
-        passwordConfirm,
       });
       if (blockReason) {
         onToast?.(blockReason, "error");
@@ -470,6 +468,7 @@ export default function AuthForm({
   const signupTrust = getSignupTrustCopy({
     phoneRequired: !phoneOptional,
     smsSenderLabel: getPublicSmsSenderLabel(),
+    publicTestDraft,
   });
   const signupPhoneFilled = signupPhone.trim().length > 0;
   const phoneBlocksSignup =
@@ -479,11 +478,6 @@ export default function AuthForm({
       phoneRegistered);
   const phoneAvailabilityBlocks =
     !phoneOptional && signupPhoneFilled && phoneRegistered;
-  const passwordConfirmFilled = passwordConfirm.length > 0;
-  const passwordMismatch =
-    mode === MODES.signup &&
-    passwordConfirmFilled &&
-    password !== passwordConfirm;
   const signupBlockReason =
     mode === MODES.signup
       ? resolveSignupBlockReason({
@@ -493,7 +487,6 @@ export default function AuthForm({
           phoneBlocksSignup,
           phoneAvailabilityBlocks,
           password,
-          passwordConfirm,
         })
       : "";
   const signupSubmitDisabled = isSignupSubmitLocked({ loading, signupLimited });
@@ -751,35 +744,6 @@ export default function AuthForm({
           </div>
         )}
 
-        {mode === MODES.signup && (
-          <div>
-            <label
-              htmlFor="auth-password-confirm"
-              className={`${AUTH_LABEL_CLASS} mb-0`}
-            >
-              비밀번호 확인
-            </label>
-            <PasswordField
-              id="auth-password-confirm"
-              value={passwordConfirm}
-              onChange={setPasswordConfirm}
-              minLength={6}
-              autoComplete="new-password"
-              placeholder="비밀번호 다시 입력"
-              aria-label="비밀번호 확인"
-            />
-            {passwordMismatch ? (
-              <p className="mt-1 min-h-[1.25rem] text-[11px] text-[#E42939]" role="status">
-                비밀번호 확인이 일치하지 않습니다.
-              </p>
-            ) : (
-              <p className="mt-1 min-h-[1.25rem] text-[11px] text-transparent" aria-hidden>
-                ·
-              </p>
-            )}
-          </div>
-        )}
-
         {mode === MODES.signup && phoneOptional ? (
           <>
             <details className="rounded-2xl border border-[#E8EBED] bg-[#FAFBFC] px-3 py-2.5 open:pb-3">
@@ -799,8 +763,7 @@ export default function AuthForm({
               </div>
             </details>
             <p className={`text-[12px] leading-relaxed ${AUTH_MUTED_TEXT_CLASS} sm:text-[11px]`}>
-              이메일·비밀번호만으로 가입할 수 있어요. 닉네임·호칭은 로그인 뒤 안내에서 입력할 수
-              있어요.
+              이메일·비밀번호만으로 가입할 수 있어요. 샘플이 있으면 작업실로 바로 이어집니다.
             </p>
           </>
         ) : null}
