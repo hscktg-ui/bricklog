@@ -1,5 +1,5 @@
 /**
- * OpenAI 연결 확인 — Writer gpt-5.5 고정
+ * OpenAI 연결 확인 — Writer gpt-5.6 Sol 고정
  * node --env-file=.env.local scripts/verify-openai.mjs
  */
 import OpenAI from "openai";
@@ -25,7 +25,7 @@ console.log("matches SSOT:", model === OPENAI_WRITER_MODEL);
 
 if (process.env.OPENAI_MODEL && process.env.OPENAI_MODEL !== OPENAI_WRITER_MODEL) {
   console.log(
-    "note: OPENAI_MODEL env ignored unless gpt-5.5* — env was:",
+    "note: OPENAI_MODEL env ignored unless gpt-5.6 / gpt-5.6-sol* — env was:",
     process.env.OPENAI_MODEL
   );
 }

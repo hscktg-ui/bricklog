@@ -4,6 +4,23 @@ All notable autonomous improvement cycles for BRICLOG.
 
 ---
 
+## [2026-08-24] — Writer GPT-5.6 Sol (0824)
+
+### Changed
+
+- Writer SSOT `gpt-5.5` → `gpt-5.6` (alias → Sol). Terra/Luna는 Writer 품질 락에서 제외.
+- `OPENAI_MODEL=gpt-5.5` 등 구세대 env는 무시하고 5.6으로 고정.
+- 블로그 Writer 프롬프트: GPT-5.6 기본 간결체 적용 금지, LENGTH 타깃은 장면·이유·경험으로 충족.
+- `/api/content/status`에 `writerFamily` / `writerTier` / `writerDominant` 표시 (기존 `gpt55Dominant` 호환 유지).
+- PTC · multi-agent · pro mode는 2분 SLA 때문에 미도입.
+
+### Test
+
+- `test:briclog-defaults` — writer lock + resolveWriterModel
+- `scripts/verify-openai.mjs` — live chat completions on `gpt-5.6`
+
+---
+
 ## [2026-06-07 overnight] — Quality Engine Overnight Mode
 
 ### Added
