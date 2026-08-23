@@ -62,10 +62,12 @@ assert.equal(cafePack._meta.featuredSeedId, "cafe_rainy_brunch");
 assert.ok(/로스팅|창가/.test(cafeText), "cafe uses engine featured blog");
 assert.ok(!/안내를 제공하는 카페/.test(cafeText), "no template cafe copy");
 assert.ok(cafePack.place?.detailBody, "cafe engine place");
-assert.ok(/아이스 브런치|창가/.test(cafePack.place.detailBody), "cafe featured place");
+assert.ok(/순차 오픈|콘센트/.test(cafePack.place.detailBody), "cafe featured place");
+assert.ok(!/복합 문화공간/.test(cafePack.place.detailBody), "no place panel rewrite");
 const cafeInsta = cafePack.instagram?.lineBreakBody || cafePack.instagram?.body || "";
 assert.ok(cafeInsta, "cafe engine insta");
-assert.ok(/아이스 브런치|창가/.test(cafeInsta), "cafe featured insta");
+assert.ok(/더운 오후|아이스 브런치/.test(cafeInsta), "cafe featured insta");
+assert.ok(!/마음에 드는 날/.test(cafeInsta), "no insta panel rewrite");
 
 const instant = await runPublicBrandTest({
   ...PUBLIC_TEST_SAMPLES[0],
