@@ -55,6 +55,18 @@ const editedTopic = findMatchingPublicTestSample({
 assert.equal(editedTopic?.id, PUBLIC_TEST_SAMPLES[0].id);
 assert.equal(editedTopic?.topic, "봄 시즌 브런치 예약 안내");
 
+const cafePack = buildInstantPublicTestPack(PUBLIC_TEST_SAMPLES[0]);
+const cafeText = cafePack.sections.map((s) => s.body).join("\n");
+assert.equal(cafePack._meta.generationMode, "engine_featured_sample");
+assert.equal(cafePack._meta.featuredSeedId, "cafe_rainy_brunch");
+assert.ok(/로스팅|창가/.test(cafeText), "cafe uses engine featured blog");
+assert.ok(!/안내를 제공하는 카페/.test(cafeText), "no template cafe copy");
+assert.ok(cafePack.place?.detailBody, "cafe engine place");
+assert.ok(/아이스 브런치|창가/.test(cafePack.place.detailBody), "cafe featured place");
+const cafeInsta = cafePack.instagram?.lineBreakBody || cafePack.instagram?.body || "";
+assert.ok(cafeInsta, "cafe engine insta");
+assert.ok(/아이스 브런치|창가/.test(cafeInsta), "cafe featured insta");
+
 const instant = await runPublicBrandTest({
   ...PUBLIC_TEST_SAMPLES[0],
   sampleId: PUBLIC_TEST_SAMPLES[0].id,
@@ -63,6 +75,7 @@ assert.equal(instant.ok, true, instant.userMessage);
 assert.equal(instant.instant, true);
 assert.ok(instant.preview?.title);
 assert.ok(instant.preview?.intro);
+assert.ok(/로스팅|창가/.test(instant.preview.intro), "preview is featured blog");
 assert.ok(instant.preview?.place?.short, "place preview");
 assert.ok(instant.preview?.insta?.body, "insta preview");
 assert.equal(instant.metrics?.contextScore?.channels?.find((c) => c.id === "place")?.ready, true);
@@ -87,6 +100,7 @@ assert.equal(dynamic?.templateId, "salon_care");
 assert.ok(dynamic.preview?.place?.short, "dynamic place");
 assert.ok(dynamic.preview?.insta?.body, "dynamic insta");
 assert.ok(dynamic.preview?.intro?.includes("레이어드살롱"), "brand in dynamic intro");
+assert.ok(!dynamic.preview.intro.includes("루트앤컷"), "adapted off catalog brand");
 
 const quotaBypass = tryDynamicPublicTestInstant({
   brandName: "테스트베이커",

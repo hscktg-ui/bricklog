@@ -323,6 +323,7 @@
     "test:overnight-category-long": "node --import ./scripts/register-alias.mjs scripts/test-overnight-category-long.mjs",
     "test:publish-readiness": "node --import ./scripts/register-alias.mjs scripts/test-publish-readiness-display.mjs",
     "test:salon-sample": "node --import ./scripts/register-alias.mjs scripts/test-salon-featured-sample.mjs",
+    "test:landing-engine-samples": "node --import ./scripts/register-alias.mjs scripts/test-landing-engine-samples.mjs",
     "test:narrative-belief": "node --import ./scripts/register-alias.mjs scripts/test-narrative-belief-pass.mjs",
     "test:v17-narrative": "node --import ./scripts/register-alias.mjs scripts/test-v17-narrative-final.mjs",
     "mission:batch": "node --import ./scripts/register-alias.mjs scripts/mission-improvement-batch.mjs --clear",
