@@ -292,6 +292,7 @@
     "test:instagram-caption-quality": "node --import ./scripts/register-alias.mjs scripts/test-instagram-caption-quality.mjs",
     "test:e2e-stepped-form": "node scripts/test-e2e-stepped-form.mjs",
     "test:channel-sqv-delivery": "node --import ./scripts/register-alias.mjs scripts/test-channel-sqv-delivery.mjs",
+    "test:detail-page-engine": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-engine.mjs",
     "test:core-rules": "node --import ./scripts/register-alias.mjs scripts/test-core-rules.mjs",
     "test:brand-content-os-centers": "node --import ./scripts/register-alias.mjs scripts/test-brand-content-os-centers.mjs",
     "test:sqv-user-display": "node --import ./scripts/register-alias.mjs scripts/test-sqv-user-display.mjs",

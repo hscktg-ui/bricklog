@@ -5,7 +5,7 @@ import BriclogNextPanel from "@/components/BriclogNextPanel";
 import { buildBriclogNextSnapshot, getBriclogNextPublicPitch } from "@/lib/product/briclogNext";
 import { VISION_EYEBROW } from "@/lib/landing/vision2030Styles";
 
-const WORKSPACE_MENUS = new Set(["blog", "place", "insta", "image", "growth"]);
+const WORKSPACE_MENUS = new Set(["blog", "place", "insta", "detailPage", "image", "growth"]);
 
 /**
  * 대시보드 홈 — 이번 달 운영 리듬 (채널 메뉴 공통)
