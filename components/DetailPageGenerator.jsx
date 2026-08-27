@@ -5,7 +5,9 @@ import Icon from "@/components/Icon";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
-import { DETAIL_PAGE_LENGTHS, DETAIL_PAGE_WIDTH } from "@/lib/product/detailPageCatalog";
+import { DETAIL_PAGE_LENGTHS, DETAIL_PAGE_WIDTH, DETAIL_PAGE_DEFAULT_ACCENT } from "@/lib/product/detailPageCatalog";
+import { DETAIL_PAGE_COMPANY_PRESETS } from "@/lib/product/detailPageCompanyPresets";
+import { DETAIL_PAGE_STANDARD_RULES } from "@/lib/product/detailPageStandard";
 import { renderDetailPageBodyHtml, wrapSmartstoreHtml, packToPlainText } from "@/lib/product/detailPageHtml";
 import {
   CHANNEL_WORKSPACE_SHELL,
@@ -118,9 +120,11 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
   const previewRef = useRef(null);
   const [productName, setProductName] = useState("");
   const [target, setTarget] = useState("");
+  const [searchIntent, setSearchIntent] = useState("");
   const [features, setFeatures] = useState("");
   const [pageLength, setPageLength] = useState("standard");
-  const [accent, setAccent] = useState("#1a1a1a");
+  const [accent, setAccent] = useState(DETAIL_PAGE_DEFAULT_ACCENT);
+  const [presetId, setPresetId] = useState("");
   const [photos, setPhotos] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -144,6 +148,17 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     }
   }, [onToast]);
 
+  const applyPreset = useCallback((preset) => {
+    setPresetId(preset.id);
+    setProductName(preset.productName);
+    setTarget(preset.target);
+    setSearchIntent(preset.searchIntent || "");
+    setFeatures(preset.features);
+    setAccent(preset.accent || DETAIL_PAGE_DEFAULT_ACCENT);
+    setPageLength(preset.pageLength || "standard");
+    setPack(null);
+  }, []);
+
   const runGenerate = useCallback(async () => {
     const name = filledProduct;
     if (!name) {
@@ -160,9 +175,11 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
           productName: name,
           topic: name,
           target,
+          searchIntent,
           features,
           pageLength,
           accent,
+          presetId,
           imageCount: photos.length,
           brandName: activeBrand?.brandName || "",
           brandId: activeBrand?.id || "",
@@ -187,7 +204,9 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
   }, [
     filledProduct,
     target,
+    searchIntent,
     features,
+    presetId,
     pageLength,
     accent,
     photos.length,
@@ -243,6 +262,32 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             {product.emptyDesc}
           </p>
 
+          <ul className="mt-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
+            {DETAIL_PAGE_STANDARD_RULES.map((rule) => (
+              <li key={rule.id}>· {rule.label}</li>
+            ))}
+          </ul>
+
+          <p className="mt-5 text-[12px] font-medium text-[var(--vision-muted)]">
+            우리 회사 프리셋
+          </p>
+          <div className="mt-2 flex flex-col gap-2">
+            {DETAIL_PAGE_COMPANY_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => applyPreset(preset)}
+                className={`min-h-[44px] rounded-2xl border px-3 py-2 text-left text-[13px] leading-snug ${
+                  presetId === preset.id
+                    ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
+                    : "border-[var(--vision-line)] bg-white"
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
           <label className="mt-5 block text-[13px] font-medium">
             상품명
             <input
@@ -259,6 +304,15 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               value={target}
               onChange={(e) => setTarget(e.target.value)}
               placeholder="예: 집밥 차리는 손님, 선물용"
+            />
+          </label>
+          <label className="mt-4 block text-[13px] font-medium">
+            고를 때 막히는 점
+            <input
+              className={VISION_INPUT}
+              value={searchIntent}
+              onChange={(e) => setSearchIntent(e.target.value)}
+              placeholder="예: 스펙은 봤는데, 누워보기 전에 뭘 봐야 할지 모르겠다"
             />
           </label>
           <label className="mt-4 block text-[13px] font-medium">
@@ -330,7 +384,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             disabled={busy}
             onClick={runGenerate}
           >
-            {busy ? "기획·카피 쓰는 중…" : product.generateLabel}
+            {busy ? "GPT-5.6 Sol로 기준 채우는 중…" : product.generateLabel}
           </button>
         </div>
       </aside>
@@ -340,13 +394,13 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
           <div className="flex h-full min-h-[320px] flex-col items-center justify-center text-center">
             <Icon name="bag" className="h-8 w-8 text-[var(--vision-muted)]" />
             <p className="mt-3 text-[15px] text-[var(--vision-muted)]">
-              상품명과 특징을 넣으면 860px 상세페이지가 나옵니다.
+              해신·HOME100·BRICLOG 프리셋을 고르거나, 상품명만 넣으면 됩니다.
             </p>
           </div>
         ) : null}
         {busy ? (
           <p className="text-[15px] text-[var(--vision-muted)]">
-            후커블·제디터와 같은 순서로 기획 JSON을 채운 뒤 템플릿에 올리고 있습니다.
+            등록된 GPT-5.6 Sol 한 번으로 섹션 JSON을 채웁니다. 이미지 모델은 쓰지 않습니다.
           </p>
         ) : null}
         {pack ? (
@@ -366,10 +420,26 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               </button>
             </div>
             <p className="mb-3 text-[12px] text-[var(--vision-muted)]">
-              {pack._meta?.mode === "llm" ? "Writer 엔진으로 카피 채움" : "브랜드 정보 기반 초안"}
+              {pack._meta?.mode === "llm" ? "GPT-5.6 Sol 1회" : "기준 초안"}
               {" · "}
-              {pack.sections?.length || 0}개 섹션 · 가로 {DETAIL_PAGE_WIDTH}px
+              {pack._meta?.standard?.ok ? "브릭로그 기준 통과" : "기준 보완 필요"}
+              {" · "}
+              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px
             </p>
+            {pack._meta?.standard ? (
+              <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
+                {DETAIL_PAGE_STANDARD_RULES.map((rule) => {
+                  const passed = pack._meta.standard.rules
+                    ? pack._meta.standard.rules[rule.id]
+                    : pack._meta.standard.ok;
+                  return (
+                    <li key={rule.id}>
+                      {passed ? "통과" : "실패"} · {rule.label}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
             <div
               ref={previewRef}
               className="overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#f4f4f4] p-4"

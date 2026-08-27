@@ -95,6 +95,7 @@ export async function POST(request) {
       html,
       documentHtml,
       plainText: packToPlainText(pack),
+      standard: pack._meta?.standard || null,
       meta: pack._meta,
       usageWarning: usageAfter.usageWarning,
       usage: usageAfter,

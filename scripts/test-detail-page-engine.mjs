@@ -1,5 +1,5 @@
 /**
- * 상품 상세페이지 엔진 — 섹션 JSON + 860px HTML 회귀
+ * 상품 상세페이지 엔진 — 브릭로그 기준 + 860px HTML 회귀
  */
 import assert from "node:assert/strict";
 import {
@@ -16,6 +16,8 @@ import {
 import { DETAIL_PAGE_WIDTH } from "../lib/product/detailPageCatalog.js";
 import { getChannelFullText } from "../lib/content/channelPack.js";
 import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
+import { assessDetailPageStandard } from "../lib/product/detailPageStandard.js";
+import { getDetailPageCompanyPreset } from "../lib/product/detailPageCompanyPresets.js";
 
 const prevMission = process.env.BRICLOG_MISSION;
 const prevCore = process.env.BRICLOG_CORE_RULES;
@@ -28,6 +30,7 @@ const input = {
   region: "여주",
   industry: "쌀가게",
   target: "집밥 차리는 손님",
+  searchIntent: "포장만 보고 밥맛까지는 가늠이 안 된다",
   features: "당일 도정\n진공 포장\n여주 수확",
   pageLength: "standard",
   brandId: "brand-test-rice",
@@ -36,20 +39,25 @@ const input = {
 const n = normalizeDetailPageInput(input);
 assert.equal(n.productName, "여주 햅쌀 10kg");
 assert.equal(n.features.length, 3);
+assert.equal(n.searchIntent.includes("밥맛"), true);
 
 const pack = buildDetailPageFallbackPack(input);
 assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");
 assert.equal(pack.sections[0].type, "hero");
+assert.ok(pack.sections.some((s) => s.type === "intent"));
 assert.ok(pack.sections.some((s) => s.type === "usp"));
 assert.ok(pack.sections.some((s) => s.type === "cta"));
 assert.equal(typeof pack._meta?.sqv?.score, "number");
 assert.ok(pack._meta.sqv.score >= 50);
+assert.equal(pack._meta.standard.ok, true, pack._meta.standard.reasons.join(","));
+assert.equal(pack._meta.standard.rules.soft_cta, true);
 assertCore1DeliveryStamped(pack, "detailPage", "detailPage");
 
 const html = renderDetailPageBodyHtml(pack, []);
 assert.ok(html.includes(`${DETAIL_PAGE_WIDTH}px`));
 assert.ok(html.includes("여주 햅쌀"));
 assert.ok(html.includes("여주미곡"));
+assert.ok(html.includes('data-standard="briclog-pdp-v1"'));
 assert.equal(html.includes("lorem"), false);
 
 const doc = wrapSmartstoreHtml(html);
@@ -83,6 +91,36 @@ assert.ok(llm._meta.sqv.score > 0);
 
 const stamped = stampDetailPagePack(llm, n, "llm");
 assert.equal(stamped._meta.contentChannel, "detailPage");
+
+const fake = assessDetailPageStandard(
+  {
+    headline: "여주 햅쌀",
+    brandName: "여주미곡",
+    sections: [
+      { type: "hero", title: "여주 햅쌀", body: "여주미곡 쌀입니다." },
+      { type: "intent", title: "고를 때", body: "포장만 보고 막힙니다." },
+      { type: "usp", title: "후기", body: "실구매자 별점 만점에 무조건 추천." },
+      { type: "cta", title: "지금 바로 구매", body: "지금 바로 구매하세요." },
+    ],
+  },
+  { brandName: "여주미곡" }
+);
+assert.equal(fake.ok, false);
+assert.ok(fake.reasons.includes("fake_review"));
+assert.ok(fake.reasons.includes("hard_cta"));
+assert.equal(fake.rules.facts_only, false);
+assert.equal(fake.rules.soft_cta, false);
+
+const haeshinPreset = getDetailPageCompanyPreset("haeshin-ops");
+assert.equal(haeshinPreset.brandName, "해신기획");
+const haeshin = buildDetailPageFallbackPack({ presetId: "haeshin-ops" });
+assert.ok(haeshin.sections.some((s) => s.type === "intent"));
+assert.ok(packToPlainText(haeshin).includes("해신기획"));
+assert.equal(haeshin._meta.standard.ok, true, haeshin._meta.standard.reasons.join(","));
+
+const home100 = buildDetailPageFallbackPack({ presetId: "home100-showroom" });
+assert.ok(packToPlainText(home100).includes("HOME100"));
+assert.equal(home100._meta.standard.ok, true, home100._meta.standard.reasons.join(","));
 
 if (prevMission === undefined) delete process.env.BRICLOG_MISSION;
 else process.env.BRICLOG_MISSION = prevMission;
