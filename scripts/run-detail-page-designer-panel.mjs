@@ -1,21 +1,25 @@
 /**
- * 브릭로그 상세 결과물 — 디자이너 30인 평가 + 860px 스크린샷
- * Run: npm run run:detail-page-designer-panel
+ * 브릭로그 상세 — 디자이너 30인 패널.
+ * 라이브 맛보기 + GPT 랭킹 리듬 결과를 실제 상품 컷으로 평가한다.
  */
-import { mkdirSync, writeFileSync, readFileSync } from "fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
 import { generateDetailPagePack } from "../lib/product/detailPageEngine.js";
+import { buildDetailPagePublicSample } from "../lib/product/detailPagePublicSample.js";
 import {
   renderDetailPageBodyHtml,
-  wrapSmartstoreHtml,
+  wrapMallHtml,
 } from "../lib/product/detailPageHtml.js";
 import { evaluateDetailPageDesignerPanel } from "../lib/qa/detailPageDesignerPanel30.js";
+import { assessDetailPageSuccess } from "../lib/product/detailPageSuccessStandard.js";
+import { DETAIL_PAGE_CORE_SHOTS } from "../lib/product/detailPageShotGen.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const OUT_DIR = join(root, "artifacts", "detail-page-designer-panel");
+const SAMPLE_DIR = join(root, "public", "detail-sample");
 
 function loadEnvLocal() {
   try {
@@ -37,27 +41,28 @@ function loadEnvLocal() {
   }
 }
 
-function photoData(w, h, bg, fg, label) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
-    <rect width="100%" height="100%" fill="${bg}"/>
-    <text x="50%" y="48%" fill="${fg}" font-size="28" font-family="Pretendard, sans-serif" text-anchor="middle">${label}</text>
-    <text x="50%" y="58%" fill="${fg}" font-size="14" opacity="0.7" font-family="Pretendard, sans-serif" text-anchor="middle">시안용 자리 · 실제 상품 사진 아님</text>
-  </svg>`;
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+function shotFile(id, slot) {
+  return join(SAMPLE_DIR, `${id}-${slot}.png`);
 }
 
-const SAMPLE_PHOTOS = {
-  "open-rice": [
-    { src: photoData(860, 680, "#c4b49a", "#3f3428", "포대"), caption: "포대 사진" },
-    { src: photoData(860, 440, "#d7cbb8", "#3f3428", "도정"), caption: "도정" },
-    { src: photoData(860, 440, "#b9a48a", "#3f3428", "진공"), caption: "진공 포장" },
-  ],
-  "open-beans": [
-    { src: photoData(860, 680, "#4a3428", "#f4ece4", "원두"), caption: "원두" },
-    { src: photoData(860, 440, "#6b4a38", "#f4ece4", "로스팅"), caption: "로스팅" },
-    { src: photoData(860, 440, "#3a281f", "#f4ece4", "분쇄"), caption: "분쇄 안내" },
-  ],
-};
+function loadShots(id) {
+  return DETAIL_PAGE_CORE_SHOTS.map((slot) => {
+    const file = shotFile(id, slot);
+    if (!existsSync(file)) return null;
+    const b64 = readFileSync(file).toString("base64");
+    return {
+      src: `data:image/png;base64,${b64}`,
+      caption:
+        slot === "hero"
+          ? "포장 앞면"
+          : slot === "observe"
+            ? "손에 쥐거나 가까이"
+            : "디테일 한 점",
+      slot,
+      generated: true,
+    };
+  }).filter(Boolean);
+}
 
 async function screenshotHtml(html, paths) {
   const { chromium } = await import("playwright");
@@ -68,7 +73,7 @@ async function screenshotHtml(html, paths) {
   });
   await page.setContent(html, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => !!document.getElementById("gollaboda-detail-page"));
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, 600));
   const article = page.locator("#gollaboda-detail-page");
   await article.waitFor({ state: "visible", timeout: 8000 });
   await article.screenshot({ path: paths.full, type: "png" });
@@ -99,55 +104,96 @@ async function screenshotHtml(html, paths) {
   await browser.close();
 }
 
-async function runSample(example) {
-  const photos = SAMPLE_PHOTOS[example.id] || [];
-  const input = {
-    ...example,
-    highlights:
-      example.id === "open-rice"
-        ? "여주에서 당일 도정\n진공 포장 그대로 집까지"
-        : "주문 후 분쇄 가능\n당일 로스팅 안내",
-    mustInclude:
-      example.id === "open-rice"
-        ? "도정 시각은 방문 당일만 안내합니다."
-        : "분쇄 굵기는 주문 시 고릅니다.",
-    imageCount: photos.length,
-    photoCaptions: photos.map((p) => p.caption),
-  };
-  const t0 = Date.now();
-  const gen = await generateDetailPagePack(input);
-  const ms = Date.now() - t0;
-  const pack = gen.pack;
-  const body = renderDetailPageBodyHtml(pack, photos);
-  const html = wrapSmartstoreHtml(body, pack);
+function panelRow({ id, label, pack, html, photos, mode, ms }) {
   const evaled = evaluateDetailPageDesignerPanel({
     pack,
-    html: body,
+    html,
     photoCount: photos.length,
   });
-  const slug = example.id.replace(/^open-/, "");
-  writeFileSync(join(OUT_DIR, `${slug}.html`), html, "utf8");
-  await screenshotHtml(html, {
+  const success = assessDetailPageSuccess({
+    pack,
+    html,
+    photoCount: photos.length,
+  });
+  return {
+    id,
+    label,
+    productName: pack.productName,
+    headline: pack.headline,
+    mode,
+    ms,
+    engineScore: pack._meta?.sqv?.score ?? null,
+    successScore: success.score,
+    successOk: success.ok,
+    standardOk: pack._meta?.standard?.ok ?? success.standardOk,
+    photos: photos.length,
+    imgCount: (html.match(/<img /g) || []).length,
+    panel: evaled.summary,
+    measured: {
+      photo: evaled.measured.photo,
+      uniqueness: evaled.measured.uniqueness,
+      padHits: evaled.measured.padHits,
+      intent: evaled.measured.intent,
+      visualLayouts: evaled.measured.visualLayouts,
+    },
+    lowest: evaled.summary.lowest,
+    highest: evaled.summary.highest,
+  };
+}
+
+async function runLiveSample(example) {
+  const t0 = Date.now();
+  const sample = buildDetailPagePublicSample(example.id);
+  const photos = loadShots(example.id);
+  const html = renderDetailPageBodyHtml(sample.pack, photos);
+  const documentHtml = wrapMallHtml(html, sample.pack, "smartstore");
+  const row = panelRow({
+    id: `${example.id}-live`,
+    label: `${example.label} 맛보기`,
+    pack: sample.pack,
+    html,
+    photos,
+    mode: "live",
+    ms: Date.now() - t0,
+  });
+  const slug = `${example.id.replace(/^open-/, "")}-live`;
+  writeFileSync(join(OUT_DIR, `${slug}.html`), documentHtml, "utf8");
+  await screenshotHtml(documentHtml, {
     full: join(OUT_DIR, `${slug}-full.png`),
     hero: join(OUT_DIR, `${slug}-hero.png`),
     mid: join(OUT_DIR, `${slug}-mid.png`),
   });
-  return {
-    id: example.id,
-    label: example.label,
-    productName: pack.productName,
-    headline: pack.headline,
+  row.images = [`${slug}-hero.png`, `${slug}-mid.png`, `${slug}-full.png`];
+  return row;
+}
+
+async function runGptSample(example) {
+  const photos = loadShots(example.id);
+  const t0 = Date.now();
+  const gen = await generateDetailPagePack(
+    { ...example, photos },
+    { allowLlm: true, allowImages: false, logLlmError: true }
+  );
+  const html = renderDetailPageBodyHtml(gen.pack, photos);
+  const documentHtml = wrapMallHtml(html, gen.pack, "smartstore");
+  const row = panelRow({
+    id: `${example.id}-gpt`,
+    label: `${example.label} GPT`,
+    pack: gen.pack,
+    html,
+    photos,
     mode: gen.mode,
-    ms,
-    engineScore: pack._meta?.sqv?.score ?? null,
-    chars: pack._meta?.chars ?? null,
-    standardOk: pack._meta?.standard?.ok ?? null,
-    photos: photos.length,
-    images: [`${slug}-hero.png`, `${slug}-mid.png`, `${slug}-full.png`],
-    panel: evaled.summary,
-    measured: evaled.measured,
-    votes: evaled.votes,
-  };
+    ms: Date.now() - t0,
+  });
+  const slug = `${example.id.replace(/^open-/, "")}-gpt`;
+  writeFileSync(join(OUT_DIR, `${slug}.html`), documentHtml, "utf8");
+  await screenshotHtml(documentHtml, {
+    full: join(OUT_DIR, `${slug}-full.png`),
+    hero: join(OUT_DIR, `${slug}-hero.png`),
+    mid: join(OUT_DIR, `${slug}-mid.png`),
+  });
+  row.images = [`${slug}-hero.png`, `${slug}-mid.png`, `${slug}-full.png`];
+  return row;
 }
 
 loadEnvLocal();
@@ -155,44 +201,78 @@ mkdirSync(OUT_DIR, { recursive: true });
 
 const samples = [];
 for (const example of DETAIL_PAGE_OPEN_EXAMPLES) {
-  samples.push(await runSample(example));
+  samples.push(await runLiveSample(example));
+}
+for (const example of DETAIL_PAGE_OPEN_EXAMPLES) {
+  samples.push(await runGptSample(example));
 }
 
 const means = samples.map((s) => s.panel.mean);
+const live = samples.filter((s) => s.mode === "live");
+const gpt = samples.filter((s) => s.mode !== "live");
 const report = {
-  version: "gollaboda-designer-30-v1",
+  version: "gollaboda-designer-30-v3",
   generatedAt: new Date().toISOString(),
   nDesigners: 30,
   samples,
   overall: {
     mean: Math.round((means.reduce((a, b) => a + b, 0) / means.length) * 10) / 10,
-    hire: samples.every((s) => s.panel.hire),
+    liveMean:
+      Math.round(
+        (live.reduce((a, s) => a + s.panel.mean, 0) / Math.max(1, live.length)) * 10
+      ) / 10,
+    gptMean:
+      Math.round(
+        (gpt.reduce((a, s) => a + s.panel.mean, 0) / Math.max(1, gpt.length)) * 10
+      ) / 10,
+    hire: live.every((s) => s.panel.hire),
+    liveHire: live.every((s) => s.panel.hire),
+    gptHire: gpt.every((s) => s.panel.hire),
     issues: [...new Set(samples.flatMap((s) => s.panel.topIssues))],
   },
 };
 writeFileSync(join(OUT_DIR, "latest.json"), JSON.stringify(report, null, 2));
-writeFileSync(join(OUT_DIR, "latest-summary.json"), JSON.stringify({
-  generatedAt: report.generatedAt,
-  overall: report.overall,
-  samples: samples.map((s) => ({
-    id: s.id,
-    productName: s.productName,
-    mode: s.mode,
-    ms: s.ms,
-    engineScore: s.engineScore,
-    panelMean: s.panel.mean,
-    passCount: s.panel.passCount,
-    hireLabel: s.panel.hireLabel,
-    topIssues: s.panel.topIssues,
-    images: s.images,
-  })),
-}, null, 2));
+writeFileSync(
+  join(OUT_DIR, "latest-summary.json"),
+  JSON.stringify(
+    {
+      generatedAt: report.generatedAt,
+      overall: report.overall,
+      samples: samples.map((s) => ({
+        id: s.id,
+        label: s.label,
+        mode: s.mode,
+        ms: s.ms,
+        engineScore: s.engineScore,
+        successScore: s.successScore,
+        successOk: s.successOk,
+        panelMean: s.panel.mean,
+        passCount: s.panel.passCount,
+        hireLabel: s.panel.hireLabel,
+        topIssues: s.panel.topIssues,
+        imgCount: s.imgCount,
+        images: s.images,
+        lowest: s.lowest.map((v) => `${v.name} ${v.score}`),
+        highest: s.highest.map((v) => `${v.name} ${v.score}`),
+      })),
+    },
+    null,
+    2
+  )
+);
 console.log(JSON.stringify(report.overall, null, 2));
-console.log(samples.map((s) => ({
-  id: s.id,
-  mode: s.mode,
-  mean: s.panel.mean,
-  pass: `${s.panel.passCount}/30`,
-  hire: s.panel.hireLabel,
-  issues: s.panel.topIssues,
-})).map((row) => JSON.stringify(row)).join("\n"));
+for (const s of samples) {
+  console.log(
+    JSON.stringify({
+      id: s.id,
+      mode: s.mode,
+      mean: s.panel.mean,
+      pass: `${s.panel.passCount}/30`,
+      hire: s.panel.hireLabel,
+      success: s.successScore,
+      successOk: s.successOk,
+      issues: s.panel.topIssues,
+    })
+  );
+}
+process.exitCode = report.overall.liveHire ? 0 : 1;
