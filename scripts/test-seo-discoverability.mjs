@@ -16,6 +16,9 @@ const page = readFileSync("app/page.js", "utf8");
 assert.ok(page.includes("SeoDiscoverabilityHero"));
 const seoHero = readFileSync("components/seo/SeoDiscoverabilityHero.jsx", "utf8");
 assert.ok(seoHero.includes("<h1"), "crawler h1 on home seo intro");
+assert.ok(seoHero.includes("골라보다"), "골라보다 in server HTML");
+assert.ok(seoHero.includes("versusGpt"), "chatbot vs screen copy wired in server HTML");
+assert.ok(seoHero.includes("/detail"), "골라보다 link in server HTML");
 assert.ok(page.includes("HomeClientLoader"));
 
 const loader = readFileSync("components/home/HomeClientLoader.jsx", "utf8");

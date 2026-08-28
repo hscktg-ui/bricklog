@@ -111,6 +111,8 @@ assert.ok(html.includes('data-grade="95"') || html.includes("data-grade=\"95\"")
 assert.ok(html.includes("font-size:38px"));
 assert.ok(html.includes("font-size:18px"));
 assert.ok(html.includes('data-ui="section-layouts"'));
+assert.ok(html.includes('data-photo-slot="hero"'));
+assert.ok(html.includes('data-photo-empty="1"'));
 assert.ok(html.includes('data-layout="hero-stack"'));
 assert.ok(html.includes('data-layout="usp-cards"'));
 assert.ok(html.includes('data-layout="spec-sheet"'));
@@ -218,6 +220,7 @@ assert.ok(assigned.byType.explain);
 assert.equal(assigned.leftovers.length, 0);
 const htmlWithPhotos = renderDetailPageBodyHtml(pack, photos);
 assert.ok(htmlWithPhotos.includes('data-photo-slot="hero"'));
+assert.equal(htmlWithPhotos.includes('data-photo-slot="hero" data-photo-empty'), false);
 assert.ok(htmlWithPhotos.includes("p1.jpg"));
 assert.ok(htmlWithPhotos.includes("p2.jpg"));
 assert.equal(htmlWithPhotos.includes("p1.jpg") && htmlWithPhotos.includes("p2.jpg"), true);
@@ -298,6 +301,19 @@ const publicHi = sanitizePublicDetailPageBody({
 });
 assert.equal(publicHi.highlights, "당일 도정");
 assert.equal(publicHi.imageCount, 3);
+
+const salonPack = buildDetailPageFallbackPack({
+  productName: "두피 케어 샴푸",
+  brandName: "살롱",
+  industry: "미용실",
+  target: "두피 민감 손님",
+  searchIntent: "향은 좋은데 두피가 따가운지 모르겠다",
+  features: "저자극\n향 잔여 적음",
+  pageLength: "standard",
+});
+assert.ok(salonPack._meta.sqv.score >= 95, `salon engine ${salonPack._meta.sqv.score}`);
+assert.equal(salonPack._meta.success.ok, true);
+assert.equal(salonPack._meta.typePairing.id, "salon");
 
 if (prevMission === undefined) delete process.env.BRICLOG_MISSION;
 else process.env.BRICLOG_MISSION = prevMission;

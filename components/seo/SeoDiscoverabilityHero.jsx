@@ -7,11 +7,13 @@ import {
   LANDING_PRIMARY_CTA,
 } from "@/lib/brand/copy";
 import { GUIDE_PAGES } from "@/lib/seo/guidePages";
+import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 const SEO_SEARCH_PHRASES = [
   "브랜드 이야기",
   "스마트플레이스 공지",
   "인스타 캡션",
+  "골라보다 상세페이지",
   "운영 계획",
   "지역 브랜드",
 ];
@@ -40,6 +42,13 @@ export default function SeoDiscoverabilityHero() {
       </p>
       <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-relaxed text-[#4E5968]">
         {BRAND_META_DESCRIPTION}
+      </p>
+      <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-relaxed text-[#4E5968]">
+        {DETAIL_PAGE_PRODUCT.versusGpt} {DETAIL_PAGE_PRODUCT.versusUs}{" "}
+        <Link href="/detail" className="font-semibold text-[#03A94D] hover:underline">
+          {DETAIL_PAGE_PRODUCT.name}
+        </Link>
+        에서 붙일 860px 화면을 만듭니다.
       </p>
       <p className="mx-auto mt-2 max-w-2xl text-[13px] text-[#8B95A1]">
         {SEO_SEARCH_PHRASES.join(" · ")}

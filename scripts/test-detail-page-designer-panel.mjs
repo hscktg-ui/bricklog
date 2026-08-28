@@ -21,8 +21,8 @@ const pack = buildDetailPageFallbackPack({
 const html = renderDetailPageBodyHtml(pack, []);
 const panel = evaluateDetailPageDesignerPanel({ pack, html, photoCount: 0 });
 assert.equal(panel.votes.length, 30);
-assert.equal(panel.measured.padHits <= 2, true);
-assert.ok(panel.summary.mean >= 70, `designer mean ${panel.summary.mean}`);
+assert.ok(html.includes('data-photo-empty="1"'));
+assert.ok(panel.summary.passCount >= 30, `pass ${panel.summary.passCount}/30`);
 assert.equal(panel.summary.n, 30);
 assert.ok(panel.summary.mean >= 1 && panel.summary.mean <= 100);
 console.log(

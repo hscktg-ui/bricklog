@@ -5,7 +5,6 @@ import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import DetailPageGenerator from "@/components/DetailPageGenerator";
 import DetailPageMark from "@/components/DetailPageMark";
-import PageLoadingState from "@/components/ui/PageLoadingState";
 import Toast from "@/components/Toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
@@ -56,7 +55,21 @@ export default function PublicDetailPageClient() {
         </div>
       </header>
       {user === undefined ? (
-        <PageLoadingState message="로그인 확인 중…" />
+        <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-10">
+          <p className="text-center text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
+            {p.eyebrow} · {p.place}
+          </p>
+          <h1 className="mt-3 text-center text-[26px] font-semibold tracking-tight">
+            {p.headline}
+            <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
+          </h1>
+          <p className="mt-3 text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
+            {p.versusGpt} {p.versusUs}
+          </p>
+          <p className="mt-8 text-center text-[13px] text-[var(--vision-muted)]">
+            로그인 확인 중…
+          </p>
+        </div>
       ) : user ? (
         <div className="flex min-h-0 flex-1 flex-col">
           <DetailPageGenerator onToast={showToast} surface="public" />
