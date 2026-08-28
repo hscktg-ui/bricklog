@@ -35,7 +35,11 @@ assert.deepEqual(
 );
 assert.equal(riceList.filled.some((s) => s.label === "품종"), false);
 assert.equal(riceList.filled.some((s) => s.label === "등급"), false);
-assert.ok(riceList.materialLines.some((l) => l.startsWith("원재료")));
+const harvest = riceList.filled.find((s) => s.label === "햅쌀");
+assert.ok(harvest?.value && harvest.value !== "햅쌀");
+assert.ok(riceList.stepLines.some((l) => l.includes("햅쌀") && l.includes("—")));
+assert.equal(riceList.specRows.some((r) => r[0] === r[1]), false);
+assert.ok(riceList.specRows.some((r) => r[0] === "햅쌀" && r[1] !== "햅쌀"));
 assert.ok(formatCategoryFlowForPrompt(riceInput).includes("산지 →"));
 assert.ok(formatCategoryFlowForPrompt(riceInput).includes("없는 항목은 만들지 말 것"));
 
@@ -43,6 +47,16 @@ const rice = buildDetailPageFallbackPack(riceInput);
 const riceText = JSON.stringify(rice);
 assert.equal(rice._meta.categoryFlow.id, "grocery");
 assert.ok(rice.sections.find((s) => s.type === "intent").bullets[0].includes("산지"));
+assert.ok(rice.sections.find((s) => s.type === "intent").title.includes("이 칸부터"));
+assert.equal(
+  rice.sections.find((s) => s.type === "intent").title.includes("가늠이 안 된다"),
+  false
+);
+assert.ok(rice.sections.find((s) => s.type === "hero").body.includes("가늠이 안 된다"));
+assert.equal(
+  rice.sections.find((s) => s.type === "explain").rows.some((r) => String(r[1]).includes("가늠이 안 된다")),
+  false
+);
 assert.ok(rice.sections.find((s) => s.type === "usp").kicker.includes("소재"));
 assert.ok(rice.sections.find((s) => s.type === "spec").rows.some((r) => r[0] === "원재료"));
 assert.ok(rice.sections.find((s) => s.type === "spec").rows.some((r) => r[0] === "도정"));
@@ -58,7 +72,9 @@ const riceHtml = renderDetailPageBodyHtml(rice, []);
 assert.ok(riceHtml.includes('data-category-flow="grocery"'));
 assert.ok(riceHtml.includes("산지"));
 assert.ok(riceHtml.includes("원재료"));
-assert.ok(riceHtml.includes("짓는 법"));
+assert.ok(riceHtml.includes("햅쌀로 표기"));
+assert.ok(riceHtml.includes('data-layout="usp-rows"'));
+assert.ok(riceHtml.includes('data-layout="reason-band"'));
 
 const beansInput = normalizeDetailPageInput({
   productName: "하우스 블렌드 원두 200g",
@@ -70,7 +86,7 @@ const beansInput = normalizeDetailPageInput({
 });
 assert.equal(resolveDetailPageCategoryFlow(beansInput).id, "cafe");
 const beansList = buildDetailPageCategoryListing(beansInput);
-assert.ok(beansList.filled.some((s) => s.label === "원두"));
+assert.ok(beansList.filled.some((s) => s.label === "원두" && s.value !== "원두"));
 assert.ok(beansList.filled.some((s) => s.label === "로스팅"));
 assert.ok(beansList.filled.some((s) => s.label === "분쇄"));
 assert.ok(beansList.filled.some((s) => s.label === "중량"));
