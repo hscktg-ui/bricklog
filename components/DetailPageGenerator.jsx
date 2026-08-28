@@ -15,7 +15,6 @@ import {
   channelFormScrollClass,
   channelResultPaneClass,
 } from "@/lib/workspace/channelWorkspaceLayout";
-import { getPublicTestSessionId } from "@/lib/publicTest/publicTestQuotaClient";
 import { VISION_CTA_ACCENT, VISION_INPUT } from "@/lib/landing/vision2030Styles";
 
 const MAX_PHOTOS = 5;
@@ -116,7 +115,7 @@ async function downloadPreviewPng(node, filename) {
   });
 }
 
-export default function DetailPageGenerator({ onCopy, onToast, variant = "workspace" }) {
+export default function DetailPageGenerator({ onCopy, onToast }) {
   const workspace = useOptionalBrandWorkspace();
   const activeBrand = workspace?.activeBrand;
   const previewRef = useRef(null);
@@ -202,34 +201,15 @@ export default function DetailPageGenerator({ onCopy, onToast, variant = "worksp
         address: activeBrand?.address || "",
         storeFeatures: activeBrand?.storeFeatures || "",
       };
-      const data =
-        variant === "public"
-          ? await fetch("/api/public/detail-page", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                ...payload,
-                sessionId: getPublicTestSessionId(),
-              }),
-            }).then(async (res) => {
-              const json = await res.json().catch(() => ({}));
-              if (!res.ok && !json?.ok) {
-                throw new Error(json?.userMessage || "상세페이지를 만들지 못했습니다.");
-              }
-              return json;
-            })
-          : await fetchWithAuth("/api/content/detail-page", {
-              method: "POST",
-              timeoutMs: 90_000,
-              body: JSON.stringify(payload),
-            });
+      const data = await fetchWithAuth("/api/content/detail-page", {
+        method: "POST",
+        timeoutMs: 90_000,
+        body: JSON.stringify(payload),
+      });
       if (!data?.ok || !data.pack) {
         throw new Error(data?.userMessage || "상세페이지를 만들지 못했습니다.");
       }
       setPack(data.pack);
-      if (data.userMessage && data.mode === "fallback") {
-        onToast?.(data.userMessage);
-      }
     } catch (err) {
       setError(err.message || "상세페이지를 만들지 못했습니다.");
     } finally {
@@ -245,8 +225,6 @@ export default function DetailPageGenerator({ onCopy, onToast, variant = "worksp
     accent,
     photos.length,
     activeBrand,
-    variant,
-    onToast,
   ]);
 
   const copyHtml = useCallback(async () => {
@@ -289,7 +267,7 @@ export default function DetailPageGenerator({ onCopy, onToast, variant = "worksp
       <aside className={channelFormPaneClass({ width: "wide" })}>
         <div className={channelFormScrollClass("", true)}>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
-            {variant === "public" ? "가입 없이 참여" : "상품 상세"}
+            상품 상세
           </p>
           <h2 className="mt-1 text-[22px] font-semibold tracking-tight">
             {product.emptyTitle}

@@ -128,7 +128,7 @@ export default function HeroSection({
               href="/detail"
               className={`${VISION_LOGIN_LINK} !min-h-0 !px-1 !py-0 !text-[13px]`}
             >
-              가입 없이 만들기
+              로그인하고 만들기
             </a>
           </p>
           {onLogin ? (

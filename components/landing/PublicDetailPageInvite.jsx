@@ -17,7 +17,7 @@ export default function PublicDetailPageInvite() {
           상세페이지가 필요하면, 여기서 만드세요
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--vision-muted)]">
-          가입 없이 상품명과 특징만 넣으면 됩니다. 스마트스토어·쿠팡에 붙이는 860px
+          로그인 후 상품명과 특징만 넣으면 됩니다. 스마트스토어·쿠팡에 붙이는 860px
           HTML이 바로 나갑니다.
         </p>
         <div className="mt-8 flex justify-center">
