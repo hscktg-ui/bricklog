@@ -5,7 +5,7 @@ import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import DetailPageGenerator from "@/components/DetailPageGenerator";
 import DetailPageMark from "@/components/DetailPageMark";
-import DetailPageSampleFrame from "@/components/DetailPageSampleFrame";
+import DetailPageSampleZone from "@/components/DetailPageSampleZone";
 import Toast from "@/components/Toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
@@ -88,7 +88,7 @@ export default function PublicDetailPageClient() {
             {p.versusGpt} {p.versusUs}
           </p>
           <div className="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <DetailPageSampleFrame caption={p.sampleCaption} height={720} />
+            <DetailPageSampleZone height={720} />
             <div className="mx-auto w-full max-w-[440px] lg:mx-0">
               <ul className="grid grid-cols-2 gap-3 text-left">
                 {p.pillars.map((item, i) => (

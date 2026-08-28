@@ -48,7 +48,11 @@ export default function SeoDiscoverabilityHero() {
         <Link href="/detail" className="font-semibold text-[#03A94D] hover:underline">
           {DETAIL_PAGE_PRODUCT.name}
         </Link>
-        에서 붙일 860px 화면을 만듭니다.
+        에서 붙일 860px 화면을 만듭니다. 로그인 없이{" "}
+        <Link href="/detail/sample" className="font-semibold text-[#03A94D] hover:underline">
+          상세 맛보기
+        </Link>
+        를 볼 수 있습니다.
       </p>
       <p className="mx-auto mt-2 max-w-2xl text-[13px] text-[#8B95A1]">
         {SEO_SEARCH_PHRASES.join(" · ")}

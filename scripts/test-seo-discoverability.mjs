@@ -19,6 +19,7 @@ assert.ok(seoHero.includes("운영 글"), "crawler h1 names operating copy + pro
 assert.ok(seoHero.includes("브릭로그 상세"), "브릭로그 상세 in server HTML");
 assert.ok(seoHero.includes("versusGpt"), "chatbot vs screen copy wired in server HTML");
 assert.ok(seoHero.includes("/detail"), "detail link in server HTML");
+assert.ok(seoHero.includes("/detail/sample"), "detail sample zone in server HTML");
 assert.ok(page.includes("HomeClientLoader"));
 
 const loader = readFileSync("components/home/HomeClientLoader.jsx", "utf8");

@@ -42,10 +42,10 @@ export default function DemoPreviewSection({ sample, onTest }) {
         </h2>
         <p className={`mt-4 text-center ${VISION_SUB}`}>
           이야기 · 플레이스 · 인스타. 상품 화면은 같은 주제가 아닙니다.{" "}
-          <a href="/detail" className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline">
+          <a href="/#landing-detail-sample" className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline">
             브릭로그 상세
           </a>
-          에서 맛보기를 보고 만듭니다.
+          샘플 존에서 맛보기를 보고 만듭니다.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
