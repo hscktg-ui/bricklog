@@ -20,7 +20,8 @@ function assert(label, cond) {
 assert("main promise mentions speed", /1~2분/.test(BRICLOG_MAIN_PROMISE));
 assert("blog role", getChannelHumanVoice("blog").role === "칼럼니스트");
 assert("place role", getChannelHumanVoice("place").role === "브랜드 담당자");
-assert("insta role", getChannelHumanVoice("instagram").role === "마케터");
+assert("detail role", getChannelHumanVoice("detailPage").role === "상세 디자인");
+assert("detail alias", getChannelHumanVoice("detail").role === "상세 디자인");
 
 const blogSteps = getGenerationSteps("blog");
 assert("blog loading mentions column", blogSteps.some((s) => /칼럼/.test(s.text)));
@@ -33,6 +34,7 @@ assert("insta loading mentions marketer", instaSteps.some((s) => /마케터/.tes
 
 assert("channel products wired", CHANNEL_PRODUCTS.blog.voiceRole === "칼럼니스트");
 assert("place products wired", CHANNEL_PRODUCTS.place.voiceRole === "브랜드 담당자");
+assert("detail products wired", CHANNEL_PRODUCTS.detailPage.voiceRole === "상세 디자인");
 
 const badge = resolveDeliveryTrustBadge(
   { sections: [{ body: "test" }], _meta: { publishReady: true, contentQualityDelivered: true } },
@@ -41,6 +43,7 @@ const badge = resolveDeliveryTrustBadge(
 assert("trust hint uses voice", /브랜드 담당자/.test(badge.hint));
 
 assert("complete message blog", /칼럼/.test(getCompleteMessage("blog")));
+assert("complete message detail", /상세/.test(getCompleteMessage("detailPage")));
 
 if (failed > 0) {
   console.error(`\n${failed} assertion(s) failed`);

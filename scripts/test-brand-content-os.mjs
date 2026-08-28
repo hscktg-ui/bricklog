@@ -33,6 +33,10 @@ if (!plan.whatToWrite?.length || !plan.whyWrite?.length || !plan.researchMustKno
   console.error("FAIL: operating plan incomplete", plan);
   process.exit(1);
 }
+if (!plan.whatToWrite?.some((w) => w.channel === "detailPage")) {
+  console.error("FAIL: operating plan missing detail page design", plan.whatToWrite);
+  process.exit(1);
+}
 
 if (!formatContentOperatingPlanBrief(plan).includes("무엇을 쓸지")) {
   console.error("FAIL: plan brief");

@@ -21,6 +21,8 @@ import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
 import { assessDetailPageStandard, applyEditedDetailPageSections } from "../lib/product/detailPageStandard.js";
 import { getDetailPageCompanyPreset, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
 import { sanitizePublicDetailPageBody } from "../lib/product/detailPagePublic.js";
+import { gptDetailPageSystemPrompt } from "../lib/product/detailPageStandard.js";
+import { DETAIL_PAGE_DESIGN_CONTEXT, formatDetailPageDesignBrief } from "../lib/product/detailPageContext.js";
 
 const prevMission = process.env.BRICLOG_MISSION;
 const prevCore = process.env.BRICLOG_CORE_RULES;
@@ -43,6 +45,10 @@ const n = normalizeDetailPageInput(input);
 assert.equal(n.productName, "여주 햅쌀 10kg");
 assert.equal(n.features.length, 3);
 assert.equal(n.searchIntent.includes("밥맛"), true);
+assert.equal(n.contentChannel, "detailPage");
+assert.equal(n.detailPageDesign?.width, DETAIL_PAGE_DESIGN_CONTEXT.width);
+assert.ok(formatDetailPageDesignBrief().includes("860"));
+assert.ok(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("Pretendard"));
 
 const pack = buildDetailPageFallbackPack(input);
 assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");

@@ -25,7 +25,7 @@ if (result.metrics.contextScore.sqvDiagnostic) {
 const topicChip = result.metrics.reflectionChips.find((c) => c.id === "topic");
 assert.ok(topicChip, "topic chip expected");
 
-assert.ok(PUBLIC_TEST_CHANNEL_HEADLINE.includes("세 채널"));
+assert.ok(PUBLIC_TEST_CHANNEL_HEADLINE.includes("상세"));
 assert.ok(PUBLIC_TEST_BLUR_HINT.includes("가입"));
 
 console.log("test-public-test-reflection-display: ok");

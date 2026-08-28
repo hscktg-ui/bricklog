@@ -30,10 +30,14 @@ const allDone = buildPostPublishOperatingSteps(plan, {
   hasInsta: true,
   blogTopic: plan.primaryTopic,
 });
+assert.ok(
+  allDone.some((s) => s.channel === "detailPage"),
+  "place+insta done → next is detail page design"
+);
 assert.equal(
-  allDone.filter((s) => s.channel !== "blog").length,
+  allDone.filter((s) => s.channel === "place" || s.channel === "instagram").length,
   0,
-  "place+insta done → only next blog"
+  "place+insta done → those channels omitted"
 );
 
 console.log("OK: post-publish operating steps");

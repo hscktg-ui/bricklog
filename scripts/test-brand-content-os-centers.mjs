@@ -48,6 +48,9 @@ const week1 = resolveIndustryWeek1Template(input);
 assert.equal(week1.label, "카페 1주차");
 assert.ok(week1.days.length >= 4);
 
+const furniture = resolveIndustryWeek1Template({ industry: "furniture" });
+assert.ok(furniture.days.some((d) => d.channel === "detailPage"));
+
 const search = searchBrandContentReferences(
   [
     {
