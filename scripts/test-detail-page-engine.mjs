@@ -117,6 +117,12 @@ const haeshin = buildDetailPageFallbackPack({ presetId: "haeshin-ops" });
 assert.ok(haeshin.sections.some((s) => s.type === "intent"));
 assert.ok(packToPlainText(haeshin).includes("해신기획"));
 assert.equal(haeshin._meta.standard.ok, true, haeshin._meta.standard.reasons.join(","));
+assert.equal(packToPlainText(haeshin).includes("맞춤를"), false);
+assert.ok(
+  haeshin.sections.find((s) => s.type === "usp")?.bullets?.some((b) =>
+    b.includes("블로그")
+  )
+);
 
 const home100 = buildDetailPageFallbackPack({ presetId: "home100-showroom" });
 assert.ok(packToPlainText(home100).includes("HOME100"));
