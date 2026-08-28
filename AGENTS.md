@@ -48,11 +48,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 `lib/product/detailPageSuccessStandard.js` — 「카피를 받았다」❌ → **「고르는 화면이 생겼다」** ✅
 
 엔진 95점(글자·구성)은 성공이 아님. 기획30 · 조사30 · 설명20 · 글10 · 검수10.
-검수는 디자이너 30인 패널(`lib/qa/detailPageDesignerPanel30.js`). 하드: 사실·약한 CTA · 문장 한 번 · 패딩 금지 · 패널 평균 90 · 상세 디자이너 비전 90.
+검수는 디자이너 30인 패널(`lib/qa/detailPageDesignerPanel30.js`). 하드: 사실·약한 CTA · 문장 한 번 · 패딩 금지 · 패널 평균 90 · 상세 디자이너 비전 90 · 기획 먼저(Planned Generation).
 국내 1위는 슬로건이 아니라 이 출고 기준(`DETAIL_PAGE_KOREA_FIRST`). 챗봇 글·대행사 롱페이지·가짜 후기를 이긴다.
-지는 축 3개: 연출컷은 **컷별 상품 사진 생성**(올린 사진 우선, 가짜 모델컷 아님) · 예쁜 롱페이지는 첫눈 화면 · 멀티몰은 스마트스토어·쿠팡에 섹션 이미지(통이미지)를 올린다 (`lib/product/detailPageCompeteWins.js`). 상세페이지 AI의 핵심은 사진까지 있는 붙일 화면. 화면 순서는 네이버 쇼핑 랭킹 상세, 붙이는 형식은 리스트 공개 샘플의 섹션 PNG 스택이다 (`lib/product/detailPageRankingPlaybook.js`). 가짜 후기·모델컷·GIF·9몰은 가져오지 않는다. 텍스트 나열은 `lib/product/detailPageCategoryFlow.js` — 범용 히트상품 5포인트 금지. 그 카테고리 상위 상세 순서(쌀: 산지→햅쌀→도정→중량→포장, 원두: 원산지→로스팅→분쇄→중량). 없는 품종·등급은 안 씀. **상세페이지는 이미지** — 860 PNG를 상세 디자이너가 본다 (`lib/qa/detailPageDesignerVision.js`). HTML 마커 점수만으로 출고하지 않는다.
+지는 축 3개: 연출컷은 **컷별 상품 사진 생성**(올린 사진 우선, 가짜 모델컷 아님) · 예쁜 롱페이지는 첫눈 화면 · 멀티몰은 스마트스토어·쿠팡에 섹션 이미지(통이미지)를 올린다 (`lib/product/detailPageCompeteWins.js`). 상세페이지 AI의 핵심은 사진까지 있는 붙일 화면. 화면 순서는 네이버 쇼핑 랭킹 상세, 붙이는 형식은 리스트 공개 샘플의 섹션 PNG 스택이다 (`lib/product/detailPageRankingPlaybook.js`). **Planned Generation** (`lib/product/detailPagePipeline.js`) — 상품 분석·기획 JSON을 먼저 확정하고, 이미지 모델은 제품 연출컷만 그린다. 한글·가격·스펙은 HTML 엔진이 올린다. 통이미지 one-shot 금지. 가짜 후기·모델컷·GIF·9몰은 가져오지 않는다. 텍스트 나열은 `lib/product/detailPageCategoryFlow.js` — 범용 히트상품 5포인트 금지. 그 카테고리 상위 상세 순서(쌀: 산지→햅쌀→도정→중량→포장, 원두: 원산지→로스팅→분쇄→중량). 없는 품종·등급은 안 씀. **상세페이지는 이미지** — 860 PNG를 상세 디자이너가 본다 (`lib/qa/detailPageDesignerVision.js`). HTML 마커 점수만으로 출고하지 않는다.
 
-측정: `npm run test:detail-page-success-standard` · `npm run test:detail-page-type-pairing`
+측정: `npm run test:detail-page-success-standard` · `npm run test:detail-page-type-pairing` · `npm run test:detail-page-pipeline`
 
 카테고리 글꼴: `lib/product/detailPageTypePairing.js` — 한글 제목체+영문 디스플레이 / 한글 본문+영문 산세리프. Pretendard는 글리프 구멍만.
 

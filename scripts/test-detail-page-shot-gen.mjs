@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import {
   DETAIL_PAGE_CORE_SHOTS,
+  DETAIL_PAGE_SHOT_GEN_VERSION,
   generateDetailPageShots,
   listMissingDetailPageShots,
+  buildDetailPageShotPrompt,
 } from "../lib/product/detailPageShotGen.js";
 
 assert.deepEqual([...DETAIL_PAGE_CORE_SHOTS], ["hero", "observe", "feature"]);
@@ -47,5 +49,8 @@ const cloned = await generateDetailPageShots(
 assert.equal(cloned.skipped, "same_sku");
 assert.equal(cloned.photos.length, 3);
 assert.ok(cloned.photos.every((p) => p.src === "https://example.com/a.jpg"));
+assert.equal(cloned.photos.find((p) => p.slot === "observe")?.role, "detail");
+assert.equal(DETAIL_PAGE_SHOT_GEN_VERSION, "detail-shot-gen-v3");
+assert.ok(buildDetailPageShotPrompt("hero", { productName: "여주 햅쌀 10kg" }).includes("Not a webpage"));
 
 console.log("ok detail-page-shot-gen missing=hero,observe,feature same_sku=3");

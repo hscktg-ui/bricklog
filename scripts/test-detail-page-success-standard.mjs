@@ -16,7 +16,7 @@ assert.equal(
   100
 );
 assert.equal(DETAIL_PAGE_SUCCESS_PHASES.length, 5);
-assert.equal(DETAIL_PAGE_SUCCESS_HARD_GATES.length, 6);
+assert.equal(DETAIL_PAGE_SUCCESS_HARD_GATES.length, 7);
 assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 90);
 assert.equal(DETAIL_PAGE_SUCCESS_DOCTRINE.pass, "고르는 화면이 생겼다");
 assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
@@ -28,8 +28,12 @@ assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("상세는 이미지"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("상세 디자이너가 이미지를 봄"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("네이버 쇼핑 랭킹 페이지 리듬"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("리스트 샘플 통이미지"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("기획 먼저, 사진은 제품만"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("한글은 엔진이 올린다"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("가짜 모델컷"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("9몰 API"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("한글 상세페이지 통이미지"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("원샷 생성"));
 assert.equal(DETAIL_PAGE_PRODUCT.versusGpt.includes("글"), true);
 
 const pack = buildDetailPageFallbackPack({
@@ -70,6 +74,24 @@ assert.equal(pack._meta.ranking.ok, true);
 assert.ok(live.measured.padHits <= 2);
 assert.ok(live.score >= 99, `success ${live.score} — 완성 화면은 99`);
 assert.ok(live.panel.mean >= 97, `panel ${live.panel.mean}`);
+assert.equal(live.hard.includes("planned_generation"), false);
+assert.ok(html.includes('data-pipeline="planned"'));
+
+const oneshotPack = {
+  ...pack,
+  _meta: {
+    ...pack._meta,
+    pipeline: { ...pack._meta.pipeline, oneShot: true },
+  },
+};
+const oneshotLive = assessDetailPageSuccess({
+  pack: oneshotPack,
+  html,
+  photoCount: shots.length,
+  input: { brandName: "우리쌀가게" },
+});
+assert.equal(oneshotLive.ok, false);
+assert.ok(oneshotLive.hard.includes("planned_generation"));
 
 const unseen = assessDetailPageSuccess({
   pack,

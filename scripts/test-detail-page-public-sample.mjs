@@ -23,6 +23,8 @@ assert.ok(rice.html.includes('data-visual="first-glance"'));
 assert.ok(rice.html.includes("data-photo-direction"));
 assert.ok(rice.documentHtml.includes('data-mall="smartstore"'));
 assert.ok(rice.documentHtml.includes('data-ranking="naver-shop-rank"'));
+assert.ok(rice.documentHtml.includes('data-pipeline="planned"'));
+assert.ok(rice.html.includes('data-pipeline="planned"'));
 assert.ok(rice.documentHtml.includes('data-list-sample="creazy"'));
 assert.ok(rice.html.includes('data-layout="points-5"'));
 assert.ok(rice.documentHtml.includes("<img "));

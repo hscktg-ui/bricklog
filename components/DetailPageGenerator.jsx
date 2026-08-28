@@ -21,6 +21,10 @@ import {
   listDetailPagePhotoSlots,
   normalizeDetailPagePhotos,
 } from "@/lib/product/detailPagePhotos";
+import {
+  DETAIL_PAGE_ASSET_ROLES,
+  assignDetailPageAssetRoles,
+} from "@/lib/product/detailPageAssets";
 import { DETAIL_PAGE_MALLS } from "@/lib/product/detailPageCompeteWins";
 import {
   renderDetailPageBodyHtml,
@@ -188,7 +192,10 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
 
   const filledProduct = productName.trim() || activeBrand?.mainKeyword || "";
 
-  const photosNorm = useMemo(() => normalizeDetailPagePhotos(photos), [photos]);
+  const photosNorm = useMemo(
+    () => assignDetailPageAssetRoles(normalizeDetailPagePhotos(photos)),
+    [photos]
+  );
 
   const previewHtml = useMemo(() => {
     if (!pack) return "";
@@ -320,7 +327,9 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     try {
       const next = await filesToDataUrls(event.target.files);
       setPhotos((prev) =>
-        normalizeDetailPagePhotos([...prev, ...next]).slice(0, DETAIL_PAGE_MAX_PHOTOS)
+        assignDetailPageAssetRoles(
+          normalizeDetailPagePhotos([...prev, ...next])
+        ).slice(0, DETAIL_PAGE_MAX_PHOTOS)
       );
       if (event.target) event.target.value = "";
     } catch {
@@ -333,16 +342,18 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     try {
       const next = await filesToDataUrls(event.dataTransfer?.files);
       setPhotos((prev) =>
-        normalizeDetailPagePhotos([...prev, ...next]).slice(0, DETAIL_PAGE_MAX_PHOTOS)
+        assignDetailPageAssetRoles(
+          normalizeDetailPagePhotos([...prev, ...next])
+        ).slice(0, DETAIL_PAGE_MAX_PHOTOS)
       );
     } catch {
       onToast?.("사진을 읽지 못했습니다.");
     }
   }, [onToast]);
 
-  const updatePhotoCaption = useCallback((idx, caption) => {
+  const updatePhotoRole = useCallback((idx, role) => {
     setPhotos((prev) =>
-      prev.map((p, i) => (i === idx ? { ...p, caption: String(caption).slice(0, 80) } : p))
+      prev.map((p, i) => (i === idx ? { ...p, role } : p))
     );
   }, []);
 
@@ -672,7 +683,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장)
               </p>
               <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-                올린 사진을 먼저 씁니다. 빈 칸은 포장 앞면·가까이·디테일 컷을 생성합니다. 가짜 모델컷은 그리지 않습니다.
+                제품 전체·디테일·사용·구성·치수를 나눠 올립니다. 한글은 사진에 그리지 않습니다. 빈 칸은 포장 앞면만 생성합니다. 가짜 모델컷은 그리지 않습니다.
               </p>
               <ol className="mt-2 grid gap-1 text-[12px] text-[var(--vision-muted)]">
                 {photoSlots.slice(0, 3).map((slot) => (
@@ -742,12 +753,20 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                         </button>
                       </div>
                     </div>
-                    <input
-                      className={`${VISION_INPUT} mt-2 min-h-[42px] text-[13px]`}
-                      value={photo.caption}
-                      onChange={(e) => updatePhotoCaption(i, e.target.value)}
-                      placeholder="사진 아래 넣을 한 줄 (선택)"
-                    />
+                    <label className="mt-2 block text-[11px] text-[var(--vision-muted)]">
+                      이 사진의 역할
+                      <select
+                        className={`${VISION_INPUT} mt-1 min-h-[42px] text-[13px]`}
+                        value={photo.role || "packshot"}
+                        onChange={(e) => updatePhotoRole(i, e.target.value)}
+                      >
+                        {DETAIL_PAGE_ASSET_ROLES.map((role) => (
+                          <option key={role.id} value={role.id}>
+                            {role.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                   </li>
                   );
                 })}
