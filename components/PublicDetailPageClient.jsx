@@ -70,6 +70,9 @@ export default function PublicDetailPageClient() {
             {p.headline}
             <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
           </h1>
+          <p className="mt-3 text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
+            {p.versusGpt} {p.versusUs}
+          </p>
           <ul className="mt-6 grid grid-cols-2 gap-3 text-left">
             {p.pillars.map((item, i) => (
               <li

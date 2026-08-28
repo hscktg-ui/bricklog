@@ -67,7 +67,7 @@ assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
 assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("골라보다"));
 assert.equal(DETAIL_PAGE_PRODUCT.eyebrow, "골라보다");
 assert.ok(DETAIL_PAGE_PRODUCT.headline.includes("글이 아니라"));
-assert.ok(DETAIL_PAGE_PRODUCT.headlineBreak.includes("고르는 화면"));
+assert.ok(DETAIL_PAGE_PRODUCT.versusUs.includes("붙일 화면"));
 assert.equal(DETAIL_PAGE_PRODUCT.standardOk.includes("브릭로그"), false);
 assert.equal(DETAIL_PAGE_PRODUCT.fieldGroups.length, 4);
 assert.equal(DETAIL_PAGE_PRODUCT.pillars.length, 4);
@@ -92,7 +92,8 @@ assert.equal(pack._meta.compositionOk, true);
 assert.equal(pack._meta.densityOk, true);
 assert.equal(pack._meta.standard.ok, true, pack._meta.standard.reasons.join(","));
 assert.equal(pack._meta.standard.rules.soft_cta, true);
-assert.equal(pack._meta.success.ok, false, "engine 95 is not 골라보다 success");
+assert.equal(pack._meta.success.ok, true, "fallback rice must ship as a choosing screen");
+assert.equal(packToPlainText(pack).includes("고르는 순서가 보이면"), false);
 assertCore1DeliveryStamped(pack, "detailPage", "detailPage");
 
 const html = renderDetailPageBodyHtml(pack, []);

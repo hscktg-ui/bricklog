@@ -29,7 +29,9 @@ export default function PublicDetailPageInvite() {
           <span className="block text-[var(--vision-muted)]">{p.headlineBreak}</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-center text-[17px] leading-relaxed text-[var(--vision-muted)]">
-          {p.sub}
+          <span className="block text-[var(--vision-ink)]">{p.versusGpt}</span>
+          <span className="mt-1 block font-medium text-[var(--vision-ink)]">{p.versusUs}</span>
+          <span className="mt-3 block">{p.sub}</span>
         </p>
 
         <div className="mt-14 grid grid-cols-1 gap-4 @min-[560px]:grid-cols-2 @min-[560px]:gap-5">

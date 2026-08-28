@@ -6,6 +6,7 @@ import {
   DETAIL_PAGE_SUCCESS_HARD_GATES,
   DETAIL_PAGE_SUCCESS_DOCTRINE,
   DETAIL_PAGE_SUCCESS_PASS_SCORE,
+  DETAIL_PAGE_KOREA_FIRST,
   assessDetailPageSuccess,
 } from "../lib/product/detailPageSuccessStandard.js";
 import { DETAIL_PAGE_PRODUCT } from "../lib/product/detailPageProduct.js";
@@ -18,7 +19,9 @@ assert.equal(DETAIL_PAGE_SUCCESS_PHASES.length, 5);
 assert.equal(DETAIL_PAGE_SUCCESS_HARD_GATES.length, 4);
 assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 80);
 assert.equal(DETAIL_PAGE_SUCCESS_DOCTRINE.pass, "고르는 화면이 생겼다");
-assert.equal(DETAIL_PAGE_PRODUCT.successOk.includes("고르는 화면"), true);
+assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
+assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));
+assert.equal(DETAIL_PAGE_PRODUCT.versusGpt.includes("글"), true);
 
 const pack = buildDetailPageFallbackPack({
   productName: "여주 햅쌀 10kg",
@@ -28,16 +31,13 @@ const pack = buildDetailPageFallbackPack({
   searchIntent: "포장만 보고 밥맛까지는 가늠이 안 된다",
   features: "당일 도정\n진공 포장\n여주 수확",
   pageLength: "standard",
+  imageCount: 3,
 });
 assert.equal(pack._meta.sqv.score >= 95, true);
 assert.equal(pack._meta.standard.ok, true);
-assert.equal(pack._meta.success.ok, false, "95점 패딩 초안은 성공이 아니다");
-assert.ok(
-  pack._meta.success.hard.includes("pad") ||
-    pack._meta.success.hard.includes("uniqueness") ||
-    pack._meta.success.hard.includes("panel")
-);
-assert.equal(pack._meta.success.doctrine, DETAIL_PAGE_SUCCESS_DOCTRINE.fail);
+assert.equal(pack._meta.success.ok, true, "1위 출고: 폴백도 고르는 화면이어야 한다");
+assert.equal(pack._meta.success.doctrine, DETAIL_PAGE_SUCCESS_DOCTRINE.pass);
+assert.ok(pack._meta.success.measured.padHits <= 2);
 
 const html = renderDetailPageBodyHtml(pack, []);
 const live = assessDetailPageSuccess({
@@ -46,10 +46,27 @@ const live = assessDetailPageSuccess({
   photoCount: 3,
   input: { brandName: "우리쌀가게" },
 });
-assert.equal(live.ok, false);
+assert.equal(live.ok, true);
 assert.equal(live.engineScore >= 95, true);
-assert.ok(live.measured.padHits > 2);
+assert.ok(live.measured.padHits <= 2);
+assert.ok(live.panel.mean >= 70);
+
+const padded = {
+  ...pack,
+  sections: (pack.sections || []).map((s) => ({
+    ...s,
+    body: `${s.body || ""} 고르는 순서가 보이면 다음 설명은 짧아집니다. 고르는 순서가 보이면 다음 설명은 짧아집니다. 고르는 순서가 보이면 다음 설명은 짧아집니다.`,
+  })),
+};
+const paddedLive = assessDetailPageSuccess({
+  pack: padded,
+  html,
+  photoCount: 3,
+  input: { brandName: "우리쌀가게" },
+});
+assert.equal(paddedLive.ok, false, "패딩 초안은 출고 금지");
+assert.ok(paddedLive.hard.includes("pad") || paddedLive.hard.includes("uniqueness"));
 
 console.log(
-  `ok detail-page-success-standard engine=${pack._meta.sqv.score} success=${live.score} hard=${live.hard.join(",")}`
+  `ok detail-page-success-standard engine=${pack._meta.sqv.score} success=${live.score} panel=${live.panel.mean} pad=${live.measured.padHits}`
 );
