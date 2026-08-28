@@ -16,6 +16,7 @@ const pack = buildDetailPageFallbackPack({
   target: "집밥 차리는 손님",
   searchIntent: "포장만 보고 밥맛까지는 가늠이 안 된다",
   features: "당일 도정\n진공 포장\n여주 수확",
+  highlights: ["당일 도정", "진공 포장", "여주 수확"],
   pageLength: "standard",
 });
 const html = renderDetailPageBodyHtml(pack, []);
@@ -24,7 +25,8 @@ assert.equal(panel.votes.length, 30);
 assert.ok(html.includes('data-photo-empty="1"'));
 assert.ok(panel.summary.passCount >= 30, `pass ${panel.summary.passCount}/30`);
 assert.equal(panel.summary.n, 30);
-assert.ok(panel.summary.mean >= 1 && panel.summary.mean <= 100);
+assert.ok(panel.summary.mean >= 97, `panel mean ${panel.summary.mean}`);
+assert.ok(panel.summary.mean <= 99);
 console.log(
   `ok detail-page-designer-panel mean=${panel.summary.mean} pass=${panel.summary.passCount}/30 pad=${panel.measured.padHits}`
 );

@@ -28,6 +28,7 @@ const pack = buildDetailPageFallbackPack({
   target: "집밥 차리는 손님",
   searchIntent: "포장만 보고 밥맛까지는 가늠이 안 된다",
   features: "당일 도정\n진공 포장\n여주 수확",
+  highlights: ["당일 도정", "진공 포장", "여주 수확"],
   pageLength: "standard",
 });
 const html = renderDetailPageBodyHtml(pack, []);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import DetailPageGenerator from "@/components/DetailPageGenerator";
 import DetailPageMark from "@/components/DetailPageMark";
+import DetailPageSampleFrame from "@/components/DetailPageSampleFrame";
 import Toast from "@/components/Toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
@@ -75,7 +76,7 @@ export default function PublicDetailPageClient() {
           <DetailPageGenerator onToast={showToast} surface="public" />
         </div>
       ) : (
-        <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-10">
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 md:px-8 md:py-10">
           <p className="text-center text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
             {p.eyebrow} · {p.place}
           </p>
@@ -83,35 +84,40 @@ export default function PublicDetailPageClient() {
             {p.headline}
             <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
           </h1>
-          <p className="mt-3 text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
+          <p className="mx-auto mt-3 max-w-xl text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
             {p.versusGpt} {p.versusUs}
           </p>
-          <ul className="mt-6 grid grid-cols-2 gap-3 text-left">
-            {p.pillars.map((item, i) => (
-              <li
-                key={item.title}
-                className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-3"
-              >
-                <span className="text-[11px] font-bold tabular-nums text-[var(--vision-muted)]">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="mt-1 block text-[13px] font-medium leading-snug text-[var(--vision-ink)]">
-                  {item.title}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 mb-6 text-center text-[13px] text-[var(--vision-muted)]">
-            {p.loginTitle}
-            <span className="mt-1 block">{p.loginHint}</span>
-          </p>
-          <AuthForm
-            embedded
-            initialMode="login"
-            authContext="detail_page"
-            onToast={showToast}
-            onAuthSuccess={() => {}}
-          />
+          <div className="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+            <DetailPageSampleFrame caption={p.sampleCaption} height={720} />
+            <div className="mx-auto w-full max-w-[440px] lg:mx-0">
+              <ul className="grid grid-cols-2 gap-3 text-left">
+                {p.pillars.map((item, i) => (
+                  <li
+                    key={item.title}
+                    className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-3"
+                  >
+                    <span className="text-[11px] font-bold tabular-nums text-[var(--vision-muted)]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="mt-1 block text-[13px] font-medium leading-snug text-[var(--vision-ink)]">
+                      {item.title}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 mb-6 text-center text-[13px] text-[var(--vision-muted)]">
+                {p.loginTitle}
+                <span className="mt-1 block">{p.loginHint}</span>
+              </p>
+              <AuthForm
+                embedded
+                initialMode="login"
+                authContext="detail_page"
+                onToast={showToast}
+                onAuthSuccess={() => {}}
+              />
+            </div>
+          </div>
         </div>
       )}
       <footer className="shrink-0 border-t border-[var(--vision-line)] px-4 py-4 text-center text-[12px] text-[var(--vision-muted)] md:px-8">

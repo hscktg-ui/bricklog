@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import DetailPageSampleFrame from "@/components/DetailPageSampleFrame";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 import {
   VISION_CTA_ACCENT,
@@ -61,6 +62,10 @@ export default function PublicDetailPageInvite() {
               </p>
             </article>
           ))}
+        </div>
+
+        <div className="mt-14">
+          <DetailPageSampleFrame caption={p.sampleCaption} height={560} />
         </div>
 
         <div className="mt-10 flex justify-center">

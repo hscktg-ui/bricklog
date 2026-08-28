@@ -23,6 +23,7 @@ assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
 assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("올린 사진 연출"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("스마트스토어·쿠팡 복사"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("가입 전 860 맛보기"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("AI 이미지 생성"));
 assert.equal(DETAIL_PAGE_PRODUCT.versusGpt.includes("글"), true);
 
@@ -33,6 +34,7 @@ const pack = buildDetailPageFallbackPack({
   target: "집밥 차리는 손님",
   searchIntent: "포장만 보고 밥맛까지는 가늠이 안 된다",
   features: "당일 도정\n진공 포장\n여주 수확",
+  highlights: ["당일 도정", "진공 포장", "여주 수확"],
   pageLength: "standard",
   imageCount: 3,
 });
@@ -52,7 +54,8 @@ const live = assessDetailPageSuccess({
 assert.equal(live.ok, true);
 assert.equal(live.engineScore >= 95, true);
 assert.ok(live.measured.padHits <= 2);
-assert.ok(live.panel.mean >= 70);
+assert.ok(live.score >= 99, `success ${live.score} — 완성 화면은 99`);
+assert.ok(live.panel.mean >= 97, `panel ${live.panel.mean}`);
 
 const padded = {
   ...pack,

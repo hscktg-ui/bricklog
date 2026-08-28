@@ -38,14 +38,14 @@ export default function DemoPreviewSection({ sample, onTest }) {
       <div className="mx-auto max-w-3xl">
         <p className={`${VISION_EYEBROW} text-center`}>Sample</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,4vw,2rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
-          한 주제, 세 채널
+          운영 글은 한 주제
         </h2>
         <p className={`mt-4 text-center ${VISION_SUB}`}>
-          이야기 · 플레이스 · 인스타. 상품 화면은{" "}
+          이야기 · 플레이스 · 인스타. 상품 화면은 같은 주제가 아닙니다.{" "}
           <a href="/detail" className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline">
             브릭로그 상세
           </a>
-          에서 따로 만듭니다.
+          에서 맛보기를 보고 만듭니다.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
