@@ -593,6 +593,8 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               ))}
             </ol>
             <p className="mb-3 text-[12px] text-[var(--vision-muted)]">
+              {pack._meta?.sqv?.score != null ? `${pack._meta.sqv.score}점` : ""}
+              {pack._meta?.sqv?.score != null ? " · " : ""}
               {pack._meta?.mode === "llm"
                 ? "GPT-5.6 Sol 1회"
                 : pack._meta?.mode === "llm-edited" || pack._meta?.edited
@@ -601,7 +603,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               {" · "}
               {pack._meta?.standard?.ok ? "브릭로그 기준 통과" : "기준 보완 필요"}
               {" · "}
-              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px
+              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px · Pretendard
             </p>
             {pack._meta?.standard ? (
               <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
