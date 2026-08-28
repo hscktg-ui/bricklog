@@ -19,7 +19,7 @@ import { assignDetailPagePhotos, normalizeDetailPagePhotos } from "../lib/produc
 import { getChannelFullText } from "../lib/content/channelPack.js";
 import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
 import { assessDetailPageStandard, applyEditedDetailPageSections } from "../lib/product/detailPageStandard.js";
-import { getDetailPageCompanyPreset, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
+import { getDetailPageExample, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
 import { sanitizePublicDetailPageBody } from "../lib/product/detailPagePublic.js";
 import { gptDetailPageSystemPrompt } from "../lib/product/detailPageStandard.js";
 import { DETAIL_PAGE_DESIGN_CONTEXT, formatDetailPageDesignBrief } from "../lib/product/detailPageContext.js";
@@ -130,22 +130,22 @@ assert.ok(fake.reasons.includes("hard_cta"));
 assert.equal(fake.rules.facts_only, false);
 assert.equal(fake.rules.soft_cta, false);
 
-const haeshinPreset = getDetailPageCompanyPreset("haeshin-ops");
-assert.equal(haeshinPreset.brandName, "해신기획");
-const haeshin = buildDetailPageFallbackPack({ presetId: "haeshin-ops" });
-assert.ok(haeshin.sections.some((s) => s.type === "intent"));
-assert.ok(packToPlainText(haeshin).includes("해신기획"));
-assert.equal(haeshin._meta.standard.ok, true, haeshin._meta.standard.reasons.join(","));
-assert.equal(packToPlainText(haeshin).includes("맞춤를"), false);
-assert.ok(
-  haeshin.sections.find((s) => s.type === "usp")?.bullets?.some((b) =>
-    b.includes("블로그")
-  )
+const ricePreset = getDetailPageExample("open-rice");
+assert.equal(ricePreset.brandName, "우리쌀가게");
+const riceFromPreset = buildDetailPageFallbackPack({ presetId: "open-rice" });
+assert.ok(riceFromPreset.sections.some((s) => s.type === "intent"));
+assert.ok(packToPlainText(riceFromPreset).includes("우리쌀가게"));
+assert.equal(
+  riceFromPreset._meta.standard.ok,
+  true,
+  riceFromPreset._meta.standard.reasons.join(",")
 );
+assert.equal(getDetailPageExample("haeshin-ops"), null);
+assert.equal(getDetailPageExample("home100-showroom"), null);
 
-const home100 = buildDetailPageFallbackPack({ presetId: "home100-showroom" });
-assert.ok(packToPlainText(home100).includes("HOME100"));
-assert.equal(home100._meta.standard.ok, true, home100._meta.standard.reasons.join(","));
+const beans = buildDetailPageFallbackPack({ presetId: "open-beans" });
+assert.ok(packToPlainText(beans).includes("골목카페"));
+assert.equal(beans._meta.standard.ok, true, beans._meta.standard.reasons.join(","));
 
 const edited = applyEditedDetailPageSections(
   pack,
@@ -191,7 +191,10 @@ assert.ok(shortHtml.includes('data-photo-gallery="1"'), "leftover photos go to g
 
 const openRice = DETAIL_PAGE_OPEN_EXAMPLES.find((p) => p.id === "open-rice");
 assert.ok(openRice);
-assert.equal(getDetailPageCompanyPreset("open-rice").productName, openRice.productName);
+assert.equal(getDetailPageExample("open-rice").productName, openRice.productName);
+assert.ok(formatDetailPageDesignBrief().includes("장바구니"));
+assert.equal(formatDetailPageDesignBrief().includes("운영글이 아니다"), true);
+assert.equal(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("운영글이 아니다"), true);
 
 const publicBody = sanitizePublicDetailPageBody({
   productName: "여주 햅쌀 10kg",
@@ -202,6 +205,8 @@ const publicBody = sanitizePublicDetailPageBody({
 assert.equal(publicBody.presetId, "");
 assert.equal(publicBody.pageLength, "standard");
 assert.equal(sanitizePublicDetailPageBody({}).productName, "");
+assert.equal(sanitizePublicDetailPageBody({ presetId: "haeshin-ops" }).presetId, "");
+assert.equal(sanitizePublicDetailPageBody({ presetId: "open-rice" }).presetId, "open-rice");
 
 const guestPack = await generateDetailPagePack(
   { productName: "여주 햅쌀 10kg", brandName: "여주미곡", features: "당일 도정" },

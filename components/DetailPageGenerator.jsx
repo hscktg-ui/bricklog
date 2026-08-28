@@ -13,7 +13,7 @@ import {
   DETAIL_PAGE_SECTION_LABELS,
   DETAIL_PAGE_PASTE_STEPS,
 } from "@/lib/product/detailPageCatalog";
-import { DETAIL_PAGE_COMPANY_PRESETS, DETAIL_PAGE_OPEN_EXAMPLES } from "@/lib/product/detailPageCompanyPresets";
+import { DETAIL_PAGE_OPEN_EXAMPLES } from "@/lib/product/detailPageCompanyPresets";
 import {
   DETAIL_PAGE_STANDARD_RULES,
   applyEditedDetailPageSections,
@@ -491,28 +491,6 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               </button>
             ))}
           </div>
-
-          <details className="mt-4 rounded-2xl border border-[var(--vision-line)] bg-white px-3 py-2">
-            <summary className="cursor-pointer text-[13px] font-medium">
-              해신·BRICLOG·HOME100 양식
-            </summary>
-            <div className="mt-2 flex flex-col gap-2 pb-1">
-              {DETAIL_PAGE_COMPANY_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => applyPreset(preset)}
-                  className={`min-h-[44px] rounded-2xl border px-3 py-2 text-left text-[13px] leading-snug ${
-                    presetId === preset.id
-                      ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
-                      : "border-[var(--vision-line)] bg-white"
-                  }`}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </details>
 
           <label className="mt-5 block text-[13px] font-medium">
             상품명
