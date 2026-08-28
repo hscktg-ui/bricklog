@@ -10,7 +10,7 @@ import {
   LANDING_SECONDARY_CTA,
 } from "@/lib/landing/ctaCopy";
 import LandingTrustStrip from "@/components/landing/LandingTrustStrip";
-import { BRICLOG_SLOGAN } from "@/lib/brand/copy";
+import { BRICLOG_SLOGAN, BRICLOG_PUBLIC_LINES } from "@/lib/brand/copy";
 import {
   VISION_CTA_ACCENT,
   VISION_CTA_GHOST_SUBTLE,
@@ -21,7 +21,7 @@ import {
 } from "@/lib/landing/vision2030Styles";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
-const CHANNELS = ["이야기", "플레이스", "인스타", "상세"];
+const CHANNELS = BRICLOG_PUBLIC_LINES.chips;
 
 export default function HeroSection({
   greeting,

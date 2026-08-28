@@ -41,7 +41,11 @@ export default function DemoPreviewSection({ sample, onTest }) {
           한 주제, 세 채널
         </h2>
         <p className={`mt-4 text-center ${VISION_SUB}`}>
-          실제 작업실과 같은 흐름입니다. 미리보기만으로도 감이 옵니다.
+          이야기 · 플레이스 · 인스타. 상품 화면은{" "}
+          <a href="/detail" className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline">
+            브릭로그 상세
+          </a>
+          에서 따로 만듭니다.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

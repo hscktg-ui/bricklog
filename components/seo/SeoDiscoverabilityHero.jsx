@@ -35,7 +35,7 @@ export default function SeoDiscoverabilityHero() {
         {BRAND_LATEST_UPDATE.label} · 샘플 체험 · 가입 없이 미리보기
       </p>
       <h1 className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
-        {BRAND_META_TITLE_KO} — 브랜드 콘텐츠 운영
+        {BRAND_META_TITLE_KO} — 운영 글 · 상품 화면
       </h1>
       <p className="mx-auto mt-2 max-w-xl text-[15px] font-semibold text-[#191F28]">
         {BRAND_LATEST_UPDATE.headline}

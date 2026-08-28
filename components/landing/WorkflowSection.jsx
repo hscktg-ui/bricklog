@@ -12,7 +12,7 @@ export default function WorkflowSection() {
           이렇게 쓰시면 돼요
         </h2>
         <p className="mx-auto mt-3 max-w-lg text-center text-[15px] leading-relaxed text-[var(--vision-muted)]">
-          브랜드와 주제를 정한 뒤, 이야기 → 플레이스 · 인스타 순으로 이어갑니다
+          브랜드와 주제를 정한 뒤, 이야기 → 플레이스 · 인스타. 상품 화면은 상세에서.
         </p>
         <ol className="mt-10 flex flex-col gap-4 @min-[640px]:grid @min-[640px]:grid-cols-2 @min-[960px]:grid-cols-3">
           {WORKFLOW_STEPS.map((s) => (

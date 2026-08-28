@@ -21,7 +21,7 @@ export default function WhyBriclog() {
           <span className="block text-[var(--vision-muted)]">운영이 쌓입니다</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-center text-[17px] leading-relaxed text-[var(--vision-muted)]">
-          조사 → 초안 → 채널별 정리. 복잡한 과정은 숨기고, 결과만 남깁니다.
+          조사 → 초안 → 채널별 정리. 상품은 고르는 화면.
         </p>
 
         <div className="mt-14 grid grid-cols-1 gap-4 @min-[720px]:grid-cols-6 @min-[720px]:grid-rows-2 @min-[720px]:gap-5">

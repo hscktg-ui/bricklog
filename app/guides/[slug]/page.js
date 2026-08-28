@@ -58,6 +58,7 @@ export default async function GuidePage({ params }) {
             <p className="text-[14px] font-bold text-[#191F28]">{page.cta}</p>
             <p className="mt-2 text-[13px] text-[#4E5968]">
               브랜드·지역·주제를 넣고 이야기·플레이스·인스타 미리보기를 무료로 확인하세요.
+              상품 화면은 브릭로그 상세에서 만듭니다.
             </p>
             <Link
               href="/#public-brand-test"

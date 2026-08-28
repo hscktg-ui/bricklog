@@ -15,7 +15,7 @@ const DEFAULT_SITE_URL = "https://briclog.ai";
 const page = readFileSync("app/page.js", "utf8");
 assert.ok(page.includes("SeoDiscoverabilityHero"));
 const seoHero = readFileSync("components/seo/SeoDiscoverabilityHero.jsx", "utf8");
-assert.ok(seoHero.includes("<h1"), "crawler h1 on home seo intro");
+assert.ok(seoHero.includes("운영 글"), "crawler h1 names operating copy + product screen");
 assert.ok(seoHero.includes("브릭로그 상세"), "브릭로그 상세 in server HTML");
 assert.ok(seoHero.includes("versusGpt"), "chatbot vs screen copy wired in server HTML");
 assert.ok(seoHero.includes("/detail"), "detail link in server HTML");

@@ -24,7 +24,7 @@ export default function ChannelPreview({ sample }) {
           네 가지 채널
         </h2>
         <p className={`mt-3 text-center ${VISION_SUB}`}>
-          각각 따로 쓰거나, 이야기부터 한 번에 이어갈 수 있어요
+          운영 글 셋, 상품 화면은 상세. 이야기부터 이어가거나 상세만 쓸 수 있어요
         </p>
 
         <ul className="mt-8 space-y-3">

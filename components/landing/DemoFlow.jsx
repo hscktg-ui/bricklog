@@ -33,7 +33,7 @@ export default function DemoFlow({ sample }) {
           브랜드부터 채널까지
         </h2>
         <p className={`mt-3 text-center ${VISION_SUB}`}>
-          브랜드 → 월·주 계획 → 조사 후 글 → 세 채널 → 다음 주 이어가기
+          브랜드 → 월·주 계획 → 운영 글 → 상품 화면 → 다음 주
         </p>
 
         <div className={`mt-10 overflow-hidden ${VISION_PANEL}`}>
@@ -133,8 +133,8 @@ function MockTopic({ sample }) {
 
 function MockChannels() {
   return (
-    <div className="grid grid-cols-1 gap-2 text-[10px] @min-[280px]:grid-cols-3">
-      {["이야기", "플레이스", "인스타"].map((c) => (
+    <div className="grid grid-cols-2 gap-2 text-[10px]">
+      {["이야기", "플레이스", "인스타", "상세"].map((c) => (
         <div
           key={c}
           className="rounded-xl bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] px-2 py-3 text-center font-semibold text-[var(--vision-ink)]"
@@ -149,8 +149,8 @@ function MockChannels() {
 function MockNextWeek() {
   return (
     <div className="rounded-2xl border border-[var(--vision-accent-ring,rgba(3,199,90,0.25))] bg-[var(--vision-panel-bg,#fff)] p-3 text-center text-[12px] shadow-[var(--vision-shadow-soft)]">
-      <p className="font-semibold text-[var(--vision-ink)]">다음 주 주제</p>
-      <p className="mt-1 text-[var(--vision-muted)]">운영 계획에서 바로 이어 씁니다</p>
+      <p className="font-semibold text-[var(--vision-ink)]">상세 · 다음 주</p>
+      <p className="mt-1 text-[var(--vision-muted)]">상품 화면은 상세에서, 운영은 계획에서</p>
     </div>
   );
 }

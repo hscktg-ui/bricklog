@@ -7,7 +7,7 @@ import { GUIDE_PAGES } from "@/lib/seo/guidePages";
 export const metadata = buildLegalPageMetadata({
   title: `콘텐츠 가이드 · ${BRAND_META_TITLE}`,
   description:
-    "네이버 블로그·스마트플레이스·인스타그램 매장 콘텐츠 작성 가이드. 브릭로그 무료 발행 샘플과 함께 확인하세요.",
+    "네이버 블로그·스마트플레이스·인스타그램·스마트스토어 상세 매장 콘텐츠 가이드. 브릭로그 무료 샘플과 함께 확인하세요.",
   path: "/guides",
 });
 
@@ -25,7 +25,11 @@ export default function GuidesIndexPage() {
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-[#4E5968]">
           네이버 이야기, 스마트플레이스 공지, 인스타 캡션을 채널별 톤에 맞게 쓰는 방법을
-          정리했습니다. 각 글 하단에서{" "}
+          정리했습니다. 상품 화면은{" "}
+          <Link href="/detail" className="text-[#03A94D] hover:underline">
+            브릭로그 상세
+          </Link>
+          에서 만듭니다. 각 글 하단에서{" "}
           <Link href="/#public-brand-test" className="text-[#03A94D] hover:underline">
             무료 발행 샘플
           </Link>
