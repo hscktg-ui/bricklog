@@ -1,28 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { VISION_CTA_ACCENT, VISION_SECTION } from "@/lib/landing/vision2030Styles";
+import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 export default function PublicDetailPageInvite() {
   return (
     <section
       id="public-detail-page"
-      className={`${VISION_SECTION} px-5 py-16 md:px-8 md:py-20`}
+      className="border-t border-[var(--vision-line)] bg-[#f6f1ea] px-5 py-16 md:px-8 md:py-20"
     >
       <div className="mx-auto max-w-3xl text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
-          상품 상세페이지
+        <p className="text-[11px] font-semibold tracking-[0.16em] text-[#7c6a58]">
+          {DETAIL_PAGE_PRODUCT.place}
         </p>
-        <h2 className="mt-3 text-[clamp(1.5rem,4vw,2rem)] font-semibold tracking-tight">
-          상세페이지가 필요하면, 여기서 만드세요
+        <h2 className="mt-3 text-[clamp(1.5rem,4vw,2rem)] font-semibold tracking-tight text-[#1c1917]">
+          {DETAIL_PAGE_PRODUCT.name}
         </h2>
-        <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--vision-muted)]">
-          로그인 후 상품명과 특징만 넣으면 됩니다. 스마트스토어·쿠팡에 붙이는 860px
-          HTML이 바로 나갑니다.
+        <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-[#5c534c]">
+          이야기·플레이스·인스타와 다른 서비스입니다. 상품 사진과 강조 문구를
+          넣으면 스마트스토어·쿠팡에 붙일 화면이 나갑니다.
         </p>
         <div className="mt-8 flex justify-center">
-          <Link href="/detail" className={`${VISION_CTA_ACCENT} !w-auto`}>
-            상세페이지 만들기
+          <Link
+            href="/detail"
+            className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#1c1917] px-8 text-[15px] font-semibold text-[#f6f1ea] transition hover:bg-[#3f3a36]"
+          >
+            {DETAIL_PAGE_PRODUCT.generateLabel}
           </Link>
         </div>
       </div>

@@ -20,6 +20,7 @@ import { getChannelFullText } from "../lib/content/channelPack.js";
 import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
 import { assessDetailPageStandard, applyEditedDetailPageSections } from "../lib/product/detailPageStandard.js";
 import { getDetailPageExample, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
+import { DETAIL_PAGE_PRODUCT } from "../lib/product/detailPageProduct.js";
 import { sanitizePublicDetailPageBody } from "../lib/product/detailPagePublic.js";
 import { gptDetailPageSystemPrompt } from "../lib/product/detailPageStandard.js";
 import { DETAIL_PAGE_DESIGN_CONTEXT, formatDetailPageDesignBrief } from "../lib/product/detailPageContext.js";
@@ -53,6 +54,9 @@ assert.equal(n.contentChannel, "detailPage");
 assert.equal(n.detailPageDesign?.width, DETAIL_PAGE_DESIGN_CONTEXT.width);
 assert.ok(formatDetailPageDesignBrief().includes("860"));
 assert.ok(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("Pretendard"));
+assert.equal(DETAIL_PAGE_PRODUCT.name, "상세페이지");
+assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
+assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("상세페이지"));
 
 const pack = buildDetailPageFallbackPack(input);
 assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");

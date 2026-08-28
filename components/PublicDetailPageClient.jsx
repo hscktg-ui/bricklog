@@ -2,17 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Logo from "@/components/Logo";
 import AuthForm from "@/components/AuthForm";
 import DetailPageGenerator from "@/components/DetailPageGenerator";
+import DetailPageMark from "@/components/DetailPageMark";
 import PageLoadingState from "@/components/ui/PageLoadingState";
 import Toast from "@/components/Toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
-import {
-  VISION_NAV,
-  VISION_NAV_INNER,
-  VISION_PAGE,
-} from "@/lib/landing/vision2030Styles";
+import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 export default function PublicDetailPageClient() {
   const [user, setUser] = useState(undefined);
@@ -52,18 +48,16 @@ export default function PublicDetailPageClient() {
   };
 
   return (
-    <div className={`${VISION_PAGE} flex min-h-[100dvh] flex-col`}>
-      <header className={VISION_NAV}>
-        <div className={VISION_NAV_INNER}>
-          <Link href="/" aria-label="브릭로그 홈">
-            <Logo />
-          </Link>
-          <nav className="flex items-center gap-2" aria-label="상세페이지">
+    <div className="detail-page-app flex min-h-[100dvh] flex-col text-[var(--vision-ink)]">
+      <header className="sticky top-0 z-30 border-b border-[var(--vision-line)] bg-[var(--vision-paper)]/92 px-4 py-3 backdrop-blur-xl md:px-8">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+          <DetailPageMark />
+          <nav className="flex items-center gap-2" aria-label={DETAIL_PAGE_PRODUCT.name}>
             <Link
               href="/"
-              className="hidden rounded-full px-3 py-2 text-[13px] font-semibold text-[var(--vision-muted)] sm:inline-flex"
+              className="rounded-full px-3 py-2 text-[13px] font-medium text-[var(--vision-muted)]"
             >
-              홈
+              {DETAIL_PAGE_PRODUCT.homeLabel}
             </Link>
           </nav>
         </div>
@@ -72,18 +66,21 @@ export default function PublicDetailPageClient() {
         <PageLoadingState message="로그인 확인 중…" />
       ) : user ? (
         <div className="flex min-h-0 flex-1 flex-col">
-          <DetailPageGenerator onToast={showToast} />
+          <DetailPageGenerator onToast={showToast} surface="public" />
         </div>
       ) : (
         <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-10">
-          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
-            상품 상세페이지
+          <p className="text-center text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
+            {DETAIL_PAGE_PRODUCT.place}
           </p>
-          <h1 className="mt-3 text-center text-[22px] font-semibold tracking-tight">
-            로그인한 뒤 만듭니다
+          <h1 className="mt-3 text-center text-[28px] font-semibold tracking-tight">
+            {DETAIL_PAGE_PRODUCT.name}
           </h1>
-          <p className="mt-2 mb-6 text-center text-[14px] leading-relaxed text-[var(--vision-muted)]">
-            상품명과 특징만 있으면 됩니다. 계정으로 들어온 사람은 누구든 만들 수 있습니다.
+          <p className="mt-2 text-center text-[15px] leading-relaxed text-[var(--vision-muted)]">
+            {DETAIL_PAGE_PRODUCT.promise}
+          </p>
+          <p className="mt-2 mb-6 text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
+            {DETAIL_PAGE_PRODUCT.loginHint}
           </p>
           <AuthForm
             embedded
@@ -94,6 +91,20 @@ export default function PublicDetailPageClient() {
           />
         </div>
       )}
+      <footer className="shrink-0 border-t border-[var(--vision-line)] px-4 py-4 text-center text-[12px] text-[var(--vision-muted)] md:px-8">
+        <p>
+          {DETAIL_PAGE_PRODUCT.accountLabel}으로 사용합니다.{" "}
+          <Link href="/terms" className="underline-offset-2 hover:underline">
+            이용약관
+          </Link>
+          <span className="mx-1.5" aria-hidden>
+            ·
+          </span>
+          <Link href="/privacy" className="underline-offset-2 hover:underline">
+            개인정보처리방침
+          </Link>
+        </p>
+      </footer>
       <Toast visible={toast.visible} message={toast.message} type={toast.type} />
     </div>
   );

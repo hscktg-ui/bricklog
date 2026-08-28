@@ -123,7 +123,7 @@ export default function HeroSection({
             {LANDING_PRIMARY_SUB}
           </p>
           <p className="mt-2 text-[13px] text-[var(--vision-muted)]">
-            상품 상세페이지만 필요하면{" "}
+            상세페이지만 필요하면{" "}
             <a
               href="/detail"
               className={`${VISION_LOGIN_LINK} !min-h-0 !px-1 !py-0 !text-[13px]`}

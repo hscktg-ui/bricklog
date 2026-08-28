@@ -36,6 +36,7 @@ import {
   channelResultPaneClass,
 } from "@/lib/workspace/channelWorkspaceLayout";
 import { VISION_CTA_ACCENT, VISION_INPUT } from "@/lib/landing/vision2030Styles";
+import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 async function filesToDataUrls(fileList) {
   const files = Array.from(fileList || []);
@@ -133,7 +134,7 @@ async function downloadPreviewPng(node, filename) {
   });
 }
 
-export default function DetailPageGenerator({ onCopy, onToast }) {
+export default function DetailPageGenerator({ onCopy, onToast, surface = "workspace" }) {
   const workspace = useOptionalBrandWorkspace();
   const activeBrand = workspace?.activeBrand;
   const previewRef = useRef(null);
@@ -451,15 +452,23 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     <div className={CHANNEL_WORKSPACE_SHELL} aria-label={product.headerTitle}>
       <aside className={channelFormPaneClass({ width: "wide" })}>
         <div className={channelFormScrollClass("", true)}>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
-            상품 상세
-          </p>
-          <h2 className="mt-1 text-[22px] font-semibold tracking-tight">
-            {product.emptyTitle}
-          </h2>
-          <p className="mt-2 text-[14px] leading-relaxed text-[var(--vision-muted)]">
-            {product.emptyDesc}
-          </p>
+          {surface === "public" ? (
+            <p className="text-[14px] leading-relaxed text-[var(--vision-muted)]">
+              {DETAIL_PAGE_PRODUCT.promise}. 사진·강조 문구·꼭 넣을 내용을 넣고, 고를 때 막히는 점부터 짭니다.
+            </p>
+          ) : (
+            <>
+              <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
+                {DETAIL_PAGE_PRODUCT.place}
+              </p>
+              <h2 className="mt-1 text-[22px] font-semibold tracking-tight">
+                {DETAIL_PAGE_PRODUCT.name}
+              </h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-[var(--vision-muted)]">
+                {product.emptyDesc}
+              </p>
+            </>
+          )}
 
           <p className="mt-5 text-[12px] font-medium text-[var(--vision-muted)]">
             바로 채워보기
@@ -661,7 +670,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             disabled={busy}
             onClick={runGenerate}
           >
-            {busy ? "만드는 중…" : pack ? "다시 만들기" : "상세페이지 만들기"}
+            {busy ? "만드는 중…" : pack ? "다시 만들기" : product.generateLabel}
           </button>
         </div>
       </aside>

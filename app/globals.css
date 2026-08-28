@@ -1042,3 +1042,20 @@ button:enabled,
   --admin-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
   --admin-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
 }
+
+/* /detail — 브릭로그 OS와 다른 제품 화면 (계정만 공유) */
+.detail-page-app {
+  --vision-ink: #1c1917;
+  --vision-paper: #f6f1ea;
+  --vision-muted: #6b625a;
+  --vision-line: rgba(28, 25, 23, 0.12);
+  --vision-line-strong: rgba(28, 25, 23, 0.2);
+  --vision-accent: #9a3412;
+  --vision-accent-deep: #7c2d12;
+  --vision-accent-soft: rgba(154, 52, 18, 0.1);
+  --vision-accent-ring: rgba(154, 52, 18, 0.2);
+  --vision-panel-bg: #fffdf9;
+  --vision-glass: rgba(246, 241, 234, 0.88);
+  background: var(--vision-paper);
+  color: var(--vision-ink);
+}

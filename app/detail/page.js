@@ -1,12 +1,12 @@
-import { BRAND_META_TITLE } from "@/lib/brand/copy";
 import { buildLegalPageMetadata } from "@/lib/brand/seo";
 import PublicDetailPageClient from "@/components/PublicDetailPageClient";
+import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 export const metadata = buildLegalPageMetadata({
-  title: `상품 상세페이지 만들기 · ${BRAND_META_TITLE}`,
-  description:
-    "로그인 후 상품명과 특징만 넣으면 스마트스토어·쿠팡용 860px 상세페이지 HTML이 나갑니다. 가짜 후기 없이 고르는 기준부터 씁니다.",
+  title: DETAIL_PAGE_PRODUCT.metaTitle,
+  description: DETAIL_PAGE_PRODUCT.metaDescription,
   path: "/detail",
+  siteName: DETAIL_PAGE_PRODUCT.name,
 });
 
 export default function PublicDetailPage() {
