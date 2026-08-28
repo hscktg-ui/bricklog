@@ -10,7 +10,7 @@ import {
 
 assert.equal(DETAIL_PAGE_PRODUCT.samplePath, "/detail/sample");
 assert.equal(DETAIL_PAGE_PRODUCT.sampleZoneId, "landing-detail-sample");
-assert.ok(DETAIL_PAGE_PRODUCT.sampleCaption.includes("컷별 상품 사진"));
+assert.ok(DETAIL_PAGE_PRODUCT.sampleCaption.includes("이미지"));
 assert.ok(DETAIL_PAGE_PRODUCT.loginTitle.includes("내 상품"));
 assert.equal(DETAIL_PAGE_OPEN_EXAMPLES.length, 2);
 assert.equal(resolveDetailPageSampleId("nope"), "open-rice");
@@ -26,6 +26,7 @@ assert.ok(rice.html.includes("포장 앞면"));
 assert.ok(rice.html.includes("산지"));
 assert.ok(rice.html.includes("원재료"));
 assert.ok(rice.html.includes('data-category-flow="grocery"'));
+assert.ok(rice.pageImage.hero.includes("page-hero"));
 assert.ok(rice.html.includes("/detail-sample/open-rice-hero.png"));
 assert.ok(rice.html.includes("<img "));
 assert.equal(rice.documentHtml.includes("fake_model"), false);
@@ -52,7 +53,8 @@ assert.ok(existsSync("public/detail-sample/ranking-rice.html"), "missing ranking
 assert.ok(existsSync("public/detail-sample/ranking-beans.html"), "missing ranking-beans.html");
 assert.ok(zone.includes("DETAIL_PAGE_OPEN_EXAMPLES"));
 assert.ok(zone.includes("open-rice") || zone.includes("label"));
-assert.ok(zone.includes("컷별 상품 사진"));
+assert.ok(zone.includes("상세는 이미지"));
+assert.ok(zone.includes("상세 디자이너"));
 assert.equal(zone.includes("AI 이미지는 없습니다"), false);
 for (const file of [
   "public/detail-sample/open-rice-hero.png",
@@ -61,6 +63,10 @@ for (const file of [
   "public/detail-sample/open-beans-hero.png",
   "public/detail-sample/open-beans-observe.png",
   "public/detail-sample/open-beans-feature.png",
+  "public/detail-sample/open-rice-page-hero.png",
+  "public/detail-sample/open-rice-page-full.png",
+  "public/detail-sample/open-beans-page-hero.png",
+  "public/detail-sample/open-beans-page-full.png",
 ]) {
   assert.ok(existsSync(file), `missing ${file}`);
 }

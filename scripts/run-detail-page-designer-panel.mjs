@@ -12,9 +12,11 @@ import {
   renderDetailPageBodyHtml,
   wrapMallHtml,
 } from "../lib/product/detailPageHtml.js";
+import { screenshotDetailPageHtml } from "./lib/screenshotDetailPage.mjs";
 import { evaluateDetailPageDesignerPanel } from "../lib/qa/detailPageDesignerPanel30.js";
 import { assessDetailPageSuccess } from "../lib/product/detailPageSuccessStandard.js";
 import { DETAIL_PAGE_CORE_SHOTS } from "../lib/product/detailPageShotGen.js";
+import { reviewDetailPageDesignerImage } from "../lib/qa/detailPageDesignerVision.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -65,55 +67,23 @@ function loadShots(id) {
 }
 
 async function screenshotHtml(html, paths) {
-  const { chromium } = await import("playwright");
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({
-    viewport: { width: 920, height: 1400 },
-    deviceScaleFactor: 1,
-  });
-  await page.setContent(html, { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => !!document.getElementById("gollaboda-detail-page"));
-  await new Promise((r) => setTimeout(r, 600));
-  const article = page.locator("#gollaboda-detail-page");
-  await article.waitFor({ state: "visible", timeout: 8000 });
-  await article.screenshot({ path: paths.full, type: "png" });
-  const box = await article.boundingBox();
-  if (box) {
-    await page.screenshot({
-      path: paths.hero,
-      type: "png",
-      clip: {
-        x: Math.max(0, box.x),
-        y: Math.max(0, box.y),
-        width: Math.min(860, box.width),
-        height: Math.min(980, box.height),
-      },
-    });
-    const midY = Math.min(box.y + 1100, box.y + Math.max(0, box.height - 980));
-    await page.screenshot({
-      path: paths.mid,
-      type: "png",
-      clip: {
-        x: Math.max(0, box.x),
-        y: Math.max(0, midY),
-        width: Math.min(860, box.width),
-        height: Math.min(980, box.height),
-      },
-    });
-  }
-  await browser.close();
+  return screenshotDetailPageHtml(html, paths);
 }
 
-function panelRow({ id, label, pack, html, photos, mode, ms }) {
+function panelRow({ id, label, pack, html, photos, mode, ms, screenshots, vision }) {
   const evaled = evaluateDetailPageDesignerPanel({
     pack,
     html,
     photoCount: photos.length,
+    screenshots,
   });
   const success = assessDetailPageSuccess({
     pack,
     html,
     photoCount: photos.length,
+    screenshots,
+    requirePageImage: true,
+    designerVision: vision,
   });
   return {
     id,
@@ -138,7 +108,43 @@ function panelRow({ id, label, pack, html, photos, mode, ms }) {
     },
     lowest: evaled.summary.lowest,
     highest: evaled.summary.highest,
+    vision,
+    lookedAtImage: evaled.measured.lookedAtImage,
   };
+}
+
+async function judgeRendered(example, { id, label, pack, html, documentHtml, photos, mode, t0 }) {
+  const slug = id.replace(/^open-/, "").replace(/-live$/, "-live").replace(/-gpt$/, "-gpt");
+  const paths = {
+    full: join(OUT_DIR, `${slug}-full.png`),
+    hero: join(OUT_DIR, `${slug}-hero.png`),
+    mid: join(OUT_DIR, `${slug}-mid.png`),
+  };
+  writeFileSync(join(OUT_DIR, `${slug}.html`), documentHtml, "utf8");
+  await screenshotHtml(documentHtml, paths);
+  const screenshots = {
+    hero: readFileSync(paths.hero),
+    mid: readFileSync(paths.mid),
+    full: readFileSync(paths.full),
+  };
+  const vision = await reviewDetailPageDesignerImage({
+    screenshots,
+    productName: pack.productName,
+    brandName: pack.brandName,
+  });
+  const row = panelRow({
+    id,
+    label,
+    pack,
+    html,
+    photos,
+    mode,
+    ms: Date.now() - t0,
+    screenshots,
+    vision,
+  });
+  row.images = [`${slug}-hero.png`, `${slug}-mid.png`, `${slug}-full.png`];
+  return row;
 }
 
 async function runLiveSample(example) {
@@ -147,24 +153,16 @@ async function runLiveSample(example) {
   const photos = loadShots(example.id);
   const html = renderDetailPageBodyHtml(sample.pack, photos);
   const documentHtml = wrapMallHtml(html, sample.pack, "smartstore");
-  const row = panelRow({
+  return judgeRendered(example, {
     id: `${example.id}-live`,
     label: `${example.label} 맛보기`,
     pack: sample.pack,
     html,
+    documentHtml,
     photos,
     mode: "live",
-    ms: Date.now() - t0,
+    t0,
   });
-  const slug = `${example.id.replace(/^open-/, "")}-live`;
-  writeFileSync(join(OUT_DIR, `${slug}.html`), documentHtml, "utf8");
-  await screenshotHtml(documentHtml, {
-    full: join(OUT_DIR, `${slug}-full.png`),
-    hero: join(OUT_DIR, `${slug}-hero.png`),
-    mid: join(OUT_DIR, `${slug}-mid.png`),
-  });
-  row.images = [`${slug}-hero.png`, `${slug}-mid.png`, `${slug}-full.png`];
-  return row;
 }
 
 async function runGptSample(example) {
@@ -176,24 +174,16 @@ async function runGptSample(example) {
   );
   const html = renderDetailPageBodyHtml(gen.pack, photos);
   const documentHtml = wrapMallHtml(html, gen.pack, "smartstore");
-  const row = panelRow({
+  return judgeRendered(example, {
     id: `${example.id}-gpt`,
     label: `${example.label} GPT`,
     pack: gen.pack,
     html,
+    documentHtml,
     photos,
     mode: gen.mode,
-    ms: Date.now() - t0,
+    t0,
   });
-  const slug = `${example.id.replace(/^open-/, "")}-gpt`;
-  writeFileSync(join(OUT_DIR, `${slug}.html`), documentHtml, "utf8");
-  await screenshotHtml(documentHtml, {
-    full: join(OUT_DIR, `${slug}-full.png`),
-    hero: join(OUT_DIR, `${slug}-hero.png`),
-    mid: join(OUT_DIR, `${slug}-mid.png`),
-  });
-  row.images = [`${slug}-hero.png`, `${slug}-mid.png`, `${slug}-full.png`];
-  return row;
 }
 
 loadEnvLocal();
@@ -225,10 +215,11 @@ const report = {
       Math.round(
         (gpt.reduce((a, s) => a + s.panel.mean, 0) / Math.max(1, gpt.length)) * 10
       ) / 10,
-    hire: live.every((s) => s.panel.hire),
-    liveHire: live.every((s) => s.panel.hire),
-    gptHire: gpt.every((s) => s.panel.hire),
-    issues: [...new Set(samples.flatMap((s) => s.panel.topIssues))],
+    hire: live.every((s) => s.panel.hire && s.vision?.looked && s.vision.ok),
+    liveHire: live.every((s) => s.panel.hire && s.vision?.looked && s.vision.ok),
+    gptHire: gpt.every((s) => s.panel.hire && s.vision?.looked && s.vision.ok),
+    visionLooked: samples.filter((s) => s.vision?.looked).length,
+    issues: [...new Set(samples.flatMap((s) => [...s.panel.topIssues, ...(s.vision?.issues || [])]))],
   },
 };
 writeFileSync(join(OUT_DIR, "latest.json"), JSON.stringify(report, null, 2));
@@ -249,6 +240,11 @@ writeFileSync(
         panelMean: s.panel.mean,
         passCount: s.panel.passCount,
         hireLabel: s.panel.hireLabel,
+        lookedAtImage: s.lookedAtImage,
+        visionLooked: s.vision?.looked || false,
+        visionScore: s.vision?.score ?? null,
+        visionOk: s.vision?.ok ?? null,
+        visionNote: s.vision?.note || "",
         topIssues: s.panel.topIssues,
         imgCount: s.imgCount,
         images: s.images,
@@ -269,6 +265,8 @@ for (const s of samples) {
       mean: s.panel.mean,
       pass: `${s.panel.passCount}/30`,
       hire: s.panel.hireLabel,
+      looked: s.lookedAtImage,
+      vision: s.vision?.looked ? s.vision.score : s.vision?.skip,
       success: s.successScore,
       successOk: s.successOk,
       issues: s.panel.topIssues,

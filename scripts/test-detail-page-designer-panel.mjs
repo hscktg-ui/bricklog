@@ -40,6 +40,8 @@ assert.ok(panel.summary.passCount >= 30, `pass ${panel.summary.passCount}/30`);
 assert.equal(panel.summary.n, 30);
 assert.ok(panel.summary.mean >= 97, `panel mean ${panel.summary.mean}`);
 assert.ok(panel.summary.mean <= 99);
+assert.equal(panel.summary.hire, false, "HTML만 보면 출고하지 않는다");
+assert.equal(panel.measured.lookedAtImage, false);
 console.log(
   `ok detail-page-designer-panel mean=${panel.summary.mean} pass=${panel.summary.passCount}/30 pad=${panel.measured.padHits}`
 );

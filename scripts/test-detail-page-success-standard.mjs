@@ -16,7 +16,7 @@ assert.equal(
   100
 );
 assert.equal(DETAIL_PAGE_SUCCESS_PHASES.length, 5);
-assert.equal(DETAIL_PAGE_SUCCESS_HARD_GATES.length, 4);
+assert.equal(DETAIL_PAGE_SUCCESS_HARD_GATES.length, 5);
 assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 80);
 assert.equal(DETAIL_PAGE_SUCCESS_DOCTRINE.pass, "고르는 화면이 생겼다");
 assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
@@ -24,7 +24,8 @@ assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("올린 사진 우선"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("컷별 상품 사진 생성"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("스마트스토어·쿠팡 복사"));
-assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("카테고리 상세 나열"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("상세는 이미지"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("상세 디자이너가 이미지를 봄"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("가입 전 860 맛보기"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("가짜 모델컷"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("9몰 API"));
@@ -66,6 +67,15 @@ assert.equal(live.engineScore >= 95, true);
 assert.ok(live.measured.padHits <= 2);
 assert.ok(live.score >= 99, `success ${live.score} — 완성 화면은 99`);
 assert.ok(live.panel.mean >= 97, `panel ${live.panel.mean}`);
+
+const unseen = assessDetailPageSuccess({
+  pack,
+  html,
+  photoCount: shots.length,
+  requirePageImage: true,
+});
+assert.equal(unseen.ok, false);
+assert.ok(unseen.hard.includes("page_image"));
 
 const padded = {
   ...pack,

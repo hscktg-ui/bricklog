@@ -10,6 +10,7 @@ import {
 import { logError } from "@/lib/api/logEvent";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { generateDetailPagePack } from "@/lib/product/detailPageEngine";
+import { reviewDetailPageDesignerImage } from "@/lib/qa/detailPageDesignerVision";
 import {
   catchDetailPageFixes,
   improveDetailPagePack,
@@ -91,6 +92,19 @@ export async function POST(request) {
       ...body,
       topic: body.productName || body.topic,
     };
+
+    if (action === "review-image") {
+      const vision = await reviewDetailPageDesignerImage({
+        screenshots: body.screenshots || {},
+        productName: body.productName || body.pack?.productName,
+        brandName: body.brandName || body.pack?.brandName,
+      });
+      return NextResponse.json({
+        ok: true,
+        vision,
+        pageImage: vision.inspected,
+      });
+    }
 
     if (action === "catch" && body.pack) {
       const pack = catchDetailPageFixes(body.pack, input);

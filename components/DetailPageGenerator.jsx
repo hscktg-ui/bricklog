@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import EditableField from "@/components/EditableField";
 import { useOptionalBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
@@ -87,16 +87,14 @@ function downloadText(filename, text, mime) {
   URL.revokeObjectURL(url);
 }
 
-async function downloadPreviewPng(node, filename) {
-  if (!node) return;
+async function capturePreviewPng(node) {
+  if (!node) return "";
   const width = DETAIL_PAGE_WIDTH;
-  const height = Math.max(node.scrollHeight, node.offsetHeight);
+  const height = Math.min(Math.max(node.scrollHeight, node.offsetHeight), 8000);
   const canvas = document.createElement("canvas");
-  const scale = 2;
-  canvas.width = width * scale;
-  canvas.height = height * scale;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext("2d");
-  ctx.scale(scale, scale);
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
 
@@ -107,30 +105,35 @@ async function downloadPreviewPng(node, filename) {
   </svg>`;
   const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
-      canvas.toBlob((png) => {
-        if (!png) {
-          reject(new Error("png_failed"));
-          return;
-        }
-        const href = URL.createObjectURL(png);
-        const a = document.createElement("a");
-        a.href = href;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(href);
-        resolve();
-      }, "image/png");
+      resolve(canvas.toDataURL("image/png"));
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
       reject(new Error("svg_draw_failed"));
     };
     img.src = url;
+  });
+}
+
+function cropHeroDataUrl(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const w = Math.min(DETAIL_PAGE_WIDTH, img.width);
+      const h = Math.min(980, img.height);
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
   });
 }
 
@@ -172,6 +175,8 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [pack, setPack] = useState(null);
   const [editing, setEditing] = useState(false);
   const [copiedMall, setCopiedMall] = useState("");
+  const [pageImage, setPageImage] = useState("");
+  const [designerVision, setDesignerVision] = useState(null);
   const photoInputRef = useRef(null);
 
   const product = CHANNEL_PRODUCTS.detailPage;
@@ -195,8 +200,51 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         brandName: pack.brandName,
         pageLength: pack.pageLength,
       },
+      screenshots: pageImage ? { hero: pageImage, full: pageImage } : undefined,
+      requirePageImage: Boolean(pageImage),
+      designerVision,
     });
-  }, [pack, previewHtml, photosNorm.length]);
+  }, [pack, previewHtml, photosNorm.length, pageImage, designerVision]);
+
+  useEffect(() => {
+    if (!pack || !previewHtml) {
+      setPageImage("");
+      setDesignerVision(null);
+      return undefined;
+    }
+    let cancelled = false;
+    setPageImage("");
+    setDesignerVision(null);
+    const timer = setTimeout(() => {
+      const article = previewRef.current?.querySelector("article");
+      if (!article) return;
+      (async () => {
+        try {
+          const png = await capturePreviewPng(article);
+          if (cancelled || !png || png.length < 24_000) return;
+          setPageImage(png);
+          const hero = await cropHeroDataUrl(png);
+          const data = await fetchWithAuth("/api/content/detail-page", {
+            method: "POST",
+            timeoutMs: 45_000,
+            body: JSON.stringify({
+              action: "review-image",
+              productName: pack.productName,
+              brandName: pack.brandName,
+              screenshots: { hero, full: png },
+            }),
+          });
+          if (!cancelled && data?.vision) setDesignerVision(data.vision);
+        } catch {
+          if (!cancelled) setDesignerVision(null);
+        }
+      })();
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [pack, previewHtml]);
 
   const briefInput = useCallback(
     () => ({
@@ -474,14 +522,20 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
 
   const downloadPng = useCallback(async () => {
     try {
-      await downloadPreviewPng(
-        previewRef.current?.querySelector("article") || previewRef.current,
-        `${(pack?.productName || "detail").slice(0, 24)}-상세.png`
-      );
+      const src =
+        pageImage ||
+        (await capturePreviewPng(
+          previewRef.current?.querySelector("article") || previewRef.current
+        ));
+      if (!src) throw new Error("png_failed");
+      const a = document.createElement("a");
+      a.href = src;
+      a.download = `${(pack?.productName || "detail").slice(0, 24)}-상세.png`;
+      a.click();
     } catch {
       onToast?.("PNG 저장에 실패했습니다. HTML을 복사해 주세요.");
     }
-  }, [pack, onToast]);
+  }, [pack, onToast, pageImage]);
 
   return (
     <div className={CHANNEL_WORKSPACE_SHELL} aria-label={product.headerTitle}>
@@ -799,7 +853,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 HTML 저장
               </button>
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadPng}>
-                PNG 저장
+                상세 이미지 저장
               </button>
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadTxt}>
                 텍스트
@@ -840,12 +894,27 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               <p className="mb-3 text-[13px] text-red-700">{error}</p>
             ) : null}
             <p className="mb-2 text-[12px] text-[var(--vision-muted)]">
-              스마트스토어·쿠팡 상세 폭 {DETAIL_PAGE_WIDTH}px
+              {designerVision?.looked
+                ? `${designerVision.designer?.job || "상세 디자이너"} ${designerVision.designer?.name || ""}이 이 이미지를 봤습니다 · ${designerVision.score}점 · ${designerVision.ok ? "출고 가능" : "재심"}`
+                : pageImage
+                  ? "상세 이미지를 디자이너가 보는 중…"
+                  : `스마트스토어·쿠팡 상세 폭 ${DETAIL_PAGE_WIDTH}px`}
               {photosNorm.length ? ` · 사진 ${photosNorm.length}장` : " · 컷 사진 생성"}
             </p>
+            {pageImage ? (
+              <div className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4">
+                <img
+                  src={pageImage}
+                  alt={`${pack.productName || "상품"} 상세 이미지`}
+                  className="mx-auto block h-auto w-full max-w-[860px] bg-white"
+                />
+              </div>
+            ) : null}
             <div
               ref={previewRef}
-              className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4"
+              className={`mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4 ${
+                pageImage ? "hidden" : ""
+              }`}
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
             <div className="mb-4 grid gap-3 sm:grid-cols-2">

@@ -67,7 +67,7 @@ assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), true);
 assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("브릭로그"));
 assert.equal(DETAIL_PAGE_PRODUCT.eyebrow, "브릭로그");
 assert.ok(DETAIL_PAGE_PRODUCT.headline.includes("글이 아니라"));
-assert.ok(DETAIL_PAGE_PRODUCT.versusUs.includes("붙일 화면"));
+assert.ok(DETAIL_PAGE_PRODUCT.versusUs.includes("붙일 이미지"));
 assert.equal(DETAIL_PAGE_PRODUCT.standardOk.includes("브릭로그"), false);
 assert.equal(DETAIL_PAGE_PRODUCT.fieldGroups.length, 4);
 assert.equal(DETAIL_PAGE_PRODUCT.pillars.length, 4);
