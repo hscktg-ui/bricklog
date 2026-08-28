@@ -19,13 +19,7 @@ import {
 import { recordSignupIntent } from "@/lib/analytics/signupIntent";
 import LandingPreviewShell from "./LandingPreviewShell";
 import HeroSection from "./HeroSection";
-import LiveStatsBanner from "./LiveStatsBanner";
 import DemoPreviewSection from "./DemoPreviewSection";
-import ContentPlanSection from "./ContentPlanSection";
-import DemoFlow from "./DemoFlow";
-import BriclogNextSection from "./BriclogNextSection";
-import WhyBriclog from "./WhyBriclog";
-import CoreEngineSection from "./CoreEngineSection";
 import LandingFaqSection from "./LandingFaqSection";
 import LandingPageFooter from "./LandingPageFooter";
 import PricingSection from "./PricingSection";
@@ -63,8 +57,7 @@ const NAV_LINKS = [
 ];
 
 export default function LandingPage({ onAuthOpen, onStart }) {
-  const { greeting, sample, contentIdea, seasonCopy, theme } =
-    useLandingVisit();
+  const { sample } = useLandingVisit();
   const [introOpen, setIntroOpen] = useState(false);
   const [publicTestPreviewActive, setPublicTestPreviewActive] = useState(false);
 
@@ -118,7 +111,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
     [onAuthOpen]
   );
 
-  const scrollToSample = () => scrollToId("landing-sample");
+  const scrollToDetailSample = () => scrollToId("landing-detail-sample");
 
   const handleIntroDismiss = useCallback(() => {
     markLandingIntroDone();
@@ -199,36 +192,19 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           }`}
         >
           <HeroSection
-            greeting={greeting}
-            seasonCopy={seasonCopy}
-            theme={theme}
-            contentIdea={contentIdea}
-            onStart={handleStart}
-            onSample={withLandingCta(scrollToSample)}
+            onSample={withLandingCta(scrollToDetailSample)}
             onTest={withLandingCta(scrollToPublicTest)}
             onLogin={() => openLogin("landing_hero")}
           />
-          <WhyBriclog />
-          <ContentPlanSection />
-          <div className="hidden lg:block">
-            <BriclogNextSection />
-          </div>
-          <div className="hidden md:block">
-            <LiveStatsBanner introOpen={introOpen} />
-          </div>
+          <PublicDetailPageInvite />
           <PublicBrandTestSection
             onSignup={(mode) => onAuthOpen(mode || "signup")}
             onPreviewActiveChange={setPublicTestPreviewActive}
           />
-          <PublicDetailPageInvite />
           <DemoPreviewSection
             sample={sample}
             onTest={withLandingCta(scrollToPublicTest)}
           />
-          <DemoFlow sample={sample} />
-          <div className="hidden lg:block">
-            <CoreEngineSection />
-          </div>
           <LandingFaqSection />
           <PricingSection onStart={handleStart} />
 

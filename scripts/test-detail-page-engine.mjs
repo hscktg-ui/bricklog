@@ -113,6 +113,8 @@ assert.ok(html.includes("font-size:18px"));
 assert.ok(html.includes('data-ui="section-layouts"'));
 assert.ok(html.includes('data-photo-slot="hero"'));
 assert.ok(html.includes('data-photo-empty="1"'));
+assert.ok(html.includes("포장 앞면"));
+assert.ok(html.includes("올린 사진"));
 assert.ok(html.includes('data-photo-direction="hero"'));
 assert.ok(html.includes('data-photo-direction="observe"'));
 assert.ok(html.includes('data-photo-direction="feature"'));

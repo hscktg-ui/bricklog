@@ -55,23 +55,7 @@ export default function PublicDetailPageClient() {
           <DetailPageMark />
         </div>
       </header>
-      {user === undefined ? (
-        <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-10">
-          <p className="text-center text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
-            {p.eyebrow} · {p.place}
-          </p>
-          <h1 className="mt-3 text-center text-[26px] font-semibold tracking-tight">
-            {p.headline}
-            <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
-          </h1>
-          <p className="mt-3 text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
-            {p.versusGpt} {p.versusUs}
-          </p>
-          <p className="mt-8 text-center text-[13px] text-[var(--vision-muted)]">
-            로그인 확인 중…
-          </p>
-        </div>
-      ) : user ? (
+      {user ? (
         <div className="flex min-h-0 flex-1 flex-col">
           <DetailPageGenerator onToast={showToast} surface="public" />
         </div>
@@ -84,38 +68,31 @@ export default function PublicDetailPageClient() {
             {p.headline}
             <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
+          <p className="mx-auto mt-3 max-w-xl text-center text-[15px] leading-relaxed text-[var(--vision-muted)]">
             {p.versusGpt} {p.versusUs}
           </p>
-          <div className="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="mt-8 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
             <DetailPageSampleZone height={720} />
-            <div className="mx-auto w-full max-w-[440px] lg:mx-0">
-              <ul className="grid grid-cols-2 gap-3 text-left">
-                {p.pillars.map((item, i) => (
-                  <li
-                    key={item.title}
-                    className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-3"
-                  >
-                    <span className="text-[11px] font-bold tabular-nums text-[var(--vision-muted)]">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="mt-1 block text-[13px] font-medium leading-snug text-[var(--vision-ink)]">
-                      {item.title}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-4 mb-6 text-center text-[13px] text-[var(--vision-muted)]">
-                {p.loginTitle}
-                <span className="mt-1 block">{p.loginHint}</span>
-              </p>
-              <AuthForm
-                embedded
-                initialMode="login"
-                authContext="detail_page"
-                onToast={showToast}
-                onAuthSuccess={() => {}}
-              />
+            <div className="mx-auto w-full max-w-[400px] lg:mx-0">
+              {user === undefined ? (
+                <p className="rounded-2xl border border-[var(--vision-line)] px-4 py-6 text-center text-[13px] text-[var(--vision-muted)]">
+                  로그인 확인 중… 화면은 먼저 보면 됩니다.
+                </p>
+              ) : (
+                <>
+                  <p className="mb-6 text-center text-[13px] text-[var(--vision-muted)]">
+                    {p.loginTitle}
+                    <span className="mt-1 block">{p.loginHint}</span>
+                  </p>
+                  <AuthForm
+                    embedded
+                    initialMode="login"
+                    authContext="detail_page"
+                    onToast={showToast}
+                    onAuthSuccess={() => {}}
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>

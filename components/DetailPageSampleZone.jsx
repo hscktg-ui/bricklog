@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import LandingPanelHeader from "@/components/landing/LandingPanelHeader";
 import {
@@ -14,6 +14,9 @@ import {
   VISION_TAB_IDLE,
 } from "@/lib/landing/vision2030Styles";
 
+const STAGE_WIDTH = 860;
+const STAGE_HEIGHT = 2800;
+
 export default function DetailPageSampleZone({
   height = 640,
   initialId = "open-rice",
@@ -23,10 +26,25 @@ export default function DetailPageSampleZone({
     DETAIL_PAGE_OPEN_EXAMPLES.find((ex) => ex.id === id) ||
     DETAIL_PAGE_OPEN_EXAMPLES[0];
   const src = detailPageSampleSrc(current.id);
+  const frameRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      if (w > 0) setScale(Math.min(1, w / STAGE_WIDTH));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const scaledHeight = Math.round(STAGE_HEIGHT * scale);
 
   return (
     <div>
-      <div className="inline-flex w-full rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] p-1 shadow-[var(--vision-shadow-soft)] sm:w-auto">
+      <div className="inline-flex w-full rounded-full border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] p-1 sm:w-auto">
         {DETAIL_PAGE_OPEN_EXAMPLES.map((ex) => (
           <button
             key={ex.id}
@@ -44,23 +62,33 @@ export default function DetailPageSampleZone({
       <div className={`mt-6 ${VISION_PANEL}`}>
         <LandingPanelHeader title={`${current.brandName} · ${current.productName}`} />
         <p className="border-b border-[var(--vision-line)] px-4 py-3 text-[13px] leading-relaxed text-[var(--vision-muted)] sm:px-5">
-          {current.label} · {current.productName} · 사진 칸은 비어 있습니다. AI
-          이미지는 쓰지 않습니다.
+          {current.label} · 사진 칸에 올릴 컷만 적혀 있습니다. AI 이미지는 없습니다.
         </p>
-        <div className="overflow-auto bg-[#f4f1ea]" style={{ maxHeight: height }}>
-          <iframe
-            key={src}
-            title={`${current.productName} 상세 맛보기`}
-            src={src}
-            className="mx-auto block border-0 bg-white"
-            style={{ width: 860, height: 2800 }}
-            loading="lazy"
-          />
+        <div
+          ref={frameRef}
+          className="overflow-auto bg-[var(--vision-wash,#f4f1ea)]"
+          style={{ maxHeight: height }}
+        >
+          <div style={{ height: scaledHeight, width: "100%" }}>
+            <iframe
+              key={src}
+              title={`${current.productName} 상세 맛보기`}
+              src={src}
+              className="block border-0 bg-white"
+              style={{
+                width: STAGE_WIDTH,
+                height: STAGE_HEIGHT,
+                transform: `scale(${scale})`,
+                transformOrigin: "top left",
+              }}
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
 
       <p className="mt-3 text-center text-[13px] text-[var(--vision-muted)]">
-        스마트스토어·쿠팡에 붙이는 860 화면입니다.{" "}
+        스마트스토어·쿠팡에 붙이는 860 화면.{" "}
         <Link
           href={src}
           target="_blank"

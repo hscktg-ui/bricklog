@@ -22,6 +22,8 @@ assert.equal(rice.id, "open-rice");
 assert.ok(rice.html.includes('data-visual="first-glance"'));
 assert.ok(rice.html.includes("data-photo-direction"));
 assert.ok(rice.documentHtml.includes('data-mall="smartstore"'));
+assert.ok(rice.html.includes("포장 앞면"));
+assert.ok(rice.html.includes("올린 사진"));
 assert.equal(rice.documentHtml.includes("image_generation"), false);
 assert.equal(rice.success.ok, true);
 assert.ok(rice.success.score >= 99, `rice success ${rice.success.score}`);
@@ -45,6 +47,19 @@ const detailClient = readFileSync("components/PublicDetailPageClient.jsx", "utf8
 assert.ok(detailClient.includes("DetailPageSampleZone"));
 const landing = readFileSync("components/landing/LandingPage.jsx", "utf8");
 assert.ok(landing.includes("landing-detail-sample"));
+assert.equal(landing.includes("WhyBriclog"), false);
+assert.equal(landing.includes("DemoFlow"), false);
+assert.ok(
+  landing.indexOf("<PublicDetailPageInvite") <
+    landing.indexOf("<PublicBrandTestSection"),
+  "detail sample zone comes before public test"
+);
+const hero = readFileSync("components/landing/HeroSection.jsx", "utf8");
+assert.equal(hero.includes("오늘의 한 줄"), false);
+assert.equal(hero.includes("radial-gradient"), false);
+const copy = readFileSync("lib/brand/copy.js", "utf8");
+assert.ok(copy.includes("고르는 화면 보기"));
+assert.ok(copy.includes("상품은 고르는 화면"));
 const demo = readFileSync("components/landing/DemoPreviewSection.jsx", "utf8");
 assert.ok(demo.includes("운영 글은 한 주제"));
 assert.ok(demo.includes("landing-detail-sample"));
