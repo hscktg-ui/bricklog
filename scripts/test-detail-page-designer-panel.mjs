@@ -19,8 +19,19 @@ const pack = buildDetailPageFallbackPack({
   highlights: ["당일 도정", "진공 포장", "여주 수확"],
   pageLength: "standard",
 });
-const html = renderDetailPageBodyHtml(pack, []);
-const panel = evaluateDetailPageDesignerPanel({ pack, html, photoCount: 0 });
+const TINY =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+const shots = [
+  { src: TINY, slot: "hero", caption: "포장 앞면" },
+  { src: TINY, slot: "observe", caption: "손에 쥐거나 가까이" },
+  { src: TINY, slot: "feature", caption: "디테일 한 점" },
+];
+const html = renderDetailPageBodyHtml(pack, shots);
+const panel = evaluateDetailPageDesignerPanel({
+  pack,
+  html,
+  photoCount: shots.length,
+});
 assert.equal(panel.votes.length, 30);
 assert.ok(html.includes('data-layout="choose-steps"'));
 assert.ok(html.includes('data-layout="compare-pair"'));

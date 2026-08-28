@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { buildDetailPagePublicSample } from "../lib/product/detailPagePublicSample.js";
 import { DETAIL_PAGE_PRODUCT } from "../lib/product/detailPageProduct.js";
 import {
@@ -10,7 +10,7 @@ import {
 
 assert.equal(DETAIL_PAGE_PRODUCT.samplePath, "/detail/sample");
 assert.equal(DETAIL_PAGE_PRODUCT.sampleZoneId, "landing-detail-sample");
-assert.ok(DETAIL_PAGE_PRODUCT.sampleCaption.includes("사진 칸"));
+assert.ok(DETAIL_PAGE_PRODUCT.sampleCaption.includes("컷별 상품 사진"));
 assert.ok(DETAIL_PAGE_PRODUCT.loginTitle.includes("내 상품"));
 assert.equal(DETAIL_PAGE_OPEN_EXAMPLES.length, 2);
 assert.equal(resolveDetailPageSampleId("nope"), "open-rice");
@@ -23,8 +23,9 @@ assert.ok(rice.html.includes('data-visual="first-glance"'));
 assert.ok(rice.html.includes("data-photo-direction"));
 assert.ok(rice.documentHtml.includes('data-mall="smartstore"'));
 assert.ok(rice.html.includes("포장 앞면"));
-assert.ok(rice.html.includes("올린 사진"));
-assert.equal(rice.documentHtml.includes("image_generation"), false);
+assert.ok(rice.html.includes("/detail-sample/open-rice-hero.png"));
+assert.ok(rice.html.includes("<img "));
+assert.equal(rice.documentHtml.includes("fake_model"), false);
 assert.equal(rice.success.ok, true);
 assert.ok(rice.success.score >= 99, `rice success ${rice.success.score}`);
 assert.equal(rice.compete.ok, true);
@@ -32,7 +33,9 @@ assert.equal(rice.compete.ok, true);
 const beans = buildDetailPagePublicSample("open-beans");
 assert.equal(beans.id, "open-beans");
 assert.ok(beans.html.includes("하우스 블렌드"));
-assert.equal(beans.documentHtml.includes("image_generation"), false);
+assert.ok(beans.html.includes("/detail-sample/open-beans-hero.png"));
+assert.ok(beans.html.includes("<img "));
+assert.equal(beans.documentHtml.includes("fake_model"), false);
 assert.equal(beans.success.ok, true);
 assert.ok(beans.success.score >= 99, `beans success ${beans.success.score}`);
 assert.equal(beans.compete.ok, true);
@@ -43,6 +46,18 @@ assert.ok(invite.includes("sampleZoneId"));
 const zone = readFileSync("components/DetailPageSampleZone.jsx", "utf8");
 assert.ok(zone.includes("DETAIL_PAGE_OPEN_EXAMPLES"));
 assert.ok(zone.includes("open-rice") || zone.includes("label"));
+assert.ok(zone.includes("컷별 상품 사진"));
+assert.equal(zone.includes("AI 이미지는 없습니다"), false);
+for (const file of [
+  "public/detail-sample/open-rice-hero.png",
+  "public/detail-sample/open-rice-observe.png",
+  "public/detail-sample/open-rice-feature.png",
+  "public/detail-sample/open-beans-hero.png",
+  "public/detail-sample/open-beans-observe.png",
+  "public/detail-sample/open-beans-feature.png",
+]) {
+  assert.ok(existsSync(file), `missing ${file}`);
+}
 const detailClient = readFileSync("components/PublicDetailPageClient.jsx", "utf8");
 assert.ok(detailClient.includes("DetailPageSampleZone"));
 const landing = readFileSync("components/landing/LandingPage.jsx", "utf8");

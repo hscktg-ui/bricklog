@@ -114,7 +114,7 @@ assert.ok(html.includes('data-ui="section-layouts"'));
 assert.ok(html.includes('data-photo-slot="hero"'));
 assert.ok(html.includes('data-photo-empty="1"'));
 assert.ok(html.includes("포장 앞면"));
-assert.ok(html.includes("올린 사진"));
+assert.ok(html.includes("상품 사진 칸"));
 assert.ok(html.includes('data-photo-direction="hero"'));
 assert.ok(html.includes('data-photo-direction="observe"'));
 assert.ok(html.includes('data-photo-direction="feature"'));
@@ -265,7 +265,7 @@ assert.equal(sanitizePublicDetailPageBody({ presetId: "open-rice" }).presetId, "
 
 const guestPack = await generateDetailPagePack(
   { productName: "여주 햅쌀 10kg", brandName: "여주미곡", features: "당일 도정" },
-  { allowLlm: false }
+  { allowLlm: false, allowImages: false }
 );
 assert.equal(guestPack.mode, "fallback");
 assert.ok(guestPack.pack.sections.length >= 4);

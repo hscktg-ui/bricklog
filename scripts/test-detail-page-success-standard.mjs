@@ -21,10 +21,12 @@ assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 80);
 assert.equal(DETAIL_PAGE_SUCCESS_DOCTRINE.pass, "고르는 화면이 생겼다");
 assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
 assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));
-assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("올린 사진 연출"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("올린 사진 우선"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("컷별 상품 사진 생성"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("스마트스토어·쿠팡 복사"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("가입 전 860 맛보기"));
-assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("AI 이미지 생성"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("가짜 모델컷"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("9몰 API"));
 assert.equal(DETAIL_PAGE_PRODUCT.versusGpt.includes("글"), true);
 
 const pack = buildDetailPageFallbackPack({
@@ -44,11 +46,18 @@ assert.equal(pack._meta.success.ok, true, "1위 출고: 폴백도 고르는 화�
 assert.equal(pack._meta.success.doctrine, DETAIL_PAGE_SUCCESS_DOCTRINE.pass);
 assert.ok(pack._meta.success.measured.padHits <= 2);
 
-const html = renderDetailPageBodyHtml(pack, []);
+const TINY =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+const shots = [
+  { src: TINY, slot: "hero", caption: "포장 앞면" },
+  { src: TINY, slot: "observe", caption: "손에 쥐거나 가까이" },
+  { src: TINY, slot: "feature", caption: "디테일 한 점" },
+];
+const html = renderDetailPageBodyHtml(pack, shots);
 const live = assessDetailPageSuccess({
   pack,
   html,
-  photoCount: 3,
+  photoCount: shots.length,
   input: { brandName: "우리쌀가게" },
 });
 assert.equal(live.ok, true);

@@ -211,6 +211,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       accent,
       presetId,
       imageCount: photosNorm.length,
+      photos: photosNorm,
       photoCaptions: photosNorm.map((p) => p.caption).filter(Boolean),
       brandName: activeBrand?.brandName || "",
       brandId: activeBrand?.id || "",
@@ -330,13 +331,16 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     try {
       const data = await fetchWithAuth("/api/content/detail-page", {
         method: "POST",
-        timeoutMs: 90_000,
+        timeoutMs: 180_000,
         body: JSON.stringify(briefInput()),
       });
       if (!data?.ok || !data.pack) {
         throw new Error(data?.userMessage || "상세페이지를 만들지 못했습니다.");
       }
       setPack(data.pack);
+      if (Array.isArray(data.shots) && data.shots.length) {
+        setPhotos(data.shots);
+      }
       setEditing(false);
       setCopied(false);
       setImproveNote("");
@@ -555,7 +559,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장)
               </p>
               <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-                모델컷을 그리지 않습니다. 올린 파일을 이 컷 순서로 연출합니다.
+                올린 사진을 먼저 씁니다. 빈 칸은 포장 앞면·가까이·디테일 컷을 생성합니다. 가짜 모델컷은 그리지 않습니다.
               </p>
               <ol className="mt-2 grid gap-1 text-[12px] text-[var(--vision-muted)]">
                 {photoSlots.slice(0, 3).map((slot) => (
@@ -837,7 +841,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
             ) : null}
             <p className="mb-2 text-[12px] text-[var(--vision-muted)]">
               스마트스토어·쿠팡 상세 폭 {DETAIL_PAGE_WIDTH}px
-              {photosNorm.length ? ` · 사진 ${photosNorm.length}장 연출` : " · 사진 칸만 잡혀 있음"}
+              {photosNorm.length ? ` · 사진 ${photosNorm.length}장` : " · 컷 사진 생성"}
             </p>
             <div
               ref={previewRef}

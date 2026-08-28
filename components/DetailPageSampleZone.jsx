@@ -62,7 +62,7 @@ export default function DetailPageSampleZone({
       <div className={`mt-6 ${VISION_PANEL}`}>
         <LandingPanelHeader title={`${current.brandName} · ${current.productName}`} />
         <p className="border-b border-[var(--vision-line)] px-4 py-3 text-[13px] leading-relaxed text-[var(--vision-muted)] sm:px-5">
-          {current.label} · 사진 칸에 올릴 컷만 적혀 있습니다. AI 이미지는 없습니다.
+          {current.label} · 컷별 상품 사진까지 붙인 860 화면입니다.
         </p>
         <div
           ref={frameRef}

@@ -4,6 +4,7 @@ import { requireVerifiedUser } from "@/lib/api/auth";
 import { checkContentGeneration } from "@/lib/billing/checkEntitlement";
 import {
   incrementContentUsage,
+  incrementImageUsage,
   getUsageSummary,
 } from "@/lib/billing/usageLedger";
 import { logError } from "@/lib/api/logEvent";
@@ -20,13 +21,17 @@ import {
 } from "@/lib/product/detailPageHtml";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 const MAX_PER_MIN =
   Number(process.env.BRICLOG_CHANNEL_RATE_LIMIT_PER_MIN) || 10;
 
 function jsonPack(pack, extra = {}) {
-  const html = renderDetailPageBodyHtml(pack, []);
+  const images =
+    extra.images ||
+    pack?._meta?.shots ||
+    [];
+  const html = renderDetailPageBodyHtml(pack, images);
   return {
     ok: true,
     channel: "detailPage",
@@ -36,6 +41,7 @@ function jsonPack(pack, extra = {}) {
     plainText: packToPlainText(pack),
     standard: pack._meta?.standard || null,
     meta: pack._meta,
+    shots: images,
     ...extra,
   };
 }
@@ -126,6 +132,10 @@ export async function POST(request) {
 
     if (pack && result.mode === "llm") {
       await incrementContentUsage(auth.supabase, auth.user.id);
+    }
+    const generatedCount = Number(pack?._meta?.generatedShotCount || 0);
+    for (let i = 0; i < generatedCount; i += 1) {
+      await incrementImageUsage(auth.supabase, auth.user.id);
     }
 
     const usageAfter = await getUsageSummary(

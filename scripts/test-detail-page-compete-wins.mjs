@@ -9,7 +9,7 @@ import {
   DETAIL_PAGE_COMPETE_WINS,
   DETAIL_PAGE_MALLS,
   assessDetailPageCompeteWins,
-  assertNoImageGenerationWin,
+  assertProductShotWin,
 } from "../lib/product/detailPageCompeteWins.js";
 import { DETAIL_PAGE_PHOTO_DIRECTION } from "../lib/product/detailPagePhotos.js";
 
@@ -18,7 +18,7 @@ assert.equal(DETAIL_PAGE_MALLS.length, 2);
 assert.equal(DETAIL_PAGE_MALLS[0].id, "smartstore");
 assert.equal(DETAIL_PAGE_MALLS[1].id, "coupang");
 assert.ok(DETAIL_PAGE_MALLS.every((m) => m.width === DETAIL_PAGE_WIDTH));
-assert.equal(assertNoImageGenerationWin(), true);
+assert.equal(assertProductShotWin(), true);
 assert.ok(DETAIL_PAGE_PHOTO_DIRECTION.hero.shot.includes("포장"));
 
 const pack = buildDetailPageFallbackPack({
@@ -37,7 +37,7 @@ const coupang = wrapMallHtml(html, pack, "coupang");
 
 const live = assessDetailPageCompeteWins({ html, wrapHtml: smart });
 assert.equal(live.ok, true, live.checks.filter((c) => !c.ok).map((c) => c.id).join(","));
-assert.equal(live.noImageGen, true);
+assert.equal(live.productShots, true);
 assert.ok(html.includes('data-photo-direction="hero"'));
 assert.ok(html.includes('data-visual="first-glance"'));
 assert.ok(smart.includes('data-mall="smartstore"'));
