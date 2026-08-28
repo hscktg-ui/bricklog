@@ -8,6 +8,13 @@ import {
   VISION_SECTION,
 } from "@/lib/landing/vision2030Styles";
 
+const PILLAR_STAGGER = [
+  "briclog-vision-stagger-1",
+  "briclog-vision-stagger-2",
+  "briclog-vision-stagger-3",
+  "briclog-vision-stagger-4",
+];
+
 export default function PublicDetailPageInvite() {
   const p = DETAIL_PAGE_PRODUCT;
   return (
@@ -25,19 +32,29 @@ export default function PublicDetailPageInvite() {
           {p.sub}
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 @min-[560px]:grid-cols-2">
+        <div className="mt-14 grid grid-cols-1 gap-4 @min-[560px]:grid-cols-2 @min-[560px]:gap-5">
           {p.pillars.map((item, i) => (
             <article
               key={item.title}
-              className="rounded-[1.25rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-6 shadow-[var(--vision-shadow-soft)]"
+              className={`group rounded-[1.5rem] border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] p-7 shadow-[var(--vision-shadow-soft)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--vision-shadow-panel)] briclog-vision-stagger ${PILLAR_STAGGER[i]} ${
+                i === 0 ? "@min-[560px]:p-9" : ""
+              }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--vision-muted)]">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] text-[12px] font-bold tabular-nums text-[var(--vision-accent-deep,#03a94d)] ring-1 ring-[var(--vision-accent-ring,rgba(3,199,90,0.2))]">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <h3 className="mt-2 text-[17px] font-semibold text-[var(--vision-ink)]">
+              <h3
+                className={`mt-5 font-semibold tracking-tight text-[var(--vision-ink)] ${
+                  i === 0 ? "text-[20px] md:text-[22px]" : "text-[19px]"
+                }`}
+              >
                 {item.title}
               </h3>
-              <p className="mt-2 text-[14px] leading-relaxed text-[var(--vision-muted)]">
+              <p
+                className={`mt-3 leading-relaxed text-[var(--vision-muted)] ${
+                  i === 0 ? "text-[16px]" : "text-[15px]"
+                }`}
+              >
                 {item.desc}
               </p>
             </article>

@@ -70,22 +70,24 @@ export default function PublicDetailPageClient() {
             {p.headline}
             <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
           </h1>
-          <ul className="mt-5 space-y-2 text-left text-[13px] leading-relaxed text-[var(--vision-muted)]">
+          <ul className="mt-6 grid grid-cols-2 gap-3 text-left">
             {p.pillars.map((item, i) => (
-              <li key={item.title} className="flex gap-2">
-                <span className="w-6 shrink-0 text-[11px] font-bold tabular-nums">
+              <li
+                key={item.title}
+                className="rounded-2xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg,#fff)] px-3 py-3"
+              >
+                <span className="text-[11px] font-bold tabular-nums text-[var(--vision-muted)]">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span>
-                  <span className="font-medium text-[var(--vision-ink)]">{item.title}</span>
-                  {" · "}
-                  {item.desc}
+                <span className="mt-1 block text-[13px] font-medium leading-snug text-[var(--vision-ink)]">
+                  {item.title}
                 </span>
               </li>
             ))}
           </ul>
           <p className="mt-4 mb-6 text-center text-[13px] text-[var(--vision-muted)]">
-            {p.loginHint}
+            {p.loginTitle}
+            <span className="mt-1 block">{p.loginHint}</span>
           </p>
           <AuthForm
             embedded

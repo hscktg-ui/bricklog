@@ -57,8 +57,16 @@ assert.ok(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["h
 assert.equal(DETAIL_PAGE_PRODUCT.name, "골라보다");
 assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
 assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("골라보다"));
+assert.equal(DETAIL_PAGE_PRODUCT.eyebrow, "골라보다");
+assert.ok(DETAIL_PAGE_PRODUCT.headline.includes("글이 아니라"));
+assert.ok(DETAIL_PAGE_PRODUCT.headlineBreak.includes("고르는 화면"));
+assert.equal(DETAIL_PAGE_PRODUCT.standardOk.includes("브릭로그"), false);
 assert.equal(DETAIL_PAGE_PRODUCT.fieldGroups.length, 4);
 assert.equal(DETAIL_PAGE_PRODUCT.pillars.length, 4);
+assert.deepEqual(
+  DETAIL_PAGE_PRODUCT.fieldGroups.map((g) => g.id),
+  ["product", "buyer", "copy", "frame"]
+);
 
 const pack = buildDetailPageFallbackPack(input);
 assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");

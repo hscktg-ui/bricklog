@@ -19,6 +19,7 @@ import {
   VISION_LOGIN_LINK,
   VISION_SUB,
 } from "@/lib/landing/vision2030Styles";
+import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 const CHANNELS = ["이야기", "플레이스", "인스타", "상세"];
 
@@ -123,12 +124,12 @@ export default function HeroSection({
             {LANDING_PRIMARY_SUB}
           </p>
           <p className="mt-2 text-[13px] text-[var(--vision-muted)]">
-            골라보다가 필요하면{" "}
+            상품 화면이 필요하면{" "}
             <a
               href="/detail"
               className={`${VISION_LOGIN_LINK} !min-h-0 !px-1 !py-0 !text-[13px]`}
             >
-              로그인하고 만들기
+              {DETAIL_PAGE_PRODUCT.ctaLabel}
             </a>
           </p>
           {onLogin ? (
