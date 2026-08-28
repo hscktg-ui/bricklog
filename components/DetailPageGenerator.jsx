@@ -16,6 +16,7 @@ import {
   channelResultPaneClass,
 } from "@/lib/workspace/channelWorkspaceLayout";
 import { getPublicTestSessionId } from "@/lib/publicTest/publicTestQuotaClient";
+import { VISION_CTA_ACCENT, VISION_INPUT } from "@/lib/landing/vision2030Styles";
 
 const MAX_PHOTOS = 5;
 
