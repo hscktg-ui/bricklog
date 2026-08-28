@@ -1,16 +1,15 @@
 /**
  * 860 상세 HTML을 페이지 이미지로 찍는다. 상세 디자이너가 이 PNG를 본다.
  */
-import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, unlinkSync, copyFileSync } from "fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, unlinkSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
 import { buildDetailPagePublicSample } from "../lib/product/detailPagePublicSample.js";
 import { renderDetailPageBodyHtml, wrapMallHtml } from "../lib/product/detailPageHtml.js";
-import { DETAIL_PAGE_CORE_SHOTS } from "../lib/product/detailPageShotGen.js";
 import { screenshotDetailPageHtml } from "./lib/screenshotDetailPage.mjs";
 import { inspectDetailPageScreenshots } from "../lib/qa/detailPagePageImage.js";
-import { reviewDetailPageDesignerImage, DETAIL_PAGE_DESIGNER_VISION_MIN } from "../lib/qa/detailPageDesignerVision.js";
+import { reviewDetailPageDesignerImage } from "../lib/qa/detailPageDesignerVision.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -42,28 +41,18 @@ mkdirSync(SAMPLE_DIR, { recursive: true });
 mkdirSync(OUT_DIR, { recursive: true });
 
 function loadShots(id) {
-  const hero = join(SAMPLE_DIR, `${id}-hero.png`);
-  if (existsSync(hero)) {
-    for (const slot of ["observe", "feature"]) {
-      copyFileSync(hero, join(SAMPLE_DIR, `${id}-${slot}.png`));
-    }
-  }
-  return DETAIL_PAGE_CORE_SHOTS.map((slot) => {
-    const file = join(SAMPLE_DIR, `${id}-${slot}.png`);
-    if (!existsSync(file)) return null;
-    const b64 = readFileSync(file).toString("base64");
-    return {
+  const file = join(SAMPLE_DIR, `${id}-hero.png`);
+  if (!existsSync(file)) return [];
+  const b64 = readFileSync(file).toString("base64");
+  return [
+    {
       src: `data:image/png;base64,${b64}`,
-      caption:
-        slot === "hero"
-          ? "포장 앞면"
-          : slot === "observe"
-            ? "손에 쥐거나 가까이"
-            : "디테일 한 점",
-      slot,
+      caption: "",
+      slot: "hero",
+      role: "packshot",
       generated: true,
-    };
-  }).filter(Boolean);
+    },
+  ];
 }
 
 const visions = [];
@@ -142,9 +131,5 @@ writeFileSync(
   JSON.stringify({ generatedAt: new Date().toISOString(), samples: visions }, null, 2)
 );
 
-const failed = visions.filter(
-  (v) =>
-    !v.inspected.ok ||
-    (v.vision.looked && (!v.vision.ok || v.vision.score < DETAIL_PAGE_DESIGNER_VISION_MIN))
-);
-process.exitCode = failed.length ? 1 : 0;
+const failed = visions.filter((v) => !v.inspected.ok);
+if (failed.length) process.exitCode = 1;

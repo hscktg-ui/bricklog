@@ -29,6 +29,7 @@ import { DETAIL_PAGE_MALLS } from "@/lib/product/detailPageCompeteWins";
 import {
   renderDetailPageBodyHtml,
   wrapDetailPageImageStackHtml,
+  wrapMallHtml,
   packToPlainText,
 } from "@/lib/product/detailPageHtml";
 import {
@@ -518,15 +519,14 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   }, [pack, mallImages, pageImage, onCopy, onToast]);
 
   const downloadHtml = useCallback(() => {
-    if (!pack) return;
-    if (!mallImages.length) {
-      onToast?.("상세 이미지가 아직입니다. 잠시 후 다시 저장해 주세요.");
+    if (!pack || !previewHtml) {
+      onToast?.("상세가 아직입니다.");
       return;
     }
-    const html = wrapDetailPageImageStackHtml(mallImages, pack, "smartstore");
+    const html = wrapMallHtml(previewHtml, pack, "smartstore");
     const slug = (pack.productName || "detail").slice(0, 24);
     downloadText(`${slug}-상세.html`, html, "text/html;charset=utf-8");
-  }, [pack, mallImages, onToast]);
+  }, [pack, previewHtml, onToast]);
 
   const downloadTxt = useCallback(() => {
     if (!pack) return;

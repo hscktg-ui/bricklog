@@ -301,6 +301,7 @@
     "test:detail-page-public-sample": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-public-sample.mjs",
     "test:detail-page-shot-gen": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-shot-gen.mjs",
     "test:detail-page-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-pipeline.mjs",
+    "test:detail-page-commerce": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-commerce.mjs",
     "test:detail-page-ranking-playbook": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-ranking-playbook.mjs",
     "test:detail-page-category-flow": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-category-flow.mjs",
     "test:detail-page-page-image": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-page-image.mjs",
