@@ -46,6 +46,13 @@ import {
 import { VISION_CTA_ACCENT, VISION_INPUT, VISION_SPINNER } from "@/lib/landing/vision2030Styles";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 import { assessDetailPageSuccess } from "@/lib/product/detailPageSuccessStandard";
+import {
+  captureDetailPageSections,
+  captureNodeImage,
+  sectionDownloadLabel,
+  sectionFileName,
+  triggerDataUrlDownloads,
+} from "@/components/detailPageCapture";
 
 async function filesToDataUrls(fileList) {
   const files = Array.from(fileList || []);
@@ -96,39 +103,6 @@ function downloadText(filename, text, mime) {
   URL.revokeObjectURL(url);
 }
 
-async function capturePreviewPng(node) {
-  if (!node) return "";
-  const width = DETAIL_PAGE_WIDTH;
-  const height = Math.min(Math.max(node.scrollHeight, node.offsetHeight), 8000);
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, width, height);
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-    <foreignObject width="100%" height="100%">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px">${node.outerHTML}</div>
-    </foreignObject>
-  </svg>`;
-  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL("image/png"));
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("svg_draw_failed"));
-    };
-    img.src = url;
-  });
-}
-
 function cropHeroDataUrl(dataUrl) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -175,6 +149,12 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [accent, setAccent] = useState(DETAIL_PAGE_DEFAULT_ACCENT);
   const [presetId, setPresetId] = useState("");
   const [photos, setPhotos] = useState([]);
+  const [price, setPrice] = useState("");
+  const [options, setOptions] = useState("");
+  const [shipping, setShipping] = useState("");
+  const [dispatch, setDispatch] = useState("");
+  const [producer, setProducer] = useState("");
+  const [storage, setStorage] = useState("");
   const [highlights, setHighlights] = useState("");
   const [mustInclude, setMustInclude] = useState("");
   const [improveNote, setImproveNote] = useState("");
@@ -235,28 +215,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       if (!article) return;
       (async () => {
         try {
-          const png = await capturePreviewPng(article);
-          if (cancelled || !png || png.length < 24_000) return;
-          const kids = [...article.children];
-          const stack = [];
-          for (const child of kids) {
-            try {
-              const sec = await capturePreviewPng(child);
-              if (sec && sec.length > 8_000) {
-                stack.push({
-                  src: sec,
-                  type: child.getAttribute("data-section") || "block",
-                  alt: pack.productName || "상품",
-                });
-              }
-            } catch {
-              /* skip zero-height sibling */
-            }
-          }
+          const captured = await captureDetailPageSections(article);
           if (cancelled) return;
-          setPageImage(png);
-          setSectionImages(stack.length ? stack : [{ src: png, type: "full", alt: pack.productName || "상품" }]);
-          const hero = await cropHeroDataUrl(png);
+          const stack = captured.sections || [];
+          const heroShot =
+            stack.find((item) => item.type === "hero")?.src || stack[0]?.src || "";
+          const fullShot = captured.full || heroShot;
+          setSectionImages(stack);
+          setPageImage(fullShot || heroShot);
+          if (!heroShot && !fullShot) {
+            setDesignerVision(null);
+            return;
+          }
+          const hero = await cropHeroDataUrl(heroShot || fullShot);
           const data = await fetchWithAuth("/api/content/detail-page", {
             method: "POST",
             timeoutMs: 45_000,
@@ -264,7 +235,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               action: "review-image",
               productName: pack.productName,
               brandName: pack.brandName,
-              screenshots: { hero, full: png },
+              screenshots: { hero, full: fullShot || hero },
             }),
           });
           if (!cancelled && data?.vision) setDesignerVision(data.vision);
@@ -294,6 +265,12 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       imageCount: photosNorm.length,
       photos: photosNorm,
       photoCaptions: photosNorm.map((p) => p.caption).filter(Boolean),
+      price,
+      options,
+      shipping,
+      dispatch,
+      producer,
+      storage,
       brandName: activeBrand?.brandName || "",
       brandId: activeBrand?.id || "",
       region: activeBrand?.region || "",
@@ -315,6 +292,12 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       accent,
       presetId,
       photosNorm,
+      price,
+      options,
+      shipping,
+      dispatch,
+      producer,
+      storage,
       activeBrand,
     ]
   );
@@ -380,10 +363,22 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     setFeatures(preset.features);
     setHighlights(preset.highlights || "");
     setMustInclude(preset.mustInclude || "");
+    setPrice(preset.price || "");
+    setOptions(preset.options || "");
+    setShipping(preset.shipping || "");
+    setDispatch(preset.dispatch || "");
+    setProducer(preset.producer || "");
+    setStorage(preset.storage || "");
+    setPhotos([
+      { src: `/detail-sample/${preset.id}-hero.png`, slot: "hero", role: "packshot" },
+      { src: `/detail-sample/${preset.id}-observe.png`, slot: "observe", role: "detail" },
+      { src: `/detail-sample/${preset.id}-feature.png`, slot: "feature", role: "detail" },
+      { src: `/detail-sample/${preset.id}-img-03.png`, slot: "scene", role: "usage" },
+    ]);
     setAccent(preset.accent || DETAIL_PAGE_DEFAULT_ACCENT);
     setPageLength(preset.pageLength || "standard");
     setPack(null);
-    setCopied(false);
+    setCopiedMall("");
     setEditing(false);
   }, []);
 
@@ -395,12 +390,18 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     setFeatures("");
     setHighlights("");
     setMustInclude("");
+    setPrice("");
+    setOptions("");
+    setShipping("");
+    setDispatch("");
+    setProducer("");
+    setStorage("");
     setImproveNote("");
     setAccent(DETAIL_PAGE_DEFAULT_ACCENT);
     setPageLength("standard");
     setPack(null);
     setError("");
-    setCopied(false);
+    setCopiedMall("");
     setEditing(false);
     setPhotos([]);
   }, []);
@@ -427,7 +428,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         setPhotos(data.shots);
       }
       setEditing(false);
-      setCopied(false);
+      setCopiedMall("");
       setImproveNote("");
     } catch (err) {
       setError(err.message || "상세페이지를 만들지 못했습니다.");
@@ -580,32 +581,90 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const downloadPng = useCallback(async () => {
     try {
       const slug = (pack?.productName || "detail").slice(0, 24);
-      const images = mallImages.length
-        ? mallImages
-        : [
-            {
-              src:
-                pageImage ||
-                (await capturePreviewPng(
-                  previewRef.current?.querySelector("article") || previewRef.current
-                )),
-            },
-          ].filter((item) => item.src);
-      if (!images.length) throw new Error("png_failed");
-      for (let i = 0; i < images.length; i += 1) {
-        const a = document.createElement("a");
-        a.href = images[i].src;
-        a.download = `${slug}-상세-${String(i).padStart(2, "0")}.png`;
-        a.click();
-        if (i < images.length - 1) {
-          await new Promise((r) => setTimeout(r, 220));
-        }
+      let images = mallImages.filter((item) => item?.src);
+      if (!images.length) {
+        const article = previewRef.current?.querySelector("article") || previewRef.current;
+        const captured = await captureDetailPageSections(article);
+        images = captured.sections.length
+          ? captured.sections
+          : captured.full
+            ? [{ src: captured.full, type: "full" }]
+            : [];
+        if (captured.sections.length) setSectionImages(captured.sections);
+        if (captured.full) setPageImage(captured.full);
       }
-      onToast?.(`상세 이미지 ${images.length}장을 저장했습니다. 몰에 위에서부터 올리세요.`);
+      if (!images.length) {
+        onToast?.("칸 이미지를 만들지 못했습니다. 아래 화면에서 칸마다 다시 저장해 보세요.");
+        return;
+      }
+      await triggerDataUrlDownloads(
+        images.map((img, i) => ({
+          src: img.src,
+          name: sectionFileName(slug, img.type || "칸", i, img.src),
+        }))
+      );
+      onToast?.(
+        images.length === 1
+          ? "상세 이미지 1장을 저장했습니다."
+          : `칸 ${images.length}장을 저장했습니다. 몰 상세에 위에서부터 올리세요.`
+      );
     } catch {
-      onToast?.("이미지 저장에 실패했습니다. 다시 만들어 주세요.");
+      onToast?.("이미지 저장에 실패했습니다. 칸마다 나눠 저장해 보세요.");
     }
-  }, [pack, onToast, pageImage, mallImages]);
+  }, [pack, onToast, mallImages]);
+
+  const downloadOneSection = useCallback(
+    async (index) => {
+      const slug = (pack?.productName || "detail").slice(0, 24);
+      const ready = mallImages[index];
+      if (ready?.src) {
+        await triggerDataUrlDownloads([
+          { src: ready.src, name: sectionFileName(slug, ready.type, index, ready.src) },
+        ]);
+        onToast?.(`${sectionDownloadLabel(ready.type)} 칸을 저장했습니다.`);
+        return;
+      }
+      const article = previewRef.current?.querySelector("article");
+      const node = article?.querySelectorAll(":scope > [data-section]")[index];
+      if (!node) {
+        onToast?.("이 칸을 찾지 못했습니다.");
+        return;
+      }
+      try {
+        const src = await captureNodeImage(node, { maxHeight: 2800 });
+        if (!src) throw new Error("empty");
+        await triggerDataUrlDownloads([
+          { src, name: sectionFileName(slug, node.getAttribute("data-section"), index, src) },
+        ]);
+        onToast?.(`${sectionDownloadLabel(node.getAttribute("data-section"))} 칸을 저장했습니다.`);
+      } catch {
+        onToast?.("이 칸 저장에 실패했습니다.");
+      }
+    },
+    [pack, mallImages, onToast]
+  );
+
+  const downloadFullPage = useCallback(async () => {
+    try {
+      if (pageImage && pageImage.length > 8_000) {
+        const slug = (pack?.productName || "detail").slice(0, 24);
+        await triggerDataUrlDownloads([{ src: pageImage, name: `${slug}-상세-전체.png` }]);
+        onToast?.("한 장으로 저장했습니다.");
+        return;
+      }
+      const article = previewRef.current?.querySelector("article");
+      const full = await captureNodeImage(article, { maxHeight: 7200 });
+      if (!full) {
+        onToast?.("한 장으로 담기엔 깁니다. 칸별로 저장하세요.");
+        return;
+      }
+      const slug = (pack?.productName || "detail").slice(0, 24);
+      await triggerDataUrlDownloads([{ src: full, name: `${slug}-상세-전체.png` }]);
+      onToast?.("한 장으로 저장했습니다.");
+    } catch {
+      onToast?.("통이미지는 길어서 실패했습니다. 칸별로 저장하세요.");
+    }
+  }, [pack, pageImage, onToast]);
 
   return (
     <div className={CHANNEL_WORKSPACE_SHELL} aria-label={product.headerTitle}>
@@ -676,6 +735,60 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 value={features}
                 onChange={(e) => setFeatures(e.target.value)}
                 placeholder={"당일 도정\n진공 포장\n여주 수확"}
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              가격
+              <input
+                className={VISION_INPUT}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="예: 32,900원"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              판매 옵션
+              <input
+                className={VISION_INPUT}
+                value={options}
+                onChange={(e) => setOptions(e.target.value)}
+                placeholder="예: 10kg / 20kg"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              배송비
+              <input
+                className={VISION_INPUT}
+                value={shipping}
+                onChange={(e) => setShipping(e.target.value)}
+                placeholder="예: 3,000원 · 3만원 이상 무료"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              출고
+              <input
+                className={VISION_INPUT}
+                value={dispatch}
+                onChange={(e) => setDispatch(e.target.value)}
+                placeholder="예: 평일 오후 2시 이전 주문 당일 출고"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              생산자 또는 제조자
+              <input
+                className={VISION_INPUT}
+                value={producer}
+                onChange={(e) => setProducer(e.target.value)}
+                placeholder="예: 우리쌀가게"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              보관
+              <input
+                className={VISION_INPUT}
+                value={storage}
+                onChange={(e) => setStorage(e.target.value)}
+                placeholder="예: 직사광선을 피한 서늘한 곳"
               />
             </label>
             <div>
@@ -930,8 +1043,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadHtml}>
                 이미지 HTML
               </button>
-              <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadPng}>
-                상세 이미지 저장
+              <button type="button" className="rounded-full border border-[var(--vision-ink)] bg-[var(--vision-ink)] px-4 py-2 text-[13px] font-medium text-white" onClick={downloadPng}>
+                칸별로 저장
+              </button>
+              <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadFullPage}>
+                한 장으로 저장
               </button>
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadTxt}>
                 텍스트
@@ -978,28 +1094,54 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                   ? "상세 이미지를 디자이너가 보는 중…"
                   : `스마트스토어·쿠팡 상세 폭 ${DETAIL_PAGE_WIDTH}px`}
               {photosNorm.length ? ` · 사진 ${photosNorm.length}장` : " · 컷 사진 생성"}
+              {mallImages.length
+                ? ` · 붙일 칸 ${mallImages.length}장`
+                : " · 통이미지가 안 되면 칸마다 저장"}
             </p>
-            {mallImages.length ? (
-              <div className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4">
-                <div className="mx-auto w-full max-w-[860px] bg-white">
-                  {mallImages.map((img, i) => (
-                    <img
-                      key={`${img.type || "sec"}-${i}`}
-                      src={img.src}
-                      alt={img.alt || `${pack.productName || "상품"} ${i + 1}`}
-                      className="block h-auto w-full"
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : null}
             <div
               ref={previewRef}
-              className={`mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4 ${
-                mallImages.length ? "hidden" : ""
-              }`}
+              className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4"
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
+            {mallImages.length ? (
+              <div className="mb-5 rounded-[1.25rem] border border-[var(--vision-line)] bg-white p-4">
+                <p className="text-[13px] font-medium">
+                  몰에 올릴 칸
+                </p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
+                  제디터처럼 860 폭으로 나눕니다. 한 장이 안 되면 칸마다 받아 위에서부터 붙이세요.
+                </p>
+                <ul className="mt-3 grid gap-2">
+                  {mallImages.map((img, i) => (
+                    <li
+                      key={`${img.type || "sec"}-${i}`}
+                      className="flex items-center gap-3 rounded-2xl border border-[var(--vision-line)] px-3 py-2"
+                    >
+                      <img
+                        src={img.src}
+                        alt=""
+                        className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-medium">
+                          {String(i + 1).padStart(2, "0")} {sectionDownloadLabel(img.type)}
+                        </p>
+                        <p className="text-[11px] text-[var(--vision-muted)]">
+                          {img.fallback ? "상품 사진만" : `${DETAIL_PAGE_WIDTH}px`}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        className="rounded-full border border-[var(--vision-line)] px-3 py-1.5 text-[12px] font-medium"
+                        onClick={() => downloadOneSection(i)}
+                      >
+                        이 칸만
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <div className="mb-4 grid gap-3 sm:grid-cols-2">
               {DETAIL_PAGE_MALLS.map((mall) => (
                 <ol

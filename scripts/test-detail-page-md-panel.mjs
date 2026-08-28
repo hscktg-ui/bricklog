@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { inspectDetailPageFacts } from "../lib/product/detailPageFactDossier.js";
+import { buildDetailPageFallbackPack } from "../lib/product/detailPageEngine.js";
 import { buildDetailPagePublicSample } from "../lib/product/detailPagePublicSample.js";
 import {
   DETAIL_PAGE_MALL_MD_PANEL_20,
@@ -10,18 +11,46 @@ assert.equal(DETAIL_PAGE_MALL_MD_PANEL_20.length, 20);
 assert.equal(new Set(DETAIL_PAGE_MALL_MD_PANEL_20.map((d) => d.id)).size, 20);
 assert.ok(DETAIL_PAGE_MALL_MD_PANEL_20.every((d) => d.years >= 10));
 
+const thin = buildDetailPageFallbackPack({
+  productName: "여주 햅쌀 10kg",
+  brandName: "우리쌀가게",
+  region: "여주",
+  industry: "쌀가게",
+  target: "집밥 차리는 손님",
+  features: "당일 도정\n진공 포장\n여주 수확",
+});
+const thinPanel = evaluateDetailPageMallMdPanel({
+  pack: thin,
+  html: "",
+  dossier: inspectDetailPageFacts(thin),
+});
+assert.ok(thinPanel.measured.vetoes.includes("가격 없음"));
+assert.ok(thinPanel.summary.mean < 60, `thin should fail MD, got ${thinPanel.summary.mean}`);
+assert.equal(thinPanel.summary.hire, false);
+
 const rice = buildDetailPagePublicSample("open-rice");
 const ricePanel = evaluateDetailPageMallMdPanel({
   pack: rice.pack,
   html: rice.html,
-  dossier: inspectDetailPageFacts(rice.pack),
+  dossier: inspectDetailPageFacts({ ...rice.pack, ...(rice.pack._meta?.input || {}) }),
 });
 assert.equal(ricePanel.votes.length, 20);
-assert.ok(ricePanel.measured.vetoes.includes("가격 없음"));
-assert.ok(ricePanel.measured.vetoes.includes("상품 컷 1장 이하"));
-assert.equal(ricePanel.summary.hire, false);
-assert.ok(ricePanel.summary.mean < 60, `thin rice should fail MD, got ${ricePanel.summary.mean}`);
-assert.equal(ricePanel.summary.passCount, 0);
+assert.equal(ricePanel.measured.vetoes.length, 0, ricePanel.measured.vetoes.join(","));
+assert.equal(ricePanel.measured.needCount, 0, "public rice must not leak [자료 필요]");
+assert.ok(ricePanel.measured.imgs >= 4, `rice imgs ${ricePanel.measured.imgs}`);
+assert.equal(ricePanel.summary.mean, 99);
+assert.equal(ricePanel.summary.hire, true);
+assert.equal(ricePanel.summary.passCount, 20);
+
+const beans = buildDetailPagePublicSample("open-beans");
+const beansPanel = evaluateDetailPageMallMdPanel({
+  pack: beans.pack,
+  html: beans.html,
+  dossier: inspectDetailPageFacts(beans.pack),
+});
+assert.equal(beansPanel.measured.vetoes.length, 0, beansPanel.measured.vetoes.join(","));
+assert.equal(beansPanel.summary.mean, 99);
+assert.equal(beansPanel.summary.hire, true);
 
 const filledPack = {
   productName: "여주 햅쌀 10kg",
@@ -61,11 +90,12 @@ const filledPanel = evaluateDetailPageMallMdPanel({
     features: "당일 도정\n진공 포장\n여주 수확\n추청",
   }),
 });
+assert.equal(filledPanel.summary.mean, 99);
 assert.ok(
-  filledPanel.summary.mean > ricePanel.summary.mean + 15,
-  `filled ${filledPanel.summary.mean} should beat thin ${ricePanel.summary.mean}`
+  filledPanel.summary.mean > thinPanel.summary.mean + 15,
+  `filled ${filledPanel.summary.mean} should beat thin ${thinPanel.summary.mean}`
 );
 
 console.log(
-  `ok detail-page-md-panel rice=${ricePanel.summary.mean} filled=${filledPanel.summary.mean} veto=${ricePanel.measured.vetoes.join(",")}`
+  `ok detail-page-md-panel rice=${ricePanel.summary.mean} beans=${beansPanel.summary.mean} thin=${thinPanel.summary.mean} veto=${thinPanel.measured.vetoes.join(",")}`
 );

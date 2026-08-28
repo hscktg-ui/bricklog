@@ -51,7 +51,7 @@ const beans = evalSample("open-beans");
 const report = {
   version: rice.summary ? undefined : undefined,
   generatedAt: new Date().toISOString(),
-  panel: "mall-md-20-v1",
+  panel: "mall-md-20-v2",
   brief: "스마트스토어·쿠팡 10년차 MD 20인. 오늘 이 리스팅을 올릴 수 있는가.",
   rice,
   beans,
