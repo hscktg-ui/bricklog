@@ -159,7 +159,6 @@ export default function AuthForm({
     setPhoneCheckMsg("");
     setEmailRegistered(false);
     setEmailCheckMsg("");
-    setPasswordConfirm("");
     lastCheckedEmailRef.current = "";
   }, [initialMode]);
 
