@@ -20,7 +20,7 @@ import {
 } from "@/lib/product/detailPageHtml";
 
 export const runtime = "nodejs";
-export const maxDuration = 45;
+export const maxDuration = 60;
 
 const MAX_PER_MIN =
   Number(process.env.BRICLOG_CHANNEL_RATE_LIMIT_PER_MIN) || 10;
