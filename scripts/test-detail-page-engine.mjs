@@ -82,6 +82,7 @@ assert.equal(pack.sections[0].type, "hero");
 assert.ok(pack.sections.some((s) => s.type === "intent"));
 assert.ok(pack.sections.some((s) => s.type === "usp"));
 assert.ok(pack.sections.some((s) => s.type === "feature"));
+assert.ok(pack.sections.some((s) => s.type === "scene"));
 assert.ok(pack._meta.sqv.score >= 95, `expected 95+, got ${pack._meta.sqv.score}`);
 assert.equal(packToPlainText(pack).includes("손님가"), false);
 assert.equal(packToPlainText(pack).includes("는 쪽"), false);

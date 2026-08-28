@@ -44,6 +44,8 @@ const invite = readFileSync("components/landing/PublicDetailPageInvite.jsx", "ut
 assert.ok(invite.includes("DetailPageSampleZone"));
 assert.ok(invite.includes("sampleZoneId"));
 const zone = readFileSync("components/DetailPageSampleZone.jsx", "utf8");
+assert.ok(existsSync("public/detail-sample/ranking-rice.html"), "missing ranking-rice.html");
+assert.ok(existsSync("public/detail-sample/ranking-beans.html"), "missing ranking-beans.html");
 assert.ok(zone.includes("DETAIL_PAGE_OPEN_EXAMPLES"));
 assert.ok(zone.includes("open-rice") || zone.includes("label"));
 assert.ok(zone.includes("컷별 상품 사진"));
