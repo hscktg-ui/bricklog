@@ -52,14 +52,6 @@ export default function PublicDetailPageClient() {
       <header className="sticky top-0 z-30 border-b border-[var(--vision-line)] bg-[var(--vision-paper)]/92 px-4 py-3 backdrop-blur-xl md:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
           <DetailPageMark />
-          <nav className="flex items-center gap-2" aria-label={DETAIL_PAGE_PRODUCT.name}>
-            <Link
-              href="/"
-              className="rounded-full px-3 py-2 text-[13px] font-medium text-[var(--vision-muted)]"
-            >
-              {DETAIL_PAGE_PRODUCT.homeLabel}
-            </Link>
-          </nav>
         </div>
       </header>
       {user === undefined ? (
@@ -93,7 +85,6 @@ export default function PublicDetailPageClient() {
       )}
       <footer className="shrink-0 border-t border-[var(--vision-line)] px-4 py-4 text-center text-[12px] text-[var(--vision-muted)] md:px-8">
         <p>
-          {DETAIL_PAGE_PRODUCT.accountLabel}으로 사용합니다.{" "}
           <Link href="/terms" className="underline-offset-2 hover:underline">
             이용약관
           </Link>

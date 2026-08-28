@@ -1,5 +1,5 @@
 /**
- * 상품 상세페이지 엔진 — 브릭로그 기준 + 860px HTML 회귀
+ * 골라보다 상세페이지 엔진 — 860px HTML 회귀
  */
 import assert from "node:assert/strict";
 import {
@@ -54,9 +54,9 @@ assert.equal(n.contentChannel, "detailPage");
 assert.equal(n.detailPageDesign?.width, DETAIL_PAGE_DESIGN_CONTEXT.width);
 assert.ok(formatDetailPageDesignBrief().includes("860"));
 assert.ok(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("Pretendard"));
-assert.equal(DETAIL_PAGE_PRODUCT.name, "상세페이지");
+assert.equal(DETAIL_PAGE_PRODUCT.name, "골라보다");
 assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
-assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("상세페이지"));
+assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("골라보다"));
 
 const pack = buildDetailPageFallbackPack(input);
 assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");
@@ -65,7 +65,7 @@ assert.ok(pack.sections.some((s) => s.type === "intent"));
 assert.ok(pack.sections.some((s) => s.type === "usp"));
 assert.ok(pack.sections.some((s) => s.type === "feature"));
 assert.ok(pack._meta.sqv.score >= 95, `expected 95+, got ${pack._meta.sqv.score}`);
-assert.ok(pack._meta.chars >= 1000, pack._meta.chars);
+assert.ok(pack._meta.chars >= 1500, pack._meta.chars);
 assert.equal(pack._meta.compositionOk, true);
 assert.equal(pack._meta.densityOk, true);
 assert.equal(pack._meta.standard.ok, true, pack._meta.standard.reasons.join(","));
@@ -76,15 +76,15 @@ const html = renderDetailPageBodyHtml(pack, []);
 assert.ok(html.includes(`${DETAIL_PAGE_WIDTH}px`));
 assert.ok(html.includes("여주 햅쌀"));
 assert.ok(html.includes("여주미곡"));
-assert.ok(html.includes('data-standard="briclog-pdp-v1"'));
+assert.ok(html.includes('data-standard="gollaboda-pdp-v1"'));
 assert.ok(html.includes("Pretendard"));
 assert.ok(html.includes('data-grade="95"') || html.includes("data-grade=\"95\""));
-assert.ok(html.includes("font-size:34px"));
-assert.ok(html.includes("font-size:17px"));
+assert.ok(html.includes("font-size:38px"));
+assert.ok(html.includes("font-size:18px"));
 
 const doc = wrapSmartstoreHtml(html);
 assert.ok(doc.startsWith("<!DOCTYPE html>"));
-assert.ok(doc.includes("briclog-detail-page"));
+assert.ok(doc.includes("gollaboda-detail-page"));
 assert.ok(doc.includes("pretendard"));
 
 const text = packToPlainText(pack);
@@ -196,9 +196,9 @@ assert.ok(shortHtml.includes('data-photo-gallery="1"'), "leftover photos go to g
 const openRice = DETAIL_PAGE_OPEN_EXAMPLES.find((p) => p.id === "open-rice");
 assert.ok(openRice);
 assert.equal(getDetailPageExample("open-rice").productName, openRice.productName);
-assert.ok(formatDetailPageDesignBrief().includes("장바구니"));
-assert.equal(formatDetailPageDesignBrief().includes("운영글이 아니다"), true);
-assert.equal(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("운영글이 아니다"), true);
+assert.ok(formatDetailPageDesignBrief().includes("골라보다"));
+assert.equal(formatDetailPageDesignBrief().includes("블로그 칼럼이 아니다"), true);
+assert.equal(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("골라보다"), true);
 
 const publicBody = sanitizePublicDetailPageBody({
   productName: "여주 햅쌀 10kg",
@@ -226,6 +226,8 @@ const highlighted = buildDetailPageFallbackPack({
 });
 assert.ok(packToPlainText(highlighted).includes("여주 당일 도정"));
 assert.ok(packToPlainText(highlighted).includes("도정 시각"));
+assert.ok(renderDetailPageBodyHtml(highlighted, []).includes("data-highlights="));
+assert.equal(packToPlainText(pack).includes("입력된 사실 바깥"), false);
 
 const photoObjs = normalizeDetailPagePhotos([
   { src: "https://example.com/p1.jpg", caption: "맨 위 쌀 포대" },

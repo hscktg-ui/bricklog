@@ -17,15 +17,15 @@ export default function PublicDetailPageInvite() {
           {DETAIL_PAGE_PRODUCT.name}
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-[#5c534c]">
-          이야기·플레이스·인스타와 다른 서비스입니다. 상품 사진과 강조 문구를
-          넣으면 스마트스토어·쿠팡에 붙일 화면이 나갑니다.
+          사진·강조 문구·꼭 넣을 내용을 넣으면, 고를 때 막히는 점부터 보이는
+          상품 화면이 나갑니다. 스마트스토어·쿠팡에 붙이면 됩니다.
         </p>
         <div className="mt-8 flex justify-center">
           <Link
             href="/detail"
             className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#1c1917] px-8 text-[15px] font-semibold text-[#f6f1ea] transition hover:bg-[#3f3a36]"
           >
-            {DETAIL_PAGE_PRODUCT.generateLabel}
+            {DETAIL_PAGE_PRODUCT.name} 열기
           </Link>
         </div>
       </div>

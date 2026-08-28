@@ -8,7 +8,6 @@ import {
 } from "@/lib/billing/usageLedger";
 import { logError } from "@/lib/api/logEvent";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
-import { prepareBrandFirstInput } from "@/lib/memory/brandFirstPrewriteGate";
 import { generateDetailPagePack } from "@/lib/product/detailPageEngine";
 import {
   catchDetailPageFixes,
@@ -19,9 +18,14 @@ import {
   wrapSmartstoreHtml,
   packToPlainText,
 } from "@/lib/product/detailPageHtml";
+import {
+  renderDetailPageBodyHtml,
+  wrapSmartstoreHtml,
+  packToPlainText,
+} from "@/lib/product/detailPageHtml";
 
 export const runtime = "nodejs";
-export const maxDuration = 90;
+export const maxDuration = 45;
 
 const MAX_PER_MIN =
   Number(process.env.BRICLOG_CHANNEL_RATE_LIMIT_PER_MIN) || 10;
@@ -82,15 +86,10 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const action = String(body.action || "generate");
-    const prepared = await prepareBrandFirstInput({
-      supabase: auth.supabase,
-      userId: auth.user.id,
-      input: {
-        ...body,
-        topic: body.productName || body.topic,
-      },
-    });
-    const input = prepared.ok ? prepared.input : { ...body, topic: body.productName };
+    const input = {
+      ...body,
+      topic: body.productName || body.topic,
+    };
 
     if (action === "catch" && body.pack) {
       const pack = catchDetailPageFixes(body.pack, input);
