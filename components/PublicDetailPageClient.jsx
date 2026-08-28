@@ -13,6 +13,7 @@ import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 export default function PublicDetailPageClient() {
   const [user, setUser] = useState(undefined);
   const [toast, setToast] = useState({ visible: false, message: "", type: "info" });
+  const p = DETAIL_PAGE_PRODUCT;
 
   useEffect(() => {
     let alive = true;
@@ -63,16 +64,28 @@ export default function PublicDetailPageClient() {
       ) : (
         <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center px-4 py-10">
           <p className="text-center text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
-            {DETAIL_PAGE_PRODUCT.place}
+            {p.eyebrow} · {p.place}
           </p>
-          <h1 className="mt-3 text-center text-[28px] font-semibold tracking-tight">
-            {DETAIL_PAGE_PRODUCT.name}
+          <h1 className="mt-3 text-center text-[26px] font-semibold tracking-tight">
+            {p.headline}
+            <span className="mt-1 block text-[var(--vision-muted)]">{p.headlineBreak}</span>
           </h1>
-          <p className="mt-2 text-center text-[15px] leading-relaxed text-[var(--vision-muted)]">
-            {DETAIL_PAGE_PRODUCT.promise}
-          </p>
-          <p className="mt-2 mb-6 text-center text-[13px] leading-relaxed text-[var(--vision-muted)]">
-            {DETAIL_PAGE_PRODUCT.loginHint}
+          <ul className="mt-5 space-y-2 text-left text-[13px] leading-relaxed text-[var(--vision-muted)]">
+            {p.pillars.map((item, i) => (
+              <li key={item.title} className="flex gap-2">
+                <span className="w-6 shrink-0 text-[11px] font-bold tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>
+                  <span className="font-medium text-[var(--vision-ink)]">{item.title}</span>
+                  {" · "}
+                  {item.desc}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 mb-6 text-center text-[13px] text-[var(--vision-muted)]">
+            {p.loginHint}
           </p>
           <AuthForm
             embedded

@@ -57,6 +57,8 @@ assert.ok(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["h
 assert.equal(DETAIL_PAGE_PRODUCT.name, "골라보다");
 assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
 assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("골라보다"));
+assert.equal(DETAIL_PAGE_PRODUCT.fieldGroups.length, 4);
+assert.equal(DETAIL_PAGE_PRODUCT.pillars.length, 4);
 
 const pack = buildDetailPageFallbackPack(input);
 assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");
@@ -66,6 +68,9 @@ assert.ok(pack.sections.some((s) => s.type === "usp"));
 assert.ok(pack.sections.some((s) => s.type === "feature"));
 assert.ok(pack._meta.sqv.score >= 95, `expected 95+, got ${pack._meta.sqv.score}`);
 assert.equal(packToPlainText(pack).includes("손님가"), false);
+assert.equal(packToPlainText(pack).includes("는 쪽"), false);
+assert.equal(packToPlainText(pack).includes("없는 이나"), false);
+assert.ok(packToPlainText(pack).includes("쪽 설명"));
 assert.ok(packToPlainText(pack).includes("손님"));
 assert.equal(pack._meta.compositionOk, true);
 assert.equal(pack._meta.densityOk, true);
@@ -82,6 +87,12 @@ assert.ok(html.includes("Pretendard"));
 assert.ok(html.includes('data-grade="95"') || html.includes("data-grade=\"95\""));
 assert.ok(html.includes("font-size:38px"));
 assert.ok(html.includes("font-size:18px"));
+assert.ok(html.includes('data-ui="section-layouts"'));
+assert.ok(html.includes('data-layout="hero-stack"'));
+assert.ok(html.includes('data-layout="usp-cards"'));
+assert.ok(html.includes('data-layout="spec-sheet"'));
+assert.ok(html.includes('data-layout="observe-quote"'));
+assert.ok(html.includes('data-layout="cta-bar"'));
 
 const doc = wrapSmartstoreHtml(html);
 assert.ok(doc.startsWith("<!DOCTYPE html>"));

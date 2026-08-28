@@ -134,6 +134,23 @@ async function downloadPreviewPng(node, filename) {
   });
 }
 
+function FieldGroup({ n, title, hint, children }) {
+  return (
+    <section className="mt-6" aria-labelledby={`detail-g-${n}`}>
+      <h3 id={`detail-g-${n}`} className="flex items-baseline gap-2">
+        <span className="text-[11px] font-bold tabular-nums tracking-[0.08em] text-[var(--vision-muted)]">
+          {n}
+        </span>
+        <span className="text-[13px] font-semibold tracking-tight">{title}</span>
+      </h3>
+      {hint ? (
+        <p className="mt-1 text-[12px] leading-snug text-[var(--vision-muted)]">{hint}</p>
+      ) : null}
+      <div className="mt-3 space-y-3">{children}</div>
+    </section>
+  );
+}
+
 export default function DetailPageGenerator({ onCopy, onToast, surface = "workspace" }) {
   const workspace = useOptionalBrandWorkspace();
   const activeBrand = workspace?.activeBrand;
@@ -153,7 +170,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
   const [revising, setRevising] = useState("");
   const [error, setError] = useState("");
   const [pack, setPack] = useState(null);
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);
   const photoInputRef = useRef(null);
 
@@ -268,7 +285,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
     setPageLength(preset.pageLength || "standard");
     setPack(null);
     setCopied(false);
-    setEditing(true);
+    setEditing(false);
   }, []);
 
   const startBlank = useCallback(() => {
@@ -285,7 +302,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
     setPack(null);
     setError("");
     setCopied(false);
-    setEditing(true);
+    setEditing(false);
     setPhotos([]);
   }, []);
 
@@ -307,7 +324,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
         throw new Error(data?.userMessage || "상세페이지를 만들지 못했습니다.");
       }
       setPack(data.pack);
-      setEditing(true);
+      setEditing(false);
       setCopied(false);
       setImproveNote("");
     } catch (err) {
@@ -331,7 +348,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
         throw new Error(data?.userMessage || "수정을 잡지 못했습니다.");
       }
       setPack(data.pack);
-      setEditing(true);
+      setEditing(false);
       onToast?.("기준에 안 맞는 문장을 정리했습니다.");
     } catch (err) {
       setError(err.message || "수정을 잡지 못했습니다.");
@@ -363,7 +380,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
         throw new Error(data?.userMessage || "개선하지 못했습니다.");
       }
       setPack(data.pack);
-      setEditing(true);
+      setEditing(false);
       onToast?.("지시대로 다듬었습니다. 미리보기에서 확인해 주세요.");
     } catch (err) {
       setError(err.message || "개선하지 못했습니다.");
@@ -453,19 +470,27 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
       <aside className={channelFormPaneClass({ width: "wide" })}>
         <div className={channelFormScrollClass("", true)}>
           {surface === "public" ? (
-            <p className="text-[14px] leading-relaxed text-[var(--vision-muted)]">
-              {DETAIL_PAGE_PRODUCT.promise}. 사진·강조 문구·꼭 넣을 내용을 넣고, 고를 때 막히는 점부터 짭니다.
-            </p>
+            <>
+              <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
+                {DETAIL_PAGE_PRODUCT.eyebrow}
+              </p>
+              <h2 className="mt-1 text-[20px] font-semibold tracking-tight">
+                {DETAIL_PAGE_PRODUCT.headlineBreak}
+              </h2>
+              <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
+                {DETAIL_PAGE_PRODUCT.sub}
+              </p>
+            </>
           ) : (
             <>
               <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
-                {DETAIL_PAGE_PRODUCT.place}
+                {DETAIL_PAGE_PRODUCT.eyebrow} · {DETAIL_PAGE_PRODUCT.place}
               </p>
               <h2 className="mt-1 text-[22px] font-semibold tracking-tight">
                 {DETAIL_PAGE_PRODUCT.name}
               </h2>
               <p className="mt-2 text-[14px] leading-relaxed text-[var(--vision-muted)]">
-                {product.emptyDesc}
+                {DETAIL_PAGE_PRODUCT.headline} {DETAIL_PAGE_PRODUCT.headlineBreak}
               </p>
             </>
           )}
@@ -501,163 +526,188 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
             ))}
           </div>
 
-          <label className="mt-5 block text-[13px] font-medium">
-            상품명
-            <input
-              className={VISION_INPUT}
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              placeholder={activeBrand?.mainKeyword || "예: 여주 쌀 10kg"}
-            />
-          </label>
-          <label className="mt-4 block text-[13px] font-medium">
-            누가 고르나요
-            <input
-              className={VISION_INPUT}
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-              placeholder="예: 집밥 차리는 손님, 선물용"
-            />
-          </label>
-          <label className="mt-4 block text-[13px] font-medium">
-            고를 때 막히는 점
-            <input
-              className={VISION_INPUT}
-              value={searchIntent}
-              onChange={(e) => setSearchIntent(e.target.value)}
-              placeholder="예: 스펙은 봤는데, 누워보기 전에 뭘 봐야 할지 모르겠다"
-            />
-          </label>
-          <label className="mt-4 block text-[13px] font-medium">
-            특징 · 쓰임 (줄바꿈으로 구분)
-            <textarea
-              className={`${VISION_INPUT} min-h-[120px] py-3`}
-              value={features}
-              onChange={(e) => setFeatures(e.target.value)}
-              placeholder={"당일 도정\n진공 포장\n여주 수확"}
-            />
-          </label>
-          <label className="mt-4 block text-[13px] font-medium">
-            강조 문구 (줄마다 하나)
-            <textarea
-              className={`${VISION_INPUT} min-h-[88px] py-3`}
-              value={highlights}
-              onChange={(e) => setHighlights(e.target.value)}
-              placeholder={"여주에서 당일 도정\n진공 포장 그대로 집까지"}
-            />
-          </label>
-          <label className="mt-4 block text-[13px] font-medium">
-            꼭 넣을 내용
-            <textarea
-              className={`${VISION_INPUT} min-h-[88px] py-3`}
-              value={mustInclude}
-              onChange={(e) => setMustInclude(e.target.value)}
-              placeholder="반드시 넣을 문장·안내. 없는 사실은 쓰지 않습니다."
-            />
-          </label>
-          <div className="mt-4">
-            <p className="text-[13px] font-medium">
-              상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장, 위부터 배치)
-            </p>
-            <label
-              className="mt-2 flex min-h-[88px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--vision-line)] bg-white px-3 py-4 text-center text-[13px] text-[var(--vision-muted)]"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handlePhotoDrop}
-            >
-              사진을 끌어다 놓거나 눌러서 첨부
+          <FieldGroup
+            n={DETAIL_PAGE_PRODUCT.fieldGroups[0].n}
+            title={DETAIL_PAGE_PRODUCT.fieldGroups[0].title}
+            hint={DETAIL_PAGE_PRODUCT.fieldGroups[0].hint}
+          >
+            <label className="block text-[13px] font-medium">
+              상품명
               <input
-                ref={photoInputRef}
-                className="sr-only"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handlePhotos}
+                className={VISION_INPUT}
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                placeholder={activeBrand?.mainKeyword || "예: 여주 쌀 10kg"}
               />
             </label>
-          </div>
-          {photosNorm.length > 0 ? (
-            <ul className="mt-3 space-y-2">
-              {photosNorm.map((photo, i) => (
-                <li key={`${i}-${photo.src.slice(-18)}`} className="rounded-2xl border border-[var(--vision-line)] bg-white p-2">
-                  <div className="flex items-center gap-2">
-                    <img src={photo.src} alt="" className="h-14 w-14 rounded-lg object-cover" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[12px] font-medium">
-                        {i + 1}. {photoSlots[i]?.label || "남는 사진"}
-                      </p>
-                      <p className="text-[11px] text-[var(--vision-muted)]">
-                        {photoSlots[i]
-                          ? `${DETAIL_PAGE_SECTION_LABELS[photoSlots[i].type] || photoSlots[i].type} 칸`
-                          : "맨 아래 모아 붙임"}
-                      </p>
-                    </div>
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                        onClick={() => movePhoto(i, -1)}
-                        disabled={i === 0}
-                      >
-                        위
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                        onClick={() => movePhoto(i, 1)}
-                        disabled={i === photosNorm.length - 1}
-                      >
-                        아래
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                        onClick={() => removePhoto(i)}
-                      >
-                        빼기
-                      </button>
-                    </div>
-                  </div>
-                  <input
-                    className={`${VISION_INPUT} mt-2 min-h-[42px] text-[13px]`}
-                    value={photo.caption}
-                    onChange={(e) => updatePhotoCaption(i, e.target.value)}
-                    placeholder="사진 아래 넣을 한 줄 (선택)"
-                  />
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          <div className="mt-4 flex gap-2">
-            {Object.values(DETAIL_PAGE_LENGTHS).map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setPageLength(opt.id)}
-                className={`min-h-[40px] flex-1 rounded-full border px-3 text-[13px] font-medium ${
-                  pageLength === opt.id
-                    ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
-                    : "border-[var(--vision-line)] bg-white"
-                }`}
+            <label className="block text-[13px] font-medium">
+              특징 · 쓰임 (줄바꿈으로 구분)
+              <textarea
+                className={`${VISION_INPUT} min-h-[120px] py-3`}
+                value={features}
+                onChange={(e) => setFeatures(e.target.value)}
+                placeholder={"당일 도정\n진공 포장\n여주 수확"}
+              />
+            </label>
+            <div>
+              <p className="text-[13px] font-medium">
+                상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장, 위부터 배치)
+              </p>
+              <label
+                className="mt-2 flex min-h-[88px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--vision-line)] bg-white px-3 py-4 text-center text-[13px] text-[var(--vision-muted)]"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handlePhotoDrop}
               >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+                사진을 끌어다 놓거나 눌러서 첨부
+                <input
+                  ref={photoInputRef}
+                  className="sr-only"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handlePhotos}
+                />
+              </label>
+            </div>
+            {photosNorm.length > 0 ? (
+              <ul className="space-y-2">
+                {photosNorm.map((photo, i) => (
+                  <li key={`${i}-${photo.src.slice(-18)}`} className="rounded-2xl border border-[var(--vision-line)] bg-white p-2">
+                    <div className="flex items-center gap-2">
+                      <img src={photo.src} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[12px] font-medium">
+                          {i + 1}. {photoSlots[i]?.label || "남는 사진"}
+                        </p>
+                        <p className="text-[11px] text-[var(--vision-muted)]">
+                          {photoSlots[i]
+                            ? `${DETAIL_PAGE_SECTION_LABELS[photoSlots[i].type] || photoSlots[i].type} 칸`
+                            : "맨 아래 모아 붙임"}
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                          onClick={() => movePhoto(i, -1)}
+                          disabled={i === 0}
+                        >
+                          위
+                        </button>
+                        <button
+                          type="button"
+                          className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                          onClick={() => movePhoto(i, 1)}
+                          disabled={i === photosNorm.length - 1}
+                        >
+                          아래
+                        </button>
+                        <button
+                          type="button"
+                          className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                          onClick={() => removePhoto(i)}
+                        >
+                          빼기
+                        </button>
+                      </div>
+                    </div>
+                    <input
+                      className={`${VISION_INPUT} mt-2 min-h-[42px] text-[13px]`}
+                      value={photo.caption}
+                      onChange={(e) => updatePhotoCaption(i, e.target.value)}
+                      placeholder="사진 아래 넣을 한 줄 (선택)"
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </FieldGroup>
 
-          <label className="mt-4 flex items-center gap-3 text-[13px] font-medium">
-            포인트 색
-            <input
-              type="color"
-              value={accent}
-              onChange={(e) => {
-                const next = e.target.value;
-                setAccent(next);
-                setPack((prev) => (prev ? { ...prev, accent: next } : prev));
-              }}
-              className="h-9 w-12 cursor-pointer rounded border border-[var(--vision-line)]"
-            />
-          </label>
+          <FieldGroup
+            n={DETAIL_PAGE_PRODUCT.fieldGroups[1].n}
+            title={DETAIL_PAGE_PRODUCT.fieldGroups[1].title}
+            hint={DETAIL_PAGE_PRODUCT.fieldGroups[1].hint}
+          >
+            <label className="block text-[13px] font-medium">
+              누가 고르나요
+              <input
+                className={VISION_INPUT}
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                placeholder="예: 집밥 차리는 손님, 선물용"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              고를 때 막히는 점
+              <input
+                className={VISION_INPUT}
+                value={searchIntent}
+                onChange={(e) => setSearchIntent(e.target.value)}
+                placeholder="예: 스펙은 봤는데, 누워보기 전에 뭘 봐야 할지 모르겠다"
+              />
+            </label>
+          </FieldGroup>
+
+          <FieldGroup
+            n={DETAIL_PAGE_PRODUCT.fieldGroups[2].n}
+            title={DETAIL_PAGE_PRODUCT.fieldGroups[2].title}
+            hint={DETAIL_PAGE_PRODUCT.fieldGroups[2].hint}
+          >
+            <label className="block text-[13px] font-medium">
+              강조 문구 (줄마다 하나)
+              <textarea
+                className={`${VISION_INPUT} min-h-[88px] py-3`}
+                value={highlights}
+                onChange={(e) => setHighlights(e.target.value)}
+                placeholder={"여주에서 당일 도정\n진공 포장 그대로 집까지"}
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              꼭 넣을 내용
+              <textarea
+                className={`${VISION_INPUT} min-h-[88px] py-3`}
+                value={mustInclude}
+                onChange={(e) => setMustInclude(e.target.value)}
+                placeholder="반드시 넣을 문장·안내. 없는 사실은 쓰지 않습니다."
+              />
+            </label>
+          </FieldGroup>
+
+          <FieldGroup
+            n={DETAIL_PAGE_PRODUCT.fieldGroups[3].n}
+            title={DETAIL_PAGE_PRODUCT.fieldGroups[3].title}
+            hint={DETAIL_PAGE_PRODUCT.fieldGroups[3].hint}
+          >
+            <div className="flex gap-2">
+              {Object.values(DETAIL_PAGE_LENGTHS).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setPageLength(opt.id)}
+                  className={`min-h-[40px] flex-1 rounded-full border px-3 text-[13px] font-medium ${
+                    pageLength === opt.id
+                      ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
+                      : "border-[var(--vision-line)] bg-white"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <label className="flex items-center gap-3 text-[13px] font-medium">
+              포인트 색
+              <input
+                type="color"
+                value={accent}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setAccent(next);
+                  setPack((prev) => (prev ? { ...prev, accent: next } : prev));
+                }}
+                className="h-9 w-12 cursor-pointer rounded border border-[var(--vision-line)]"
+              />
+            </label>
+          </FieldGroup>
 
           {error && !pack ? (
             <p className="mt-4 text-[13px] text-red-700">{error}</p>
@@ -677,16 +727,33 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
 
       <section className={channelResultPaneClass()}>
         {!pack && !busy ? (
-          <div className="flex h-full min-h-[320px] flex-col items-center justify-center text-center">
-            <Icon name="bag" className="h-8 w-8 text-[var(--vision-muted)]" />
-            <p className="mt-3 text-[15px] text-[var(--vision-muted)]">
-              사진·강조 문구를 넣고 만들면, 나온 글을 바로 고칠 수 있습니다.
+          <div className="mx-auto flex h-full min-h-[320px] max-w-sm flex-col justify-center text-left">
+            <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
+              {DETAIL_PAGE_PRODUCT.eyebrow}
             </p>
+            <p className="mt-2 text-[18px] font-semibold tracking-tight">
+              {DETAIL_PAGE_PRODUCT.emptyResult}
+            </p>
+            <ol className="mt-5 space-y-3">
+              {DETAIL_PAGE_PRODUCT.pillars.slice(0, 3).map((item, i) => (
+                <li key={item.title} className="flex gap-3">
+                  <span className="text-[11px] font-bold tabular-nums text-[var(--vision-muted)]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>
+                    <span className="block text-[14px] font-medium">{item.title}</span>
+                    <span className="mt-0.5 block text-[13px] leading-relaxed text-[var(--vision-muted)]">
+                      {item.desc}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ol>
           </div>
         ) : null}
         {busy ? (
           <p className="text-[15px] text-[var(--vision-muted)]">
-            상품명과 특징으로 상세페이지를 맞추고 있습니다.
+            {DETAIL_PAGE_PRODUCT.busyLine}
           </p>
         ) : null}
         {pack ? (
@@ -716,6 +783,33 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
                 {editing ? "미리보기만" : "문장 고치기"}
               </button>
             </div>
+            <p className="mb-3 text-[12px] text-[var(--vision-muted)]">
+              {pack._meta?.sqv?.score != null ? `${pack._meta.sqv.score}점` : ""}
+              {pack._meta?.sqv?.score != null ? " · " : ""}
+              {pack._meta?.mode === "llm"
+                ? "GPT-5.6 Sol 1회"
+                : pack._meta?.mode === "llm-edited" || pack._meta?.edited
+                  ? "문장 수정본"
+                  : "기준 초안"}
+              {" · "}
+              {pack._meta?.standard?.ok
+                ? DETAIL_PAGE_PRODUCT.standardOk
+                : DETAIL_PAGE_PRODUCT.standardNeed}
+              {" · "}
+              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px · Pretendard
+            </p>
+            {error ? (
+              <p className="mb-3 text-[13px] text-red-700">{error}</p>
+            ) : null}
+            <p className="mb-2 text-[12px] text-[var(--vision-muted)]">
+              스마트스토어 상세 폭 {DETAIL_PAGE_WIDTH}px
+              {photosNorm.length ? ` · 사진 ${photosNorm.length}장 배치` : " · 사진 없음"}
+            </p>
+            <div
+              ref={previewRef}
+              className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4"
+              dangerouslySetInnerHTML={{ __html: previewHtml }}
+            />
             <ol
               className={`mb-4 rounded-2xl border px-4 py-3 text-[13px] leading-relaxed ${
                 copied
@@ -732,22 +826,6 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
                 </li>
               ))}
             </ol>
-            <p className="mb-3 text-[12px] text-[var(--vision-muted)]">
-              {pack._meta?.sqv?.score != null ? `${pack._meta.sqv.score}점` : ""}
-              {pack._meta?.sqv?.score != null ? " · " : ""}
-              {pack._meta?.mode === "llm"
-                ? "GPT-5.6 Sol 1회"
-                : pack._meta?.mode === "llm-edited" || pack._meta?.edited
-                  ? "문장 수정본"
-                  : "기준 초안"}
-              {" · "}
-              {pack._meta?.standard?.ok ? "브릭로그 기준 통과" : "기준 보완 필요"}
-              {" · "}
-              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px · Pretendard
-            </p>
-            {error ? (
-              <p className="mb-3 text-[13px] text-red-700">{error}</p>
-            ) : null}
             {pack._meta?.standard ? (
               <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
                 {DETAIL_PAGE_STANDARD_RULES.map((rule) => {
@@ -856,15 +934,6 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
                 ))}
               </div>
             ) : null}
-            <p className="mb-2 text-[12px] text-[var(--vision-muted)]">
-              스마트스토어 상세 폭 {DETAIL_PAGE_WIDTH}px
-              {photosNorm.length ? ` · 사진 ${photosNorm.length}장 배치` : " · 사진 없음"}
-            </p>
-            <div
-              ref={previewRef}
-              className="overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4"
-              dangerouslySetInnerHTML={{ __html: previewHtml }}
-            />
           </div>
         ) : null}
       </section>
