@@ -15,7 +15,7 @@ import {
   packToPlainText,
 } from "../lib/product/detailPageHtml.js";
 import { DETAIL_PAGE_WIDTH } from "../lib/product/detailPageCatalog.js";
-import { assignDetailPagePhotos } from "../lib/product/detailPagePhotos.js";
+import { assignDetailPagePhotos, normalizeDetailPagePhotos } from "../lib/product/detailPagePhotos.js";
 import { getChannelFullText } from "../lib/content/channelPack.js";
 import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
 import { assessDetailPageStandard, applyEditedDetailPageSections } from "../lib/product/detailPageStandard.js";
@@ -23,6 +23,10 @@ import { getDetailPageCompanyPreset, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/pr
 import { sanitizePublicDetailPageBody } from "../lib/product/detailPagePublic.js";
 import { gptDetailPageSystemPrompt } from "../lib/product/detailPageStandard.js";
 import { DETAIL_PAGE_DESIGN_CONTEXT, formatDetailPageDesignBrief } from "../lib/product/detailPageContext.js";
+import {
+  catchDetailPageFixes,
+  listDetailPageFixTargets,
+} from "../lib/product/detailPageRevise.js";
 
 const prevMission = process.env.BRICLOG_MISSION;
 const prevCore = process.env.BRICLOG_CORE_RULES;
@@ -205,6 +209,47 @@ const guestPack = await generateDetailPagePack(
 );
 assert.equal(guestPack.mode, "fallback");
 assert.ok(guestPack.pack.sections.length >= 4);
+
+const highlighted = buildDetailPageFallbackPack({
+  ...input,
+  highlights: "여주 당일 도정\n진공 그대로",
+  mustInclude: "도정 시각은  visit 당일만 안내합니다.",
+});
+assert.ok(packToPlainText(highlighted).includes("여주 당일 도정"));
+assert.ok(packToPlainText(highlighted).includes("도정 시각"));
+
+const photoObjs = normalizeDetailPagePhotos([
+  { src: "https://example.com/p1.jpg", caption: "맨 위 쌀 포대" },
+  "https://example.com/p2.jpg",
+]);
+assert.equal(photoObjs[0].caption, "맨 위 쌀 포대");
+assert.equal(photoObjs[1].src, "https://example.com/p2.jpg");
+const htmlCaption = renderDetailPageBodyHtml(pack, photoObjs);
+assert.ok(htmlCaption.includes("맨 위 쌀 포대"));
+
+const dirty = {
+  ...pack,
+  sections: pack.sections.map((s) =>
+    s.type === "cta"
+      ? { ...s, body: "지금 바로 구매하세요. 실구매자 별점 만점입니다." }
+      : s
+  ),
+};
+const dirtyAssess = assessDetailPageStandard(dirty, { brandName: "여주미곡" });
+assert.equal(dirtyAssess.ok, false);
+const caught = catchDetailPageFixes(dirty, input);
+assert.equal(caught._meta.catchFixes, true);
+assert.equal(caught._meta.standard.ok, true, caught._meta.standard.reasons.join(","));
+assert.equal(listDetailPageFixTargets(caught).length, 0);
+
+const publicHi = sanitizePublicDetailPageBody({
+  productName: "여주 햅쌀",
+  highlights: "당일 도정",
+  mustInclude: "진공 포장",
+  imageCount: 3,
+});
+assert.equal(publicHi.highlights, "당일 도정");
+assert.equal(publicHi.imageCount, 3);
 
 if (prevMission === undefined) delete process.env.BRICLOG_MISSION;
 else process.env.BRICLOG_MISSION = prevMission;

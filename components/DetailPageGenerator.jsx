@@ -21,10 +21,16 @@ import {
 import {
   DETAIL_PAGE_MAX_PHOTOS,
   listDetailPagePhotoSlots,
+  normalizeDetailPagePhotos,
 } from "@/lib/product/detailPagePhotos";
 import { renderDetailPageBodyHtml, wrapSmartstoreHtml, packToPlainText } from "@/lib/product/detailPageHtml";
 import {
+  applyHeadlineSubhead,
+  listDetailPageFixTargets,
+} from "@/lib/product/detailPageRevise";
+import {
   CHANNEL_WORKSPACE_SHELL,
+  CHANNEL_MOBILE_CTA_FOOTER,
   channelFormPaneClass,
   channelFormScrollClass,
   channelResultPaneClass,
@@ -32,12 +38,12 @@ import {
 import { VISION_CTA_ACCENT, VISION_INPUT } from "@/lib/landing/vision2030Styles";
 
 async function filesToDataUrls(fileList) {
-  const files = Array.from(fileList || []).slice(0, DETAIL_PAGE_MAX_PHOTOS);
+  const files = Array.from(fileList || []);
   const out = [];
   for (const file of files) {
     if (!file.type.startsWith("image/")) continue;
     const url = await readAsDataUrl(file);
-    out.push(await shrinkDataUrl(url, 1200));
+    out.push({ src: await shrinkDataUrl(url, 1200), caption: "" });
   }
   return out;
 }
@@ -139,20 +145,66 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
   const [accent, setAccent] = useState(DETAIL_PAGE_DEFAULT_ACCENT);
   const [presetId, setPresetId] = useState("");
   const [photos, setPhotos] = useState([]);
+  const [highlights, setHighlights] = useState("");
+  const [mustInclude, setMustInclude] = useState("");
+  const [improveNote, setImproveNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [revising, setRevising] = useState("");
   const [error, setError] = useState("");
   const [pack, setPack] = useState(null);
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(true);
   const [copied, setCopied] = useState(false);
+  const photoInputRef = useRef(null);
 
   const product = CHANNEL_PRODUCTS.detailPage;
 
   const filledProduct = productName.trim() || activeBrand?.mainKeyword || "";
 
+  const photosNorm = useMemo(() => normalizeDetailPagePhotos(photos), [photos]);
+
   const previewHtml = useMemo(() => {
     if (!pack) return "";
-    return renderDetailPageBodyHtml(pack, photos);
-  }, [pack, photos]);
+    return renderDetailPageBodyHtml(pack, photosNorm);
+  }, [pack, photosNorm]);
+
+  const briefInput = useCallback(
+    () => ({
+      productName: filledProduct,
+      topic: filledProduct,
+      target,
+      searchIntent,
+      features,
+      highlights,
+      mustInclude,
+      pageLength,
+      accent,
+      presetId,
+      imageCount: photosNorm.length,
+      photoCaptions: photosNorm.map((p) => p.caption).filter(Boolean),
+      brandName: activeBrand?.brandName || "",
+      brandId: activeBrand?.id || "",
+      region: activeBrand?.region || "",
+      industry: activeBrand?.industry || "",
+      brandDescription: activeBrand?.brandDescription || "",
+      phone: activeBrand?.phone || "",
+      hours: activeBrand?.hours || "",
+      address: activeBrand?.address || "",
+      storeFeatures: activeBrand?.storeFeatures || "",
+    }),
+    [
+      filledProduct,
+      target,
+      searchIntent,
+      features,
+      highlights,
+      mustInclude,
+      pageLength,
+      accent,
+      presetId,
+      photosNorm,
+      activeBrand,
+    ]
+  );
 
   const photoSlots = useMemo(() => {
     const length = DETAIL_PAGE_LENGTHS[pageLength] || DETAIL_PAGE_LENGTHS.standard;
@@ -162,11 +214,32 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
   const handlePhotos = useCallback(async (event) => {
     try {
       const next = await filesToDataUrls(event.target.files);
-      setPhotos(next);
+      setPhotos((prev) =>
+        normalizeDetailPagePhotos([...prev, ...next]).slice(0, DETAIL_PAGE_MAX_PHOTOS)
+      );
+      if (event.target) event.target.value = "";
     } catch {
       onToast?.("사진을 읽지 못했습니다.");
     }
   }, [onToast]);
+
+  const handlePhotoDrop = useCallback(async (event) => {
+    event.preventDefault();
+    try {
+      const next = await filesToDataUrls(event.dataTransfer?.files);
+      setPhotos((prev) =>
+        normalizeDetailPagePhotos([...prev, ...next]).slice(0, DETAIL_PAGE_MAX_PHOTOS)
+      );
+    } catch {
+      onToast?.("사진을 읽지 못했습니다.");
+    }
+  }, [onToast]);
+
+  const updatePhotoCaption = useCallback((idx, caption) => {
+    setPhotos((prev) =>
+      prev.map((p, i) => (i === idx ? { ...p, caption: String(caption).slice(0, 80) } : p))
+    );
+  }, []);
 
   const movePhoto = useCallback((idx, dir) => {
     setPhotos((prev) => {
@@ -188,11 +261,13 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     setTarget(preset.target);
     setSearchIntent(preset.searchIntent || "");
     setFeatures(preset.features);
+    setHighlights(preset.highlights || "");
+    setMustInclude(preset.mustInclude || "");
     setAccent(preset.accent || DETAIL_PAGE_DEFAULT_ACCENT);
     setPageLength(preset.pageLength || "standard");
     setPack(null);
     setCopied(false);
-    setEditing(false);
+    setEditing(true);
   }, []);
 
   const startBlank = useCallback(() => {
@@ -201,12 +276,16 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     setTarget("");
     setSearchIntent("");
     setFeatures("");
+    setHighlights("");
+    setMustInclude("");
+    setImproveNote("");
     setAccent(DETAIL_PAGE_DEFAULT_ACCENT);
     setPageLength("standard");
     setPack(null);
     setError("");
     setCopied(false);
-    setEditing(false);
+    setEditing(true);
+    setPhotos([]);
   }, []);
 
   const runGenerate = useCallback(async () => {
@@ -218,69 +297,95 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     setBusy(true);
     setError("");
     try {
-      const payload = {
-        productName: name,
-        topic: name,
-        target,
-        searchIntent,
-        features,
-        pageLength,
-        accent,
-        presetId,
-        imageCount: photos.length,
-        brandName: activeBrand?.brandName || "",
-        brandId: activeBrand?.id || "",
-        region: activeBrand?.region || "",
-        industry: activeBrand?.industry || "",
-        brandDescription: activeBrand?.brandDescription || "",
-        phone: activeBrand?.phone || "",
-        hours: activeBrand?.hours || "",
-        address: activeBrand?.address || "",
-        storeFeatures: activeBrand?.storeFeatures || "",
-      };
       const data = await fetchWithAuth("/api/content/detail-page", {
         method: "POST",
         timeoutMs: 90_000,
-        body: JSON.stringify(payload),
+        body: JSON.stringify(briefInput()),
       });
       if (!data?.ok || !data.pack) {
         throw new Error(data?.userMessage || "상세페이지를 만들지 못했습니다.");
       }
       setPack(data.pack);
-      setEditing(false);
+      setEditing(true);
       setCopied(false);
+      setImproveNote("");
     } catch (err) {
       setError(err.message || "상세페이지를 만들지 못했습니다.");
     } finally {
       setBusy(false);
     }
-  }, [
-    filledProduct,
-    target,
-    searchIntent,
-    features,
-    presetId,
-    pageLength,
-    accent,
-    photos.length,
-    activeBrand,
-  ]);
+  }, [filledProduct, briefInput]);
+
+  const runCatchFixes = useCallback(async () => {
+    if (!pack) return;
+    setRevising("catch");
+    setError("");
+    try {
+      const data = await fetchWithAuth("/api/content/detail-page", {
+        method: "POST",
+        timeoutMs: 60_000,
+        body: JSON.stringify({ ...briefInput(), action: "catch", pack }),
+      });
+      if (!data?.ok || !data.pack) {
+        throw new Error(data?.userMessage || "수정을 잡지 못했습니다.");
+      }
+      setPack(data.pack);
+      setEditing(true);
+      onToast?.("기준에 안 맞는 문장을 정리했습니다.");
+    } catch (err) {
+      setError(err.message || "수정을 잡지 못했습니다.");
+    } finally {
+      setRevising("");
+    }
+  }, [pack, briefInput, onToast]);
+
+  const runImprove = useCallback(async () => {
+    if (!pack) return;
+    if (!improveNote.trim()) {
+      setError("고칠 방향을 한 줄 적어 주세요.");
+      return;
+    }
+    setRevising("improve");
+    setError("");
+    try {
+      const data = await fetchWithAuth("/api/content/detail-page", {
+        method: "POST",
+        timeoutMs: 90_000,
+        body: JSON.stringify({
+          ...briefInput(),
+          action: "improve",
+          pack,
+          improveNote,
+        }),
+      });
+      if (!data?.ok || !data.pack) {
+        throw new Error(data?.userMessage || "개선하지 못했습니다.");
+      }
+      setPack(data.pack);
+      setEditing(true);
+      onToast?.("지시대로 다듬었습니다. 미리보기에서 확인해 주세요.");
+    } catch (err) {
+      setError(err.message || "개선하지 못했습니다.");
+    } finally {
+      setRevising("");
+    }
+  }, [pack, improveNote, briefInput, onToast]);
 
   const copyHtml = useCallback(async () => {
     if (!pack) return;
-    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photos));
+    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm));
     await navigator.clipboard.writeText(html);
     setCopied(true);
     onCopy?.(html);
     onToast?.("HTML을 복사했습니다. 아래 순서로 붙여넣으세요.");
-  }, [pack, photos, onCopy, onToast]);
+  }, [pack, photosNorm, onCopy, onToast]);
 
   const downloadHtml = useCallback(() => {
     if (!pack) return;
-    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photos));
+    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm));
     const slug = (pack.productName || "detail").slice(0, 24);
     downloadText(`${slug}-상세.html`, html, "text/html;charset=utf-8");
-  }, [pack, photos]);
+  }, [pack, photosNorm]);
 
   const downloadTxt = useCallback(() => {
     if (!pack) return;
@@ -307,6 +412,17 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
         brandName: prev.brandName || activeBrand?.brandName || "",
       });
     });
+  }, [activeBrand]);
+
+  const updateHeadline = useCallback((field, val) => {
+    setPack((prev) =>
+      applyHeadlineSubhead(
+        prev,
+        field === "headline" ? val : prev?.headline,
+        field === "subhead" ? val : prev?.subhead,
+        { brandName: prev?.brandName || activeBrand?.brandName || "" }
+      )
+    );
   }, [activeBrand]);
 
   const removeSection = useCallback((idx) => {
@@ -435,55 +551,91 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             />
           </label>
           <label className="mt-4 block text-[13px] font-medium">
-            상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장, 위부터 배치)
-            <input
-              className="mt-2 block w-full text-[13px]"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handlePhotos}
+            강조 문구 (줄마다 하나)
+            <textarea
+              className={`${VISION_INPUT} min-h-[88px] py-3`}
+              value={highlights}
+              onChange={(e) => setHighlights(e.target.value)}
+              placeholder={"여주에서 당일 도정\n진공 포장 그대로 집까지"}
             />
           </label>
-          {photos.length > 0 ? (
+          <label className="mt-4 block text-[13px] font-medium">
+            꼭 넣을 내용
+            <textarea
+              className={`${VISION_INPUT} min-h-[88px] py-3`}
+              value={mustInclude}
+              onChange={(e) => setMustInclude(e.target.value)}
+              placeholder="반드시 넣을 문장·안내. 없는 사실은 쓰지 않습니다."
+            />
+          </label>
+          <div className="mt-4">
+            <p className="text-[13px] font-medium">
+              상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장, 위부터 배치)
+            </p>
+            <label
+              className="mt-2 flex min-h-[88px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--vision-line)] bg-white px-3 py-4 text-center text-[13px] text-[var(--vision-muted)]"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handlePhotoDrop}
+            >
+              사진을 끌어다 놓거나 눌러서 첨부
+              <input
+                ref={photoInputRef}
+                className="sr-only"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotos}
+              />
+            </label>
+          </div>
+          {photosNorm.length > 0 ? (
             <ul className="mt-3 space-y-2">
-              {photos.map((src, i) => (
-                <li key={`${i}-${src.slice(-12)}`} className="flex items-center gap-2">
-                  <img src={src} alt="" className="h-14 w-14 rounded-lg object-cover" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[12px] font-medium">
-                      {i + 1}. {photoSlots[i]?.label || "남는 사진"}
-                    </p>
-                    <p className="text-[11px] text-[var(--vision-muted)]">
-                      {photoSlots[i]
-                        ? `${DETAIL_PAGE_SECTION_LABELS[photoSlots[i].type] || photoSlots[i].type} 칸`
-                        : "맨 아래 모아 붙임"}
-                    </p>
+              {photosNorm.map((photo, i) => (
+                <li key={`${i}-${photo.src.slice(-18)}`} className="rounded-2xl border border-[var(--vision-line)] bg-white p-2">
+                  <div className="flex items-center gap-2">
+                    <img src={photo.src} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[12px] font-medium">
+                        {i + 1}. {photoSlots[i]?.label || "남는 사진"}
+                      </p>
+                      <p className="text-[11px] text-[var(--vision-muted)]">
+                        {photoSlots[i]
+                          ? `${DETAIL_PAGE_SECTION_LABELS[photoSlots[i].type] || photoSlots[i].type} 칸`
+                          : "맨 아래 모아 붙임"}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                        onClick={() => movePhoto(i, -1)}
+                        disabled={i === 0}
+                      >
+                        위
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                        onClick={() => movePhoto(i, 1)}
+                        disabled={i === photosNorm.length - 1}
+                      >
+                        아래
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                        onClick={() => removePhoto(i)}
+                      >
+                        빼기
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                      onClick={() => movePhoto(i, -1)}
-                      disabled={i === 0}
-                    >
-                      위
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                      onClick={() => movePhoto(i, 1)}
-                      disabled={i === photos.length - 1}
-                    >
-                      아래
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                      onClick={() => removePhoto(i)}
-                    >
-                      빼기
-                    </button>
-                  </div>
+                  <input
+                    className={`${VISION_INPUT} mt-2 min-h-[42px] text-[13px]`}
+                    value={photo.caption}
+                    onChange={(e) => updatePhotoCaption(i, e.target.value)}
+                    placeholder="사진 아래 넣을 한 줄 (선택)"
+                  />
                 </li>
               ))}
             </ul>
@@ -520,17 +672,18 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             />
           </label>
 
-          {error ? (
+          {error && !pack ? (
             <p className="mt-4 text-[13px] text-red-700">{error}</p>
           ) : null}
-
+        </div>
+        <div className={`${CHANNEL_MOBILE_CTA_FOOTER} md:border-t md:bg-white md:px-5 md:py-4`}>
           <button
             type="button"
-            className={`${VISION_CTA_ACCENT} mt-5`}
+            className={VISION_CTA_ACCENT}
             disabled={busy}
             onClick={runGenerate}
           >
-            {busy ? "만드는 중…" : "상세페이지 만들기"}
+            {busy ? "만드는 중…" : pack ? "다시 만들기" : "상세페이지 만들기"}
           </button>
         </div>
       </aside>
@@ -540,7 +693,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
           <div className="flex h-full min-h-[320px] flex-col items-center justify-center text-center">
             <Icon name="bag" className="h-8 w-8 text-[var(--vision-muted)]" />
             <p className="mt-3 text-[15px] text-[var(--vision-muted)]">
-              상품명과 특징만 있으면 됩니다. 사진은 선택입니다.
+              사진·강조 문구를 넣고 만들면, 나온 글을 바로 고칠 수 있습니다.
             </p>
           </div>
         ) : null}
@@ -605,6 +758,9 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               {" · "}
               {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px · Pretendard
             </p>
+            {error ? (
+              <p className="mb-3 text-[13px] text-red-700">{error}</p>
+            ) : null}
             {pack._meta?.standard ? (
               <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
                 {DETAIL_PAGE_STANDARD_RULES.map((rule) => {
@@ -619,9 +775,56 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
                 })}
               </ul>
             ) : null}
+            {listDetailPageFixTargets(pack).length > 0 ? (
+              <div className="mb-4 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3">
+                <p className="text-[13px] font-medium">기준에서 빠진 수정</p>
+                <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
+                  {listDetailPageFixTargets(pack)
+                    .map((r) => r.fail)
+                    .join(" · ")}
+                </p>
+                <button
+                  type="button"
+                  className="mt-3 rounded-full border border-[var(--vision-ink)] bg-[var(--vision-ink)] px-4 py-2 text-[13px] font-medium text-white disabled:opacity-50"
+                  disabled={!!revising}
+                  onClick={runCatchFixes}
+                >
+                  {revising === "catch" ? "정리 중…" : "이 실패 잡기"}
+                </button>
+              </div>
+            ) : null}
+            <div className="mb-5 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3">
+              <p className="text-[13px] font-medium">이렇게 고쳐 주세요</p>
+              <textarea
+                className={`${VISION_INPUT} min-h-[72px] py-3`}
+                value={improveNote}
+                onChange={(e) => setImproveNote(e.target.value)}
+                placeholder="예: 맨 위 제목을 더 짧게, 쇼룸에서 누워 보는 장면만 강조"
+              />
+              <button
+                type="button"
+                className="mt-3 rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium disabled:opacity-50"
+                disabled={!!revising}
+                onClick={runImprove}
+              >
+                {revising === "improve" ? "다듬는 중…" : "지시대로 개선"}
+              </button>
+            </div>
             {editing ? (
               <div className="mb-5 space-y-3">
                 <p className="text-[13px] font-medium">섹션 문장 고치기</p>
+                <EditableField
+                  label="큰 제목"
+                  value={pack.headline}
+                  rows={2}
+                  onChange={(v) => updateHeadline("headline", v)}
+                />
+                <EditableField
+                  label="한 줄 설명"
+                  value={pack.subhead}
+                  rows={2}
+                  onChange={(v) => updateHeadline("subhead", v)}
+                />
                 {(pack.sections || []).map((section, idx) => (
                   <div key={`${section.type}-${idx}`} className="space-y-2">
                     <EditableField
@@ -668,7 +871,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             ) : null}
             <p className="mb-2 text-[12px] text-[var(--vision-muted)]">
               스마트스토어 상세 폭 {DETAIL_PAGE_WIDTH}px
-              {photos.length ? ` · 사진 ${photos.length}장 배치` : " · 사진 없음"}
+              {photosNorm.length ? ` · 사진 ${photosNorm.length}장 배치` : " · 사진 없음"}
             </p>
             <div
               ref={previewRef}

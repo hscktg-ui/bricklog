@@ -11,6 +11,10 @@ import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { prepareBrandFirstInput } from "@/lib/memory/brandFirstPrewriteGate";
 import { generateDetailPagePack } from "@/lib/product/detailPageEngine";
 import {
+  catchDetailPageFixes,
+  improveDetailPagePack,
+} from "@/lib/product/detailPageRevise";
+import {
   renderDetailPageBodyHtml,
   wrapSmartstoreHtml,
   packToPlainText,
@@ -21,6 +25,21 @@ export const maxDuration = 90;
 
 const MAX_PER_MIN =
   Number(process.env.BRICLOG_CHANNEL_RATE_LIMIT_PER_MIN) || 10;
+
+function jsonPack(pack, extra = {}) {
+  const html = renderDetailPageBodyHtml(pack, []);
+  return {
+    ok: true,
+    channel: "detailPage",
+    pack,
+    html,
+    documentHtml: wrapSmartstoreHtml(html),
+    plainText: packToPlainText(pack),
+    standard: pack._meta?.standard || null,
+    meta: pack._meta,
+    ...extra,
+  };
+}
 
 export async function POST(request) {
   const ip = getClientIp(request);
@@ -62,6 +81,7 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
+    const action = String(body.action || "generate");
     const prepared = await prepareBrandFirstInput({
       supabase: auth.supabase,
       userId: auth.user.id,
@@ -72,10 +92,43 @@ export async function POST(request) {
     });
     const input = prepared.ok ? prepared.input : { ...body, topic: body.productName };
 
+    if (action === "catch" && body.pack) {
+      const pack = catchDetailPageFixes(body.pack, input);
+      const usageAfter = await getUsageSummary(
+        auth.supabase,
+        auth.user.id,
+        auth.user.email
+      );
+      return NextResponse.json(jsonPack(pack, { mode: "catch", usage: usageAfter }));
+    }
+
+    if (action === "improve" && body.pack) {
+      const result = await improveDetailPagePack(
+        body.pack,
+        input,
+        body.improveNote || body.note || ""
+      );
+      if (!result.ok) {
+        return NextResponse.json(
+          { ok: false, userMessage: result.userMessage },
+          { status: 400 }
+        );
+      }
+      if (result.mode === "llm-edited") {
+        await incrementContentUsage(auth.supabase, auth.user.id);
+      }
+      const usageAfter = await getUsageSummary(
+        auth.supabase,
+        auth.user.id,
+        auth.user.email
+      );
+      return NextResponse.json(
+        jsonPack(result.pack, { mode: result.mode, usage: usageAfter })
+      );
+    }
+
     const result = await generateDetailPagePack(input);
     const pack = result.pack;
-    const html = renderDetailPageBodyHtml(pack, []);
-    const documentHtml = wrapSmartstoreHtml(html);
 
     if (pack && result.mode === "llm") {
       await incrementContentUsage(auth.supabase, auth.user.id);
@@ -87,19 +140,13 @@ export async function POST(request) {
       auth.user.email
     );
 
-    return NextResponse.json({
-      ok: true,
-      channel: "detailPage",
-      mode: result.mode,
-      pack,
-      html,
-      documentHtml,
-      plainText: packToPlainText(pack),
-      standard: pack._meta?.standard || null,
-      meta: pack._meta,
-      usageWarning: usageAfter.usageWarning,
-      usage: usageAfter,
-    });
+    return NextResponse.json(
+      jsonPack(pack, {
+        mode: result.mode,
+        usageWarning: usageAfter.usageWarning,
+        usage: usageAfter,
+      })
+    );
   } catch (err) {
     console.error("[api/content/detail-page]", err);
     await logError({
