@@ -1,5 +1,5 @@
 /**
- * 골라보다 카테고리 글꼴 — 한글+영문 페어가 분위기별로 갈린다
+ * 브릭로그 상세 카테고리 글꼴 — 한글+영문 페어가 분위기별로 갈린다
  */
 import assert from "node:assert/strict";
 import {

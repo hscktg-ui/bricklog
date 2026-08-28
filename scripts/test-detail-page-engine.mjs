@@ -1,5 +1,5 @@
 /**
- * 골라보다 상세페이지 엔진 — 860px HTML 회귀
+ * 브릭로그 상세 엔진 — 860px HTML 회귀
  */
 import assert from "node:assert/strict";
 import {
@@ -62,10 +62,10 @@ assert.ok(
     input,
   }).includes("Fraunces")
 );
-assert.equal(DETAIL_PAGE_PRODUCT.name, "골라보다");
-assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
-assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("골라보다"));
-assert.equal(DETAIL_PAGE_PRODUCT.eyebrow, "골라보다");
+assert.equal(DETAIL_PAGE_PRODUCT.name, "브릭로그 상세");
+assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), true);
+assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("브릭로그"));
+assert.equal(DETAIL_PAGE_PRODUCT.eyebrow, "브릭로그");
 assert.ok(DETAIL_PAGE_PRODUCT.headline.includes("글이 아니라"));
 assert.ok(DETAIL_PAGE_PRODUCT.versusUs.includes("붙일 화면"));
 assert.equal(DETAIL_PAGE_PRODUCT.standardOk.includes("브릭로그"), false);
@@ -121,6 +121,7 @@ assert.ok(html.includes('data-layout="cta-bar"'));
 
 const doc = wrapSmartstoreHtml(html, pack);
 assert.ok(doc.startsWith("<!DOCTYPE html>"));
+assert.ok(doc.includes("<title>브릭로그 상세</title>"));
 assert.ok(doc.includes("gollaboda-detail-page"));
 assert.ok(doc.includes("fonts.googleapis.com"));
 assert.ok(doc.includes("Nanum+Myeongjo"));
@@ -236,9 +237,9 @@ assert.ok(shortHtml.includes('data-photo-gallery="1"'), "leftover photos go to g
 const openRice = DETAIL_PAGE_OPEN_EXAMPLES.find((p) => p.id === "open-rice");
 assert.ok(openRice);
 assert.equal(getDetailPageExample("open-rice").productName, openRice.productName);
-assert.ok(formatDetailPageDesignBrief().includes("골라보다"));
+assert.ok(formatDetailPageDesignBrief().includes("브릭로그 상세"));
 assert.equal(formatDetailPageDesignBrief().includes("블로그 칼럼이 아니다"), true);
-assert.equal(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("골라보다"), true);
+assert.equal(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("브릭로그 상세"), true);
 
 const publicBody = sanitizePublicDetailPageBody({
   productName: "여주 햅쌀 10kg",

@@ -35,7 +35,8 @@ assert("insta loading mentions marketer", instaSteps.some((s) => /마케터/.tes
 assert("channel products wired", CHANNEL_PRODUCTS.blog.voiceRole === "칼럼니스트");
 assert("place products wired", CHANNEL_PRODUCTS.place.voiceRole === "브랜드 담당자");
 assert("detail products wired", CHANNEL_PRODUCTS.detailPage.voiceRole === "상세 디자인");
-assert("detail product name", CHANNEL_PRODUCTS.detailPage.menuLabel === "골라보다");
+assert("detail product name", CHANNEL_PRODUCTS.detailPage.menuLabel === "상세");
+assert("detail product header", CHANNEL_PRODUCTS.detailPage.headerTitle === "브릭로그 상세");
 
 const badge = resolveDeliveryTrustBadge(
   { sections: [{ body: "test" }], _meta: { publishReady: true, contentQualityDelivered: true } },

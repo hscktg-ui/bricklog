@@ -43,7 +43,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 측정: `npm run test:quality-trust-kpi`
 - 90점 미만·placeholder·업종 오염 → 사용자 노출 금지 (`lib/product/briclogResetQualityGate.js`)
 
-### 골라보다 성공 기준 (상세페이지)
+### 브릭로그 상세 성공 기준
 
 `lib/product/detailPageSuccessStandard.js` — 「카피를 받았다」❌ → **「고르는 화면이 생겼다」** ✅
 

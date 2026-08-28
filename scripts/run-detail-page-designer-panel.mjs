@@ -1,5 +1,5 @@
 /**
- * 골라보다 결과물 — 디자이너 30인 평가 + 860px 스크린샷
+ * 브릭로그 상세 결과물 — 디자이너 30인 평가 + 860px 스크린샷
  * Run: npm run run:detail-page-designer-panel
  */
 import { mkdirSync, writeFileSync, readFileSync } from "fs";
