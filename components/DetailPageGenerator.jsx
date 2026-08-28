@@ -10,7 +10,6 @@ import {
   DETAIL_PAGE_WIDTH,
   DETAIL_PAGE_DEFAULT_ACCENT,
   DETAIL_PAGE_SECTION_LABELS,
-  DETAIL_PAGE_PASTE_STEPS,
 } from "@/lib/product/detailPageCatalog";
 import { DETAIL_PAGE_OPEN_EXAMPLES } from "@/lib/product/detailPageCompanyPresets";
 import {
@@ -22,7 +21,8 @@ import {
   listDetailPagePhotoSlots,
   normalizeDetailPagePhotos,
 } from "@/lib/product/detailPagePhotos";
-import { renderDetailPageBodyHtml, wrapSmartstoreHtml, packToPlainText } from "@/lib/product/detailPageHtml";
+import { DETAIL_PAGE_MALLS } from "@/lib/product/detailPageCompeteWins";
+import { renderDetailPageBodyHtml, wrapMallHtml, packToPlainText } from "@/lib/product/detailPageHtml";
 import {
   applyHeadlineSubhead,
   listDetailPageFixTargets,
@@ -171,7 +171,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [error, setError] = useState("");
   const [pack, setPack] = useState(null);
   const [editing, setEditing] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedMall, setCopiedMall] = useState("");
   const photoInputRef = useRef(null);
 
   const product = CHANNEL_PRODUCTS.detailPage;
@@ -402,18 +402,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     }
   }, [pack, improveNote, briefInput, onToast]);
 
-  const copyHtml = useCallback(async () => {
+  const copyForMall = useCallback(async (mallId) => {
     if (!pack) return;
-    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm), pack);
+    const mall = DETAIL_PAGE_MALLS.find((m) => m.id === mallId) || DETAIL_PAGE_MALLS[0];
+    const html = wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, mall.id);
     await navigator.clipboard.writeText(html);
-    setCopied(true);
+    setCopiedMall(mall.id);
     onCopy?.(html);
-    onToast?.("HTML을 복사했습니다. 아래 순서로 붙여넣으세요.");
+    onToast?.(`${mall.label}용 HTML을 복사했습니다. 아래 순서로 붙여넣으세요.`);
   }, [pack, photosNorm, onCopy, onToast]);
 
   const downloadHtml = useCallback(() => {
     if (!pack) return;
-    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm), pack);
+    const html = wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, "smartstore");
     const slug = (pack.productName || "detail").slice(0, 24);
     downloadText(`${slug}-상세.html`, html, "text/html;charset=utf-8");
   }, [pack, photosNorm]);
@@ -551,8 +552,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
             </label>
             <div>
               <p className="text-[13px] font-medium">
-                상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장, 위부터 배치)
+                상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장)
               </p>
+              <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
+                모델컷을 그리지 않습니다. 올린 파일을 이 컷 순서로 연출합니다.
+              </p>
+              <ol className="mt-2 grid gap-1 text-[12px] text-[var(--vision-muted)]">
+                {photoSlots.slice(0, 3).map((slot) => (
+                  <li key={slot.type}>
+                    {slot.n} {slot.shot}
+                    {slot.hint ? ` · ${slot.hint}` : ""}
+                  </li>
+                ))}
+              </ol>
               <label
                 className="mt-2 flex min-h-[88px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--vision-line)] bg-white px-3 py-4 text-center text-[13px] text-[var(--vision-muted)]"
                 onDragOver={(e) => e.preventDefault()}
@@ -571,17 +583,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
             </div>
             {photosNorm.length > 0 ? (
               <ul className="space-y-2">
-                {photosNorm.map((photo, i) => (
+                {photosNorm.map((photo, i) => {
+                  const slot = photoSlots[i];
+                  return (
                   <li key={`${i}-${photo.src.slice(-18)}`} className="rounded-2xl border border-[var(--vision-line)] bg-white p-2">
                     <div className="flex items-center gap-2">
                       <img src={photo.src} alt="" className="h-14 w-14 rounded-lg object-cover" />
                       <div className="min-w-0 flex-1">
                         <p className="text-[12px] font-medium">
-                          {i + 1}. {photoSlots[i]?.label || "남는 사진"}
+                          {slot ? `${slot.n}. ${slot.shot}` : "남는 사진"}
                         </p>
                         <p className="text-[11px] text-[var(--vision-muted)]">
-                          {photoSlots[i]
-                            ? `${DETAIL_PAGE_SECTION_LABELS[photoSlots[i].type] || photoSlots[i].type} 칸`
+                          {slot
+                            ? `${DETAIL_PAGE_SECTION_LABELS[slot.type] || slot.type} 칸`
                             : "맨 아래 모아 붙임"}
                         </p>
                       </div>
@@ -618,7 +632,8 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                       placeholder="사진 아래 넣을 한 줄 (선택)"
                     />
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : null}
           </FieldGroup>
@@ -762,9 +777,20 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         {pack ? (
           <div>
             <div className="mb-4 flex flex-wrap gap-2">
-              <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={copyHtml}>
-                HTML 복사
-              </button>
+              {DETAIL_PAGE_MALLS.map((mall) => (
+                <button
+                  key={mall.id}
+                  type="button"
+                  className={`rounded-full border px-4 py-2 text-[13px] font-medium ${
+                    copiedMall === mall.id
+                      ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
+                      : "border-[var(--vision-line)] bg-white"
+                  }`}
+                  onClick={() => copyForMall(mall.id)}
+                >
+                  {mall.copyLabel}
+                </button>
+              ))}
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadHtml}>
                 HTML 저장
               </button>
@@ -810,30 +836,35 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               <p className="mb-3 text-[13px] text-red-700">{error}</p>
             ) : null}
             <p className="mb-2 text-[12px] text-[var(--vision-muted)]">
-              스마트스토어 상세 폭 {DETAIL_PAGE_WIDTH}px
-              {photosNorm.length ? ` · 사진 ${photosNorm.length}장 배치` : " · 사진 없음"}
+              스마트스토어·쿠팡 상세 폭 {DETAIL_PAGE_WIDTH}px
+              {photosNorm.length ? ` · 사진 ${photosNorm.length}장 연출` : " · 사진 칸만 잡혀 있음"}
             </p>
             <div
               ref={previewRef}
               className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4"
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
-            <ol
-              className={`mb-4 rounded-2xl border px-4 py-3 text-[13px] leading-relaxed ${
-                copied
-                  ? "border-[var(--vision-ink)] bg-white"
-                  : "border-[var(--vision-line)] bg-white"
-              }`}
-            >
-              <li className="mb-1 text-[12px] font-medium text-[var(--vision-muted)]">
-                {copied ? "복사됨 · 붙여넣기" : "스토어에 붙이는 순서"}
-              </li>
-              {DETAIL_PAGE_PASTE_STEPS.map((step, i) => (
-                <li key={step}>
-                  {i + 1}. {step}
-                </li>
+            <div className="mb-4 grid gap-3 sm:grid-cols-2">
+              {DETAIL_PAGE_MALLS.map((mall) => (
+                <ol
+                  key={mall.id}
+                  className={`rounded-2xl border px-4 py-3 text-[13px] leading-relaxed ${
+                    copiedMall === mall.id
+                      ? "border-[var(--vision-ink)] bg-white"
+                      : "border-[var(--vision-line)] bg-white"
+                  }`}
+                >
+                  <li className="mb-1 text-[12px] font-medium text-[var(--vision-muted)]">
+                    {copiedMall === mall.id ? `복사됨 · ${mall.label}` : mall.label}
+                  </li>
+                  {mall.steps.map((step, i) => (
+                    <li key={step}>
+                      {i + 1}. {step}
+                    </li>
+                  ))}
+                </ol>
               ))}
-            </ol>
+            </div>
             {successView ? (
               <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
                 {successView.phases.map((phase) => (

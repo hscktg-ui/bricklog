@@ -21,6 +21,9 @@ assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 80);
 assert.equal(DETAIL_PAGE_SUCCESS_DOCTRINE.pass, "고르는 화면이 생겼다");
 assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
 assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("올린 사진 연출"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("스마트스토어·쿠팡 복사"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("AI 이미지 생성"));
 assert.equal(DETAIL_PAGE_PRODUCT.versusGpt.includes("글"), true);
 
 const pack = buildDetailPageFallbackPack({

@@ -50,6 +50,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 엔진 95점(글자·구성)은 성공이 아님. 기획30 · 조사30 · 설명20 · 글10 · 검수10.
 검수는 디자이너 30인 패널(`lib/qa/detailPageDesignerPanel30.js`). 하드: 사실·약한 CTA · 문장 한 번 · 패딩 금지 · 패널 평균 70.
 국내 1위는 슬로건이 아니라 이 출고 기준(`DETAIL_PAGE_KOREA_FIRST`). 챗봇 글·대행사 롱페이지·가짜 후기를 이긴다.
+지는 축 3개(연출컷·예쁜 롱페이지·멀티몰)는 AI 생성·9몰 API가 아니라 올린 사진 연출·첫눈 화면·스마트스토어·쿠팡 복사로 이긴다 (`lib/product/detailPageCompeteWins.js`).
 
 측정: `npm run test:detail-page-success-standard` · `npm run test:detail-page-type-pairing`
 
