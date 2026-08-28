@@ -73,6 +73,11 @@ for (const example of DETAIL_PAGE_OPEN_EXAMPLES) {
   const html = renderDetailPageBodyHtml(sample.pack, photos);
   const documentHtml = wrapMallHtml(html, sample.pack, "smartstore");
   const slug = example.id;
+  writeFileSync(
+    join(SAMPLE_DIR, `${slug.replace(/^open-/, "ranking-")}.html`),
+    wrapMallHtml(sample.html, sample.pack, "smartstore"),
+    "utf8"
+  );
   for (const file of readdirSync(SAMPLE_DIR)) {
     if (file.startsWith(`${slug}-img-`) && file.endsWith(".png")) {
       unlinkSync(join(SAMPLE_DIR, file));

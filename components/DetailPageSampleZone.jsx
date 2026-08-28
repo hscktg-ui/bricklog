@@ -80,7 +80,7 @@ export default function DetailPageSampleZone({
       <div className={`mt-6 ${VISION_PANEL}`}>
         <LandingPanelHeader title={`${current.brandName} · ${current.productName}`} />
         <p className="border-b border-[var(--vision-line)] px-4 py-3 text-[13px] leading-relaxed text-[var(--vision-muted)] sm:px-5">
-          상세는 섹션 이미지입니다. 상세 디자이너가 이 860 화면을 봅니다.
+          네이버 쇼핑 랭킹 상세와 같은 순서입니다. 리스트 샘플처럼 섹션 이미지를 붙입니다.
         </p>
         <div
           ref={frameRef}
@@ -108,7 +108,7 @@ export default function DetailPageSampleZone({
       </div>
 
       <p className="mt-3 text-center text-[13px] text-[var(--vision-muted)]">
-        스마트스토어·쿠팡에 위에서부터 올리는 860 이미지.
+        스마트스토어·쿠팡에 위에서부터 올리는 860 이미지. 기준은 네이버 쇼핑 랭킹 상세와 리스트 샘플입니다.
       </p>
     </div>
   );

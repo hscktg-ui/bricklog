@@ -22,7 +22,9 @@ assert.equal(rice.id, "open-rice");
 assert.ok(rice.html.includes('data-visual="first-glance"'));
 assert.ok(rice.html.includes("data-photo-direction"));
 assert.ok(rice.documentHtml.includes('data-mall="smartstore"'));
-assert.ok(rice.documentHtml.includes('data-deliverable="image-stack"'));
+assert.ok(rice.documentHtml.includes('data-ranking="naver-shop-rank"'));
+assert.ok(rice.documentHtml.includes('data-list-sample="creazy"'));
+assert.ok(rice.html.includes('data-layout="points-5"'));
 assert.ok(rice.documentHtml.includes("<img "));
 assert.equal(rice.documentHtml.includes('data-layout="hero-stack"'), false);
 assert.ok(rice.html.includes("포장 앞면"));
@@ -56,8 +58,8 @@ assert.ok(existsSync("public/detail-sample/ranking-rice.html"), "missing ranking
 assert.ok(existsSync("public/detail-sample/ranking-beans.html"), "missing ranking-beans.html");
 assert.ok(zone.includes("DETAIL_PAGE_OPEN_EXAMPLES"));
 assert.ok(zone.includes("open-rice") || zone.includes("label"));
-assert.ok(zone.includes("섹션 이미지") || zone.includes("상세는 이미지"));
-assert.ok(zone.includes("상세 디자이너"));
+assert.ok(zone.includes("네이버 쇼핑 랭킹"));
+assert.ok(zone.includes("리스트 샘플"));
 assert.equal(zone.includes("AI 이미지는 없습니다"), false);
 for (const file of [
   "public/detail-sample/open-rice-hero.png",

@@ -53,8 +53,10 @@ assert.equal(
   false
 );
 assert.ok(rice.sections.find((s) => s.type === "hero").body.includes("가늠이 안 된다"));
+assert.ok(rice.sections.find((s) => s.type === "explain").kicker.includes("핵심 소구점"));
+assert.ok(rice.sections.find((s) => s.type === "explain").bullets.some((b) => String(b).includes("산지")));
 assert.equal(
-  rice.sections.find((s) => s.type === "explain").rows.some((r) => String(r[1]).includes("가늠이 안 된다")),
+  JSON.stringify(rice.sections.find((s) => s.type === "explain")).includes("가늠이 안 된다"),
   false
 );
 assert.ok(rice.sections.find((s) => s.type === "usp").kicker.includes("소재"));
@@ -74,7 +76,8 @@ assert.ok(riceHtml.includes("산지"));
 assert.ok(riceHtml.includes("원재료"));
 assert.ok(riceHtml.includes("햅쌀로 표기"));
 assert.ok(riceHtml.includes('data-layout="usp-rows"'));
-assert.ok(riceHtml.includes('data-layout="reason-band"'));
+assert.ok(riceHtml.includes('data-layout="points-5"'));
+assert.ok(riceHtml.includes("핵심 소구점"));
 
 const beansInput = normalizeDetailPageInput({
   productName: "하우스 블렌드 원두 200g",
