@@ -19,20 +19,31 @@ export default function PublicDetailPageClient() {
   const [toast, setToast] = useState({ visible: false, message: "", type: "info" });
 
   useEffect(() => {
+    let alive = true;
+    let subscription = null;
+
     if (!isSupabaseConfigured) {
       setUser(null);
       return undefined;
     }
-    let alive = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (alive) setUser(data.session?.user ?? null);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (alive) setUser(data.session?.user ?? null);
+      })
+      .catch(() => {
+        if (alive) setUser(null);
+      });
+
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       if (alive) setUser(session?.user ?? null);
     });
+    subscription = data?.subscription ?? null;
+
     return () => {
       alive = false;
-      sub.subscription.unsubscribe();
+      subscription?.unsubscribe?.();
     };
   }, []);
 
