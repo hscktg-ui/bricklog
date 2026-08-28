@@ -49,11 +49,11 @@ import {
 } from "@/lib/landing/vision2030Styles";
 
 const NAV_LINKS = [
-  { id: "landing-detail-sample", label: "상세", show: "hidden sm:inline-flex" },
   { id: "public-brand-test", label: "샘플 체험", show: "hidden sm:inline-flex" },
   { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
   { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
   { id: "pricing", label: "요금", show: "hidden lg:inline-flex" },
+  { id: "landing-detail-sample", label: "상세", show: "hidden sm:inline-flex" },
 ];
 
 export default function LandingPage({ onAuthOpen, onStart }) {
@@ -196,7 +196,6 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onTest={withLandingCta(scrollToPublicTest)}
             onLogin={() => openLogin("landing_hero")}
           />
-          <PublicDetailPageInvite />
           <PublicBrandTestSection
             onSignup={(mode) => onAuthOpen(mode || "signup")}
             onPreviewActiveChange={setPublicTestPreviewActive}
@@ -207,6 +206,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           />
           <LandingFaqSection />
           <PricingSection onStart={handleStart} />
+          <PublicDetailPageInvite />
 
           <section
             className={`${VISION_SECTION_DARK} px-5 py-20 text-center md:px-8 md:py-28 briclog-vision-footer-cta`}

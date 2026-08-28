@@ -103,9 +103,14 @@ assert.ok(landing.includes("landing-detail-sample"));
 assert.equal(landing.includes("WhyBriclog"), false);
 assert.equal(landing.includes("DemoFlow"), false);
 assert.ok(
-  landing.indexOf("<PublicDetailPageInvite") <
-    landing.indexOf("<PublicBrandTestSection"),
-  "detail sample zone comes before public test"
+  landing.indexOf("<PricingSection") <
+    landing.indexOf("<PublicDetailPageInvite"),
+  "detail sample zone comes after pricing, at the bottom"
+);
+assert.ok(
+  landing.indexOf("<DemoPreviewSection") <
+    landing.indexOf("<PublicDetailPageInvite"),
+  "detail sample zone comes after operating-copy preview"
 );
 const hero = readFileSync("components/landing/HeroSection.jsx", "utf8");
 assert.equal(hero.includes("오늘의 한 줄"), false);
