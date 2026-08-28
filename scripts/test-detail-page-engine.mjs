@@ -53,7 +53,15 @@ assert.equal(n.searchIntent.includes("밥맛"), true);
 assert.equal(n.contentChannel, "detailPage");
 assert.equal(n.detailPageDesign?.width, DETAIL_PAGE_DESIGN_CONTEXT.width);
 assert.ok(formatDetailPageDesignBrief().includes("860"));
-assert.ok(gptDetailPageSystemPrompt({ brandName: "여주미곡", sectionIds: ["hero"] }).includes("Pretendard"));
+assert.ok(formatDetailPageDesignBrief(input).includes("나눔명조"));
+assert.ok(formatDetailPageDesignBrief(input).includes("Fraunces"));
+assert.ok(
+  gptDetailPageSystemPrompt({
+    brandName: "여주미곡",
+    sectionIds: ["hero"],
+    input,
+  }).includes("Fraunces")
+);
 assert.equal(DETAIL_PAGE_PRODUCT.name, "골라보다");
 assert.equal(DETAIL_PAGE_PRODUCT.name.includes("브릭로그"), false);
 assert.ok(DETAIL_PAGE_PRODUCT.metaTitle.startsWith("골라보다"));
@@ -92,7 +100,12 @@ assert.ok(html.includes(`${DETAIL_PAGE_WIDTH}px`));
 assert.ok(html.includes("여주 햅쌀"));
 assert.ok(html.includes("여주미곡"));
 assert.ok(html.includes('data-standard="gollaboda-pdp-v1"'));
+assert.ok(html.includes("Nanum Myeongjo"));
+assert.ok(html.includes("Fraunces"));
+assert.ok(html.includes("IBM Plex Sans KR"));
+assert.ok(html.includes("DM Sans"));
 assert.ok(html.includes("Pretendard"));
+assert.ok(html.includes('data-type="grocery"'));
 assert.ok(html.includes('data-grade="95"') || html.includes("data-grade=\"95\""));
 assert.ok(html.includes("font-size:38px"));
 assert.ok(html.includes("font-size:18px"));
@@ -103,10 +116,12 @@ assert.ok(html.includes('data-layout="spec-sheet"'));
 assert.ok(html.includes('data-layout="observe-quote"'));
 assert.ok(html.includes('data-layout="cta-bar"'));
 
-const doc = wrapSmartstoreHtml(html);
+const doc = wrapSmartstoreHtml(html, pack);
 assert.ok(doc.startsWith("<!DOCTYPE html>"));
 assert.ok(doc.includes("gollaboda-detail-page"));
-assert.ok(doc.includes("pretendard"));
+assert.ok(doc.includes("fonts.googleapis.com"));
+assert.ok(doc.includes("Nanum+Myeongjo"));
+assert.ok(doc.includes("Fraunces"));
 
 const text = packToPlainText(pack);
 assert.ok(text.includes("여주 햅쌀"));

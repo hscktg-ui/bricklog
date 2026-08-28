@@ -50,7 +50,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 엔진 95점(글자·구성)은 성공이 아님. 기획30 · 조사30 · 설명20 · 글10 · 검수10.
 검수는 디자이너 30인 패널(`lib/qa/detailPageDesignerPanel30.js`). 하드: 사실·약한 CTA · 문장 한 번 · 패딩 금지 · 패널 평균 70.
 
-측정: `npm run test:detail-page-success-standard`
+측정: `npm run test:detail-page-success-standard` · `npm run test:detail-page-type-pairing`
+
+카테고리 글꼴: `lib/product/detailPageTypePairing.js` — 한글 제목체+영문 디스플레이 / 한글 본문+영문 산세리프. Pretendard는 글리프 구멍만.
 
 ### EXPLAIN V3 (Research → Explain → Write)
 

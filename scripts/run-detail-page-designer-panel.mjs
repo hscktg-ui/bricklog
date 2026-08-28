@@ -119,7 +119,7 @@ async function runSample(example) {
   const ms = Date.now() - t0;
   const pack = gen.pack;
   const body = renderDetailPageBodyHtml(pack, photos);
-  const html = wrapSmartstoreHtml(body);
+  const html = wrapSmartstoreHtml(body, pack);
   const evaled = evaluateDetailPageDesignerPanel({
     pack,
     html: body,

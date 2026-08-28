@@ -404,7 +404,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
 
   const copyHtml = useCallback(async () => {
     if (!pack) return;
-    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm));
+    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm), pack);
     await navigator.clipboard.writeText(html);
     setCopied(true);
     onCopy?.(html);
@@ -413,7 +413,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
 
   const downloadHtml = useCallback(() => {
     if (!pack) return;
-    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm));
+    const html = wrapSmartstoreHtml(renderDetailPageBodyHtml(pack, photosNorm), pack);
     const slug = (pack.productName || "detail").slice(0, 24);
     downloadText(`${slug}-상세.html`, html, "text/html;charset=utf-8");
   }, [pack, photosNorm]);
@@ -802,6 +802,9 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                   : "기준 초안"}
               {" · "}
               {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px
+              {pack._meta?.typePairing?.label
+                ? ` · ${pack._meta.typePairing.label}`
+                : ""}
             </p>
             {error ? (
               <p className="mb-3 text-[13px] text-red-700">{error}</p>

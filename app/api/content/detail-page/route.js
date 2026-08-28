@@ -32,7 +32,7 @@ function jsonPack(pack, extra = {}) {
     channel: "detailPage",
     pack,
     html,
-    documentHtml: wrapSmartstoreHtml(html),
+    documentHtml: wrapSmartstoreHtml(html, pack),
     plainText: packToPlainText(pack),
     standard: pack._meta?.standard || null,
     meta: pack._meta,
