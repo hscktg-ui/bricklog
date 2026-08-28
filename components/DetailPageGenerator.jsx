@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import Icon from "@/components/Icon";
 import EditableField from "@/components/EditableField";
 import { useOptionalBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
@@ -35,7 +34,7 @@ import {
   channelFormScrollClass,
   channelResultPaneClass,
 } from "@/lib/workspace/channelWorkspaceLayout";
-import { VISION_CTA_ACCENT, VISION_INPUT } from "@/lib/landing/vision2030Styles";
+import { VISION_CTA_ACCENT, VISION_INPUT, VISION_SPINNER } from "@/lib/landing/vision2030Styles";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 async function filesToDataUrls(fileList) {
@@ -151,7 +150,7 @@ function FieldGroup({ n, title, hint, children }) {
   );
 }
 
-export default function DetailPageGenerator({ onCopy, onToast, surface = "workspace" }) {
+export default function DetailPageGenerator({ onCopy, onToast, surface: _surface = "workspace" }) {
   const workspace = useOptionalBrandWorkspace();
   const activeBrand = workspace?.activeBrand;
   const previewRef = useRef(null);
@@ -469,31 +468,18 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
     <div className={CHANNEL_WORKSPACE_SHELL} aria-label={product.headerTitle}>
       <aside className={channelFormPaneClass({ width: "wide" })}>
         <div className={channelFormScrollClass("", true)}>
-          {surface === "public" ? (
-            <>
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
-                {DETAIL_PAGE_PRODUCT.eyebrow}
-              </p>
-              <h2 className="mt-1 text-[20px] font-semibold tracking-tight">
-                {DETAIL_PAGE_PRODUCT.headlineBreak}
-              </h2>
-              <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)]">
-                {DETAIL_PAGE_PRODUCT.sub}
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
-                {DETAIL_PAGE_PRODUCT.eyebrow} · {DETAIL_PAGE_PRODUCT.place}
-              </p>
-              <h2 className="mt-1 text-[22px] font-semibold tracking-tight">
-                {DETAIL_PAGE_PRODUCT.name}
-              </h2>
-              <p className="mt-2 text-[14px] leading-relaxed text-[var(--vision-muted)]">
-                {DETAIL_PAGE_PRODUCT.headline} {DETAIL_PAGE_PRODUCT.headlineBreak}
-              </p>
-            </>
-          )}
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
+            {DETAIL_PAGE_PRODUCT.eyebrow} · {DETAIL_PAGE_PRODUCT.place}
+          </p>
+          <h2 className="mt-1 text-[20px] font-semibold tracking-tight md:text-[22px]">
+            {DETAIL_PAGE_PRODUCT.headline}
+            <span className="mt-0.5 block text-[var(--vision-muted)]">
+              {DETAIL_PAGE_PRODUCT.headlineBreak}
+            </span>
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-[var(--vision-muted)] md:text-[14px]">
+            {DETAIL_PAGE_PRODUCT.sub}
+          </p>
 
           <p className="mt-5 text-[12px] font-medium text-[var(--vision-muted)]">
             바로 채워보기
@@ -729,13 +715,13 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
         {!pack && !busy ? (
           <div className="mx-auto flex h-full min-h-[320px] max-w-sm flex-col justify-center text-left">
             <p className="text-[11px] font-semibold tracking-[0.16em] text-[var(--vision-muted)]">
-              {DETAIL_PAGE_PRODUCT.eyebrow}
+              {DETAIL_PAGE_PRODUCT.place}
             </p>
             <p className="mt-2 text-[18px] font-semibold tracking-tight">
               {DETAIL_PAGE_PRODUCT.emptyResult}
             </p>
             <ol className="mt-5 space-y-3">
-              {DETAIL_PAGE_PRODUCT.pillars.slice(0, 3).map((item, i) => (
+              {DETAIL_PAGE_PRODUCT.pillars.map((item, i) => (
                 <li key={item.title} className="flex gap-3">
                   <span className="text-[11px] font-bold tabular-nums text-[var(--vision-muted)]">
                     {String(i + 1).padStart(2, "0")}
@@ -752,9 +738,12 @@ export default function DetailPageGenerator({ onCopy, onToast, surface = "worksp
           </div>
         ) : null}
         {busy ? (
-          <p className="text-[15px] text-[var(--vision-muted)]">
-            {DETAIL_PAGE_PRODUCT.busyLine}
-          </p>
+          <div className="flex h-full min-h-[240px] flex-col items-center justify-center px-6 text-center">
+            <div className={VISION_SPINNER} aria-hidden />
+            <p className="mt-4 text-[15px] text-[var(--vision-muted)]">
+              {DETAIL_PAGE_PRODUCT.busyLine}
+            </p>
+          </div>
         ) : null}
         {pack ? (
           <div>
