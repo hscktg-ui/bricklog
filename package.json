@@ -294,6 +294,7 @@
     "test:e2e-stepped-form": "node scripts/test-e2e-stepped-form.mjs",
     "test:channel-sqv-delivery": "node --import ./scripts/register-alias.mjs scripts/test-channel-sqv-delivery.mjs",
     "test:detail-page-engine": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-engine.mjs",
+    "test:detail-page-success-standard": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-success-standard.mjs",
     "test:detail-page-designer-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-designer-panel.mjs",
     "test:core-rules": "node --import ./scripts/register-alias.mjs scripts/test-core-rules.mjs",
     "test:brand-content-os-centers": "node --import ./scripts/register-alias.mjs scripts/test-brand-content-os-centers.mjs",

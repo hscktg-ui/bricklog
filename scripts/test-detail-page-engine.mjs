@@ -84,6 +84,7 @@ assert.equal(pack._meta.compositionOk, true);
 assert.equal(pack._meta.densityOk, true);
 assert.equal(pack._meta.standard.ok, true, pack._meta.standard.reasons.join(","));
 assert.equal(pack._meta.standard.rules.soft_cta, true);
+assert.equal(pack._meta.success.ok, false, "engine 95 is not 골라보다 success");
 assertCore1DeliveryStamped(pack, "detailPage", "detailPage");
 
 const html = renderDetailPageBodyHtml(pack, []);

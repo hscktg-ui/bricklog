@@ -36,6 +36,7 @@ import {
 } from "@/lib/workspace/channelWorkspaceLayout";
 import { VISION_CTA_ACCENT, VISION_INPUT, VISION_SPINNER } from "@/lib/landing/vision2030Styles";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
+import { assessDetailPageSuccess } from "@/lib/product/detailPageSuccessStandard";
 
 async function filesToDataUrls(fileList) {
   const files = Array.from(fileList || []);
@@ -183,6 +184,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     if (!pack) return "";
     return renderDetailPageBodyHtml(pack, photosNorm);
   }, [pack, photosNorm]);
+
+  const successView = useMemo(() => {
+    if (!pack) return null;
+    return assessDetailPageSuccess({
+      pack,
+      html: previewHtml,
+      photoCount: photosNorm.length,
+      input: {
+        brandName: pack.brandName,
+        pageLength: pack.pageLength,
+      },
+    });
+  }, [pack, previewHtml, photosNorm.length]);
 
   const briefInput = useCallback(
     () => ({
@@ -773,19 +787,21 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               </button>
             </div>
             <p className="mb-3 text-[12px] text-[var(--vision-muted)]">
-              {pack._meta?.sqv?.score != null ? `${pack._meta.sqv.score}점` : ""}
-              {pack._meta?.sqv?.score != null ? " · " : ""}
+              {successView?.ok
+                ? DETAIL_PAGE_PRODUCT.successOk
+                : DETAIL_PAGE_PRODUCT.successNeed}
+              {successView?.score != null ? ` · 성공 ${successView.score}` : ""}
+              {pack._meta?.sqv?.score != null
+                ? ` · ${DETAIL_PAGE_PRODUCT.engineGradeHint} ${pack._meta.sqv.score}`
+                : ""}
+              {" · "}
               {pack._meta?.mode === "llm"
                 ? "GPT-5.6 Sol 1회"
                 : pack._meta?.mode === "llm-edited" || pack._meta?.edited
                   ? "문장 수정본"
                   : "기준 초안"}
               {" · "}
-              {pack._meta?.standard?.ok
-                ? DETAIL_PAGE_PRODUCT.standardOk
-                : DETAIL_PAGE_PRODUCT.standardNeed}
-              {" · "}
-              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px · Pretendard
+              {pack.sections?.length || 0}개 섹션 · {DETAIL_PAGE_WIDTH}px
             </p>
             {error ? (
               <p className="mb-3 text-[13px] text-red-700">{error}</p>
@@ -815,7 +831,17 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 </li>
               ))}
             </ol>
-            {pack._meta?.standard ? (
+            {successView ? (
+              <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
+                {successView.phases.map((phase) => (
+                  <li key={phase.id}>
+                    {phase.ok ? "통과" : "미달"} · {phase.weight} {phase.label} · {phase.score}
+                    {" · "}
+                    {phase.meaning}
+                  </li>
+                ))}
+              </ul>
+            ) : pack._meta?.standard ? (
               <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
                 {DETAIL_PAGE_STANDARD_RULES.map((rule) => {
                   const passed = pack._meta.standard.rules
@@ -828,6 +854,14 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                   );
                 })}
               </ul>
+            ) : null}
+            {successView && !successView.ok && successView.hardLabels.length ? (
+              <div className="mb-4 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3">
+                <p className="text-[13px] font-medium">성공 기준에서 빠진 것</p>
+                <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
+                  {successView.hardLabels.join(" · ")}
+                </p>
+              </div>
             ) : null}
             {listDetailPageFixTargets(pack).length > 0 ? (
               <div className="mb-4 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3">
