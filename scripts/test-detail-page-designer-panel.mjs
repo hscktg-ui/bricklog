@@ -22,7 +22,9 @@ const pack = buildDetailPageFallbackPack({
 const html = renderDetailPageBodyHtml(pack, []);
 const panel = evaluateDetailPageDesignerPanel({ pack, html, photoCount: 0 });
 assert.equal(panel.votes.length, 30);
-assert.ok(html.includes('data-photo-empty="1"'));
+assert.ok(html.includes('data-layout="choose-steps"'));
+assert.ok(html.includes('data-layout="compare-pair"'));
+assert.ok((html.match(/data-role="lead"/g) || []).length <= 8);
 assert.ok(panel.summary.passCount >= 30, `pass ${panel.summary.passCount}/30`);
 assert.equal(panel.summary.n, 30);
 assert.ok(panel.summary.mean >= 97, `panel mean ${panel.summary.mean}`);

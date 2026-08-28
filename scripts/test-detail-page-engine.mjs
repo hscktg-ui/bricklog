@@ -86,7 +86,7 @@ assert.ok(pack._meta.sqv.score >= 95, `expected 95+, got ${pack._meta.sqv.score}
 assert.equal(packToPlainText(pack).includes("손님가"), false);
 assert.equal(packToPlainText(pack).includes("는 쪽"), false);
 assert.equal(packToPlainText(pack).includes("없는 이나"), false);
-assert.ok(packToPlainText(pack).includes("쪽 설명"));
+assert.ok(packToPlainText(pack).includes("당일 도정"));
 assert.ok(packToPlainText(pack).includes("손님"));
 assert.equal(pack._meta.compositionOk, true);
 assert.equal(pack._meta.densityOk, true);
@@ -121,6 +121,8 @@ assert.ok(html.includes('data-photo-direction="feature"'));
 assert.ok(html.includes('data-visual="first-glance"'));
 assert.ok(html.includes('data-mall-ready="smartstore,coupang"'));
 assert.ok(html.includes('data-layout="hero-stack"'));
+assert.ok(html.includes('data-layout="choose-steps"'));
+assert.ok(html.includes('data-layout="compare-pair"'));
 assert.ok(html.includes('data-layout="usp-cards"'));
 assert.ok(html.includes('data-layout="spec-sheet"'));
 assert.ok(html.includes('data-layout="observe-quote"'));
