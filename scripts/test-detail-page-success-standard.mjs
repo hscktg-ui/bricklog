@@ -17,7 +17,7 @@ assert.equal(
 );
 assert.equal(DETAIL_PAGE_SUCCESS_PHASES.length, 5);
 assert.equal(DETAIL_PAGE_SUCCESS_HARD_GATES.length, 5);
-assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 80);
+assert.equal(DETAIL_PAGE_SUCCESS_PASS_SCORE, 90);
 assert.equal(DETAIL_PAGE_SUCCESS_DOCTRINE.pass, "고르는 화면이 생겼다");
 assert.equal(DETAIL_PAGE_KOREA_FIRST.not, "슬로건");
 assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));

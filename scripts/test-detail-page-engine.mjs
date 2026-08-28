@@ -99,6 +99,9 @@ assert.equal(pack._meta.standard.ok, true, pack._meta.standard.reasons.join(",")
 assert.equal(pack._meta.standard.rules.soft_cta, true);
 assert.equal(pack._meta.success.ok, true, "fallback rice must ship as a choosing screen");
 assert.equal(packToPlainText(pack).includes("고르는 순서가 보이면"), false);
+assert.equal(packToPlainText(pack).includes("직접 대조해 보면"), false);
+assert.ok(packToPlainText(pack).includes("가까이에서"));
+assert.ok(packToPlainText(pack).includes("직접 확인"));
 assertCore1DeliveryStamped(pack, "detailPage", "detailPage");
 
 const html = renderDetailPageBodyHtml(pack, []);

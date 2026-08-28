@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import LandingPanelHeader from "@/components/landing/LandingPanelHeader";
 import {
   DETAIL_PAGE_OPEN_EXAMPLES,
   detailPageSamplePageSrc,
-  detailPageSampleSrc,
   resolveDetailPageSampleId,
 } from "@/lib/product/detailPageCompanyPresets";
 import {
@@ -25,7 +23,6 @@ export default function DetailPageSampleZone({
   const current =
     DETAIL_PAGE_OPEN_EXAMPLES.find((ex) => ex.id === id) ||
     DETAIL_PAGE_OPEN_EXAMPLES[0];
-  const htmlSrc = detailPageSampleSrc(current.id);
   const frameRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [stack, setStack] = useState([detailPageSamplePageSrc(current.id, "full")]);
@@ -111,15 +108,7 @@ export default function DetailPageSampleZone({
       </div>
 
       <p className="mt-3 text-center text-[13px] text-[var(--vision-muted)]">
-        스마트스토어·쿠팡에 위에서부터 올리는 860 이미지.{" "}
-        <Link
-          href={htmlSrc}
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline"
-        >
-          붙일 이미지 HTML
-        </Link>
+        스마트스토어·쿠팡에 위에서부터 올리는 860 이미지.
       </p>
     </div>
   );

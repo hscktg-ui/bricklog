@@ -40,4 +40,12 @@ const kept = await generateDetailPageShots(
 assert.equal(kept.photos[0].slot, "hero");
 assert.equal(kept.generated.length, 0);
 
-console.log("ok detail-page-shot-gen missing=hero,observe,feature");
+const cloned = await generateDetailPageShots(
+  { productName: "여주 햅쌀 10kg" },
+  { photos: [{ src: "https://example.com/a.jpg", slot: "hero" }] }
+);
+assert.equal(cloned.skipped, "same_sku");
+assert.equal(cloned.photos.length, 3);
+assert.ok(cloned.photos.every((p) => p.src === "https://example.com/a.jpg"));
+
+console.log("ok detail-page-shot-gen missing=hero,observe,feature same_sku=3");

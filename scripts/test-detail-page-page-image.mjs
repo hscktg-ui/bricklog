@@ -7,7 +7,7 @@ import {
   inspectPngBuffer,
   inspectDetailPageScreenshots,
 } from "../lib/qa/detailPagePageImage.js";
-import { DETAIL_PAGE_IMAGE_DESIGNER } from "../lib/qa/detailPageDesignerVision.js";
+import { DETAIL_PAGE_IMAGE_DESIGNER, DETAIL_PAGE_DESIGNER_VISION_MIN } from "../lib/qa/detailPageDesignerVision.js";
 import { buildDetailPageFallbackPack } from "../lib/product/detailPageEngine.js";
 import { renderDetailPageBodyHtml } from "../lib/product/detailPageHtml.js";
 import { evaluateDetailPageDesignerPanel } from "../lib/qa/detailPageDesignerPanel30.js";
@@ -16,6 +16,7 @@ import { detailPageSamplePageSrc } from "../lib/product/detailPageCompanyPresets
 import { DETAIL_PAGE_PRODUCT } from "../lib/product/detailPageProduct.js";
 
 assert.equal(DETAIL_PAGE_IMAGE_DESIGNER.job.includes("상세페이지 디자이너"), true);
+assert.equal(DETAIL_PAGE_DESIGNER_VISION_MIN, 90);
 assert.ok(DETAIL_PAGE_PRODUCT.versusUs.includes("이미지"));
 assert.equal(detailPageSamplePageSrc("open-rice"), "/detail-sample/open-rice-page-hero.png");
 assert.equal(

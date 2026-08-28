@@ -24,7 +24,6 @@ import {
 import { DETAIL_PAGE_MALLS } from "@/lib/product/detailPageCompeteWins";
 import {
   renderDetailPageBodyHtml,
-  wrapMallHtml,
   wrapDetailPageImageStackHtml,
   packToPlainText,
 } from "@/lib/product/detailPageHtml";
@@ -494,25 +493,29 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       : [{ src: pageImage, alt: pack.productName || "상품" }].filter((item) => item.src);
     const html = images.length
       ? wrapDetailPageImageStackHtml(images, pack, mall.id)
-      : wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, mall.id);
+      : "";
+    if (!html) {
+      onToast?.("상세 이미지가 아직입니다. 잠시 후 다시 저장해 주세요.");
+      return;
+    }
     await navigator.clipboard.writeText(html);
     setCopiedMall(mall.id);
     onCopy?.(html);
     onToast?.(
-      images.length
-        ? `${mall.label}용 상세 이미지를 복사했습니다. 아래에서 이미지를 올리세요.`
-        : `${mall.label}용 HTML 원판을 복사했습니다.`
+      `${mall.label}용 상세 이미지를 복사했습니다. 아래에서 이미지를 올리세요.`
     );
-  }, [pack, photosNorm, mallImages, pageImage, onCopy, onToast]);
+  }, [pack, mallImages, pageImage, onCopy, onToast]);
 
   const downloadHtml = useCallback(() => {
     if (!pack) return;
-    const html = mallImages.length
-      ? wrapDetailPageImageStackHtml(mallImages, pack, "smartstore")
-      : wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, "smartstore");
+    if (!mallImages.length) {
+      onToast?.("상세 이미지가 아직입니다. 잠시 후 다시 저장해 주세요.");
+      return;
+    }
+    const html = wrapDetailPageImageStackHtml(mallImages, pack, "smartstore");
     const slug = (pack.productName || "detail").slice(0, 24);
     downloadText(`${slug}-상세.html`, html, "text/html;charset=utf-8");
-  }, [pack, photosNorm, mallImages]);
+  }, [pack, mallImages, onToast]);
 
   const downloadTxt = useCallback(() => {
     if (!pack) return;
