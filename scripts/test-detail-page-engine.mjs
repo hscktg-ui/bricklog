@@ -129,8 +129,9 @@ assert.ok(html.includes('data-photo-direction="observe"'));
 assert.ok(html.includes('data-photo-direction="feature"'));
 assert.ok(html.includes('data-visual="first-glance"'));
 assert.ok(html.includes('data-mall-ready="smartstore,coupang"'));
-assert.ok(html.includes('data-layout="hero-stack"'));
-assert.ok(html.includes('data-layout="choose-steps"'));
+assert.ok(html.includes('data-layout="hero-banner"'));
+assert.ok(html.includes('data-layout="problem-band"'));
+assert.ok(html.includes('data-ranking-slot="hero-banner"'));
 assert.ok(html.includes('data-layout="points-5"'));
 assert.ok(html.includes('data-layout="usp-rows"'));
 assert.ok(html.includes('data-ranking="naver-shop-rank"'));
@@ -238,8 +239,9 @@ const photos = [
 ];
 const assigned = assignDetailPagePhotos(pack.sections, photos);
 assert.equal(assigned.byType.hero, photos[0]);
-assert.ok(assigned.byType.explain);
-assert.equal(assigned.leftovers.length, 0);
+assert.ok(assigned.byType.observe);
+assert.equal(assigned.byType.explain, undefined);
+assert.equal(assigned.leftovers.length, 1);
 const htmlWithPhotos = renderDetailPageBodyHtml(pack, photos);
 assert.ok(htmlWithPhotos.includes('data-photo-slot="hero"'));
 assert.equal(htmlWithPhotos.includes('data-photo-slot="hero" data-photo-empty'), false);
@@ -298,7 +300,7 @@ const photoObjs = normalizeDetailPagePhotos([
 assert.equal(photoObjs[0].caption, "맨 위 쌀 포대");
 assert.equal(photoObjs[1].src, "https://example.com/p2.jpg");
 const htmlCaption = renderDetailPageBodyHtml(pack, photoObjs);
-assert.ok(htmlCaption.includes("맨 위 쌀 포대"));
+assert.equal(htmlCaption.includes("맨 위 쌀 포대"), false);
 
 const dirty = {
   ...pack,

@@ -46,13 +46,17 @@ assert.ok(formatCategoryFlowForPrompt(riceInput).includes("없는 항목은 만�
 const rice = buildDetailPageFallbackPack(riceInput);
 const riceText = JSON.stringify(rice);
 assert.equal(rice._meta.categoryFlow.id, "grocery");
-assert.ok(rice.sections.find((s) => s.type === "intent").bullets[0].includes("산지"));
-assert.ok(rice.sections.find((s) => s.type === "intent").title.includes("이 칸부터"));
+assert.ok(rice.sections.find((s) => s.type === "explain").bullets[0].includes("산지"));
+assert.ok(rice.sections.find((s) => s.type === "intent").title.includes("가늠이 안 된다"));
 assert.equal(
-  rice.sections.find((s) => s.type === "intent").title.includes("가늠이 안 된다"),
+  rice.sections.find((s) => s.type === "intent").title.includes("이 칸부터"),
   false
 );
-assert.ok(rice.sections.find((s) => s.type === "hero").body.includes("가늠이 안 된다"));
+assert.ok(rice.sections.find((s) => s.type === "intent").kicker.includes("고민"));
+assert.equal(
+  (rice.sections.find((s) => s.type === "hero").body || "").includes("가늠이 안 된다"),
+  false
+);
 assert.ok(rice.sections.find((s) => s.type === "explain").kicker.includes("핵심 소구점"));
 assert.ok(rice.sections.find((s) => s.type === "explain").bullets.some((b) => String(b).includes("산지")));
 assert.equal(
@@ -74,7 +78,9 @@ const riceHtml = renderDetailPageBodyHtml(rice, []);
 assert.ok(riceHtml.includes('data-category-flow="grocery"'));
 assert.ok(riceHtml.includes("산지"));
 assert.ok(riceHtml.includes("원재료"));
-assert.ok(riceHtml.includes("햅쌀로 표기"));
+assert.ok(riceHtml.includes("여주 햅쌀"));
+assert.equal(riceHtml.includes("햅쌀로 표기"), false);
+assert.ok(riceHtml.includes('data-layout="problem-band"'));
 assert.ok(riceHtml.includes('data-layout="usp-rows"'));
 assert.ok(riceHtml.includes('data-layout="points-5"'));
 assert.ok(riceHtml.includes("핵심 소구점"));

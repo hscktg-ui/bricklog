@@ -51,7 +51,7 @@ const stackHtml = wrapDetailPageImageStackHtml(
 );
 assert.ok(stackHtml.includes('data-deliverable="image-stack"'));
 assert.ok(stackHtml.includes("<img "));
-assert.equal(stackHtml.includes('data-layout="hero-stack"'), false);
+assert.equal(stackHtml.includes('data-layout="hero-banner"'), false);
 const stacked = assessDetailPageCompeteWins({ html, wrapHtml: stackHtml });
 assert.equal(stacked.ok, true, stacked.checks.filter((c) => !c.ok).map((c) => c.id).join(","));
 
