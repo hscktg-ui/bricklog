@@ -15,9 +15,10 @@ import {
   packToPlainText,
 } from "../lib/product/detailPageHtml.js";
 import { DETAIL_PAGE_WIDTH } from "../lib/product/detailPageCatalog.js";
+import { assignDetailPagePhotos } from "../lib/product/detailPagePhotos.js";
 import { getChannelFullText } from "../lib/content/channelPack.js";
 import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
-import { assessDetailPageStandard } from "../lib/product/detailPageStandard.js";
+import { assessDetailPageStandard, applyEditedDetailPageSections } from "../lib/product/detailPageStandard.js";
 import { getDetailPageCompanyPreset, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
 import { sanitizePublicDetailPageBody } from "../lib/product/detailPagePublic.js";
 
@@ -129,6 +130,48 @@ assert.ok(
 const home100 = buildDetailPageFallbackPack({ presetId: "home100-showroom" });
 assert.ok(packToPlainText(home100).includes("HOME100"));
 assert.equal(home100._meta.standard.ok, true, home100._meta.standard.reasons.join(","));
+
+const edited = applyEditedDetailPageSections(
+  pack,
+  pack.sections.map((s, i) =>
+    i === 0 ? { ...s, title: "여주에서 도정한 햅쌀", body: "여주미곡에서 당일 도정한 쌀입니다." } : s
+  ),
+  { brandName: "여주미곡" }
+);
+assert.equal(edited._meta.edited, true);
+assert.ok(edited.sections[0].title.includes("도정한 햅쌀"));
+assert.ok(renderDetailPageBodyHtml(edited, []).includes("도정한 햅쌀"));
+assert.equal(edited._meta.standard.ok, true, edited._meta.standard.reasons.join(","));
+
+const tooShort = applyEditedDetailPageSections(pack, pack.sections.slice(0, 2), {
+  brandName: "여주미곡",
+});
+assert.equal(tooShort.sections.length, pack.sections.length);
+
+const photos = [
+  "https://example.com/p1.jpg",
+  "https://example.com/p2.jpg",
+  "https://example.com/p3.jpg",
+  "https://example.com/p4.jpg",
+  "https://example.com/p5.jpg",
+];
+const assigned = assignDetailPagePhotos(pack.sections, photos);
+assert.equal(assigned.byType.hero, photos[0]);
+assert.ok(assigned.byType.explain);
+assert.equal(assigned.leftovers.length, 0);
+const htmlWithPhotos = renderDetailPageBodyHtml(pack, photos);
+assert.ok(htmlWithPhotos.includes('data-photo-slot="hero"'));
+assert.ok(htmlWithPhotos.includes("p1.jpg"));
+assert.ok(htmlWithPhotos.includes("p2.jpg"));
+assert.equal(htmlWithPhotos.includes("p1.jpg") && htmlWithPhotos.includes("p2.jpg"), true);
+assert.ok(htmlWithPhotos.includes('data-photos="'));
+const heroIdx = htmlWithPhotos.indexOf("p1.jpg");
+const secondIdx = htmlWithPhotos.indexOf("p2.jpg");
+assert.ok(heroIdx >= 0 && secondIdx > heroIdx, "photos should follow slot order");
+
+const shortPack = buildDetailPageFallbackPack({ ...input, pageLength: "short" });
+const shortHtml = renderDetailPageBodyHtml(shortPack, photos);
+assert.ok(shortHtml.includes('data-photo-gallery="1"'), "leftover photos go to gallery before CTA");
 
 const openRice = DETAIL_PAGE_OPEN_EXAMPLES.find((p) => p.id === "open-rice");
 assert.ok(openRice);
