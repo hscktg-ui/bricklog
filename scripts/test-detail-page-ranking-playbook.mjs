@@ -14,7 +14,16 @@ assert.ok(DETAIL_PAGE_LIST_TOOL_USE.every((t) => t.take && t.leave));
 assert.ok(formatRankingPlaybookForPrompt().includes("크리에이지"));
 assert.ok(formatRankingPlaybookForPrompt().includes("가짜 후기"));
 assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("scene"));
-assert.ok(formatRankingPlaybookForPrompt().includes("카테고리 분석"));
+assert.ok(formatRankingPlaybookForPrompt().includes("섹션 PNG"));
+assert.ok(formatRankingPlaybookForPrompt().includes("통이미지는 가져온다"));
+assert.equal(formatRankingPlaybookForPrompt().includes("통이미지 카피"), false);
+assert.ok(
+  DETAIL_PAGE_LIST_TOOL_USE.every((t) => t.take.includes("PNG") || t.take.includes("섹션"))
+);
+assert.equal(
+  DETAIL_PAGE_LIST_TOOL_USE.find((t) => t.id === "creazy").leave.includes("통이미지"),
+  false
+);
 assert.ok(
   gptDetailPageSystemPrompt({
     brandName: "여주미곡",

@@ -22,6 +22,9 @@ assert.equal(rice.id, "open-rice");
 assert.ok(rice.html.includes('data-visual="first-glance"'));
 assert.ok(rice.html.includes("data-photo-direction"));
 assert.ok(rice.documentHtml.includes('data-mall="smartstore"'));
+assert.ok(rice.documentHtml.includes('data-deliverable="image-stack"'));
+assert.ok(rice.documentHtml.includes("<img "));
+assert.equal(rice.documentHtml.includes('data-layout="hero-stack"'), false);
 assert.ok(rice.html.includes("포장 앞면"));
 assert.ok(rice.html.includes("산지"));
 assert.ok(rice.html.includes("원재료"));
@@ -53,7 +56,7 @@ assert.ok(existsSync("public/detail-sample/ranking-rice.html"), "missing ranking
 assert.ok(existsSync("public/detail-sample/ranking-beans.html"), "missing ranking-beans.html");
 assert.ok(zone.includes("DETAIL_PAGE_OPEN_EXAMPLES"));
 assert.ok(zone.includes("open-rice") || zone.includes("label"));
-assert.ok(zone.includes("상세는 이미지"));
+assert.ok(zone.includes("섹션 이미지") || zone.includes("상세는 이미지"));
 assert.ok(zone.includes("상세 디자이너"));
 assert.equal(zone.includes("AI 이미지는 없습니다"), false);
 for (const file of [
@@ -67,8 +70,17 @@ for (const file of [
   "public/detail-sample/open-rice-page-full.png",
   "public/detail-sample/open-beans-page-hero.png",
   "public/detail-sample/open-beans-page-full.png",
+  "public/detail-sample/open-rice-stack.json",
+  "public/detail-sample/open-beans-stack.json",
 ]) {
   assert.ok(existsSync(file), `missing ${file}`);
+}
+for (const id of ["open-rice", "open-beans"]) {
+  const man = JSON.parse(readFileSync(`public/detail-sample/${id}-stack.json`, "utf8"));
+  assert.ok(Array.isArray(man.images) && man.images.length >= 2, `${id} stack`);
+  for (const img of man.images) {
+    assert.ok(existsSync(`public/detail-sample/${img}`), `missing stack ${img}`);
+  }
 }
 const detailClient = readFileSync("components/PublicDetailPageClient.jsx", "utf8");
 assert.ok(detailClient.includes("DetailPageSampleZone"));

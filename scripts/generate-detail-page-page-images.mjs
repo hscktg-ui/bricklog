@@ -1,7 +1,7 @@
 /**
  * 860 상세 HTML을 페이지 이미지로 찍는다. 상세 디자이너가 이 PNG를 본다.
  */
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from "fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, unlinkSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
@@ -67,12 +67,31 @@ for (const example of DETAIL_PAGE_OPEN_EXAMPLES) {
   const html = renderDetailPageBodyHtml(sample.pack, photos);
   const documentHtml = wrapMallHtml(html, sample.pack, "smartstore");
   const slug = example.id;
+  for (const file of readdirSync(SAMPLE_DIR)) {
+    if (file.startsWith(`${slug}-img-`) && file.endsWith(".png")) {
+      unlinkSync(join(SAMPLE_DIR, file));
+    }
+  }
   const paths = {
     full: join(SAMPLE_DIR, `${slug}-page-full.png`),
     hero: join(SAMPLE_DIR, `${slug}-page-hero.png`),
     mid: join(SAMPLE_DIR, `${slug}-page-mid.png`),
+    stackPrefix: join(SAMPLE_DIR, `${slug}-img`),
   };
-  await screenshotDetailPageHtml(documentHtml, paths);
+  const shot = await screenshotDetailPageHtml(documentHtml, paths);
+  const stackFiles = (shot.stack || []).map((dest) => dest.split(/[/\\]/).pop());
+  writeFileSync(
+    join(SAMPLE_DIR, `${slug}-stack.json`),
+    JSON.stringify(
+      {
+        id: slug,
+        deliverable: "image-stack",
+        images: stackFiles,
+      },
+      null,
+      2
+    )
+  );
   const screenshots = {
     hero: readFileSync(paths.hero),
     mid: readFileSync(paths.mid),
@@ -101,6 +120,7 @@ for (const example of DETAIL_PAGE_OPEN_EXAMPLES) {
     JSON.stringify({
       id: example.id,
       png: inspected,
+      stack: stackFiles.length,
       vision: visions[visions.length - 1].vision,
     })
   );

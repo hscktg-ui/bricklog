@@ -58,6 +58,20 @@ export async function screenshotDetailPageHtml(html, paths = {}) {
     const photoY = Math.min(box.y + 2100, box.y + Math.max(0, box.height - 980));
     await clip(photoY, 980, paths.mid);
   }
+  const stack = [];
+  if (paths.stackPrefix) {
+    const kids = page.locator("#gollaboda-detail-page > *");
+    const n = await kids.count();
+    for (let i = 0; i < n; i++) {
+      const dest = `${paths.stackPrefix}-${String(i).padStart(2, "0")}.png`;
+      try {
+        await kids.nth(i).screenshot({ path: dest, type: "png" });
+        stack.push(dest);
+      } catch {
+        /* zero-height sibling */
+      }
+    }
+  }
   await browser.close();
-  return paths;
+  return { ...paths, stack };
 }

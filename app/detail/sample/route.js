@@ -2,7 +2,7 @@ import { buildDetailPagePublicSample } from "@/lib/product/detailPagePublicSampl
 
 export const runtime = "nodejs";
 
-/** 로그인 없이 붙일 860 HTML만. 사이트 크롬 없음. ?id=open-rice|open-beans */
+/** 로그인 없이 붙일 860 이미지 스택만. 사이트 크롬 없음. ?id=open-rice|open-beans */
 export function GET(request) {
   const id = new URL(request.url).searchParams.get("id");
   const sample = buildDetailPagePublicSample(id);

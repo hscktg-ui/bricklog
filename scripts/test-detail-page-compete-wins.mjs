@@ -3,7 +3,7 @@
  */
 import assert from "node:assert/strict";
 import { buildDetailPageFallbackPack } from "../lib/product/detailPageEngine.js";
-import { renderDetailPageBodyHtml, wrapMallHtml } from "../lib/product/detailPageHtml.js";
+import { renderDetailPageBodyHtml, wrapMallHtml, wrapDetailPageImageStackHtml } from "../lib/product/detailPageHtml.js";
 import { DETAIL_PAGE_WIDTH } from "../lib/product/detailPageCatalog.js";
 import {
   DETAIL_PAGE_COMPETE_WINS,
@@ -17,7 +17,7 @@ assert.equal(DETAIL_PAGE_COMPETE_WINS.length, 3);
 assert.equal(DETAIL_PAGE_MALLS.length, 2);
 assert.equal(DETAIL_PAGE_MALLS[0].id, "smartstore");
 assert.equal(DETAIL_PAGE_MALLS[1].id, "coupang");
-assert.ok(DETAIL_PAGE_MALLS.every((m) => m.width === DETAIL_PAGE_WIDTH));
+assert.ok(DETAIL_PAGE_MALLS.every((m) => m.steps.some((s) => s.includes("이미지를 위에서부터"))));
 assert.equal(assertProductShotWin(), true);
 assert.ok(DETAIL_PAGE_PHOTO_DIRECTION.hero.shot.includes("포장"));
 
@@ -43,6 +43,17 @@ assert.ok(html.includes('data-visual="first-glance"'));
 assert.ok(smart.includes('data-mall="smartstore"'));
 assert.ok(coupang.includes('data-mall="coupang"'));
 assert.equal(smart.includes("image_generation"), false);
+
+const stackHtml = wrapDetailPageImageStackHtml(
+  [{ src: "/detail-sample/open-rice-page-full.png", alt: "여주 햅쌀 10kg" }],
+  pack,
+  "smartstore"
+);
+assert.ok(stackHtml.includes('data-deliverable="image-stack"'));
+assert.ok(stackHtml.includes("<img "));
+assert.equal(stackHtml.includes('data-layout="hero-stack"'), false);
+const stacked = assessDetailPageCompeteWins({ html, wrapHtml: stackHtml });
+assert.equal(stacked.ok, true, stacked.checks.filter((c) => !c.ok).map((c) => c.id).join(","));
 
 console.log(
   `ok detail-page-compete-wins ${live.checks.map((c) => c.id).join("·")} malls=${live.malls.join(",")}`

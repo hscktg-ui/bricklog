@@ -22,7 +22,12 @@ import {
   normalizeDetailPagePhotos,
 } from "@/lib/product/detailPagePhotos";
 import { DETAIL_PAGE_MALLS } from "@/lib/product/detailPageCompeteWins";
-import { renderDetailPageBodyHtml, wrapMallHtml, packToPlainText } from "@/lib/product/detailPageHtml";
+import {
+  renderDetailPageBodyHtml,
+  wrapMallHtml,
+  wrapDetailPageImageStackHtml,
+  packToPlainText,
+} from "@/lib/product/detailPageHtml";
 import {
   applyHeadlineSubhead,
   listDetailPageFixTargets,
@@ -176,6 +181,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [editing, setEditing] = useState(false);
   const [copiedMall, setCopiedMall] = useState("");
   const [pageImage, setPageImage] = useState("");
+  const [sectionImages, setSectionImages] = useState([]);
   const [designerVision, setDesignerVision] = useState(null);
   const photoInputRef = useRef(null);
 
@@ -209,11 +215,13 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   useEffect(() => {
     if (!pack || !previewHtml) {
       setPageImage("");
+      setSectionImages([]);
       setDesignerVision(null);
       return undefined;
     }
     let cancelled = false;
     setPageImage("");
+    setSectionImages([]);
     setDesignerVision(null);
     const timer = setTimeout(() => {
       const article = previewRef.current?.querySelector("article");
@@ -222,7 +230,25 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         try {
           const png = await capturePreviewPng(article);
           if (cancelled || !png || png.length < 24_000) return;
+          const kids = [...article.children];
+          const stack = [];
+          for (const child of kids) {
+            try {
+              const sec = await capturePreviewPng(child);
+              if (sec && sec.length > 8_000) {
+                stack.push({
+                  src: sec,
+                  type: child.getAttribute("data-section") || "block",
+                  alt: pack.productName || "상품",
+                });
+              }
+            } catch {
+              /* skip zero-height sibling */
+            }
+          }
+          if (cancelled) return;
           setPageImage(png);
+          setSectionImages(stack.length ? stack : [{ src: png, type: "full", alt: pack.productName || "상품" }]);
           const hero = await cropHeroDataUrl(png);
           const data = await fetchWithAuth("/api/content/detail-page", {
             method: "POST",
@@ -454,22 +480,39 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     }
   }, [pack, improveNote, briefInput, onToast]);
 
+  const mallImages = useMemo(() => {
+    if (sectionImages.length) return sectionImages;
+    if (pageImage) return [{ src: pageImage, alt: pack?.productName || "상품" }];
+    return [];
+  }, [sectionImages, pageImage, pack?.productName]);
+
   const copyForMall = useCallback(async (mallId) => {
     if (!pack) return;
     const mall = DETAIL_PAGE_MALLS.find((m) => m.id === mallId) || DETAIL_PAGE_MALLS[0];
-    const html = wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, mall.id);
+    const images = mallImages.length
+      ? mallImages
+      : [{ src: pageImage, alt: pack.productName || "상품" }].filter((item) => item.src);
+    const html = images.length
+      ? wrapDetailPageImageStackHtml(images, pack, mall.id)
+      : wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, mall.id);
     await navigator.clipboard.writeText(html);
     setCopiedMall(mall.id);
     onCopy?.(html);
-    onToast?.(`${mall.label}용 HTML을 복사했습니다. 아래 순서로 붙여넣으세요.`);
-  }, [pack, photosNorm, onCopy, onToast]);
+    onToast?.(
+      images.length
+        ? `${mall.label}용 상세 이미지를 복사했습니다. 아래에서 이미지를 올리세요.`
+        : `${mall.label}용 HTML 원판을 복사했습니다.`
+    );
+  }, [pack, photosNorm, mallImages, pageImage, onCopy, onToast]);
 
   const downloadHtml = useCallback(() => {
     if (!pack) return;
-    const html = wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, "smartstore");
+    const html = mallImages.length
+      ? wrapDetailPageImageStackHtml(mallImages, pack, "smartstore")
+      : wrapMallHtml(renderDetailPageBodyHtml(pack, photosNorm), pack, "smartstore");
     const slug = (pack.productName || "detail").slice(0, 24);
     downloadText(`${slug}-상세.html`, html, "text/html;charset=utf-8");
-  }, [pack, photosNorm]);
+  }, [pack, photosNorm, mallImages]);
 
   const downloadTxt = useCallback(() => {
     if (!pack) return;
@@ -522,20 +565,33 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
 
   const downloadPng = useCallback(async () => {
     try {
-      const src =
-        pageImage ||
-        (await capturePreviewPng(
-          previewRef.current?.querySelector("article") || previewRef.current
-        ));
-      if (!src) throw new Error("png_failed");
-      const a = document.createElement("a");
-      a.href = src;
-      a.download = `${(pack?.productName || "detail").slice(0, 24)}-상세.png`;
-      a.click();
+      const slug = (pack?.productName || "detail").slice(0, 24);
+      const images = mallImages.length
+        ? mallImages
+        : [
+            {
+              src:
+                pageImage ||
+                (await capturePreviewPng(
+                  previewRef.current?.querySelector("article") || previewRef.current
+                )),
+            },
+          ].filter((item) => item.src);
+      if (!images.length) throw new Error("png_failed");
+      for (let i = 0; i < images.length; i += 1) {
+        const a = document.createElement("a");
+        a.href = images[i].src;
+        a.download = `${slug}-상세-${String(i).padStart(2, "0")}.png`;
+        a.click();
+        if (i < images.length - 1) {
+          await new Promise((r) => setTimeout(r, 220));
+        }
+      }
+      onToast?.(`상세 이미지 ${images.length}장을 저장했습니다. 몰에 위에서부터 올리세요.`);
     } catch {
-      onToast?.("PNG 저장에 실패했습니다. HTML을 복사해 주세요.");
+      onToast?.("이미지 저장에 실패했습니다. 다시 만들어 주세요.");
     }
-  }, [pack, onToast, pageImage]);
+  }, [pack, onToast, pageImage, mallImages]);
 
   return (
     <div className={CHANNEL_WORKSPACE_SHELL} aria-label={product.headerTitle}>
@@ -850,7 +906,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 </button>
               ))}
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadHtml}>
-                HTML 저장
+                이미지 HTML
               </button>
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadPng}>
                 상세 이미지 저장
@@ -901,19 +957,24 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                   : `스마트스토어·쿠팡 상세 폭 ${DETAIL_PAGE_WIDTH}px`}
               {photosNorm.length ? ` · 사진 ${photosNorm.length}장` : " · 컷 사진 생성"}
             </p>
-            {pageImage ? (
+            {mallImages.length ? (
               <div className="mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4">
-                <img
-                  src={pageImage}
-                  alt={`${pack.productName || "상품"} 상세 이미지`}
-                  className="mx-auto block h-auto w-full max-w-[860px] bg-white"
-                />
+                <div className="mx-auto w-full max-w-[860px] bg-white">
+                  {mallImages.map((img, i) => (
+                    <img
+                      key={`${img.type || "sec"}-${i}`}
+                      src={img.src}
+                      alt={img.alt || `${pack.productName || "상품"} ${i + 1}`}
+                      className="block h-auto w-full"
+                    />
+                  ))}
+                </div>
               </div>
             ) : null}
             <div
               ref={previewRef}
               className={`mb-5 overflow-x-auto rounded-[1.25rem] border border-[var(--vision-line)] bg-[#efece7] p-4 ${
-                pageImage ? "hidden" : ""
+                mallImages.length ? "hidden" : ""
               }`}
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />

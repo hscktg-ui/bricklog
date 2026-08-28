@@ -25,10 +25,10 @@ export default function DetailPageSampleZone({
   const current =
     DETAIL_PAGE_OPEN_EXAMPLES.find((ex) => ex.id === id) ||
     DETAIL_PAGE_OPEN_EXAMPLES[0];
-  const pageFull = detailPageSamplePageSrc(current.id, "full");
   const htmlSrc = detailPageSampleSrc(current.id);
   const frameRef = useRef(null);
   const [scale, setScale] = useState(1);
+  const [stack, setStack] = useState([detailPageSamplePageSrc(current.id, "full")]);
 
   useEffect(() => {
     const el = frameRef.current;
@@ -40,6 +40,28 @@ export default function DetailPageSampleZone({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    const fallback = [detailPageSamplePageSrc(id, "full")];
+    setStack(fallback);
+    let cancelled = false;
+    fetch(`/detail-sample/${id}-stack.json`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        const images = (data?.images || [])
+          .map((file) => String(file || "").replace(/^.*[\\/]/, ""))
+          .filter(Boolean)
+          .map((file) => `/detail-sample/${file}`);
+        if (images.length) setStack(images);
+      })
+      .catch(() => {
+        if (!cancelled) setStack(fallback);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   return (
     <div>
@@ -61,7 +83,7 @@ export default function DetailPageSampleZone({
       <div className={`mt-6 ${VISION_PANEL}`}>
         <LandingPanelHeader title={`${current.brandName} · ${current.productName}`} />
         <p className="border-b border-[var(--vision-line)] px-4 py-3 text-[13px] leading-relaxed text-[var(--vision-muted)] sm:px-5">
-          상세는 이미지입니다. 상세 디자이너가 이 860 화면을 봅니다.
+          상세는 섹션 이미지입니다. 상세 디자이너가 이 860 화면을 봅니다.
         </p>
         <div
           ref={frameRef}
@@ -74,27 +96,29 @@ export default function DetailPageSampleZone({
               margin: "0 auto",
             }}
           >
-            <img
-              key={pageFull}
-              src={pageFull}
-              alt={`${current.productName} 상세 이미지`}
-              width={STAGE_WIDTH}
-              className="block h-auto max-w-none bg-white"
-              style={{ width: STAGE_WIDTH * scale }}
-            />
+            {stack.map((src) => (
+              <img
+                key={src}
+                src={src}
+                alt={`${current.productName} 상세 이미지`}
+                width={STAGE_WIDTH}
+                className="block h-auto max-w-none bg-white"
+                style={{ width: STAGE_WIDTH * scale }}
+              />
+            ))}
           </div>
         </div>
       </div>
 
       <p className="mt-3 text-center text-[13px] text-[var(--vision-muted)]">
-        스마트스토어·쿠팡에 붙이는 860 이미지.{" "}
+        스마트스토어·쿠팡에 위에서부터 올리는 860 이미지.{" "}
         <Link
           href={htmlSrc}
           target="_blank"
           rel="noreferrer"
           className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline"
         >
-          HTML 원판 보기
+          붙일 이미지 HTML
         </Link>
       </p>
     </div>
