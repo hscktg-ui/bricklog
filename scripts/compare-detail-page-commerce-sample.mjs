@@ -1,5 +1,5 @@
 /**
- * 여주 햅쌀 샘플: HTML 출고 vs 구 이미지스택, DOM·자료 게이트 점검.
+ * 여주 햅쌀 샘플: HTML 출고 vs 구 PNG 스택 문제 대조.
  */
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
@@ -13,9 +13,8 @@ mkdirSync(outDir, { recursive: true });
 const rice = buildDetailPagePublicSample("open-rice");
 const html = rice.documentHtml;
 const pack = rice.pack;
-const facts = pack._meta?.facts || {};
-const commerce = pack._meta?.commerce || {};
-const critique = pack._meta?.critique || {};
+const srcs = [...html.matchAll(/<img[^>]+src="([^"]+)"/g)].map((m) => m[1]);
+const uniqueSrc = new Set(srcs);
 
 function count(re) {
   return (html.match(re) || []).length;
@@ -26,48 +25,49 @@ const checks = {
   h2: count(/<h2[\s>]/g),
   table: count(/<table[\s>]/g),
   dl: count(/<dl[\s>]/g),
-  button: count(/<(button|a)[^>]*(구매하기|#detail-buy)/g),
-  ctaBuy: html.includes("구매하기"),
-  missingMarker: html.includes("[자료 필요"),
+  button: html.includes("구매하기"),
+  missingPrice: html.includes("[자료 필요: 가격]"),
   abstractScream: /크게 외치지 않습니다|기준만 챙기면 됩니다/.test(html),
   deliverableHtml: html.includes('data-deliverable="html"'),
-  imageStackDeliverable: rice.mallStackHtml?.includes('data-deliverable="image-stack"'),
-  heroPngOnly: (rice.shots || []).length === 1 && rice.shots[0]?.slot === "hero",
-  viewport: html.includes("width=device-width"),
+  imageStack: html.includes('data-deliverable="image-stack"'),
+  notice: pack.sections.some((s) => s.type === "notice"),
+  riceGrainBrief: String(
+    pack.sections.find((s) => s.type === "observe")?.imageBrief?.prompt || ""
+  ).includes("쌀알"),
+  cookedRiceBrief: String(
+    pack.sections.find((s) => s.type === "scene")?.imageBrief?.prompt || ""
+  ).includes("밥"),
+  uniquePhotos: uniqueSrc.size,
+  photoRepeat: srcs.length > 1 && uniqueSrc.size < srcs.length,
+  critique: pack._meta?.critique?.total ?? 0,
+  invented: pack._meta?.critique?.invented === true,
+  missingRequired: pack._meta?.facts?.missingRequired || [],
 };
 
 const summary = {
   generatedAt: new Date().toISOString(),
-  sampleId: rice.id,
-  productName: rice.productName,
-  success: rice.success,
-  compete: rice.compete,
-  grade: pack._meta?.grade,
-  critique,
-  facts: {
-    missingRequired: facts.missingRequired,
-    missingRecommended: facts.missingRecommended,
-    usableFacts: facts.usableFacts || [],
-    prohibitedClaims: facts.prohibitedClaims,
+  versusOldPngStack: {
+    old: "860 PNG 10장 스택, DOM 텍스트 없음, 같은 포장 반복, 추상 카피, FAQ·CTA 없음",
+    now: "HTML 제목·표·FAQ·CTA, 포장 1장만, 없는 값은 [자료 필요], 검수 75+",
   },
-  commerceKeys: Object.keys(commerce),
-  htmlBytes: Buffer.byteLength(html, "utf8"),
-  mallStackBytes: Buffer.byteLength(rice.mallStackHtml || "", "utf8"),
   checks,
   pass:
     checks.h1 === 1 &&
     checks.table >= 1 &&
     checks.dl >= 1 &&
-    checks.ctaBuy &&
-    checks.missingMarker &&
+    checks.button &&
+    checks.missingPrice &&
     !checks.abstractScream &&
     checks.deliverableHtml &&
-    checks.heroPngOnly &&
-    (critique.total == null || critique.total >= 75),
+    !checks.imageStack &&
+    checks.notice &&
+    checks.riceGrainBrief &&
+    !checks.photoRepeat &&
+    checks.critique >= 75 &&
+    !checks.invented,
 };
 
+writeFileSync(join(outDir, "latest.json"), JSON.stringify(summary, null, 2));
 writeFileSync(join(outDir, "rice.html"), html);
-writeFileSync(join(outDir, "rice-commerce.json"), JSON.stringify(commerce, null, 2));
-writeFileSync(join(outDir, "latest-summary.json"), JSON.stringify(summary, null, 2));
-console.log(JSON.stringify({ pass: summary.pass, checks, critiqueScore: critique.total, missingRequired: facts.missingRequired }, null, 2));
-if (!summary.pass) process.exitCode = 1;
+console.log(JSON.stringify(summary, null, 2));
+if (!summary.pass) process.exit(1);

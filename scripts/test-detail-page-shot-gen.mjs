@@ -42,15 +42,16 @@ const kept = await generateDetailPageShots(
 assert.equal(kept.photos[0].slot, "hero");
 assert.equal(kept.generated.length, 0);
 
-const cloned = await generateDetailPageShots(
+const distinct = await generateDetailPageShots(
   { productName: "여주 햅쌀 10kg" },
   { photos: [{ src: "https://example.com/a.jpg", slot: "hero" }] }
 );
-assert.equal(cloned.skipped, "same_sku");
-assert.equal(cloned.photos.length, 3);
-assert.ok(cloned.photos.every((p) => p.src === "https://example.com/a.jpg"));
-assert.equal(cloned.photos.find((p) => p.slot === "observe")?.role, "detail");
-assert.equal(DETAIL_PAGE_SHOT_GEN_VERSION, "detail-shot-gen-v3");
-assert.ok(buildDetailPageShotPrompt("hero", { productName: "여주 햅쌀 10kg" }).includes("Not a webpage"));
+assert.equal(distinct.skipped, "no_repeat");
+assert.equal(distinct.photos.length, 1);
+assert.equal(distinct.photos[0].slot, "hero");
+assert.equal(DETAIL_PAGE_SHOT_GEN_VERSION, "detail-shot-gen-v4");
+assert.ok(buildDetailPageShotPrompt("hero", { productName: "여주 햅쌀 10kg" }).includes("한국 온라인 쇼핑몰"));
+assert.ok(buildDetailPageShotPrompt("observe", { productName: "여주 햅쌀 10kg", industry: "쌀가게" }).includes("쌀알"));
+assert.ok(buildDetailPageShotPrompt("scene", { productName: "여주 햅쌀 10kg", industry: "쌀가게" }).includes("밥"));
 
-console.log("ok detail-page-shot-gen missing=hero,observe,feature same_sku=3");
+console.log("ok detail-page-shot-gen missing=hero,observe,feature no_repeat=1");

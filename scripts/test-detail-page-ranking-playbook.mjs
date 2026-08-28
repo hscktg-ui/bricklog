@@ -26,6 +26,7 @@ assert.ok(formatRankingPlaybookForPrompt().includes("크리에이지"));
 assert.ok(formatRankingPlaybookForPrompt().includes("가짜 후기"));
 assert.ok(formatRankingPlaybookForPrompt().includes("네이버 쇼핑 랭킹"));
 assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("scene"));
+assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("notice"));
 assert.ok(formatRankingPlaybookForPrompt().includes("HTML 텍스트"));
 assert.ok(formatRankingPlaybookForPrompt().includes("[자료 필요]"));
 assert.equal(formatRankingPlaybookForPrompt().includes("통이미지 카피"), false);
