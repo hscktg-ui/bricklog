@@ -592,3 +592,7 @@ export function useBrandWorkspace() {
   }
   return ctx;
 }
+
+export function useOptionalBrandWorkspace() {
+  return useContext(BrandWorkspaceContext);
+}

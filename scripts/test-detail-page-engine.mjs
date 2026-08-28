@@ -7,6 +7,7 @@ import {
   parseDetailPageLlmPack,
   normalizeDetailPageInput,
   stampDetailPagePack,
+  generateDetailPagePack,
 } from "../lib/product/detailPageEngine.js";
 import {
   renderDetailPageBodyHtml,
@@ -17,7 +18,8 @@ import { DETAIL_PAGE_WIDTH } from "../lib/product/detailPageCatalog.js";
 import { getChannelFullText } from "../lib/content/channelPack.js";
 import { assertCore1DeliveryStamped } from "../lib/product/briclogCoreRules.js";
 import { assessDetailPageStandard } from "../lib/product/detailPageStandard.js";
-import { getDetailPageCompanyPreset } from "../lib/product/detailPageCompanyPresets.js";
+import { getDetailPageCompanyPreset, DETAIL_PAGE_OPEN_EXAMPLES } from "../lib/product/detailPageCompanyPresets.js";
+import { sanitizePublicDetailPageBody } from "../lib/product/detailPagePublic.js";
 
 const prevMission = process.env.BRICLOG_MISSION;
 const prevCore = process.env.BRICLOG_CORE_RULES;
@@ -127,6 +129,27 @@ assert.ok(
 const home100 = buildDetailPageFallbackPack({ presetId: "home100-showroom" });
 assert.ok(packToPlainText(home100).includes("HOME100"));
 assert.equal(home100._meta.standard.ok, true, home100._meta.standard.reasons.join(","));
+
+const openRice = DETAIL_PAGE_OPEN_EXAMPLES.find((p) => p.id === "open-rice");
+assert.ok(openRice);
+assert.equal(getDetailPageCompanyPreset("open-rice").productName, openRice.productName);
+
+const publicBody = sanitizePublicDetailPageBody({
+  productName: "여주 햅쌀 10kg",
+  features: "당일 도정",
+  presetId: "not-a-preset",
+  pageLength: "nope",
+});
+assert.equal(publicBody.presetId, "");
+assert.equal(publicBody.pageLength, "standard");
+assert.equal(sanitizePublicDetailPageBody({}).productName, "");
+
+const guestPack = await generateDetailPagePack(
+  { productName: "여주 햅쌀 10kg", brandName: "여주미곡", features: "당일 도정" },
+  { allowLlm: false }
+);
+assert.equal(guestPack.mode, "fallback");
+assert.ok(guestPack.pack.sections.length >= 4);
 
 if (prevMission === undefined) delete process.env.BRICLOG_MISSION;
 else process.env.BRICLOG_MISSION = prevMission;

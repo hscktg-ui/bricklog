@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import Link from "next/link";
 import {
   hasPlayedLandingSignature,
   markLandingIntroDone,
@@ -42,6 +43,7 @@ import {
 } from "@/lib/landing/ctaCopy";
 import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
+import PublicDetailPageInvite from "@/components/landing/PublicDetailPageInvite";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
@@ -53,6 +55,7 @@ import {
 } from "@/lib/landing/vision2030Styles";
 
 const NAV_LINKS = [
+  { id: "public-detail-page", label: "상세페이지", href: "/detail", show: "hidden sm:inline-flex" },
   { id: "public-brand-test", label: "샘플 체험", show: "hidden sm:inline-flex" },
   { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
   { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
@@ -148,16 +151,26 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             className="flex shrink-0 items-center gap-0.5 sm:gap-1"
             aria-label="주요 메뉴"
           >
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.id}
-                type="button"
-                onClick={() => scrollToId(link.id)}
-                className={`${link.show} rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] lg:px-3 lg:text-[13px]`}
-              >
-                {link.label}
-              </button>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.href ? (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className={`${link.show} rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] lg:px-3 lg:text-[13px]`}
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.id}
+                  type="button"
+                  onClick={() => scrollToId(link.id)}
+                  className={`${link.show} rounded-full px-2.5 py-2 text-[12px] font-semibold text-[var(--vision-muted)] transition hover:bg-[var(--vision-panel-bg,rgba(0,0,0,0.05))] hover:text-[var(--vision-ink)] lg:px-3 lg:text-[13px]`}
+                >
+                  {link.label}
+                </button>
+              )
+            )}
             <button
               type="button"
               data-briclog-cta="login-nav"
@@ -207,6 +220,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
             onSignup={(mode) => onAuthOpen(mode || "signup")}
             onPreviewActiveChange={setPublicTestPreviewActive}
           />
+          <PublicDetailPageInvite />
           <DemoPreviewSection
             sample={sample}
             onTest={withLandingCta(scrollToPublicTest)}

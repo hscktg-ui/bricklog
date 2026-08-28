@@ -20,7 +20,7 @@ import {
   VISION_SUB,
 } from "@/lib/landing/vision2030Styles";
 
-const CHANNELS = ["이야기", "플레이스", "인스타"];
+const CHANNELS = ["이야기", "플레이스", "인스타", "상세"];
 
 export default function HeroSection({
   greeting,
@@ -121,6 +121,15 @@ export default function HeroSection({
           </div>
           <p className="mt-3 text-[13px] leading-relaxed text-[var(--vision-muted)]">
             {LANDING_PRIMARY_SUB}
+          </p>
+          <p className="mt-2 text-[13px] text-[var(--vision-muted)]">
+            상품 상세페이지만 필요하면{" "}
+            <a
+              href="/detail"
+              className={`${VISION_LOGIN_LINK} !min-h-0 !px-1 !py-0 !text-[13px]`}
+            >
+              가입 없이 만들기
+            </a>
           </p>
           {onLogin ? (
             <p className="mt-2 text-[13px] text-[var(--vision-muted)]">

@@ -6,6 +6,7 @@ const BASE = resolvePublicSiteUrl();
 const STATIC_PATHS = [
   { path: "", priority: 1, changeFrequency: "daily" },
   { path: "/help", priority: 0.85, changeFrequency: "weekly" },
+  { path: "/detail", priority: 0.86, changeFrequency: "weekly" },
   { path: "/guides", priority: 0.8, changeFrequency: "weekly" },
   { path: "/terms", priority: 0.4, changeFrequency: "monthly" },
   { path: "/privacy", priority: 0.4, changeFrequency: "monthly" },

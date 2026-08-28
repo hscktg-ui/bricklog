@@ -2,11 +2,11 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import Icon from "@/components/Icon";
-import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
+import { useOptionalBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
 import { DETAIL_PAGE_LENGTHS, DETAIL_PAGE_WIDTH, DETAIL_PAGE_DEFAULT_ACCENT } from "@/lib/product/detailPageCatalog";
-import { DETAIL_PAGE_COMPANY_PRESETS } from "@/lib/product/detailPageCompanyPresets";
+import { DETAIL_PAGE_COMPANY_PRESETS, DETAIL_PAGE_OPEN_EXAMPLES } from "@/lib/product/detailPageCompanyPresets";
 import { DETAIL_PAGE_STANDARD_RULES } from "@/lib/product/detailPageStandard";
 import { renderDetailPageBodyHtml, wrapSmartstoreHtml, packToPlainText } from "@/lib/product/detailPageHtml";
 import {
@@ -15,7 +15,7 @@ import {
   channelFormScrollClass,
   channelResultPaneClass,
 } from "@/lib/workspace/channelWorkspaceLayout";
-import { VISION_CTA_ACCENT, VISION_INPUT } from "@/lib/landing/vision2030Styles";
+import { getPublicTestSessionId } from "@/lib/publicTest/publicTestQuotaClient";
 
 const MAX_PHOTOS = 5;
 
@@ -115,8 +115,9 @@ async function downloadPreviewPng(node, filename) {
   });
 }
 
-export default function DetailPageGenerator({ onCopy, onToast }) {
-  const { activeBrand } = useBrandWorkspace();
+export default function DetailPageGenerator({ onCopy, onToast, variant = "workspace" }) {
+  const workspace = useOptionalBrandWorkspace();
+  const activeBrand = workspace?.activeBrand;
   const previewRef = useRef(null);
   const [productName, setProductName] = useState("");
   const [target, setTarget] = useState("");
@@ -159,6 +160,18 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     setPack(null);
   }, []);
 
+  const startBlank = useCallback(() => {
+    setPresetId("");
+    setProductName("");
+    setTarget("");
+    setSearchIntent("");
+    setFeatures("");
+    setAccent(DETAIL_PAGE_DEFAULT_ACCENT);
+    setPageLength("standard");
+    setPack(null);
+    setError("");
+  }, []);
+
   const runGenerate = useCallback(async () => {
     const name = filledProduct;
     if (!name) {
@@ -168,34 +181,54 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     setBusy(true);
     setError("");
     try {
-      const data = await fetchWithAuth("/api/content/detail-page", {
-        method: "POST",
-        timeoutMs: 90_000,
-        body: JSON.stringify({
-          productName: name,
-          topic: name,
-          target,
-          searchIntent,
-          features,
-          pageLength,
-          accent,
-          presetId,
-          imageCount: photos.length,
-          brandName: activeBrand?.brandName || "",
-          brandId: activeBrand?.id || "",
-          region: activeBrand?.region || "",
-          industry: activeBrand?.industry || "",
-          brandDescription: activeBrand?.brandDescription || "",
-          phone: activeBrand?.phone || "",
-          hours: activeBrand?.hours || "",
-          address: activeBrand?.address || "",
-          storeFeatures: activeBrand?.storeFeatures || "",
-        }),
-      });
+      const payload = {
+        productName: name,
+        topic: name,
+        target,
+        searchIntent,
+        features,
+        pageLength,
+        accent,
+        presetId,
+        imageCount: photos.length,
+        brandName: activeBrand?.brandName || "",
+        brandId: activeBrand?.id || "",
+        region: activeBrand?.region || "",
+        industry: activeBrand?.industry || "",
+        brandDescription: activeBrand?.brandDescription || "",
+        phone: activeBrand?.phone || "",
+        hours: activeBrand?.hours || "",
+        address: activeBrand?.address || "",
+        storeFeatures: activeBrand?.storeFeatures || "",
+      };
+      const data =
+        variant === "public"
+          ? await fetch("/api/public/detail-page", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...payload,
+                sessionId: getPublicTestSessionId(),
+              }),
+            }).then(async (res) => {
+              const json = await res.json().catch(() => ({}));
+              if (!res.ok && !json?.ok) {
+                throw new Error(json?.userMessage || "상세페이지를 만들지 못했습니다.");
+              }
+              return json;
+            })
+          : await fetchWithAuth("/api/content/detail-page", {
+              method: "POST",
+              timeoutMs: 90_000,
+              body: JSON.stringify(payload),
+            });
       if (!data?.ok || !data.pack) {
         throw new Error(data?.userMessage || "상세페이지를 만들지 못했습니다.");
       }
       setPack(data.pack);
+      if (data.userMessage && data.mode === "fallback") {
+        onToast?.(data.userMessage);
+      }
     } catch (err) {
       setError(err.message || "상세페이지를 만들지 못했습니다.");
     } finally {
@@ -211,6 +244,8 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
     accent,
     photos.length,
     activeBrand,
+    variant,
+    onToast,
   ]);
 
   const copyHtml = useCallback(async () => {
@@ -253,7 +288,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
       <aside className={channelFormPaneClass({ width: "wide" })}>
         <div className={channelFormScrollClass("", true)}>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--vision-muted)]">
-            상품 상세
+            {variant === "public" ? "가입 없이 참여" : "상품 상세"}
           </p>
           <h2 className="mt-1 text-[22px] font-semibold tracking-tight">
             {product.emptyTitle}
@@ -262,22 +297,27 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             {product.emptyDesc}
           </p>
 
-          <ul className="mt-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
-            {DETAIL_PAGE_STANDARD_RULES.map((rule) => (
-              <li key={rule.id}>· {rule.label}</li>
-            ))}
-          </ul>
-
           <p className="mt-5 text-[12px] font-medium text-[var(--vision-muted)]">
-            우리 회사 프리셋
+            바로 채워보기
           </p>
-          <div className="mt-2 flex flex-col gap-2">
-            {DETAIL_PAGE_COMPANY_PRESETS.map((preset) => (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={startBlank}
+              className={`min-h-[40px] rounded-full border px-3 text-[13px] font-medium ${
+                !presetId
+                  ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
+                  : "border-[var(--vision-line)] bg-white"
+              }`}
+            >
+              내 상품으로
+            </button>
+            {DETAIL_PAGE_OPEN_EXAMPLES.map((preset) => (
               <button
                 key={preset.id}
                 type="button"
                 onClick={() => applyPreset(preset)}
-                className={`min-h-[44px] rounded-2xl border px-3 py-2 text-left text-[13px] leading-snug ${
+                className={`min-h-[40px] rounded-full border px-3 text-[13px] font-medium ${
                   presetId === preset.id
                     ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
                     : "border-[var(--vision-line)] bg-white"
@@ -287,6 +327,28 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
               </button>
             ))}
           </div>
+
+          <details className="mt-4 rounded-2xl border border-[var(--vision-line)] bg-white px-3 py-2">
+            <summary className="cursor-pointer text-[13px] font-medium">
+              해신·BRICLOG·HOME100 양식
+            </summary>
+            <div className="mt-2 flex flex-col gap-2 pb-1">
+              {DETAIL_PAGE_COMPANY_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => applyPreset(preset)}
+                  className={`min-h-[44px] rounded-2xl border px-3 py-2 text-left text-[13px] leading-snug ${
+                    presetId === preset.id
+                      ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
+                      : "border-[var(--vision-line)] bg-white"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </details>
 
           <label className="mt-5 block text-[13px] font-medium">
             상품명
@@ -384,7 +446,7 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
             disabled={busy}
             onClick={runGenerate}
           >
-            {busy ? "GPT-5.6 Sol로 기준 채우는 중…" : product.generateLabel}
+            {busy ? "만드는 중…" : "상세페이지 만들기"}
           </button>
         </div>
       </aside>
@@ -394,13 +456,13 @@ export default function DetailPageGenerator({ onCopy, onToast }) {
           <div className="flex h-full min-h-[320px] flex-col items-center justify-center text-center">
             <Icon name="bag" className="h-8 w-8 text-[var(--vision-muted)]" />
             <p className="mt-3 text-[15px] text-[var(--vision-muted)]">
-              해신·HOME100·BRICLOG 프리셋을 고르거나, 상품명만 넣으면 됩니다.
+              상품명과 특징만 있으면 됩니다. 사진은 선택입니다.
             </p>
           </div>
         ) : null}
         {busy ? (
           <p className="text-[15px] text-[var(--vision-muted)]">
-            등록된 GPT-5.6 Sol 한 번으로 섹션 JSON을 채웁니다. 이미지 모델은 쓰지 않습니다.
+            상품명과 특징으로 상세페이지를 맞추고 있습니다.
           </p>
         ) : null}
         {pack ? (
