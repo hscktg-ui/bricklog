@@ -50,7 +50,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 엔진 95점(글자·구성)은 성공이 아님. 기획30 · 조사30 · 설명20 · 글10 · 검수10.
 검수는 디자이너 30인 패널(`lib/qa/detailPageDesignerPanel30.js`). 하드: 사실·약한 CTA · 문장 한 번 · 패딩 금지 · 패널 평균 70.
 국내 1위는 슬로건이 아니라 이 출고 기준(`DETAIL_PAGE_KOREA_FIRST`). 챗봇 글·대행사 롱페이지·가짜 후기를 이긴다.
-지는 축 3개: 연출컷은 **컷별 상품 사진 생성**(올린 사진 우선, 가짜 모델컷 아님) · 예쁜 롱페이지는 첫눈 화면 · 멀티몰은 스마트스토어·쿠팡 복사 (`lib/product/detailPageCompeteWins.js`). 상세페이지 AI의 핵심은 사진까지 있는 붙일 화면. 스마트스토어 상위 리듬은 `lib/product/detailPageRankingPlaybook.js` — 리스트의 화면 순서만 가져오고 가짜 후기·모델컷·통이미지는 가져오지 않는다.
+지는 축 3개: 연출컷은 **컷별 상품 사진 생성**(올린 사진 우선, 가짜 모델컷 아님) · 예쁜 롱페이지는 첫눈 화면 · 멀티몰은 스마트스토어·쿠팡 복사 (`lib/product/detailPageCompeteWins.js`). 상세페이지 AI의 핵심은 사진까지 있는 붙일 화면. 스마트스토어 상위 리듬은 `lib/product/detailPageRankingPlaybook.js` — 리스트의 화면 순서만 가져오고 가짜 후기·모델컷·통이미지는 가져오지 않는다. 텍스트 나열은 `lib/product/detailPageCategoryFlow.js` — 범용 5포인트 금지. 그 카테고리 상위 상세 순서(쌀: 산지→도정→중량→포장→원재료, 원두: 원산지→로스팅→분쇄→중량). 없는 품종·등급은 안 씀.
 
 측정: `npm run test:detail-page-success-standard` · `npm run test:detail-page-type-pairing`
 

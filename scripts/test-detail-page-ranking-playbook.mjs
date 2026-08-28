@@ -14,11 +14,19 @@ assert.ok(DETAIL_PAGE_LIST_TOOL_USE.every((t) => t.take && t.leave));
 assert.ok(formatRankingPlaybookForPrompt().includes("크리에이지"));
 assert.ok(formatRankingPlaybookForPrompt().includes("가짜 후기"));
 assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("scene"));
+assert.ok(formatRankingPlaybookForPrompt().includes("카테고리 분석"));
 assert.ok(
   gptDetailPageSystemPrompt({
     brandName: "여주미곡",
     sectionIds: DETAIL_PAGE_LENGTHS.standard.sectionIds,
   }).includes("상위 상세 리듬")
+);
+assert.ok(
+  gptDetailPageSystemPrompt({
+    brandName: "여주미곡",
+    sectionIds: DETAIL_PAGE_LENGTHS.standard.sectionIds,
+    input: { productName: "여주 햅쌀 10kg", industry: "쌀가게" },
+  }).includes("산지")
 );
 
 const pack = buildDetailPageFallbackPack({

@@ -24,6 +24,7 @@ assert.ok(DETAIL_PAGE_KOREA_FIRST.beats.includes("챗봇 상세 글"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("올린 사진 우선"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("컷별 상품 사진 생성"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("스마트스토어·쿠팡 복사"));
+assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("카테고리 상세 나열"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.ship.includes("가입 전 860 맛보기"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("가짜 모델컷"));
 assert.ok(DETAIL_PAGE_KOREA_FIRST.notHow.includes("9몰 API"));
