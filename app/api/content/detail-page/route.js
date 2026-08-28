@@ -18,11 +18,6 @@ import {
   wrapSmartstoreHtml,
   packToPlainText,
 } from "@/lib/product/detailPageHtml";
-import {
-  renderDetailPageBodyHtml,
-  wrapSmartstoreHtml,
-  packToPlainText,
-} from "@/lib/product/detailPageHtml";
 
 export const runtime = "nodejs";
 export const maxDuration = 45;
