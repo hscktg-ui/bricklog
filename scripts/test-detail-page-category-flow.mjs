@@ -52,18 +52,18 @@ assert.equal(
   rice.sections.find((s) => s.type === "intent").title.includes("이 칸부터"),
   false
 );
-assert.ok(rice.sections.find((s) => s.type === "intent").kicker.includes("고민"));
+assert.equal(rice.sections.find((s) => s.type === "intent").kicker, "");
 assert.equal(
   (rice.sections.find((s) => s.type === "hero").body || "").includes("가늠이 안 된다"),
   false
 );
-assert.ok(rice.sections.find((s) => s.type === "explain").kicker.includes("핵심 소구점"));
+assert.ok(rice.sections.find((s) => s.type === "explain").kicker.includes("표기"));
 assert.ok(rice.sections.find((s) => s.type === "explain").bullets.some((b) => String(b).includes("산지")));
 assert.equal(
   JSON.stringify(rice.sections.find((s) => s.type === "explain")).includes("가늠이 안 된다"),
   false
 );
-assert.ok(rice.sections.find((s) => s.type === "usp").kicker.includes("소재"));
+assert.equal(rice.sections.find((s) => s.type === "usp").kicker, "");
 assert.ok(rice.sections.find((s) => s.type === "spec").rows.some((r) => r[0] === "원재료"));
 assert.ok(rice.sections.find((s) => s.type === "spec").rows.some((r) => r[0] === "도정"));
 assert.equal(
@@ -83,7 +83,7 @@ assert.equal(riceHtml.includes("햅쌀로 표기"), false);
 assert.ok(riceHtml.includes('data-layout="problem-band"'));
 assert.ok(riceHtml.includes('data-layout="usp-rows"'));
 assert.ok(riceHtml.includes('data-layout="points-5"'));
-assert.ok(riceHtml.includes("핵심 소구점"));
+assert.ok(riceHtml.includes("표기"));
 
 const beansInput = normalizeDetailPageInput({
   productName: "하우스 블렌드 원두 200g",

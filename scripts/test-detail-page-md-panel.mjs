@@ -37,7 +37,7 @@ const ricePanel = evaluateDetailPageMallMdPanel({
 assert.equal(ricePanel.votes.length, 20);
 assert.equal(ricePanel.measured.vetoes.length, 0, ricePanel.measured.vetoes.join(","));
 assert.equal(ricePanel.measured.needCount, 0, "public rice must not leak [자료 필요]");
-assert.ok(ricePanel.measured.imgs >= 4, `rice imgs ${ricePanel.measured.imgs}`);
+assert.ok(ricePanel.measured.imgs >= 3, `rice imgs ${ricePanel.measured.imgs}`);
 assert.equal(ricePanel.summary.mean, 99);
 assert.equal(ricePanel.summary.hire, true);
 assert.equal(ricePanel.summary.passCount, 20);

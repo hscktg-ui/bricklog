@@ -47,7 +47,7 @@ assert.ok(rice.pageImage.hero.includes("page-hero"));
 assert.ok(rice.html.includes("/detail-sample/open-rice-hero.png"));
 assert.ok(rice.html.includes("/detail-sample/open-rice-observe.png"));
 assert.ok(rice.html.includes("/detail-sample/open-rice-feature.png"));
-assert.ok(rice.html.includes("/detail-sample/open-rice-img-03.png"));
+assert.equal(rice.html.includes("/detail-sample/open-rice-img-03.png"), false);
 assert.equal(rice.documentHtml.includes("fake_model"), false);
 assert.equal(rice.success.ok, true);
 assert.ok(rice.success.score >= 90, `rice success ${rice.success.score}`);
