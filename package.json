@@ -302,6 +302,7 @@
     "test:detail-page-compete-wins": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-compete-wins.mjs",
     "test:detail-page-public-sample": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-public-sample.mjs",
     "test:detail-page-shot-gen": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-shot-gen.mjs",
+    "test:detail-page-image-concept": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-image-concept.mjs",
     "test:detail-page-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-pipeline.mjs",
     "test:detail-page-commerce": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-commerce.mjs",
     "test:detail-page-ranking-playbook": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-ranking-playbook.mjs",

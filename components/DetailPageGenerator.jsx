@@ -18,13 +18,13 @@ import {
 } from "@/lib/product/detailPageStandard";
 import {
   DETAIL_PAGE_MAX_PHOTOS,
-  listDetailPagePhotoSlots,
   normalizeDetailPagePhotos,
 } from "@/lib/product/detailPagePhotos";
 import {
-  DETAIL_PAGE_ASSET_ROLES,
-  assignDetailPageAssetRoles,
-} from "@/lib/product/detailPageAssets";
+  inspectDetailPageImageConcept,
+  listDetailPageShotSubjects,
+} from "@/lib/product/detailPageImageConcept";
+import { assignDetailPageAssetRoles } from "@/lib/product/detailPageAssets";
 import { DETAIL_PAGE_MALLS } from "@/lib/product/detailPageCompeteWins";
 import {
   renderDetailPageBodyHtml,
@@ -302,57 +302,74 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     ]
   );
 
-  const photoSlots = useMemo(() => {
-    const length = DETAIL_PAGE_LENGTHS[pageLength] || DETAIL_PAGE_LENGTHS.standard;
-    return listDetailPagePhotoSlots(length.sectionIds);
-  }, [pageLength]);
+  const shotSubjects = useMemo(
+    () =>
+      listDetailPageShotSubjects({
+        productName: filledProduct,
+        industry: activeBrand?.industry || "",
+      }),
+    [filledProduct, activeBrand?.industry]
+  );
+
+  const imageConcept = useMemo(
+    () =>
+      inspectDetailPageImageConcept({
+        photos: photosNorm,
+        input: {
+          productName: filledProduct,
+          industry: activeBrand?.industry || "",
+        },
+      }),
+    [photosNorm, filledProduct, activeBrand?.industry]
+  );
+
+  const placeIncomingPhotos = useCallback((prev, incoming, slot) => {
+    const subjects = listDetailPageShotSubjects({
+      productName: filledProduct,
+      industry: activeBrand?.industry || "",
+    });
+    if (slot) {
+      const rest = prev.filter((p) => p.slot !== slot);
+      return assignDetailPageAssetRoles(
+        normalizeDetailPagePhotos([...rest, { ...incoming[0], slot }])
+      ).slice(0, DETAIL_PAGE_MAX_PHOTOS);
+    }
+    const taken = new Set(prev.map((p) => p.slot).filter(Boolean));
+    const empty = subjects.filter((s) => !taken.has(s.slot));
+    return assignDetailPageAssetRoles(
+      normalizeDetailPagePhotos([
+        ...prev,
+        ...incoming.map((photo, i) => ({
+          ...photo,
+          slot: photo.slot || empty[i]?.slot || "",
+        })),
+      ])
+    ).slice(0, DETAIL_PAGE_MAX_PHOTOS);
+  }, [filledProduct, activeBrand?.industry]);
 
   const handlePhotos = useCallback(async (event) => {
     try {
       const next = await filesToDataUrls(event.target.files);
-      setPhotos((prev) =>
-        assignDetailPageAssetRoles(
-          normalizeDetailPagePhotos([...prev, ...next])
-        ).slice(0, DETAIL_PAGE_MAX_PHOTOS)
-      );
+      setPhotos((prev) => placeIncomingPhotos(prev, next));
       if (event.target) event.target.value = "";
     } catch {
       onToast?.("사진을 읽지 못했습니다.");
     }
-  }, [onToast]);
+  }, [onToast, placeIncomingPhotos]);
 
-  const handlePhotoDrop = useCallback(async (event) => {
+  const handlePhotoDrop = useCallback(async (event, slot) => {
     event.preventDefault();
     try {
       const next = await filesToDataUrls(event.dataTransfer?.files);
-      setPhotos((prev) =>
-        assignDetailPageAssetRoles(
-          normalizeDetailPagePhotos([...prev, ...next])
-        ).slice(0, DETAIL_PAGE_MAX_PHOTOS)
-      );
+      if (!next.length) return;
+      setPhotos((prev) => placeIncomingPhotos(prev, next, slot));
     } catch {
       onToast?.("사진을 읽지 못했습니다.");
     }
-  }, [onToast]);
+  }, [onToast, placeIncomingPhotos]);
 
-  const updatePhotoRole = useCallback((idx, role) => {
-    setPhotos((prev) =>
-      prev.map((p, i) => (i === idx ? { ...p, role } : p))
-    );
-  }, []);
-
-  const movePhoto = useCallback((idx, dir) => {
-    setPhotos((prev) => {
-      const next = [...prev];
-      const j = idx + dir;
-      if (j < 0 || j >= next.length) return prev;
-      [next[idx], next[j]] = [next[j], next[idx]];
-      return next;
-    });
-  }, []);
-
-  const removePhoto = useCallback((idx) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== idx));
+  const removePhotoSlot = useCallback((slot) => {
+    setPhotos((prev) => prev.filter((p) => p.slot !== slot));
   }, []);
 
   const applyPreset = useCallback((preset) => {
@@ -372,8 +389,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     setPhotos([
       { src: `/detail-sample/${preset.id}-hero.png`, slot: "hero", role: "packshot" },
       { src: `/detail-sample/${preset.id}-observe.png`, slot: "observe", role: "detail" },
-      { src: `/detail-sample/${preset.id}-feature.png`, slot: "feature", role: "detail" },
-      { src: `/detail-sample/${preset.id}-img-03.png`, slot: "scene", role: "usage" },
+      { src: `/detail-sample/${preset.id}-feature.png`, slot: "feature", role: "package" },
     ]);
     setAccent(preset.accent || DETAIL_PAGE_DEFAULT_ACCENT);
     setPageLength(preset.pageLength || "standard");
@@ -792,26 +808,63 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               />
             </label>
             <div>
-              <p className="text-[13px] font-medium">
-                상품 사진 (최대 {DETAIL_PAGE_MAX_PHOTOS}장)
-              </p>
+              <p className="text-[13px] font-medium">상품 컷</p>
               <p className="mt-1 text-[12px] leading-relaxed text-[var(--vision-muted)]">
-                제품 전체·디테일·사용·구성·치수를 나눠 올립니다. 한글은 사진에 그리지 않습니다. 빈 칸은 포장 앞면만 생성합니다. 가짜 모델컷은 그리지 않습니다.
+                장은 세지 않습니다. {shotSubjects.filter((s) => s.required).map((s) => s.label).join("·")}은
+                피사체가 달라야 합니다. 한글은 사진에 그리지 않습니다. 빈 칸은 만들기 때 그 피사체만 생성합니다.
               </p>
-              <ol className="mt-2 grid gap-1 text-[12px] text-[var(--vision-muted)]">
-                {photoSlots.slice(0, 3).map((slot) => (
-                  <li key={slot.type}>
-                    {slot.n} {slot.shot}
-                    {slot.hint ? ` · ${slot.hint}` : ""}
-                  </li>
-                ))}
-              </ol>
+              <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
+                {imageConcept.doctrine}
+              </p>
+              <ul className="mt-2 space-y-2">
+                {shotSubjects.map((subject) => {
+                  const photo = photosNorm.find((p) => p.slot === subject.slot);
+                  return (
+                    <li
+                      key={subject.id}
+                      className="rounded-2xl border border-[var(--vision-line)] bg-white p-2"
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => handlePhotoDrop(e, subject.slot)}
+                    >
+                      <div className="flex items-center gap-2">
+                        {photo?.src ? (
+                          <img src={photo.src} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                        ) : (
+                          <span className="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-[var(--vision-line)] text-[11px] text-[var(--vision-muted)]">
+                            빈 칸
+                          </span>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[12px] font-medium">
+                            {subject.label}
+                            {subject.required ? "" : " · 있으면"}
+                          </p>
+                          <p className="text-[11px] text-[var(--vision-muted)]">
+                            {photo?.src
+                              ? "이 피사체로 붙입니다"
+                              : "만들면 이 피사체를 생성합니다"}
+                          </p>
+                        </div>
+                        {photo?.src ? (
+                          <button
+                            type="button"
+                            className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
+                            onClick={() => removePhotoSlot(subject.slot)}
+                          >
+                            빼기
+                          </button>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
               <label
-                className="mt-2 flex min-h-[88px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--vision-line)] bg-white px-3 py-4 text-center text-[13px] text-[var(--vision-muted)]"
+                className="mt-2 flex min-h-[64px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--vision-line)] bg-white px-3 py-3 text-center text-[13px] text-[var(--vision-muted)]"
                 onDragOver={(e) => e.preventDefault()}
-                onDrop={handlePhotoDrop}
+                onDrop={(e) => handlePhotoDrop(e)}
               >
-                사진을 끌어다 놓거나 눌러서 첨부
+                여러 장을 올리면 빈 피사체부터 채웁니다
                 <input
                   ref={photoInputRef}
                   className="sr-only"
@@ -822,69 +875,6 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 />
               </label>
             </div>
-            {photosNorm.length > 0 ? (
-              <ul className="space-y-2">
-                {photosNorm.map((photo, i) => {
-                  const slot = photoSlots[i];
-                  return (
-                  <li key={`${i}-${photo.src.slice(-18)}`} className="rounded-2xl border border-[var(--vision-line)] bg-white p-2">
-                    <div className="flex items-center gap-2">
-                      <img src={photo.src} alt="" className="h-14 w-14 rounded-lg object-cover" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[12px] font-medium">
-                          {slot ? `${slot.n}. ${slot.shot}` : "남는 사진"}
-                        </p>
-                        <p className="text-[11px] text-[var(--vision-muted)]">
-                          {slot
-                            ? `${DETAIL_PAGE_SECTION_LABELS[slot.type] || slot.type} 칸`
-                            : "맨 아래 모아 붙임"}
-                        </p>
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          type="button"
-                          className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                          onClick={() => movePhoto(i, -1)}
-                          disabled={i === 0}
-                        >
-                          위
-                        </button>
-                        <button
-                          type="button"
-                          className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                          onClick={() => movePhoto(i, 1)}
-                          disabled={i === photosNorm.length - 1}
-                        >
-                          아래
-                        </button>
-                        <button
-                          type="button"
-                          className="rounded-full border border-[var(--vision-line)] px-2 py-1 text-[11px]"
-                          onClick={() => removePhoto(i)}
-                        >
-                          빼기
-                        </button>
-                      </div>
-                    </div>
-                    <label className="mt-2 block text-[11px] text-[var(--vision-muted)]">
-                      이 사진의 역할
-                      <select
-                        className={`${VISION_INPUT} mt-1 min-h-[42px] text-[13px]`}
-                        value={photo.role || "packshot"}
-                        onChange={(e) => updatePhotoRole(i, e.target.value)}
-                      >
-                        {DETAIL_PAGE_ASSET_ROLES.map((role) => (
-                          <option key={role.id} value={role.id}>
-                            {role.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </li>
-                  );
-                })}
-              </ul>
-            ) : null}
           </FieldGroup>
 
           <FieldGroup
@@ -1096,7 +1086,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 : pageImage
                   ? "상세 이미지를 디자이너가 보는 중…"
                   : `스마트스토어·쿠팡 상세 폭 ${DETAIL_PAGE_WIDTH}px`}
-              {photosNorm.length ? ` · 사진 ${photosNorm.length}장` : " · 컷 사진 생성"}
+              {successView?.imageConcept
+                ? ` · 컷 ${successView.imageConcept.requiredFilledCount}/${successView.imageConcept.requiredCount}`
+                : photosNorm.length
+                  ? ` · 사진 ${photosNorm.length}장`
+                  : " · 컷 사진 생성"}
               {mallImages.length
                 ? ` · 붙일 칸 ${mallImages.length}장`
                 : " · 통이미지가 안 되면 칸마다 저장"}
@@ -1184,6 +1178,15 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                     {successView.mdPanel.vetoes?.length
                       ? ` · ${successView.mdPanel.vetoes.join(" · ")}`
                       : ""}
+                  </li>
+                ) : null}
+                {successView.imageConcept ? (
+                  <li>
+                    {successView.imageConcept.ok ? "통과" : "미달"} · 상품 컷{" "}
+                    {successView.imageConcept.requiredFilledCount}/
+                    {successView.imageConcept.requiredCount}
+                    {" · "}
+                    {successView.imageConcept.doctrine}
                   </li>
                 ) : null}
               </ul>
