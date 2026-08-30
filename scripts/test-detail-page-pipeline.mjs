@@ -66,7 +66,7 @@ const furniture = buildDetailPagePlan({
   features: "참나무\n1800mm",
   pageLength: "standard",
 });
-assert.equal(furniture.archetype, "technical_authority");
+assert.equal(furniture.archetype, "technical");
 assert.ok(furniture.order.includes("소재"));
 
 const salon = buildDetailPagePlan({
@@ -81,14 +81,13 @@ assert.deepEqual(
   [...DETAIL_PAGE_PIPELINE_STAGES],
   [
     "intelligence",
-    "plan",
-    "art",
-    "imageDirector",
+    "strategy",
+    "storyboard",
+    "artDirector",
     "productPhoto",
-    "copy",
-    "layout",
-    "render",
+    "typography",
     "critic",
+    "stitch",
   ]
 );
 
@@ -97,9 +96,11 @@ const html = renderDetailPageBodyHtml(pack, []);
 assert.ok(html.includes('data-pipeline="planned"'));
 assert.ok(html.includes('data-korean-in-image="0"'));
 assert.ok(html.includes('data-image-gen="product-only"'));
-assert.ok(html.includes('data-composition="H02-image-then-nameplate"'));
-assert.ok(html.includes('data-composition="P02-question-stack"'));
-assert.ok(html.includes('data-composition="E02-quiet-board"'));
+assert.ok(html.includes('data-composition="dramatic_hero"'));
+assert.ok(html.includes('data-composition="typography_focus"'));
+assert.ok(html.includes('data-deliverable="mall-image"'));
+assert.equal(html.includes("<button"), false);
+assert.equal(html.includes('role="button"'), false);
 assert.equal(pack._meta.pipeline.oneShot, false);
 assert.equal(pack._meta.pipeline.koreanOnPageNotInPhoto, true);
 assert.equal(pack._meta.pipeline.imageGenStage, 5);

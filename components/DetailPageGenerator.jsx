@@ -6,7 +6,6 @@ import { useOptionalBrandWorkspace } from "@/context/BrandWorkspaceContext";
 import { fetchWithAuth } from "@/lib/api/clientAuth";
 import { CHANNEL_PRODUCTS } from "@/lib/channels/channelProducts";
 import {
-  DETAIL_PAGE_LENGTHS,
   DETAIL_PAGE_WIDTH,
   DETAIL_PAGE_DEFAULT_ACCENT,
   DETAIL_PAGE_SECTION_LABELS,
@@ -45,6 +44,7 @@ import {
 } from "@/lib/workspace/channelWorkspaceLayout";
 import { VISION_CTA_ACCENT, VISION_INPUT, VISION_SPINNER } from "@/lib/landing/vision2030Styles";
 import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
+import { listDetailPageStylePresets } from "@/lib/product/detailPageStylePreset";
 import { assessDetailPageSuccess } from "@/lib/product/detailPageSuccessStandard";
 import {
   captureDetailPageSections,
@@ -147,6 +147,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [features, setFeatures] = useState("");
   const [pageLength, setPageLength] = useState("standard");
   const [accent, setAccent] = useState(DETAIL_PAGE_DEFAULT_ACCENT);
+  const [stylePreset, setStylePreset] = useState("");
   const [presetId, setPresetId] = useState("");
   const [photos, setPhotos] = useState([]);
   const [price, setPrice] = useState("");
@@ -261,6 +262,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       mustInclude,
       pageLength,
       accent,
+      stylePreset,
       presetId,
       imageCount: photosNorm.length,
       photos: photosNorm,
@@ -290,6 +292,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       mustInclude,
       pageLength,
       accent,
+      stylePreset,
       presetId,
       photosNorm,
       price,
@@ -932,34 +935,20 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
             title={DETAIL_PAGE_PRODUCT.fieldGroups[3].title}
             hint={DETAIL_PAGE_PRODUCT.fieldGroups[3].hint}
           >
-            <div className="flex gap-2">
-              {Object.values(DETAIL_PAGE_LENGTHS).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setPageLength(opt.id)}
-                  className={`min-h-[40px] flex-1 rounded-full border px-3 text-[13px] font-medium ${
-                    pageLength === opt.id
-                      ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
-                      : "border-[var(--vision-line)] bg-white"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-            <label className="flex items-center gap-3 text-[13px] font-medium">
-              포인트 색
-              <input
-                type="color"
-                value={accent}
-                onChange={(e) => {
-                  const next = e.target.value;
-                  setAccent(next);
-                  setPack((prev) => (prev ? { ...prev, accent: next } : prev));
-                }}
-                className="h-9 w-12 cursor-pointer rounded border border-[var(--vision-line)]"
-              />
+            <label className="block text-[13px] font-medium">
+              스타일
+              <select
+                className={`${VISION_INPUT} mt-1`}
+                value={stylePreset}
+                onChange={(e) => setStylePreset(e.target.value)}
+              >
+                <option value="">상품에 맞게</option>
+                {listDetailPageStylePresets().map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.label} · {preset.hint}
+                  </option>
+                ))}
+              </select>
             </label>
           </FieldGroup>
 

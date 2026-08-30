@@ -27,7 +27,8 @@ const html = renderDetailPageBodyHtml(pack, [
 ]);
 const doc = wrapMallHtml(html, pack, "smartstore");
 assert.equal((html.match(/<h1[\s>]/g) || []).length, 1);
-assert.ok(html.includes("<button"));
+assert.ok(html.includes('data-cta="close"'));
+assert.equal(html.includes("<button"), false);
 assert.ok(html.includes('data-layout="faq"'));
 assert.ok(html.includes("[자료 필요: 가격]"));
 assert.ok(html.includes("[자료 필요: 배송비]") || html.includes("[자료 필요: 출고"));
