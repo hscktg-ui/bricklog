@@ -51,6 +51,9 @@ assert.equal(rice.html.includes("/detail-sample/open-rice-img-03.png"), false);
 assert.equal(rice.documentHtml.includes("fake_model"), false);
 assert.equal(rice.success.ok, true);
 assert.ok(rice.success.score >= 90, `rice success ${rice.success.score}`);
+assert.equal(rice.success.mdPanel.passCount, 20);
+assert.equal(rice.success.mdPanel.hire, true);
+assert.equal(rice.pack._meta.mdPanel.passCount, 20);
 assert.ok(rice.pack._meta.critique.ok, `critique ${rice.pack._meta.critique.total}`);
 assert.equal(rice.compete.ok, true);
 
@@ -65,6 +68,8 @@ assert.ok(beans.html.includes("<img "));
 assert.equal(beans.documentHtml.includes("fake_model"), false);
 assert.equal(beans.success.ok, true);
 assert.ok(beans.success.score >= 90, `beans success ${beans.success.score}`);
+assert.equal(beans.success.mdPanel.passCount, 20);
+assert.equal(beans.success.mdPanel.hire, true);
 assert.equal(beans.compete.ok, true);
 
 const invite = readFileSync("components/landing/PublicDetailPageInvite.jsx", "utf8");

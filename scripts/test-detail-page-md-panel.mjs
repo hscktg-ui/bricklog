@@ -51,6 +51,7 @@ const beansPanel = evaluateDetailPageMallMdPanel({
 assert.equal(beansPanel.measured.vetoes.length, 0, beansPanel.measured.vetoes.join(","));
 assert.equal(beansPanel.summary.mean, 99);
 assert.equal(beansPanel.summary.hire, true);
+assert.equal(beansPanel.summary.passCount, 20);
 
 const filledPack = {
   productName: "여주 햅쌀 10kg",

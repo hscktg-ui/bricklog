@@ -1069,6 +1069,9 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 ? DETAIL_PAGE_PRODUCT.successOk
                 : DETAIL_PAGE_PRODUCT.successNeed}
               {successView?.score != null ? ` · 성공 ${successView.score}` : ""}
+              {successView?.mdPanel
+                ? ` · MD ${successView.mdPanel.passCount}/${successView.mdPanel.n}`
+                : ""}
               {pack._meta?.sqv?.score != null
                 ? ` · ${DETAIL_PAGE_PRODUCT.engineGradeHint} ${pack._meta.sqv.score}`
                 : ""}
@@ -1172,6 +1175,17 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                     {phase.meaning}
                   </li>
                 ))}
+                {successView.mdPanel ? (
+                  <li>
+                    {successView.mdPanel.hire ? "통과" : "미달"} · MD 20인{" "}
+                    {successView.mdPanel.passCount}/{successView.mdPanel.n}
+                    {" · "}
+                    {successView.mdPanel.hireLabel}
+                    {successView.mdPanel.vetoes?.length
+                      ? ` · ${successView.mdPanel.vetoes.join(" · ")}`
+                      : ""}
+                  </li>
+                ) : null}
               </ul>
             ) : pack._meta?.standard ? (
               <ul className="mb-4 grid gap-1 text-[12px] text-[var(--vision-muted)]">
