@@ -46,7 +46,7 @@ assert.ok(rice.html.includes("당일 도정"));
 assert.ok(rice.pack.sections.some((s) => s.type === "notice"));
 assert.ok(rice.documentHtml.includes("도서산간"));
 assert.ok(rice.pageImage.hero.includes("page-hero"));
-assert.ok(rice.html.includes("/detail-sample/open-rice-hero.png"));
+assert.ok(rice.html.includes("/detail-sample/open-rice-canvas-pack.png"));
 assert.ok(rice.html.includes("/detail-sample/open-rice-canvas-meal.png"));
 assert.ok(rice.html.includes("/detail-sample/open-rice-canvas-macro.png"));
 assert.equal(rice.html.includes("/detail-sample/open-rice-img-03.png"), false);
