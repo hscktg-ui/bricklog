@@ -93,7 +93,11 @@ async function captureViaHtml2Canvas(node, width, height) {
 
 function canvasToDataUrl(canvas, type = "png") {
   if (!canvas || canvas.width < 8 || canvas.height < 8) return "";
-  if (type === "jpeg") {
+  if (type === "webp") {
+    const webp = canvas.toDataURL("image/webp", 0.92);
+    if (webp.startsWith("data:image/webp")) return webp;
+  }
+  if (type === "jpeg" || type === "jpg") {
     return canvas.toDataURL("image/jpeg", 0.92);
   }
   const png = canvas.toDataURL("image/png");
@@ -137,13 +141,13 @@ function photoFallback(child) {
   };
 }
 
-export async function captureDetailPageSections(article) {
+export async function captureDetailPageSections(article, { type = "png" } = {}) {
   if (!article) return { sections: [], full: "" };
   const kids = [...article.querySelectorAll(":scope > [data-section]")];
   const sections = [];
   for (const child of kids.length ? kids : [...article.children]) {
     try {
-      const src = await captureNodeImage(child, { maxHeight: 2800 });
+      const src = await captureNodeImage(child, { maxHeight: 2800, type });
       if (src && src.length > 2_400) {
         sections.push({
           src,
@@ -162,7 +166,7 @@ export async function captureDetailPageSections(article) {
   const tall = Math.max(article.scrollHeight, article.offsetHeight);
   if (tall <= 7200) {
     try {
-      full = await captureNodeImage(article, { maxHeight: 7200 });
+      full = await captureNodeImage(article, { maxHeight: 7200, type });
       if (full && full.length < 8_000) full = "";
     } catch {
       full = "";
@@ -190,7 +194,11 @@ export function triggerDataUrlDownloads(files, delayMs = 420) {
 }
 
 export function sectionFileName(slug, type, index, src = "") {
-  const ext = String(src).startsWith("data:image/jpeg") ? "jpg" : "png";
+  const ext = String(src).startsWith("data:image/webp")
+    ? "webp"
+    : String(src).startsWith("data:image/jpeg")
+      ? "jpg"
+      : "png";
   const label = String(type || "칸").replace(/[^\w가-힣-]+/g, "");
   return `${slug}-${String(index).padStart(2, "0")}-${label || "칸"}.${ext}`;
 }

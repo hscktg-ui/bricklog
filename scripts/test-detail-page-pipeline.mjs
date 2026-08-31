@@ -97,7 +97,7 @@ assert.ok(html.includes('data-pipeline="planned"'));
 assert.ok(html.includes('data-korean-in-image="0"'));
 assert.ok(html.includes('data-image-gen="product-only"'));
 assert.ok(html.includes('data-composition="dramatic_hero"'));
-assert.ok(html.includes('data-composition="typography_focus"'));
+assert.ok(html.includes('data-composition="typography_overlay"'));
 assert.ok(html.includes('data-deliverable="mall-image"'));
 assert.equal(html.includes("<button"), false);
 assert.equal(html.includes('role="button"'), false);

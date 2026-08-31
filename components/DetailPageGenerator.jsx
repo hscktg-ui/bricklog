@@ -167,6 +167,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [copiedMall, setCopiedMall] = useState("");
   const [pageImage, setPageImage] = useState("");
   const [sectionImages, setSectionImages] = useState([]);
+  const [exportFormat, setExportFormat] = useState("png");
   const [designerVision, setDesignerVision] = useState(null);
   const photoInputRef = useRef(null);
 
@@ -586,6 +587,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     );
   }, [activeBrand]);
 
+  const moveSection = useCallback((idx, dir) => {
+    setPack((prev) => {
+      if (!prev?.sections) return prev;
+      const next = prev.sections.slice();
+      const j = idx + dir;
+      if (j < 0 || j >= next.length) return prev;
+      [next[idx], next[j]] = [next[j], next[idx]];
+      return applyEditedDetailPageSections(next[0] ? { ...prev, sections: next } : prev, next, {
+        brandName: prev.brandName || activeBrand?.brandName || "",
+      });
+    });
+  }, [activeBrand]);
+
   const removeSection = useCallback((idx) => {
     setPack((prev) => {
       if (!prev?.sections || prev.sections.length <= 4) return prev;
@@ -603,7 +617,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       let images = mallImages.filter((item) => item?.src);
       if (!images.length) {
         const article = previewRef.current?.querySelector("article") || previewRef.current;
-        const captured = await captureDetailPageSections(article);
+        const captured = await captureDetailPageSections(article, { type: exportFormat });
         images = captured.sections.length
           ? captured.sections
           : captured.full
@@ -630,7 +644,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     } catch {
       onToast?.("이미지 저장에 실패했습니다. 칸마다 나눠 저장해 보세요.");
     }
-  }, [pack, onToast, mallImages]);
+  }, [pack, onToast, mallImages, exportFormat]);
 
   const downloadOneSection = useCallback(
     async (index) => {
@@ -650,7 +664,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         return;
       }
       try {
-        const src = await captureNodeImage(node, { maxHeight: 2800 });
+        const src = await captureNodeImage(node, { maxHeight: 2800, type: exportFormat });
         if (!src) throw new Error("empty");
         await triggerDataUrlDownloads([
           { src, name: sectionFileName(slug, node.getAttribute("data-section"), index, src) },
@@ -660,7 +674,7 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         onToast?.("이 칸 저장에 실패했습니다.");
       }
     },
-    [pack, mallImages, onToast]
+    [pack, mallImages, onToast, exportFormat]
   );
 
   const downloadFullPage = useCallback(async () => {
@@ -672,18 +686,19 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
         return;
       }
       const article = previewRef.current?.querySelector("article");
-      const full = await captureNodeImage(article, { maxHeight: 7200 });
+      const full = await captureNodeImage(article, { maxHeight: 7200, type: exportFormat });
       if (!full) {
         onToast?.("한 장으로 담기엔 깁니다. 칸별로 저장하세요.");
         return;
       }
       const slug = (pack?.productName || "detail").slice(0, 24);
-      await triggerDataUrlDownloads([{ src: full, name: `${slug}-상세-전체.png` }]);
+      const ext = exportFormat === "webp" ? "webp" : exportFormat === "jpeg" ? "jpg" : "png";
+      await triggerDataUrlDownloads([{ src: full, name: `${slug}-상세-전체.${ext}` }]);
       onToast?.("한 장으로 저장했습니다.");
     } catch {
       onToast?.("통이미지는 길어서 실패했습니다. 칸별로 저장하세요.");
     }
-  }, [pack, pageImage, onToast]);
+  }, [pack, pageImage, onToast, exportFormat]);
 
   return (
     <div className={CHANNEL_WORKSPACE_SHELL} aria-label={product.headerTitle}>
@@ -1028,6 +1043,20 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadFullPage}>
                 한 장으로 저장
               </button>
+              {["png", "jpeg", "webp"].map((fmt) => (
+                <button
+                  key={fmt}
+                  type="button"
+                  className={`rounded-full border px-3 py-2 text-[12px] font-medium uppercase ${
+                    exportFormat === fmt
+                      ? "border-[var(--vision-ink)] bg-[var(--vision-ink)] text-white"
+                      : "border-[var(--vision-line)] bg-white"
+                  }`}
+                  onClick={() => setExportFormat(fmt)}
+                >
+                  {fmt === "jpeg" ? "JPG" : fmt.toUpperCase()}
+                </button>
+              ))}
               <button type="button" className="rounded-full border border-[var(--vision-line)] bg-white px-4 py-2 text-[13px] font-medium" onClick={downloadTxt}>
                 텍스트
               </button>
@@ -1253,6 +1282,24 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 />
                 {(pack.sections || []).map((section, idx) => (
                   <div key={`${section.type}-${idx}`} className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="rounded-full border border-[var(--vision-line)] px-3 py-1 text-[12px]"
+                        onClick={() => moveSection(idx, -1)}
+                        disabled={idx === 0}
+                      >
+                        위로
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-full border border-[var(--vision-line)] px-3 py-1 text-[12px]"
+                        onClick={() => moveSection(idx, 1)}
+                        disabled={idx === (pack.sections?.length || 1) - 1}
+                      >
+                        아래로
+                      </button>
+                    </div>
                     <EditableField
                       label={`${idx + 1}. ${DETAIL_PAGE_SECTION_LABELS[section.type] || section.type}`}
                       value={section.title}

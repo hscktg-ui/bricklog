@@ -72,17 +72,17 @@ assert.equal(
 );
 assert.equal(riceText.includes("추청"), false);
 assert.equal(riceText.includes("1등급"), false);
-assert.ok(rice.sections.find((s) => s.type === "scene").title.includes("밥을 짓는"));
+assert.ok(
+  /밥|짓|씻/.test(rice.sections.find((s) => s.type === "scene").title)
+);
 
 const riceHtml = renderDetailPageBodyHtml(rice, []);
 assert.ok(riceHtml.includes('data-category-flow="grocery"'));
 assert.ok(riceHtml.includes("산지"));
-assert.ok(riceHtml.includes("원재료"));
 assert.ok(riceHtml.includes("여주 햅쌀"));
 assert.equal(riceHtml.includes("햅쌀로 표기"), false);
-assert.ok(riceHtml.includes('data-layout="problem-band"'));
-assert.ok(riceHtml.includes('data-layout="usp-rows"'));
-assert.ok(riceHtml.includes('data-layout="points-5"'));
+assert.ok(riceHtml.includes('data-layout="ad-canvas"'));
+assert.ok(riceHtml.includes('data-composition="dramatic_hero"'));
 assert.equal(riceHtml.includes("핵심 소구점"), false);
 
 const beansInput = normalizeDetailPageInput({

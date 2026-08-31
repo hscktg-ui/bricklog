@@ -33,9 +33,9 @@ const panel = evaluateDetailPageDesignerPanel({
   photoCount: shots.length,
 });
 assert.equal(panel.votes.length, 30);
-assert.ok(html.includes('data-layout="problem-band"'));
-assert.ok(html.includes('data-layout="hero-banner"'));
-assert.ok(html.includes('data-layout="points-5"'));
+assert.ok(html.includes('data-layout="ad-canvas"'));
+assert.ok(html.includes('data-renderer="detail-canvas"'));
+assert.ok(html.includes('data-composition="dramatic_hero"'));
 assert.ok((html.match(/data-role="lead"/g) || []).length <= 8);
 assert.ok(panel.summary.passCount >= 30, `pass ${panel.summary.passCount}/30`);
 assert.equal(panel.summary.n, 30);
