@@ -297,6 +297,7 @@
     "test:detail-page-engine": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-engine.mjs",
     "test:detail-page-success-standard": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-success-standard.mjs",
     "test:detail-page-designer-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-designer-panel.mjs",
+    "test:detail-page-ai-dev-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-ai-dev-panel.mjs",
     "test:detail-page-md-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-md-panel.mjs",
     "test:detail-page-type-pairing": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-type-pairing.mjs",
     "test:detail-page-compete-wins": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-compete-wins.mjs",
