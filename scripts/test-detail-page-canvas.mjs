@@ -30,7 +30,7 @@ assert.equal(html.includes("border-radius:999px"), false);
 assert.ok(web.webUiFeel <= 15, `web_ui_feel ${web.webUiFeel}`);
 assert.ok(quality.ok, `canvas quality fail ${quality.failNs.join(",")}`);
 assert.ok(html.includes("/detail-sample/open-rice-canvas-meal.png"));
-assert.ok(html.includes("오늘 도정한 쌀"));
+assert.ok(html.includes("갓 지은 밥"));
 assert.ok(existsSync("public/detail-sample/open-rice-canvas-meal.png"));
 assert.ok(existsSync("public/detail-sample/open-rice-canvas-finale.png"));
 

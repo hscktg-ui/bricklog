@@ -1,0 +1,106 @@
+{
+  "id": "open-beans",
+  "grok": false,
+  "mode": "directed",
+  "productName": "하우스 블렌드 원두 200g",
+  "brandName": "골목카페",
+  "sections": [
+    {
+      "type": "hero",
+      "kicker": "하우스 블렌드",
+      "title": "내리는 순간, 집 안에 향이 번집니다",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "dramatic_hero"
+    },
+    {
+      "type": "intent",
+      "kicker": "하우스 블렌드",
+      "title": "중배전",
+      "body": "주문 후 분쇄 가능",
+      "rows": [],
+      "bullets": [],
+      "composition": "typography_overlay"
+    },
+    {
+      "type": "explain",
+      "kicker": "",
+      "title": "",
+      "body": "",
+      "rows": [
+        ["원산지", "블렌드"],
+        ["로스팅", "중배전"],
+        ["분쇄", "주문 후 분쇄"],
+        ["중량", "200g"],
+        ["포장", "밸브"]
+      ],
+      "bullets": [],
+      "composition": "listing"
+    },
+    {
+      "type": "observe",
+      "kicker": "원두",
+      "title": "커피 원두",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "macro_crop"
+    },
+    {
+      "type": "usp",
+      "kicker": "원료",
+      "title": "블렌드",
+      "body": "",
+      "rows": [
+        ["로스팅", "중배전"],
+        ["중량", "200g"]
+      ],
+      "bullets": [],
+      "composition": "product_left"
+    },
+    {
+      "type": "spec",
+      "kicker": "",
+      "title": "14,500원",
+      "body": "",
+      "rows": [
+        ["중량", "200g"],
+        ["옵션", "홀빈 / 에스프레소 / 핸드드립"],
+        ["로스팅", "주문 당일 로스팅"]
+      ],
+      "bullets": [],
+      "composition": "specification"
+    },
+    {
+      "type": "feature",
+      "kicker": "",
+      "title": "200g",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "centered_product"
+    },
+    {
+      "type": "scene",
+      "kicker": "",
+      "title": "3,000원 · 3만원 이상 무료",
+      "body": "",
+      "rows": [
+        ["출고", "로스팅 당일 출고"],
+        ["도서산간", "3,500원 추가"]
+      ],
+      "bullets": [],
+      "composition": "negative_space"
+    },
+    {
+      "type": "cta",
+      "kicker": "골목카페",
+      "title": "개봉 원두는 교환되지 않습니다. 파손만 7일",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "product_right"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "id": "open-rice",
+  "grok": false,
+  "mode": "directed",
+  "productName": "여주 햅쌀 10kg",
+  "brandName": "우리쌀가게",
+  "sections": [
+    {
+      "type": "hero",
+      "kicker": "여주 햅쌀",
+      "title": "갓 지은 밥 한 공기의 온기",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "dramatic_hero"
+    },
+    {
+      "type": "intent",
+      "kicker": "여주",
+      "title": "여주 햅쌀",
+      "body": "진상 · 당일 도정",
+      "rows": [],
+      "bullets": [],
+      "composition": "typography_overlay"
+    },
+    {
+      "type": "explain",
+      "kicker": "",
+      "title": "",
+      "body": "",
+      "rows": [
+        ["산지", "여주"],
+        ["품종", "진상"],
+        ["햅쌀", "여주 햅쌀"],
+        ["도정", "당일 도정"],
+        ["중량", "10kg"],
+        ["포장", "진공"]
+      ],
+      "bullets": [],
+      "composition": "listing"
+    },
+    {
+      "type": "observe",
+      "kicker": "쌀알",
+      "title": "쌀",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "macro_crop"
+    },
+    {
+      "type": "usp",
+      "kicker": "원료",
+      "title": "여주에서 수확한 쌀",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "full_bleed_photo"
+    },
+    {
+      "type": "spec",
+      "kicker": "",
+      "title": "32,900원",
+      "body": "",
+      "rows": [
+        ["품종", "진상"],
+        ["중량", "10kg"],
+        ["옵션", "10kg / 20kg"],
+        ["도정", "주문 당일 도정"]
+      ],
+      "bullets": [],
+      "composition": "specification"
+    },
+    {
+      "type": "feature",
+      "kicker": "",
+      "title": "10kg",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "centered_product"
+    },
+    {
+      "type": "scene",
+      "kicker": "",
+      "title": "3,000원 · 3만원 이상 무료",
+      "body": "",
+      "rows": [
+        ["출고", "평일 오후 2시 이전 주문 당일 출고"],
+        ["도서산간", "3,500원 추가"]
+      ],
+      "bullets": [],
+      "composition": "editorial"
+    },
+    {
+      "type": "cta",
+      "kicker": "우리쌀가게",
+      "title": "단순 변심 7일. 개봉한 쌀은 교환되지 않습니다",
+      "body": "",
+      "rows": [],
+      "bullets": [],
+      "composition": "split_visual"
+    }
+  ]
+}
