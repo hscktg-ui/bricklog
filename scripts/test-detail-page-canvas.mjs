@@ -31,12 +31,16 @@ assert.ok(web.webUiFeel <= 15, `web_ui_feel ${web.webUiFeel}`);
 assert.ok(quality.ok, `canvas quality fail ${quality.failNs.join(",")}`);
 assert.ok(html.includes("/detail-sample/open-rice-canvas-meal.png"));
 assert.ok(html.includes("갓 지은 밥"));
+assert.ok(html.includes("여주에서 수확한 쌀"));
+assert.equal(html.includes("오늘 도정한 쌀"), false);
 assert.ok(existsSync("public/detail-sample/open-rice-canvas-meal.png"));
 assert.ok(existsSync("public/detail-sample/open-rice-canvas-finale.png"));
 
 const beans = buildDetailPagePublicSample("open-beans");
 assert.ok(beans.html.includes('data-renderer="detail-canvas"'));
 assert.ok(beans.html.includes("14,500"));
+assert.ok(beans.html.includes("내리는 순간"));
+assert.equal(beans.html.includes("내려야 안다"), false);
 assert.equal(beans.html.includes("<button"), false);
 
 console.log(
