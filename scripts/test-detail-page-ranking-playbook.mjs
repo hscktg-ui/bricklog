@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   DETAIL_PAGE_RANKING_SEQUENCE,
+  DETAIL_PAGE_MALL_SEQUENCE,
   DETAIL_PAGE_LIST_TOOL_USE,
   DETAIL_PAGE_LIST_SAMPLE,
   DETAIL_PAGE_STANDARD_SOURCES,
@@ -13,7 +14,12 @@ import { DETAIL_PAGE_LENGTHS } from "../lib/product/detailPageCatalog.js";
 import { gptDetailPageSystemPrompt } from "../lib/product/detailPageStandard.js";
 import { buildDetailPageFallbackPack } from "../lib/product/detailPageEngine.js";
 
-assert.equal(DETAIL_PAGE_RANKING_PLAYBOOK_VERSION, "detail-ranking-playbook-v3");
+assert.equal(DETAIL_PAGE_RANKING_PLAYBOOK_VERSION, "detail-ranking-playbook-v4");
+assert.equal(DETAIL_PAGE_MALL_SEQUENCE.length, 9);
+assert.deepEqual(
+  DETAIL_PAGE_MALL_SEQUENCE.map((s) => s.they),
+  ["후킹", "정보", "나열", "재료", "원료", "스펙", "패키지", "배송정보", "필수정보"]
+);
 assert.equal(DETAIL_PAGE_STANDARD_SOURCES.rank.id, "naver-shop-rank");
 assert.equal(DETAIL_PAGE_STANDARD_SOURCES.list.canonical, "creazy");
 assert.equal(DETAIL_PAGE_RANKING_SEQUENCE.length, 10);
@@ -25,6 +31,8 @@ assert.ok(DETAIL_PAGE_LIST_TOOL_USE.every((t) => t.take && t.leave));
 assert.ok(formatRankingPlaybookForPrompt().includes("크리에이지"));
 assert.ok(formatRankingPlaybookForPrompt().includes("가짜 후기"));
 assert.ok(formatRankingPlaybookForPrompt().includes("네이버 쇼핑 랭킹"));
+assert.ok(formatRankingPlaybookForPrompt().includes("후킹"));
+assert.ok(formatRankingPlaybookForPrompt().includes("필수정보"));
 assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("scene"));
 assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("notice"));
 assert.ok(formatRankingPlaybookForPrompt().includes("HTML 텍스트"));

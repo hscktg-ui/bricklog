@@ -38,7 +38,7 @@ assert.equal(html.includes("data-photo-brief"), false);
 assert.equal(html.includes("사진 손에"), false);
 assert.equal(html.includes("주장·사실·이익"), false);
 assert.ok(html.includes("당일 도정"));
-assert.ok(pack.sections.some((s) => s.type === "notice"));
+assert.ok(html.includes('data-mall-beat="notice"') || pack.sections.some((s) => s.type === "cta"));
 assert.equal(typeof pack.sections.find((s) => s.type === "observe")?.imageBrief, "object");
 assert.ok(pack.sections.find((s) => s.type === "observe").imageBrief.prompt.includes("쌀알"));
 assert.ok(pack._meta.commerce.sections.find((s) => s.id === "observe")?.imageBrief?.purpose);

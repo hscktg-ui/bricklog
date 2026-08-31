@@ -12,8 +12,16 @@ const story = buildRiceCanvasStory(rice.pack, rice.shots);
 const quality = evaluateDetailPageCanvasQuality(story, html);
 
 assert.ok(html.includes('data-renderer="detail-canvas"'));
-assert.equal((html.match(/data-canvas="/g) || []).length, 10);
+assert.equal((html.match(/data-canvas="/g) || []).length, 9);
+assert.deepEqual(
+  story.frames.map((f) => f.beat),
+  ["hook", "info", "listing", "ingredient", "material", "spec", "package", "shipping", "notice"]
+);
 assert.equal(new Set(story.frames.map((f) => f.composition)).size >= 8, true);
+assert.ok(html.includes('data-mall-beat="hook"'));
+assert.ok(html.includes('data-mall-beat="listing"'));
+assert.equal(html.includes("한 끼가 된다"), false);
+assert.equal(html.includes("씻고, 앉힌다"), false);
 assert.equal(html.includes("<button"), false);
 assert.equal(html.includes("<nav"), false);
 assert.equal(html.includes("<table"), false);
