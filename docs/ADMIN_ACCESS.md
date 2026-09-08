@@ -19,7 +19,7 @@ BRICLOG_ADMIN_EMAILS=hscktg@gmail.com
 | Layer | Behavior |
 |--------|----------|
 | `BRICLOG_ADMIN_EMAILS` | Source of truth for operator email |
-| `middleware.js` | `/api/admin/*` → 404 without valid Bearer + allowlisted email |
+| `proxy.js` | `/api/admin/*` → 404 without valid Bearer + allowlisted email |
 | `lib/api/adminGuard.js` | Same check + light rate limit on admin API routes |
 | `app/admin/*` | Client redirect to `/` if not allowlisted (session in sessionStorage) |
 | Sidebar | "관리자" link only when profile role is server-trusted `ADMIN` |

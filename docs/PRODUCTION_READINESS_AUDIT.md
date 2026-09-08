@@ -142,7 +142,7 @@ Scoring weights (~10 pts each): env docs, DB/RLS, auth, billing, cron, admin, le
 | Layer | Status |
 |-------|--------|
 | `BRICLOG_ADMIN_EMAILS` server allowlist | **YES** — [ADMIN_ACCESS.md](./ADMIN_ACCESS.md) |
-| `/api/admin/*` middleware → 404 if not allowlisted | **YES** — `middleware.js` |
+| `/api/admin/*` proxy → 404 if not allowlisted | **YES** — `proxy.js` |
 | `requireAdminApi` + rate limit | **YES** — `lib/api/adminGuard.js` |
 | Client `/admin` guard | **YES** — `app/admin/AdminPageClient.js` |
 | `profiles` ADMIN self-promote blocked | **YES** — `schema-v11-admin-role-guard.sql` |

@@ -8,7 +8,7 @@ function normalizeHost(host = "") {
   return host.split(",")[0].trim().toLowerCase();
 }
 
-export async function middleware(request) {
+export async function proxy(request) {
   const host = normalizeHost(
     request.headers.get("x-forwarded-host") || request.headers.get("host") || ""
   );

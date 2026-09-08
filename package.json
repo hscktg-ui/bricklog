@@ -298,6 +298,7 @@
     "test:detail-page-success-standard": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-success-standard.mjs",
     "test:detail-page-designer-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-designer-panel.mjs",
     "test:detail-page-ai-dev-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-ai-dev-panel.mjs",
+    "test:detail-page-vendor-method": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-vendor-method.mjs",
     "test:detail-page-md-panel": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-md-panel.mjs",
     "test:detail-page-type-pairing": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-type-pairing.mjs",
     "test:detail-page-compete-wins": "node --import ./scripts/register-alias.mjs scripts/test-detail-page-compete-wins.mjs",
@@ -390,20 +391,20 @@
     "@/": "./"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.106.1",
-    "@tosspayments/tosspayments-sdk": "^2.7.0",
+    "@supabase/supabase-js": "^2.116.0",
+    "@tosspayments/tosspayments-sdk": "^2.8.1",
     "html2canvas": "^1.4.1",
-    "next": "16.2.6",
-    "openai": "^6.38.0",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "next": "^16.3.4",
+    "openai": "^6.49.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.6",
-    "pg": "^8.21.0",
-    "playwright": "^1.49.1",
-    "tailwindcss": "^4"
+    "@tailwindcss/postcss": "^4.3.3",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
+    "pg": "^8.23.0",
+    "playwright": "^1.63.0",
+    "tailwindcss": "^4.3.3"
   }
 }

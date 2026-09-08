@@ -31,8 +31,8 @@ assert.ok(jsonLd.includes("buildOrganizationJsonLd"));
 const pageJsonLd = readFileSync("components/seo/PageJsonLdScript.jsx", "utf8");
 assert.ok(pageJsonLd.includes("graphs"));
 
-const middleware = readFileSync("middleware.js", "utf8");
-assert.ok(middleware.includes("www.") && middleware.includes("briclog.ai"));
+const proxy = readFileSync("proxy.js", "utf8");
+assert.ok(proxy.includes("www.") && proxy.includes("briclog.ai"));
 
 const vercel = readFileSync("vercel.json", "utf8");
 assert.ok(vercel.includes("www.briclog.ai"));
