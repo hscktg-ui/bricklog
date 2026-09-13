@@ -16,12 +16,13 @@ const beansPanel = evaluateDetailPageAiDevPanel({ pack: beans.pack, html: beans.
 
 assert.equal(ricePanel.votes.length, 50);
 assert.equal(beansPanel.votes.length, 50);
-assert.equal(ricePanel.measured.lyricHook, true);
-assert.equal(ricePanel.measured.attributeHook, false);
-assert.ok(ricePanel.measured.xl >= 2, `rice xl ${ricePanel.measured.xl}`);
-assert.equal(ricePanel.summary.hire, false);
-assert.ok(ricePanel.summary.topIssues.includes("후킹이 속성 나열이 아님"));
-assert.ok(ricePanel.summary.mean < 88, `rice mean too high ${ricePanel.summary.mean}`);
+assert.equal(ricePanel.measured.attributeHook, true);
+assert.equal(ricePanel.measured.lyricHook, false);
+assert.ok(ricePanel.measured.xl <= 1, `rice xl ${ricePanel.measured.xl}`);
+assert.equal(ricePanel.summary.topIssues.includes("후킹이 속성 나열이 아님"), false);
+assert.equal(beansPanel.measured.attributeHook, true);
+assert.equal(beansPanel.measured.lyricHook, false);
+assert.ok(ricePanel.summary.mean >= 88, `rice mean ${ricePanel.summary.mean}`);
 
 const outDir = "artifacts/detail-page-ai-dev-panel";
 mkdirSync(outDir, { recursive: true });

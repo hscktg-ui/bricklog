@@ -60,7 +60,11 @@ async function filesToDataUrls(fileList) {
   for (const file of files) {
     if (!file.type.startsWith("image/")) continue;
     const url = await readAsDataUrl(file);
-    out.push({ src: await shrinkDataUrl(url, 1200), caption: "" });
+    out.push({
+      src: await shrinkDataUrl(url, 1200),
+      caption: "",
+      name: file.name || "",
+    });
   }
   return out;
 }
@@ -156,6 +160,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
   const [dispatch, setDispatch] = useState("");
   const [producer, setProducer] = useState("");
   const [storage, setStorage] = useState("");
+  const [origin, setOrigin] = useState("");
+  const [variety, setVariety] = useState("");
+  const [weight, setWeight] = useState("");
+  const [process, setProcess] = useState("");
+  const [packWay, setPackWay] = useState("");
   const [highlights, setHighlights] = useState("");
   const [mustInclude, setMustInclude] = useState("");
   const [improveNote, setImproveNote] = useState("");
@@ -274,6 +283,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       dispatch,
       producer,
       storage,
+      origin,
+      variety,
+      weight,
+      process,
+      pack: packWay,
       brandName: activeBrand?.brandName || "",
       brandId: activeBrand?.id || "",
       region: activeBrand?.region || "",
@@ -302,6 +316,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
       dispatch,
       producer,
       storage,
+      origin,
+      variety,
+      weight,
+      process,
+      packWay,
       activeBrand,
     ]
   );
@@ -390,6 +409,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     setDispatch(preset.dispatch || "");
     setProducer(preset.producer || "");
     setStorage(preset.storage || "");
+    setOrigin(preset.origin || "");
+    setVariety(preset.variety || "");
+    setWeight(preset.weight || "");
+    setProcess(preset.process || "");
+    setPackWay(preset.pack || "");
     setPhotos([
       { src: `/detail-sample/${preset.id}-hero.png`, slot: "hero", role: "packshot" },
       { src: `/detail-sample/${preset.id}-observe.png`, slot: "observe", role: "detail" },
@@ -416,6 +440,11 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
     setDispatch("");
     setProducer("");
     setStorage("");
+    setOrigin("");
+    setVariety("");
+    setWeight("");
+    setProcess("");
+    setPackWay("");
     setImproveNote("");
     setAccent(DETAIL_PAGE_DEFAULT_ACCENT);
     setPageLength("standard");
@@ -772,6 +801,51 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               />
             </label>
             <label className="block text-[13px] font-medium">
+              산지 · 원산지
+              <input
+                className={VISION_INPUT}
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+                placeholder="예: 여주"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              품종
+              <input
+                className={VISION_INPUT}
+                value={variety}
+                onChange={(e) => setVariety(e.target.value)}
+                placeholder="예: 진상"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              중량
+              <input
+                className={VISION_INPUT}
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                placeholder="예: 10kg"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              도정 · 로스팅
+              <input
+                className={VISION_INPUT}
+                value={process}
+                onChange={(e) => setProcess(e.target.value)}
+                placeholder="예: 주문 당일 도정"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
+              포장
+              <input
+                className={VISION_INPUT}
+                value={packWay}
+                onChange={(e) => setPackWay(e.target.value)}
+                placeholder="예: 진공 포장"
+              />
+            </label>
+            <label className="block text-[13px] font-medium">
               가격
               <input
                 className={VISION_INPUT}
@@ -1080,6 +1154,9 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
               {successView?.mdPanel
                 ? ` · MD ${successView.mdPanel.passCount}/${successView.mdPanel.n}`
                 : ""}
+              {pack._meta?.aiDevPanel
+                ? ` · DEV ${pack._meta.aiDevPanel.passCount}/${pack._meta.aiDevPanel.n}`
+                : ""}
               {pack._meta?.sqv?.score != null
                 ? ` · ${DETAIL_PAGE_PRODUCT.engineGradeHint} ${pack._meta.sqv.score}`
                 : ""}
@@ -1227,6 +1304,28 @@ export default function DetailPageGenerator({ onCopy, onToast, surface: _surface
                 <p className="text-[13px] font-medium">성공 기준에서 빠진 것</p>
                 <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
                   {successView.hardLabels.join(" · ")}
+                </p>
+              </div>
+            ) : null}
+            {pack._meta?.aiDevPanel ? (
+              <div className="mb-4 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3">
+                <p className="text-[13px] font-medium">
+                  개발자 50인 {pack._meta.aiDevPanel.hire ? "통과" : "미달"} ·{" "}
+                  {pack._meta.aiDevPanel.passCount}/{pack._meta.aiDevPanel.n}
+                </p>
+                <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
+                  {pack._meta.aiDevPanel.hireLabel}
+                  {pack._meta.aiDevPanel.topIssues?.length
+                    ? ` · ${pack._meta.aiDevPanel.topIssues.join(" · ")}`
+                    : ""}
+                </p>
+              </div>
+            ) : null}
+            {pack._meta?.llmBuffered ? (
+              <div className="mb-4 rounded-2xl border border-[var(--vision-line)] bg-white px-4 py-3">
+                <p className="text-[13px] font-medium">GPT 결과를 그대로 쓰지 않은 이유</p>
+                <p className="mt-1 text-[12px] text-[var(--vision-muted)]">
+                  {(pack._meta.llmBufferReasons || []).join(" · ")}
                 </p>
               </div>
             ) : null}

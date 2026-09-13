@@ -10,6 +10,7 @@ import {
 import { logError } from "@/lib/api/logEvent";
 import { mapServiceError } from "@/lib/errors/serviceMessages";
 import { generateDetailPagePack } from "@/lib/product/detailPageEngine";
+import { sanitizeDetailPageAstroInput } from "@/lib/product/detailPageAstroPolicy";
 import { reviewDetailPageDesignerImage } from "@/lib/qa/detailPageDesignerVision";
 import {
   catchDetailPageFixes,
@@ -88,9 +89,10 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const action = String(body.action || "generate");
+    const sanitizedBody = sanitizeDetailPageAstroInput(body, action);
     const input = {
-      ...body,
-      topic: body.productName || body.topic,
+      ...sanitizedBody,
+      topic: sanitizedBody.productName || sanitizedBody.topic,
     };
 
     if (action === "review-image") {

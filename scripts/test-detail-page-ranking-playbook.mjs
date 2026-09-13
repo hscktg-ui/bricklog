@@ -33,8 +33,13 @@ assert.ok(formatRankingPlaybookForPrompt().includes("가짜 후기"));
 assert.ok(formatRankingPlaybookForPrompt().includes("네이버 쇼핑 랭킹"));
 assert.ok(formatRankingPlaybookForPrompt().includes("후킹"));
 assert.ok(formatRankingPlaybookForPrompt().includes("필수정보"));
+assert.deepEqual(
+  DETAIL_PAGE_LENGTHS.standard.sectionIds,
+  ["hero", "intent", "explain", "observe", "usp", "spec", "feature", "scene", "cta"]
+);
 assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("scene"));
-assert.ok(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("notice"));
+assert.equal(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("brand"), false);
+assert.equal(DETAIL_PAGE_LENGTHS.standard.sectionIds.includes("notice"), false);
 assert.ok(formatRankingPlaybookForPrompt().includes("HTML 텍스트"));
 assert.ok(formatRankingPlaybookForPrompt().includes("[자료 필요]"));
 assert.equal(formatRankingPlaybookForPrompt().includes("통이미지 카피"), false);

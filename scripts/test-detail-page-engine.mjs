@@ -77,13 +77,19 @@ assert.deepEqual(
 );
 
 const pack = buildDetailPageFallbackPack(input);
-assert.ok(pack.sections.length >= 6, "standard length should have 6+ sections");
+assert.deepEqual(
+  pack.sections.map((s) => s.type),
+  ["hero", "intent", "explain", "observe", "usp", "spec", "feature", "scene", "cta"]
+);
 assert.equal(pack.sections[0].type, "hero");
 assert.ok(pack.sections.some((s) => s.type === "intent"));
 assert.ok(pack.sections.some((s) => s.type === "usp"));
 assert.ok(pack.sections.some((s) => s.type === "feature"));
 assert.ok(pack.sections.some((s) => s.type === "scene"));
+assert.equal(pack.sections.some((s) => s.type === "brand"), false);
+assert.equal(pack.sections.some((s) => s.type === "notice"), false);
 assert.ok(pack._meta.sqv.score >= 95, `expected 95+, got ${pack._meta.sqv.score}`);
+assert.equal(pack._meta.aiDevPanel?.hire, true, JSON.stringify(pack._meta.aiDevPanel));
 assert.equal(packToPlainText(pack).includes("손님가"), false);
 assert.equal(packToPlainText(pack).includes("는 쪽"), false);
 assert.equal(packToPlainText(pack).includes("없는 이나"), false);
@@ -264,6 +270,22 @@ const shortPack = buildDetailPageFallbackPack({ ...input, pageLength: "short" })
 const shortHtml = renderDetailPageBodyHtml(shortPack, photos);
 assert.ok(shortHtml.includes("p1.jpg"));
 assert.ok(shortHtml.includes("p4.jpg") || shortHtml.includes("p5.jpg"));
+assert.deepEqual(shortPack.sections.map((s) => s.type), ["hero", "intent", "observe", "spec", "cta"]);
+
+const astroInput = normalizeDetailPageInput({
+  ...input,
+  sourceChannel: "blog",
+  continuityCopy: "이 브랜드에 쌓인 기록은 계속 이어집니다",
+});
+assert.equal(astroInput.detailPageAstro.enabled, true);
+assert.deepEqual(astroInput.detailPageAstro.anchorTypes, ["intent", "scene", "cta"]);
+assert.ok(
+  gptDetailPageSystemPrompt({
+    brandName: "여주미곡",
+    sectionIds: astroInput.pageLength === "standard" ? pack.sections.map((s) => s.type) : ["hero"],
+    input: astroInput,
+  }).includes("Astro 연결 문맥")
+);
 
 const openRice = DETAIL_PAGE_OPEN_EXAMPLES.find((p) => p.id === "open-rice");
 assert.ok(openRice);
