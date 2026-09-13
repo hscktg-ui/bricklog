@@ -21,10 +21,10 @@ export default function ChannelPreview({ sample }) {
       <div className="mx-auto max-w-3xl md:max-w-5xl">
         <p className={`text-center ${VISION_EYEBROW}`}>Channels</p>
         <h2 className="mt-3 text-center text-[clamp(1.5rem,4vw,2rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
-          네 가지 채널
+          세 가지 채널
         </h2>
         <p className={`mt-3 text-center ${VISION_SUB}`}>
-          운영 글 셋, 상품 화면은 상세. 이야기부터 이어가거나 상세만 쓸 수 있어요
+          이야기에서 출발해 플레이스와 인스타까지 같은 맥락으로 이어집니다.
         </p>
 
         <ul className="mt-8 space-y-3">

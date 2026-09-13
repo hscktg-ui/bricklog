@@ -11,7 +11,6 @@ import {
 import BlogEditor from "@/components/BlogEditor";
 import PlaceGenerator from "@/components/PlaceGenerator";
 import InstagramGenerator from "@/components/InstagramGenerator";
-import DetailPageGenerator from "@/components/DetailPageGenerator";
 import DailyTimelinessPanel from "@/components/DailyTimelinessPanel";
 import PricingModal from "@/components/billing/PricingModal";
 import { BrandWorkspaceProvider, useBrandWorkspace } from "@/context/BrandWorkspaceContext";
@@ -702,7 +701,7 @@ function DashboardLayout({
   const goBlog = () => setActiveMenu("blog");
   const navigate = (menu) => setActiveMenu(normalizeWorkspaceMenuId(menu));
 
-  const workspaceMenus = new Set(["blog", "place", "insta", "detailPage", "plan", "growth"]);
+  const workspaceMenus = new Set(["blog", "place", "insta", "plan", "growth"]);
   const showRhythmTabs =
     !showChannelWelcome && ["blog", "place", "insta", "growth"].includes(activeMenu);
   const idleHintActive =
@@ -725,6 +724,10 @@ function DashboardLayout({
   useEffect(() => {
     setRhythmTab("studio");
   }, [activeMenu]);
+
+  useEffect(() => {
+    if (activeMenu === "detailPage") setActiveMenu("blog");
+  }, [activeMenu, setActiveMenu]);
 
   return (
     <div className="briclog-vision-workspace relative flex h-full min-h-0 flex-1 overflow-hidden">
@@ -884,11 +887,6 @@ function DashboardLayout({
               onCopy={(t) => handleCopy(t, "전체 콘텐츠가 복사되었습니다.")}
               userId={user.id}
               brandId={activeBrandId}
-            />
-          ) : activeMenu === "detailPage" ? (
-            <DetailPageGenerator
-              onCopy={(t) => handleCopy(t, "상세페이지 HTML이 복사되었습니다.")}
-              onToast={showToast}
             />
           ) : activeMenu === "growth" ? (
             <GrowthStudio

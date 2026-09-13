@@ -7,13 +7,12 @@ import {
   LANDING_PRIMARY_CTA,
 } from "@/lib/brand/copy";
 import { GUIDE_PAGES } from "@/lib/seo/guidePages";
-import { DETAIL_PAGE_PRODUCT } from "@/lib/product/detailPageProduct";
 
 const SEO_SEARCH_PHRASES = [
   "브랜드 이야기",
   "스마트플레이스 공지",
   "인스타 캡션",
-  "브릭로그 상세",
+  "블로그 플레이스 인스타",
   "운영 계획",
   "지역 브랜드",
 ];
@@ -35,24 +34,13 @@ export default function SeoDiscoverabilityHero() {
         {BRAND_LATEST_UPDATE.label} · 샘플 체험 · 가입 없이 미리보기
       </p>
       <h1 className="mt-4 text-[22px] font-bold tracking-tight text-[#191F28] sm:text-[28px]">
-        {BRAND_META_TITLE_KO} — 운영 글 · 상품 화면
+        {BRAND_META_TITLE_KO} — 블로그 · 플레이스 · 인스타 운영
       </h1>
       <p className="mx-auto mt-2 max-w-xl text-[15px] font-semibold text-[#191F28]">
         {BRAND_LATEST_UPDATE.headline}
       </p>
       <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-relaxed text-[#4E5968]">
         {BRAND_META_DESCRIPTION}
-      </p>
-      <p className="mx-auto mt-3 max-w-2xl text-[14px] leading-relaxed text-[#4E5968]">
-        {DETAIL_PAGE_PRODUCT.versusGpt} {DETAIL_PAGE_PRODUCT.versusUs}{" "}
-        <Link href="/detail" className="font-semibold text-[#03A94D] hover:underline">
-          {DETAIL_PAGE_PRODUCT.name}
-        </Link>
-        에서 붙일 860px 화면을 만듭니다. 로그인 없이{" "}
-        <Link href="/detail/sample" className="font-semibold text-[#03A94D] hover:underline">
-          상세 맛보기
-        </Link>
-        를 볼 수 있습니다.
       </p>
       <p className="mx-auto mt-2 max-w-2xl text-[13px] text-[#8B95A1]">
         {SEO_SEARCH_PHRASES.join(" · ")}

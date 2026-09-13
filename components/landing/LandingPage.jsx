@@ -37,7 +37,6 @@ import {
 } from "@/lib/landing/ctaCopy";
 import LandingMobileStickyCta from "@/components/landing/LandingMobileStickyCta";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
-import PublicDetailPageInvite from "@/components/landing/PublicDetailPageInvite";
 import {
   VISION_CTA_ACCENT,
   VISION_EYEBROW,
@@ -53,7 +52,6 @@ const NAV_LINKS = [
   { id: "landing-sample", label: "샘플", show: "hidden lg:inline-flex" },
   { id: "landing-faq", label: "FAQ", show: "hidden xl:inline-flex" },
   { id: "pricing", label: "요금", show: "hidden lg:inline-flex" },
-  { id: "landing-detail-sample", label: "상세", show: "hidden sm:inline-flex" },
 ];
 
 export default function LandingPage({ onAuthOpen, onStart }) {
@@ -110,8 +108,6 @@ export default function LandingPage({ onAuthOpen, onStart }) {
     },
     [onAuthOpen]
   );
-
-  const scrollToDetailSample = () => scrollToId("landing-detail-sample");
 
   const handleIntroDismiss = useCallback(() => {
     markLandingIntroDone();
@@ -192,7 +188,7 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           }`}
         >
           <HeroSection
-            onSample={withLandingCta(scrollToDetailSample)}
+            onSample={withLandingCta(() => scrollToId("landing-sample"))}
             onTest={withLandingCta(scrollToPublicTest)}
             onLogin={() => openLogin("landing_hero")}
           />
@@ -206,7 +202,6 @@ export default function LandingPage({ onAuthOpen, onStart }) {
           />
           <LandingFaqSection />
           <PricingSection onStart={handleStart} />
-          <PublicDetailPageInvite />
 
           <section
             className={`${VISION_SECTION_DARK} px-5 py-20 text-center md:px-8 md:py-28 briclog-vision-footer-cta`}

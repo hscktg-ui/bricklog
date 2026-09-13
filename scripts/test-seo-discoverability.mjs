@@ -15,11 +15,10 @@ const DEFAULT_SITE_URL = "https://briclog.ai";
 const page = readFileSync("app/page.js", "utf8");
 assert.ok(page.includes("SeoDiscoverabilityHero"));
 const seoHero = readFileSync("components/seo/SeoDiscoverabilityHero.jsx", "utf8");
-assert.ok(seoHero.includes("운영 글"), "crawler h1 names operating copy + product screen");
-assert.ok(seoHero.includes("브릭로그 상세"), "브릭로그 상세 in server HTML");
-assert.ok(seoHero.includes("versusGpt"), "chatbot vs screen copy wired in server HTML");
-assert.ok(seoHero.includes("/detail"), "detail link in server HTML");
-assert.ok(seoHero.includes("/detail/sample"), "detail sample zone in server HTML");
+assert.ok(seoHero.includes("블로그 · 플레이스 · 인스타 운영"), "crawler h1 names 3-channel focus");
+assert.ok(!seoHero.includes("브릭로그 상세"), "detail page removed from server HTML");
+assert.ok(!seoHero.includes("/detail"), "detail link removed from server HTML");
+assert.ok(!seoHero.includes("/detail/sample"), "detail sample link removed from server HTML");
 assert.ok(page.includes("HomeClientLoader"));
 
 const loader = readFileSync("components/home/HomeClientLoader.jsx", "utf8");

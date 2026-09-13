@@ -21,7 +21,7 @@ export default function BlogWelcomeHero({ onTrySample, isGenerating }) {
           <p className="mt-3 max-w-md text-[14px] leading-relaxed text-[var(--vision-muted)]">
             {BRAND_PHILOSOPHY}{" "}
             맞춤 개인화와 맞춤 브랜드화로 이야기·플레이스·인스타 초안을 한 흐름에
-            준비합니다. 상품 화면은 상세에서.
+            준비합니다.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button

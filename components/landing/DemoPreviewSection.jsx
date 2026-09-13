@@ -41,7 +41,7 @@ export default function DemoPreviewSection({ sample, onTest }) {
           운영 글은 한 주제
         </h2>
         <p className={`mt-4 text-center ${VISION_SUB}`}>
-          이야기 · 플레이스 · 인스타. 상품 화면은 같은 주제가 아닙니다.
+          이야기 · 플레이스 · 인스타가 한 흐름으로 이어집니다.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -107,11 +107,7 @@ export default function DemoPreviewSection({ sample, onTest }) {
           </p>
         ) : null}
         <p className="mt-4 hidden text-center text-[13px] text-[var(--vision-muted)] sm:block">
-          붙여넣기 대신 운영 계획에서 이어갑니다. 상품 화면 맛보기는{" "}
-          <a href="/#landing-detail-sample" className="font-semibold text-[var(--vision-ink)] underline-offset-2 hover:underline">
-            맨 아래
-          </a>
-          에 있습니다.
+          붙여넣기용 초안에서 끝나지 않고, 운영 계획과 브랜드 기록까지 같은 흐름으로 이어집니다.
         </p>
       </div>
     </section>
