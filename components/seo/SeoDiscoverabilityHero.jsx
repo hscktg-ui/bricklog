@@ -87,6 +87,15 @@ export default function SeoDiscoverabilityHero({
         ))}
       </ul>
       <nav aria-label="검색용 가이드 링크">
+        <Link href="/?landing=1" data-briclog-cta="start">
+          BRICLOG 시작하기
+        </Link>
+        <Link href="/#public-brand-test" id="landing-sample-seo">
+          샘플 체험
+        </Link>
+        <Link href="/#landing-pricing" id="landing-pricing-seo">
+          무료 시작 및 채널 안내
+        </Link>
         {featuredGuides.map((page) => (
           <Link key={page.slug} href={`/guides/${page.slug}`}>
             {page.title}

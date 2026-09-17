@@ -316,6 +316,25 @@ export default function HomeClient({
   }, []);
 
   if (loading) {
+    if (!user || forceLanding) {
+      return (
+        <LandingPreviewProvider>
+          <TrendLandingPage
+            key={`${initialQuery}:${initialCategory}:${trendCatalog?.updatedAt || ""}`}
+            trendCatalog={trendCatalog}
+            initialQuery={initialQuery}
+            initialCategory={initialCategory}
+            onAuthOpen={openAuth}
+            onStart={openStart}
+          />
+          <Toast
+            visible={toast.visible}
+            message={toast.message}
+            type={toast.type}
+          />
+        </LandingPreviewProvider>
+      );
+    }
     return (
       <PageLoadingState
         message="브릭로그를 준비하는 중…"
