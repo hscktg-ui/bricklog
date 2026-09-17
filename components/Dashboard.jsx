@@ -52,6 +52,7 @@ import WelcomeOverlay, {
 } from "@/components/WelcomeOverlay";
 import GrowthStudio from "@/components/growth/GrowthStudio";
 import ContentPlanWorkspace from "@/components/workspace/ContentPlanWorkspace";
+import TodayWorkspaceScene from "@/components/workspace/TodayWorkspaceScene";
 import { recordDashboardVisit } from "@/lib/dashboard/visitCounter";
 import {
   mapLastContentItem,
@@ -552,7 +553,7 @@ function DashboardLayout({
       userPrefs.primaryChannel || "blog"
     );
     setUserPrefs(next);
-    setActiveMenu(next.primaryChannel || "blog");
+    setActiveMenu("today");
   }, [
     user.id,
     demoMode,
@@ -724,13 +725,11 @@ function DashboardLayout({
       );
       return;
     }
-    const home = userPrefs.primaryChannel || "blog";
-    setActiveMenu(home);
+    setActiveMenu("today");
     setSelectedHistoryId(null);
     resetToHome();
     setMobileOpen(false);
   }, [
-    userPrefs.primaryChannel,
     setActiveMenu,
     setSelectedHistoryId,
     resetToHome,
@@ -743,10 +742,13 @@ function DashboardLayout({
   const navigate = (menu) => setActiveMenu(normalizeWorkspaceMenuId(menu));
 
   const workspaceMenus = new Set(["blog", "place", "insta", "plan", "growth"]);
+  const showTodayScene = !showChannelWelcome && activeMenu === "today";
   const showRhythmTabs =
-    !showChannelWelcome && ["blog", "place", "insta", "growth"].includes(activeMenu);
+    !showChannelWelcome &&
+    !showTodayScene &&
+    ["blog", "place", "insta", "growth"].includes(activeMenu);
   const idleHintActive =
-    !showChannelWelcome && workspaceMenus.has(activeMenu);
+    !showChannelWelcome && !showTodayScene && workspaceMenus.has(activeMenu);
   const showProfileSetupBanner =
     !demoMode &&
     !suppressProfileBanner &&
@@ -774,7 +776,7 @@ function DashboardLayout({
     <div className="briclog-vision-workspace relative flex h-full min-h-0 flex-1 overflow-hidden">
       <GenerationLoadingOverlayHost />
       <GenerationWakeLockHost />
-      {welcomeOpen && !showChannelWelcome ? (
+      {welcomeOpen && !showChannelWelcome && !showTodayScene ? (
         <WelcomeOverlay
           open
           greetingHeadline={welcomeGreeting.headline}
@@ -821,7 +823,7 @@ function DashboardLayout({
           activeMenu={activeMenu}
           brandName={activeBrand?.brandName || ""}
           headerTitle={
-            showChannelWelcome
+            showChannelWelcome || showTodayScene
               ? "Today"
               : firstStoryFocus
                 ? "오늘의 편집본"
@@ -846,7 +848,7 @@ function DashboardLayout({
           />
         )}
 
-        {!showChannelWelcome && rhythmTab === "studio" && (
+        {!showChannelWelcome && !showTodayScene && rhythmTab === "studio" && (
           <BriclogNextHomeStrip
             activeMenu={activeMenu}
             blogInput={blogInput}
@@ -874,6 +876,30 @@ function DashboardLayout({
               brandType={activeBrand?.brandType || "other"}
               industryLabel={activeBrand?.industry || ""}
               brandName={activeBrand?.brandName || ""}
+            />
+          ) : showTodayScene ? (
+            <TodayWorkspaceScene
+              blogInput={blogInput}
+              brandName={activeBrand?.brandName || blogInput?.brandName || ""}
+              region={activeBrand?.region || blogInput?.region || ""}
+              hasPlace={Boolean(placeContent)}
+              hasInsta={Boolean(instagramContent)}
+              blogContent={blogContent}
+              onPrimaryAction={({ menuId, topic }) => {
+                if (topic) {
+                  setBlogInput((prev) => ({
+                    ...prev,
+                    topic: topic.trim() || prev.topic,
+                    mainKeyword: prev.mainKeyword || topic.trim() || "",
+                  }));
+                }
+                setRhythmTab("studio");
+                setActiveMenu(menuId || "blog");
+              }}
+              onSecondaryAction={() => {
+                setRhythmTab("studio");
+                setActiveMenu("plan");
+              }}
             />
           ) : rhythmTab === "next" && showRhythmTabs ? (
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-5 sm:px-6 md:px-8">

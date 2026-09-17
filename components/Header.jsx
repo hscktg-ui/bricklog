@@ -4,6 +4,7 @@ import HeaderPlanControl from "@/components/workspace/HeaderPlanControl";
 import { channelHeaderTitle } from "@/lib/channels/channelProducts";
 
 const MENU_JOURNEY = {
+  today: "Today",
   growth: "Brief",
   plan: "Brief",
   blog: "Create",
@@ -30,10 +31,16 @@ export default function Header({
 }) {
   const title = headerTitle ?? channelHeaderTitle(activeMenu);
   const journey = MENU_JOURNEY[activeMenu] || "Today";
-  const showPlanControl = !demoMode && typeof onPlanChange === "function";
-  const contextLine = brandName
-    ? `${brandName}`
-    : "오늘 적용할 브랜드를 고르세요";
+  const isToday = activeMenu === "today" || headerTitle === "Today";
+  const showPlanControl =
+    !demoMode && !isToday && typeof onPlanChange === "function";
+  const contextLine = isToday
+    ? brandName
+      ? brandName
+      : "지금 무엇을"
+    : brandName
+      ? `${brandName}`
+      : "오늘 적용할 브랜드를 고르세요";
 
   return (
     <header className="briclog-workspace-header sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between gap-1.5 border-b border-[var(--vision-line)] bg-[var(--vision-glass-strong)] px-2.5 backdrop-blur-xl sm:h-14 sm:gap-2 sm:px-4 md:px-6">
@@ -49,13 +56,19 @@ export default function Header({
           </button>
         ) : null}
         <div className="min-w-0">
-          <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)] sm:text-[11px]">
-            {journey}
-            <span className="mx-1.5 text-[var(--vision-line-strong)]">·</span>
-            <span className="normal-case tracking-normal text-[var(--vision-muted)]">
+          {isToday ? (
+            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)] sm:text-[11px]">
               {contextLine}
-            </span>
-          </p>
+            </p>
+          ) : (
+            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)] sm:text-[11px]">
+              {journey}
+              <span className="mx-1.5 text-[var(--vision-line-strong)]">·</span>
+              <span className="normal-case tracking-normal text-[var(--vision-muted)]">
+                {contextLine}
+              </span>
+            </p>
+          )}
           <h1 className="truncate text-[14px] font-semibold leading-tight tracking-[-0.02em] text-[var(--vision-ink)] sm:text-[16px] md:text-[17px]">
             {title}
           </h1>

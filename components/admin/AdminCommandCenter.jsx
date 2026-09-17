@@ -26,13 +26,8 @@ const PULSE_STYLES = {
 };
 
 /**
- * Editorial command center — 1 status sentence · inline metrics · action buttons.
- * @param {{
- *   view?: object|null,
- *   loading?: boolean,
- *   onNavigateSection?: (id: string) => void,
- *   onRunTrend?: () => void,
- * }} props
+ * Admin editorial command center — Jobs: one verdict · Cook: landing density.
+ * Sentence + inline metrics + action buttons (no card grid).
  */
 export default function AdminCommandCenter({
   view,
@@ -52,13 +47,18 @@ export default function AdminCommandCenter({
 
   const pulse = PULSE_STYLES[view.pulse] || PULSE_STYLES.ok;
   const metricLine = (view.signals || [])
-    .slice(0, 5)
+    .slice(0, 4)
     .map((s) => `${s.label} ${s.value}`)
     .join(" · ");
   const channelLine = (view.channels || [])
     .filter((ch) => ch.passRate != null)
     .map((ch) => `${ch.label} ${ch.passRate}%`)
     .join(" · ");
+  const verdict =
+    view.nowActions?.[0]?.title ||
+    view.topAlert ||
+    view.headline ||
+    "오늘 운영 상태를 확인하세요.";
 
   return (
     <section
@@ -74,12 +74,11 @@ export default function AdminCommandCenter({
             </span>
           </div>
           <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold leading-snug tracking-[-0.03em] text-[var(--admin-ink,#111111)]">
-            {view.headline}
+            {verdict}
           </h2>
           <p className="mt-2 text-[14px] leading-relaxed text-[var(--admin-muted,#5F6B66)]">
             {view.subline}
             {view.readiness != null ? ` · 준비도 ${view.readiness}` : ""}
-            {view.readinessBand ? ` (${view.readinessBand})` : ""}
           </p>
           {metricLine ? (
             <p className="mt-3 text-[13px] leading-relaxed text-[var(--admin-ink,#111111)]">
@@ -89,11 +88,6 @@ export default function AdminCommandCenter({
           {channelLine ? (
             <p className="mt-1 text-[12px] text-[var(--admin-muted,#5F6B66)]">
               배치 · {channelLine}
-            </p>
-          ) : null}
-          {view.topAlert ? (
-            <p className="mt-3 max-w-2xl rounded-2xl bg-white/75 px-3 py-2 text-[12px] text-[var(--admin-muted,#5F6B66)]">
-              {view.topAlert}
             </p>
           ) : null}
         </div>
@@ -128,25 +122,18 @@ export default function AdminCommandCenter({
         ) : null}
       </div>
 
-      {view.nowActions?.length > 0 ? (
+      {view.nowActions?.length > 1 ? (
         <div className="mt-5 border-t border-[var(--admin-line,rgba(17,17,17,0.08))] pt-4">
-          <p className={ADMIN_EYEBROW}>위험 · 지금</p>
+          <p className={ADMIN_EYEBROW}>다음</p>
           <ul className="mt-2 space-y-2">
-            {view.nowActions.slice(0, 2).map((action) => (
+            {view.nowActions.slice(1, 2).map((action) => (
               <li key={action.id} className="text-[13px] leading-relaxed text-[var(--admin-ink,#111111)]">
-                <span className="font-semibold text-[#E42939]">지금</span>
-                <span className="mx-1.5 text-[var(--admin-muted,#5F6B66)]">·</span>
                 {action.title}
-                {action.advice ? (
-                  <span className="mt-0.5 block text-[12px] text-[var(--admin-muted,#5F6B66)]">
-                    {action.advice}
-                  </span>
-                ) : null}
               </li>
             ))}
           </ul>
         </div>
-      ) : view.watchCount > 0 ? (
+      ) : view.watchCount > 0 && !(view.nowActions?.length > 0) ? (
         <p className="mt-5 text-[12px] text-[var(--admin-muted,#5F6B66)]">
           관찰·이번 주 항목 {view.watchCount}건 — 품질 탭에서 확인
         </p>
