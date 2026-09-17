@@ -61,10 +61,10 @@ export default async function GuidePage({ params }) {
               세 채널이 같은 맥락으로 이어지는지 바로 볼 수 있습니다.
             </p>
             <Link
-              href="/#public-brand-test"
+              href={page.ctaHref || "/#public-brand-test"}
               className="mt-4 inline-flex rounded-xl bg-[#03C75A] px-5 py-3 text-[14px] font-bold text-white"
             >
-              발행 샘플 무료로 보기
+              {page.cta}
             </Link>
           </div>
 

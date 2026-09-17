@@ -169,9 +169,9 @@ export async function renderOgImage() {
               letterSpacing: "-0.06em",
             }}
           >
-            Discover what is moving in AI.
-            <br />
-            Apply it to your brand.
+                Discover what is moving in AI rankings.
+                <br />
+                Apply it to your brand.
           </div>
           <div
             style={{

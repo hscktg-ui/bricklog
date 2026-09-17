@@ -45,7 +45,9 @@ export default async function TrendDetailPage({ params }) {
               BRICLOG
             </Link>
             <span aria-hidden>·</span>
-            <span>AI TREND</span>
+            <Link href="/#trend-list" className="hover:underline">
+              AI 순위·랭킹
+            </Link>
             {trend.isSample ? (
               <>
                 <span aria-hidden>·</span>
@@ -61,10 +63,15 @@ export default async function TrendDetailPage({ params }) {
               <div>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
                   {trend.categoryLabel}
+                  {trend.currentRank != null ? ` · ${trend.currentRank}위` : ""}
                 </p>
                 <h1 className="mt-3 text-[clamp(2.1rem,7vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.05em] text-[#111111]">
                   {trend.name}
                 </h1>
+                <p className="mt-2 text-[14px] font-medium text-[#03A94D]">
+                  AI 순위·랭킹 트렌드
+                  {trend.currentRank != null ? ` · 현재 ${trend.currentRank}위` : ""}
+                </p>
                 <p className="mt-4 max-w-3xl text-[17px] leading-[1.7] text-[#4F5A56]">
                   {trend.description}
                 </p>

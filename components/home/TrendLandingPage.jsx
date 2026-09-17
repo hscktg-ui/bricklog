@@ -217,16 +217,18 @@ export default function TrendLandingPage({
             <div className="text-center">
               <p className="text-[13px] font-semibold tracking-[0.16em] text-[#111111]">BRICLOG</p>
               <h1 className="mt-4 text-[clamp(2.3rem,6vw,4.9rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-[#111111]">
-                AI의 지금을 읽다.
+                AI 순위·랭킹,
+                <br />
+                지금을 읽다.
               </h1>
               <p className="mt-4 text-[12px] font-medium uppercase tracking-[0.22em] text-[#7B8680]">
-                TREND · SEARCH · CREATE
+                RANK · TREND · CREATE
               </p>
             </div>
 
             <form onSubmit={handleSearchSubmit} className="mx-auto mt-8 max-w-4xl">
               <label className="sr-only" htmlFor="trend-search-input">
-                AI 검색
+                AI 순위·랭킹 검색
               </label>
               <div className="overflow-hidden rounded-[34px] border border-[#DCE3DF] bg-white shadow-[0_24px_80px_rgba(17,17,17,0.06)]">
                 <div className="flex items-center gap-3 px-4 py-4 sm:px-6 sm:py-5">
@@ -234,7 +236,7 @@ export default function TrendLandingPage({
                     id="trend-search-input"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="AI를 검색하세요"
+                    placeholder="AI 순위·도구·모델을 검색하세요"
                     className="h-14 flex-1 border-0 bg-transparent px-1 text-[18px] text-[#111111] outline-none placeholder:text-[#8A948F] md:text-[22px]"
                   />
                   <button
@@ -284,8 +286,8 @@ export default function TrendLandingPage({
                 ) : null}
               </div>
               <p className="mt-4 text-center text-[12px] leading-[1.7] text-[#6C7772]">
-                Founders, marketers, operators, and developers can track models, tools, video,
-                image, coding, and agents here.
+                AI 도구·모델 실시간 순위와 랭킹 변동을 보고, 구글·네이버 검색용 브랜드 초안까지
+                이어갑니다.
               </p>
             </form>
 
@@ -318,9 +320,11 @@ export default function TrendLandingPage({
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">Live AI Trend</p>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
+                  Live AI Ranking
+                </p>
                 <h2 className="mt-3 text-[clamp(1.8rem,4vw,2.9rem)] font-semibold leading-[1.02] tracking-[-0.04em] text-[#111111]">
-                  지금 가장 많이 움직이는 AI
+                  지금 AI 순위·랭킹 Top
                 </h2>
               </div>
               <div className="max-w-xl rounded-[22px] border border-[#E7ECE8] bg-white px-4 py-3 text-[12px] leading-[1.7] text-[#5F6B66]">
