@@ -11,25 +11,19 @@ export default function BrandIcon({ size = 36, className = "" }) {
       className={className}
       aria-hidden
     >
-      <rect x="4" y="22" width="16" height="14" rx="3" fill="#5BC77A" />
-      <rect x="22" y="22" width="16" height="14" rx="3" fill="#2D6B45" />
+      <rect x="4" y="4" width="40" height="40" rx="11" fill="#F7F8FA" />
       <rect
-        x="13"
-        y="6"
-        width="18"
-        height="16"
-        rx="3"
-        fill="none"
-        stroke="#2D6B45"
-        strokeWidth="2.5"
+        x="10"
+        y="10"
+        width="13"
+        height="13"
+        rx="3.2"
+        fill="#F7F8FA"
+        stroke="#111111"
+        strokeWidth="2.2"
       />
-      <path
-        d="M17 12h8M17 16h6"
-        stroke="#5BC77A"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M27 8l3 3-3 3" fill="#fff" stroke="#2D6B45" strokeWidth="1.5" />
+      <rect x="25" y="10" width="13" height="13" rx="3.2" fill="#111111" />
+      <rect x="17.5" y="25" width="13" height="13" rx="3.2" fill="#03C75A" />
     </svg>
   );
 }

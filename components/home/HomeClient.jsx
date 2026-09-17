@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import AuthForm from "@/components/AuthForm";
-import LandingPage from "@/components/landing/LandingPage";
+import TrendLandingPage from "@/components/home/TrendLandingPage";
 import { LandingPreviewProvider } from "@/components/landing/LandingPreviewContext";
 import { recordLoginIntent } from "@/lib/analytics/signupIntent";
 import BriclogAssistant from "@/components/assistant/BriclogAssistant";
@@ -33,7 +33,7 @@ const Dashboard = dynamic(() => import("@/components/Dashboard"), {
   ),
 });
 
-export default function HomeClient() {
+export default function HomeClient({ trendCatalog }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -334,7 +334,11 @@ export default function HomeClient() {
             </button>
           </div>
         ) : null}
-        <LandingPage onAuthOpen={openAuth} onStart={openStart} />
+        <TrendLandingPage
+          trendCatalog={trendCatalog}
+          onAuthOpen={openAuth}
+          onStart={openStart}
+        />
         {authMode && (
           <div
             className="pointer-events-none fixed inset-0 z-[95] flex items-end justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:items-center sm:p-6"

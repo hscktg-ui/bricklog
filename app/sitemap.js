@@ -1,5 +1,6 @@
 import { resolvePublicSiteUrl } from "@/lib/brand/seo";
 import { getGuideSitemapPaths } from "@/lib/seo/guidePages";
+import { TREND_SEED_ITEMS } from "@/lib/trends/seedCatalog";
 
 const BASE = resolvePublicSiteUrl();
 
@@ -21,8 +22,13 @@ export default function sitemap() {
       priority: 0.82,
       changeFrequency: "weekly",
     }));
+  const trendPaths = TREND_SEED_ITEMS.map((item) => ({
+    path: `/trend/${item.slug}`,
+    priority: 0.76,
+    changeFrequency: "daily",
+  }));
 
-  const paths = [...STATIC_PATHS, ...guidePaths];
+  const paths = [...STATIC_PATHS, ...guidePaths, ...trendPaths];
 
   return paths.map(({ path, priority, changeFrequency }) => ({
     url: `${BASE}${path}`,

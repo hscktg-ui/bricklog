@@ -604,6 +604,37 @@ function DashboardLayout({
 
   const [confirmChannelPicker, setConfirmChannelPicker] = useState(false);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const create = params.get("create") || "";
+    const topic = params.get("topic") || params.get("trendContext") || "";
+    const brandName = params.get("brandName") || "";
+    const region = params.get("region") || "";
+    if (!create && !topic && !brandName && !region) return;
+
+    if (create === "plan") setActiveMenu("plan");
+    else setActiveMenu("blog");
+    setRhythmTab("studio");
+    setSelectedHistoryId(null);
+    setBlogInput((prev) => ({
+      ...prev,
+      brandName: brandName.trim() || prev.brandName,
+      region: region.trim() || prev.region,
+      topic: topic.trim() || prev.topic,
+      mainKeyword: prev.mainKeyword || topic.trim() || "",
+    }));
+
+    params.delete("create");
+    params.delete("topic");
+    params.delete("trendContext");
+    params.delete("brandName");
+    params.delete("region");
+    const nextQuery = params.toString();
+    const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}`;
+    window.history.replaceState({}, "", nextUrl);
+  }, [setActiveMenu, setSelectedHistoryId, setBlogInput]);
+
   const reopenChannelWelcome = useCallback(() => {
     const next = resetChannelOnboarding(user.id);
     setUserPrefs(next);

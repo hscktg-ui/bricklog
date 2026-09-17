@@ -100,6 +100,14 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
   const [prefillSource, setPrefillSource] = useState("rotation");
   const [channelTab, setChannelTab] = useState("blog");
   const activeSample = getPublicTestSampleByIndex(sampleIdx);
+  const bannerValues =
+    prefillSource === "query"
+      ? {
+          brandName: brandName || activeSample.brandName,
+          region: region || activeSample.region,
+          topic: topic || activeSample.topic,
+        }
+      : activeSample;
 
   const applySampleToForm = useCallback((sample) => {
     if (!sample?.brandName) return;
@@ -319,22 +327,24 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <p className="flex-1 rounded-xl border border-[var(--vision-line)] bg-[var(--vision-panel-bg)] px-3 py-2.5 text-[13px] text-[var(--vision-muted)]">
                 <span className="font-semibold text-[var(--vision-ink)]">
-                  {activeSample.brandName}
+                  {bannerValues.brandName}
                 </span>
                 <span className="text-[var(--vision-muted)]"> · </span>
-                {activeSample.region}
+                {bannerValues.region}
                 <span className="text-[var(--vision-muted)]"> · </span>
-                {activeSample.topic}
+                {bannerValues.topic}
               </p>
               <span className="shrink-0 rounded-full border border-[var(--vision-accent-ring,rgba(3,199,90,0.25))] bg-[var(--vision-accent-soft,rgba(3,199,90,0.12))] px-3 py-1.5 text-[11px] font-bold text-[var(--vision-accent)]">
-                {PUBLIC_TEST_SAMPLE_BADGE}
+                {prefillSource === "query" ? "트렌드에서 가져옴" : PUBLIC_TEST_SAMPLE_BADGE}
               </span>
             </div>
           ) : null}
           {sampleReady ? (
             <div className="mb-3 flex items-center justify-end gap-2">
               <p className="hidden flex-1 text-[11px] text-[var(--vision-muted)] sm:block">
-                {prefillSource === "cache"
+                {prefillSource === "query"
+                  ? "트렌드 화면에서 고른 주제를 폼에 먼저 넣어 두었어요"
+                  : prefillSource === "cache"
                   ? "이 브라우저에 저장된 마지막 입력을 불러왔어요"
                   : "접속할 때마다 다른 가상 브랜드 예시가 보입니다"}
               </p>

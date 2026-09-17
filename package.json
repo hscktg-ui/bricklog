@@ -23,6 +23,7 @@
     "apply:schema-v16-phone": "node scripts/apply-schema-v16-phone.mjs",
     "apply:schema-v19-public-test": "node scripts/apply-schema-v19-public-test.mjs",
     "apply:schema-v23-ops-batch-snapshots": "node scripts/apply-schema-v23-ops-batch-snapshots.mjs",
+    "apply:schema-v24-ai-trends": "node scripts/apply-schema-v24-ai-trends.mjs",
     "seed:ops-batch-snapshots": "node --import ./scripts/register-alias.mjs scripts/seed-ops-batch-snapshots.mjs",
     "test:public-brand-test": "node scripts/public-brand-test-smoke.mjs",
     "test:public-brand-test:prod": "node scripts/public-brand-test-smoke.mjs",

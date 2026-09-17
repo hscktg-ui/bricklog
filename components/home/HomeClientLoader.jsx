@@ -7,6 +7,6 @@ const HomeClient = dynamic(() => import("@/components/home/HomeClient"), {
   loading: () => null,
 });
 
-export default function HomeClientLoader() {
-  return <HomeClient />;
+export default function HomeClientLoader({ trendCatalog }) {
+  return <HomeClient trendCatalog={trendCatalog} />;
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BRICLOG_CONTACT_EMAIL, BRICLOG_CONTACT_LABEL } from "@/lib/brand/support";
 import {
+  BRAND_PHILOSOPHY,
   BRAND_META_TITLE_KO,
   SITE_FOOTER_DESCRIPTION,
   SITE_FOOTER_TAGLINE,
@@ -21,17 +22,23 @@ export default function SiteFooter() {
       className="shrink-0 border-t border-[var(--border)] bg-[var(--footer-bg,var(--background))] text-[var(--foreground)]"
       role="contentinfo"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 md:flex-row md:items-end md:justify-between md:px-8">
-        <div>
-          <p className="text-[14px] font-bold text-[var(--foreground)]">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 md:flex-row md:items-end md:justify-between md:px-8">
+        <div className="max-w-xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
+            Intent Before Output
+          </p>
+          <p className="mt-2 text-[16px] font-bold text-[var(--foreground)]">
             {BRAND_META_TITLE_KO}
           </p>
-          <p className="mt-1 text-[12px] text-[var(--muted)]">{SITE_FOOTER_TAGLINE}</p>
+          <p className="mt-1 text-[13px] text-[var(--foreground)]/86">{SITE_FOOTER_TAGLINE}</p>
           {SITE_FOOTER_DESCRIPTION ? (
-            <p className="mt-2 max-w-md text-[11px] leading-relaxed text-[var(--muted)]">
+            <p className="mt-2 text-[12px] leading-relaxed text-[var(--muted)]">
               {SITE_FOOTER_DESCRIPTION}
             </p>
           ) : null}
+          <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--muted)]">
+            {BRAND_PHILOSOPHY}
+          </p>
           <p className="mt-3 text-[11px] leading-relaxed text-[var(--muted)]">
             해신 · 대표 김태규 · 116-06-68724
             <span className="mx-1.5 text-[var(--border)]" aria-hidden>
@@ -42,6 +49,9 @@ export default function SiteFooter() {
         </div>
 
         <div className="flex flex-col gap-2 md:items-end">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+            Discover · Apply · Create
+          </p>
           <p className="text-[12px] text-[var(--muted)]">
             <a
               href={`mailto:${BRICLOG_CONTACT_EMAIL}`}
