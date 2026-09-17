@@ -199,6 +199,7 @@ export default function TrendLandingPage({
             <button
               type="button"
               onClick={openSignup}
+              data-briclog-cta="start"
               className="inline-flex min-h-[42px] items-center rounded-full bg-[#111111] px-4 text-[13px] font-semibold text-white hover:opacity-92"
             >
               작업실
@@ -484,7 +485,10 @@ export default function TrendLandingPage({
                 </div>
               </div>
 
-              <div className="rounded-[28px] border border-[#E7ECE8] bg-white p-6">
+              <div id="landing-pricing" className="rounded-[28px] border border-[#E7ECE8] bg-white p-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#03A94D]">
+                  Free Now
+                </p>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Channels</p>
                 <ul className="mt-4 space-y-3 text-[15px] text-[#111111]">
                   <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
@@ -503,6 +507,7 @@ export default function TrendLandingPage({
                 <button
                   type="button"
                   onClick={() => scrollTo("public-brand-test")}
+                  data-briclog-cta="start"
                   className="mt-6 inline-flex min-h-[48px] items-center rounded-full bg-[#03C75A] px-5 text-[14px] font-semibold text-white hover:brightness-105"
                 >
                   BRICLOG 시작하기

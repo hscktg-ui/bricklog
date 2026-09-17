@@ -16,17 +16,16 @@ export default function SidebarMobileShortcuts({
 }) {
   const items = [
     { id: "plan", ...CHANNEL_PRODUCTS.plan },
+    { id: "review", ...CHANNEL_PRODUCTS.review },
     { id: "history", ...CHANNEL_PRODUCTS.history },
   ];
 
   return (
     <div className="mb-2 border-b border-[var(--vision-line)]/80 px-2 pb-2 lg:hidden">
       <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>자주 쓰는 메뉴</p>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
         {items.map((item) => {
-          const active =
-            activeMenu === item.id ||
-            (item.id === "plan" && (activeMenu === "review" || activeMenu === "image"));
+          const active = activeMenu === item.id;
           return (
             <button
               key={item.id}

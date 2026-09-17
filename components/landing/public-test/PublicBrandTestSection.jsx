@@ -300,6 +300,9 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
         result?.preview ? "pb-32 sm:pb-36" : ""
       }`}
     >
+      <div id="landing-sample" className="sr-only" aria-hidden>
+        샘플 체험 섹션
+      </div>
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="max-w-lg">
           <p className={VISION_EYEBROW}>샘플 체험</p>

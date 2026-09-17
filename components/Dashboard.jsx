@@ -69,6 +69,7 @@ import WorkspaceRhythmTabs from "@/components/workspace/WorkspaceRhythmTabs";
 import { WorkspacePreviewProvider } from "@/context/WorkspacePreviewContext";
 import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
+import DraftReviewStudio from "@/components/DraftReviewStudio";
 import { CHANNEL_PRODUCTS, normalizeWorkspaceMenuId } from "@/lib/channels/channelProducts";
 import {
   fetchGenerationById,
@@ -897,13 +898,22 @@ function DashboardLayout({
               brandId={activeBrandId}
               onPlanChange={() => setPricingOpen(true)}
             />
-          ) : activeMenu === "plan" || activeMenu === "review" || activeMenu === "image" ? (
+          ) : activeMenu === "plan" || activeMenu === "image" ? (
             <ContentPlanWorkspace
               userId={user.id}
               brandId={activeBrandId}
               contentArchive={activeBrand?.contentArchive}
               onNavigate={navigate}
               onToast={showToast}
+            />
+          ) : activeMenu === "review" ? (
+            <DraftReviewStudio
+              userId={user.id}
+              brandId={activeBrandId}
+              onCopy={handleCopy}
+              onToast={showToast}
+              onUpgradeClick={() => setPricingOpen(true)}
+              onOpenBrandWorkspace={() => handleMenuNavigate("growth")}
             />
           ) : activeMenu === "place" ? (
             <PlaceGenerator
