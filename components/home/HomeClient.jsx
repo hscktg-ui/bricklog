@@ -33,7 +33,11 @@ const Dashboard = dynamic(() => import("@/components/Dashboard"), {
   ),
 });
 
-export default function HomeClient({ trendCatalog }) {
+export default function HomeClient({
+  trendCatalog,
+  initialQuery = "",
+  initialCategory = "all",
+}) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -335,7 +339,10 @@ export default function HomeClient({ trendCatalog }) {
           </div>
         ) : null}
         <TrendLandingPage
+          key={`${initialQuery}:${initialCategory}:${trendCatalog?.updatedAt || ""}`}
           trendCatalog={trendCatalog}
+          initialQuery={initialQuery}
+          initialCategory={initialCategory}
           onAuthOpen={openAuth}
           onStart={openStart}
         />

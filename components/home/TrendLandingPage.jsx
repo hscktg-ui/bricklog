@@ -69,10 +69,16 @@ function TrendMiniList({ items = [] }) {
   );
 }
 
-export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) {
+export default function TrendLandingPage({
+  trendCatalog,
+  initialQuery = "",
+  initialCategory = "all",
+  onAuthOpen,
+  onStart,
+}) {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [query, setQuery] = useState(initialQuery);
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [catalogState, setCatalogState] = useState(trendCatalog);
 
   useEffect(() => {
@@ -123,11 +129,12 @@ export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) 
   }, [items, query]);
 
   const filteredTopItems = useMemo(() => {
-    return topItems.filter((item) => {
+    const source = query.trim() ? items : topItems;
+    return source.filter((item) => {
       if (activeCategory !== "all" && item.category !== activeCategory) return false;
       return matchesTrend(item, query);
     });
-  }, [topItems, activeCategory, query]);
+  }, [items, topItems, activeCategory, query]);
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -135,14 +142,17 @@ export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) 
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    if (!query.trim()) return;
+    const trimmed = query.trim();
+    if (!trimmed) return;
     const target = exactMatch || suggestions[0];
     if (target) {
       router.push(`/trend/${target.slug}`);
       return;
     }
-    const encoded = encodeURIComponent(query.trim());
-    router.push(`/?topic=${encoded}#public-brand-test`);
+    const params = new URLSearchParams();
+    params.set("q", trimmed);
+    if (activeCategory !== "all") params.set("category", activeCategory);
+    router.push(`/?${params.toString()}#trend-list`);
   };
 
   const openSignup = () => onStart?.();
@@ -150,6 +160,13 @@ export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) 
   const trendRequestHref = `mailto:${BRICLOG_CONTACT_EMAIL}?subject=${encodeURIComponent(
     "BRICLOG Trend 등록 요청"
   )}&body=${encodeURIComponent(query.trim())}`;
+  const createFromQueryHref = query.trim()
+    ? `/?${new URLSearchParams({
+        create: "blog",
+        topic: query.trim(),
+        trendContext: query.trim(),
+      }).toString()}#public-brand-test`
+    : "/#public-brand-test";
   const liveLabel = catalogState?.live?.liveLabel || catalogState?.live?.updatedLabel || "UPDATED --:--";
 
   return (
@@ -262,6 +279,10 @@ export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) 
                   </div>
                 ) : null}
               </div>
+              <p className="mt-4 text-center text-[12px] leading-[1.7] text-[#6C7772]">
+                Founders, marketers, operators, and developers can track models, tools, video,
+                image, coding, and agents here.
+              </p>
             </form>
 
             <div className="mx-auto mt-6 max-w-4xl rounded-[24px] border border-[#E7ECE8] bg-white px-4 py-3">
@@ -326,6 +347,28 @@ export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) 
               })}
             </div>
 
+            {query.trim() || activeCategory !== "all" ? (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-[#E7ECE8] bg-[#FAFCFB] px-4 py-3 text-[12px] text-[#5F6B66]">
+                <p>
+                  {query.trim() ? (
+                    <>
+                      Search results for <strong className="text-[#111111]">{query.trim()}</strong>
+                    </>
+                  ) : (
+                    <>Category filtered</>
+                  )}{" "}
+                  · {filteredTopItems.length} results
+                </p>
+                <button
+                  type="button"
+                  onClick={() => router.push("/#trend-list")}
+                  className="font-semibold text-[#111111] hover:text-[#03A94D]"
+                >
+                  Reset
+                </button>
+              </div>
+            ) : null}
+
             <div className="mt-6 overflow-hidden rounded-[28px] border border-[#E7ECE8] bg-white">
               <div className="hidden grid-cols-[72px_minmax(0,1.5fr)_110px_90px_100px_120px] gap-4 border-b border-[#EEF2EF] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7B8680] md:grid">
                 <span>Rank</span>
@@ -374,6 +417,22 @@ export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) 
               ) : (
                 <div className="px-5 py-12 text-center">
                   <p className="text-[17px] font-semibold text-[#111111]">조건에 맞는 트렌드가 없습니다.</p>
+                  {query.trim() ? (
+                    <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+                      <Link
+                        href={createFromQueryHref}
+                        className="inline-flex min-h-[44px] items-center rounded-full bg-[#111111] px-5 text-[13px] font-semibold text-white"
+                      >
+                        이 주제로 바로 활용하기
+                      </Link>
+                      <a
+                        href={trendRequestHref}
+                        className="inline-flex min-h-[44px] items-center rounded-full border border-[#DCE3DF] bg-white px-5 text-[13px] font-semibold text-[#111111]"
+                      >
+                        트렌드 등록 요청
+                      </a>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>

@@ -7,6 +7,16 @@ const HomeClient = dynamic(() => import("@/components/home/HomeClient"), {
   loading: () => null,
 });
 
-export default function HomeClientLoader({ trendCatalog }) {
-  return <HomeClient trendCatalog={trendCatalog} />;
+export default function HomeClientLoader({
+  trendCatalog,
+  initialQuery = "",
+  initialCategory = "all",
+}) {
+  return (
+    <HomeClient
+      trendCatalog={trendCatalog}
+      initialQuery={initialQuery}
+      initialCategory={initialCategory}
+    />
+  );
 }
