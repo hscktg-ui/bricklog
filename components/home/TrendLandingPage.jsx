@@ -174,21 +174,21 @@ export default function TrendLandingPage({
       <header className="sticky top-0 z-30 border-b border-[#E7ECE8]/80 bg-[#FCFCFA]/94 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
           <Logo showIcon wordmark="BRICLOG" iconSize={28} className="items-center" onClick={() => scrollTo("trend-search")} />
-          <nav className="hidden items-center gap-4 text-[13px] font-medium text-[#4F5A56] md:flex">
+          <nav className="hidden items-center gap-5 text-[13px] font-medium text-[#5F6B66] md:flex">
             <button type="button" onClick={() => scrollTo("trend-list")} className="hover:text-[#111111]">
-              TREND
+              순위
             </button>
             <button type="button" onClick={() => scrollTo("public-brand-test")} className="hover:text-[#111111]">
-              SAMPLE
+              샘플
             </button>
             <button type="button" onClick={() => scrollTo("landing-pricing")} className="hover:text-[#111111]">
-              PLAN
+              요금
             </button>
             <button type="button" onClick={() => scrollTo("create-with-briclog")} className="hover:text-[#111111]">
-              CREATE
+              만들기
             </button>
             <Link href="/guides" className="hover:text-[#111111]">
-              GUIDES
+              가이드
             </Link>
           </nav>
           <div className="flex items-center gap-2">
@@ -212,36 +212,38 @@ export default function TrendLandingPage({
       </header>
 
       <main id="landing-main">
-        <section id="trend-search" className="px-4 pb-12 pt-12 md:px-6 md:pb-14 md:pt-20">
+        <section id="trend-search" className="px-4 pb-14 pt-14 md:px-6 md:pb-20 md:pt-24">
           <div className="mx-auto max-w-5xl">
             <div className="text-center">
-              <p className="text-[13px] font-semibold tracking-[0.16em] text-[#111111]">BRICLOG</p>
-              <h1 className="mt-4 text-[clamp(2.3rem,6vw,4.9rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-[#111111]">
+              <p className="text-[12px] font-medium tracking-[0.08em] text-[#5F6B66]">브릭로그</p>
+              <h1 className="mt-5 text-[clamp(2.2rem,5.8vw,4.4rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-[#111111]">
                 AI 순위·랭킹,
                 <br />
                 지금을 읽다.
               </h1>
-              <p className="mt-4 text-[12px] font-medium uppercase tracking-[0.22em] text-[#7B8680]">
-                RANK · TREND · CREATE
+              <p className="mx-auto mt-5 max-w-xl text-[16px] leading-[1.65] text-[#5F6B66] md:text-[18px]">
+                움직이는 도구를 보고,
+                <br className="sm:hidden" />
+                브랜드 초안까지 이어갑니다.
               </p>
             </div>
 
-            <form onSubmit={handleSearchSubmit} className="mx-auto mt-8 max-w-4xl">
+            <form onSubmit={handleSearchSubmit} className="mx-auto mt-10 max-w-3xl">
               <label className="sr-only" htmlFor="trend-search-input">
                 AI 순위·랭킹 검색
               </label>
-              <div className="overflow-hidden rounded-[34px] border border-[#DCE3DF] bg-white shadow-[0_24px_80px_rgba(17,17,17,0.06)]">
-                <div className="flex items-center gap-3 px-4 py-4 sm:px-6 sm:py-5">
+              <div className="overflow-hidden rounded-[22px] border border-[#E7ECE8] bg-white shadow-[0_12px_40px_rgba(17,17,17,0.05)]">
+                <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5 sm:py-4">
                   <input
                     id="trend-search-input"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="AI 순위·도구·모델을 검색하세요"
-                    className="h-14 flex-1 border-0 bg-transparent px-1 text-[18px] text-[#111111] outline-none placeholder:text-[#8A948F] md:text-[22px]"
+                    placeholder="도구·모델 이름을 검색하세요"
+                    className="h-12 flex-1 border-0 bg-transparent px-1 text-[17px] text-[#111111] outline-none placeholder:text-[#8A948F] md:text-[19px]"
                   />
                   <button
                     type="submit"
-                    className="inline-flex h-[52px] min-w-[52px] items-center justify-center rounded-full bg-[#03C75A] px-5 text-[15px] font-semibold text-white hover:brightness-105"
+                    className="inline-flex h-[48px] min-w-[48px] items-center justify-center rounded-full bg-[#03C75A] px-5 text-[15px] font-semibold text-white hover:brightness-105"
                     aria-label="검색"
                   >
                     ⌕
@@ -285,19 +287,18 @@ export default function TrendLandingPage({
                   </div>
                 ) : null}
               </div>
-              <p className="mt-4 text-center text-[12px] leading-[1.7] text-[#6C7772]">
-                AI 도구·모델 실시간 순위와 랭킹 변동을 보고, 구글·네이버 검색용 브랜드 초안까지
-                이어갑니다.
+              <p className="mt-5 text-center text-[13px] leading-[1.7] text-[#5F6B66]">
+                실시간 순위 변동을 보고, 구글·네이버용 브랜드 초안까지.
               </p>
             </form>
 
-            <div className="mx-auto mt-6 max-w-4xl rounded-[24px] border border-[#E7ECE8] bg-white px-4 py-3">
-              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7B8680]">
-                  LIVE · {liveLabel}
+            <div className="mx-auto mt-8 max-w-3xl rounded-[20px] border border-[#E7ECE8] bg-white px-4 py-4">
+              <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
+                <p className="text-[12px] font-medium text-[#5F6B66]">
+                  실시간 · {liveLabel}
                 </p>
                 <p className="text-[11px] text-[#8A948F]">
-                  {catalogState?.live?.isLive ? "Hourly DB snapshot" : catalogState?.live?.liveLabel}
+                  {catalogState?.live?.isLive ? "매시간 갱신" : catalogState?.live?.liveLabel}
                 </p>
               </div>
               <ul className="mt-3 grid gap-2 md:grid-cols-4">
@@ -320,10 +321,8 @@ export default function TrendLandingPage({
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
-                  Live AI Ranking
-                </p>
-                <h2 className="mt-3 text-[clamp(1.8rem,4vw,2.9rem)] font-semibold leading-[1.02] tracking-[-0.04em] text-[#111111]">
+                <p className="text-[12px] font-medium text-[#5F6B66]">실시간 순위</p>
+                <h2 className="mt-3 text-[clamp(1.7rem,3.8vw,2.6rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-[#111111]">
                   지금 AI 순위·랭킹 Top
                 </h2>
               </div>
@@ -451,8 +450,8 @@ export default function TrendLandingPage({
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-6 lg:grid-cols-2">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">What&apos;s Rising</p>
-                <h2 className="mt-3 text-[28px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111111]">
+                <p className="text-[12px] font-medium text-[#5F6B66]">상승</p>
+                <h2 className="mt-3 text-[24px] font-semibold leading-[1.2] tracking-[-0.01em] text-[#111111]">
                   최근 1시간 가장 빠르게 오른 AI
                 </h2>
                 <div className="mt-5">
@@ -461,8 +460,8 @@ export default function TrendLandingPage({
               </div>
 
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">New</p>
-                <h2 className="mt-3 text-[28px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111111]">
+                <p className="text-[12px] font-medium text-[#5F6B66]">신규</p>
+                <h2 className="mt-3 text-[24px] font-semibold leading-[1.2] tracking-[-0.01em] text-[#111111]">
                   새롭게 감지된 AI
                 </h2>
                 <div className="mt-5">
@@ -477,41 +476,39 @@ export default function TrendLandingPage({
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_360px] lg:items-end">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">Create With BRICLOG</p>
-                <h2 className="mt-3 text-[clamp(1.9rem,4vw,3.2rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-[#111111]">
+                <p className="text-[12px] font-medium text-[#5F6B66]">만들기</p>
+                <h2 className="mt-3 text-[clamp(1.8rem,3.8vw,2.8rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-[#111111]">
                   찾았다면,
                   <br />
                   이제 활용하세요.
                 </h2>
-                <div className="mt-6 flex flex-wrap items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#5F6B66]">
-                  <span>TREND</span>
+                <div className="mt-5 flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#5F6B66]">
+                  <span>순위</span>
                   <span className="text-[#C6CFCA]">→</span>
-                  <span>BRIEF</span>
+                  <span>브리프</span>
                   <span className="text-[#C6CFCA]">→</span>
-                  <span className="text-[#111111]">CREATE</span>
+                  <span className="text-[#111111]">초안</span>
                 </div>
               </div>
 
               <div
                 id="landing-pricing"
                 data-briclog-anchor="pricing"
-                className="scroll-mt-24 rounded-[28px] border border-[#E7ECE8] bg-white p-6"
+                className="scroll-mt-24 rounded-[22px] border border-[#E7ECE8] bg-white p-6"
               >
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#03A94D]">
-                  Free Now
-                </p>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Channels</p>
+                <p className="text-[12px] font-medium text-[#03A94D]">지금 무료</p>
+                <p className="mt-1 text-[13px] text-[#5F6B66]">채널</p>
                 <ul className="mt-4 space-y-3 text-[15px] text-[#111111]">
                   <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
-                    <span className="font-semibold">BLOG</span>
-                    <span className="text-[13px] text-[#5F6B66]">이야기 초안</span>
+                    <span className="font-semibold">이야기</span>
+                    <span className="text-[13px] text-[#5F6B66]">블로그 초안</span>
                   </li>
                   <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
-                    <span className="font-semibold">SMARTPLACE</span>
+                    <span className="font-semibold">플레이스</span>
                     <span className="text-[13px] text-[#5F6B66]">공지 톤 분리</span>
                   </li>
                   <li className="flex items-center justify-between">
-                    <span className="font-semibold">INSTAGRAM</span>
+                    <span className="font-semibold">인스타</span>
                     <span className="text-[13px] text-[#5F6B66]">캡션 연결</span>
                   </li>
                 </ul>
@@ -521,7 +518,7 @@ export default function TrendLandingPage({
                   data-briclog-cta="start"
                   className="mt-6 inline-flex min-h-[48px] items-center rounded-full bg-[#03C75A] px-5 text-[14px] font-semibold text-white hover:brightness-105"
                 >
-                  BRICLOG 시작하기
+                  샘플로 시작하기
                 </button>
               </div>
             </div>
@@ -532,23 +529,23 @@ export default function TrendLandingPage({
 
         <section className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-3">
-            <Link href="/guides" className="rounded-[24px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#03C75A]/35 hover:bg-[#F8FCF9]">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Guides</p>
-              <p className="mt-3 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#111111]">
-                기존 검색 유입용 가이드 유지
+            <Link href="/guides" className="rounded-[20px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#111111]/25">
+              <p className="text-[12px] font-medium text-[#5F6B66]">가이드</p>
+              <p className="mt-3 text-[18px] font-semibold leading-[1.35] tracking-[-0.01em] text-[#111111]">
+                검색·운영용 작성 가이드
               </p>
             </Link>
 
-            <Link href="/help" className="rounded-[24px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#03C75A]/35 hover:bg-[#F8FCF9]">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">FAQ</p>
-              <p className="mt-3 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#111111]">
+            <Link href="/help" className="rounded-[20px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#111111]/25">
+              <p className="text-[12px] font-medium text-[#5F6B66]">도움말</p>
+              <p className="mt-3 text-[18px] font-semibold leading-[1.35] tracking-[-0.01em] text-[#111111]">
                 초안 생성 후 복사·게시
               </p>
             </Link>
 
-            <div className="rounded-[24px] border border-[#E7ECE8] bg-white p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Brand Philosophy</p>
-              <p className="mt-3 text-[24px] font-semibold leading-[1.2] tracking-[-0.04em] text-[#111111]">
+            <div className="rounded-[20px] border border-[#E7ECE8] bg-white p-5">
+              <p className="text-[12px] font-medium text-[#5F6B66]">철학</p>
+              <p className="mt-3 text-[22px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#111111]">
                 AI 시대,
                 <br />
                 중요한 것은 의도다.

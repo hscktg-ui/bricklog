@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { BRICLOG_CONTACT_EMAIL, BRICLOG_CONTACT_LABEL } from "@/lib/brand/support";
 import {
-  BRAND_PHILOSOPHY,
   BRAND_META_TITLE_KO,
-  SITE_FOOTER_DESCRIPTION,
   SITE_FOOTER_TAGLINE,
 } from "@/lib/brand/copy";
 import SiteFooterSocial from "@/components/layout/SiteFooterSocial";
@@ -16,30 +14,25 @@ const LEGAL_LINKS = [
   { href: "/refund", label: "환불정책" },
 ];
 
+/** Vision 2040 footer — one slogan · no EN echo */
 export default function SiteFooter() {
   return (
     <footer
       className="shrink-0 border-t border-[var(--border)] bg-[var(--footer-bg,var(--background))] text-[var(--foreground)]"
       role="contentinfo"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 md:flex-row md:items-end md:justify-between md:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 md:flex-row md:items-end md:justify-between md:px-8">
         <div className="max-w-xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
-            Intent Before Output
+          <p className="text-[12px] font-semibold text-[var(--brand)]">
+            Intent before output
           </p>
-          <p className="mt-2 text-[16px] font-bold text-[var(--foreground)]">
+          <p className="mt-3 text-[22px] font-semibold leading-snug tracking-[-0.01em] text-[var(--foreground)]">
             {BRAND_META_TITLE_KO}
           </p>
-          <p className="mt-1 text-[13px] text-[var(--foreground)]/86">{SITE_FOOTER_TAGLINE}</p>
-          {SITE_FOOTER_DESCRIPTION ? (
-            <p className="mt-2 text-[12px] leading-relaxed text-[var(--muted)]">
-              {SITE_FOOTER_DESCRIPTION}
-            </p>
-          ) : null}
-          <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--muted)]">
-            {BRAND_PHILOSOPHY}
+          <p className="mt-2 text-[15px] leading-relaxed text-[var(--foreground)]/88">
+            {SITE_FOOTER_TAGLINE}
           </p>
-          <p className="mt-3 text-[11px] leading-relaxed text-[var(--muted)]">
+          <p className="mt-5 text-[11px] leading-relaxed text-[var(--muted)]">
             해신 · 대표 김태규 · 116-06-68724
             <span className="mx-1.5 text-[var(--border)]" aria-hidden>
               ·
@@ -48,10 +41,7 @@ export default function SiteFooter() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-2 md:items-end">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-            Discover · Apply · Create
-          </p>
+        <div className="flex flex-col gap-3 md:items-end">
           <p className="text-[12px] text-[var(--muted)]">
             <a
               href={`mailto:${BRICLOG_CONTACT_EMAIL}`}

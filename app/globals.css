@@ -162,15 +162,15 @@ button:enabled,
   --briclog-green-bright: #03c75a;
   --vision-accent: var(--briclog-green-bright);
   --vision-accent-deep: var(--briclog-green);
-  --vision-accent-soft: rgba(3, 199, 90, 0.12);
-  --vision-accent-ring: rgba(3, 199, 90, 0.18);
-  --vision-ink: #0f1a14;
-  --vision-paper: #f7faf8;
-  --vision-muted: #5a6b62;
-  --vision-line: rgba(15, 26, 20, 0.08);
-  --vision-line-strong: rgba(15, 26, 20, 0.14);
+  --vision-accent-soft: rgba(3, 199, 90, 0.09);
+  --vision-accent-ring: rgba(3, 199, 90, 0.16);
+  --vision-ink: #111111;
+  --vision-paper: #fcfcfa;
+  --vision-muted: #5f6b66;
+  --vision-line: rgba(17, 17, 17, 0.08);
+  --vision-line-strong: rgba(17, 17, 17, 0.14);
   --vision-panel-bg: #ffffff;
-  --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+  --vision-shadow-panel: 0 18px 56px rgba(17, 17, 17, 0.06);
   color: var(--vision-ink);
   color-scheme: light;
 }
@@ -178,14 +178,14 @@ button:enabled,
 @media (max-width: 1023px) {
   .briclog-auth-vision,
   .briclog-auth-vision.briclog-vision-page {
-    --vision-ink: #0f1a14;
-    --vision-paper: #f7faf8;
-    --vision-muted: #5a6b62;
-    --vision-line: rgba(15, 26, 20, 0.08);
-    --vision-line-strong: rgba(15, 26, 20, 0.14);
+    --vision-ink: #111111;
+    --vision-paper: #fcfcfa;
+    --vision-muted: #5f6b66;
+    --vision-line: rgba(17, 17, 17, 0.08);
+    --vision-line-strong: rgba(17, 17, 17, 0.14);
     --vision-panel-bg: #ffffff;
-    --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
-    --vision-accent-soft: rgba(3, 199, 90, 0.12);
+    --vision-shadow-panel: 0 18px 56px rgba(17, 17, 17, 0.06);
+    --vision-accent-soft: rgba(3, 199, 90, 0.09);
     background: var(--vision-paper);
     color: var(--vision-ink);
   }
@@ -643,75 +643,74 @@ button:enabled,
   animation: briclog-intro-chevron 1.6s ease-in-out infinite;
 }
 
-/* ── Vision 2030 Landing — BRICLOG color philosophy (editorial · spatial) ── */
+/* ── Vision 2040 — one paper · one ink · hangul-first editorial ── */
 .briclog-vision-page {
   --briclog-green: #03a94d;
   --briclog-green-bright: #03c75a;
   --briclog-green-deep: #026b38;
   --briclog-brick: #c9a66b;
-  --briclog-brick-soft: rgba(201, 166, 107, 0.14);
+  --briclog-brick-soft: rgba(201, 166, 107, 0.1);
   --vision-accent: var(--briclog-green-bright);
   --vision-accent-deep: var(--briclog-green);
-  --vision-accent-soft: rgba(3, 199, 90, 0.12);
-  --vision-accent-ring: rgba(3, 199, 90, 0.18);
-  --vision-ink: #0f1a14;
-  --vision-paper: #f7faf8;
-  --vision-muted: #5a6b62;
-  --vision-line: rgba(15, 26, 20, 0.08);
-  --vision-line-strong: rgba(15, 26, 20, 0.14);
-  --vision-glass: rgba(247, 250, 248, 0.82);
-  --vision-glass-strong: rgba(255, 255, 255, 0.92);
+  --vision-accent-soft: rgba(3, 199, 90, 0.09);
+  --vision-accent-ring: rgba(3, 199, 90, 0.16);
+  --vision-ink: #111111;
+  --vision-paper: #fcfcfa;
+  --vision-muted: #5f6b66;
+  --vision-line: rgba(17, 17, 17, 0.08);
+  --vision-line-strong: rgba(17, 17, 17, 0.14);
+  --vision-glass: rgba(252, 252, 250, 0.88);
+  --vision-glass-strong: rgba(255, 255, 255, 0.94);
   --vision-panel-bg: #ffffff;
-  --vision-btn-surface: rgba(3, 199, 90, 0.1);
-  --vision-btn-ghost-bg: rgba(3, 199, 90, 0.08);
-  --vision-btn-surface-hover: rgba(3, 199, 90, 0.16);
-  --vision-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
-  --vision-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+  --vision-btn-surface: rgba(3, 199, 90, 0.09);
+  --vision-btn-ghost-bg: rgba(3, 199, 90, 0.06);
+  --vision-btn-surface-hover: rgba(3, 199, 90, 0.14);
+  --vision-shadow-soft: 0 6px 24px rgba(17, 17, 17, 0.045);
+  --vision-shadow-panel: 0 18px 56px rgba(17, 17, 17, 0.06);
   --vision-tab-active-bg: var(--vision-ink);
   --vision-tab-active-fg: #ffffff;
   --vision-chip-active-bg: var(--vision-ink);
   --vision-chip-active-fg: #ffffff;
   --vision-hero-mesh:
-    radial-gradient(120% 80% at 50% -20%, rgba(3, 169, 77, 0.16), transparent 55%),
-    radial-gradient(70% 50% at 100% 10%, var(--briclog-brick-soft), transparent 50%),
-    radial-gradient(60% 40% at 0% 90%, rgba(232, 249, 239, 0.9), transparent 55%),
+    radial-gradient(110% 70% at 50% -18%, rgba(3, 169, 77, 0.1), transparent 58%),
+    radial-gradient(55% 40% at 100% 8%, var(--briclog-brick-soft), transparent 52%),
     linear-gradient(180deg, #ffffff 0%, var(--vision-paper) 100%);
   background: var(--vision-paper);
   color: var(--vision-ink);
+  color-scheme: light;
 }
 
+/* 2040: mobile keeps the same paper — no dual-skin split */
 @media (max-width: 1023px) {
   .briclog-vision-page {
-    --vision-ink: #eef7f1;
-    --vision-paper: #071510;
-    --vision-muted: rgba(196, 220, 205, 0.62);
-    --vision-line: rgba(196, 220, 205, 0.12);
-    --vision-line-strong: rgba(196, 220, 205, 0.18);
-    --vision-glass: rgba(15, 31, 24, 0.88);
-    --vision-glass-strong: rgba(15, 31, 24, 0.94);
-    --vision-panel-bg: rgba(255, 255, 255, 0.08);
-    --vision-btn-surface: rgba(255, 255, 255, 0.1);
-    --vision-btn-ghost-bg: rgba(255, 255, 255, 0.12);
-    --vision-btn-surface-hover: rgba(255, 255, 255, 0.18);
-    --vision-shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.42);
-    --vision-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.52);
-    --vision-accent-soft: rgba(3, 199, 90, 0.14);
-    --vision-tab-active-bg: var(--vision-accent-deep);
+    --vision-ink: #111111;
+    --vision-paper: #fcfcfa;
+    --vision-muted: #5f6b66;
+    --vision-line: rgba(17, 17, 17, 0.08);
+    --vision-line-strong: rgba(17, 17, 17, 0.14);
+    --vision-glass: rgba(252, 252, 250, 0.9);
+    --vision-glass-strong: rgba(255, 255, 255, 0.96);
+    --vision-panel-bg: #ffffff;
+    --vision-btn-surface: rgba(3, 199, 90, 0.09);
+    --vision-btn-ghost-bg: rgba(3, 199, 90, 0.06);
+    --vision-btn-surface-hover: rgba(3, 199, 90, 0.14);
+    --vision-shadow-soft: 0 6px 24px rgba(17, 17, 17, 0.045);
+    --vision-shadow-panel: 0 18px 56px rgba(17, 17, 17, 0.06);
+    --vision-accent-soft: rgba(3, 199, 90, 0.09);
+    --vision-tab-active-bg: var(--vision-ink);
     --vision-tab-active-fg: #ffffff;
-    --vision-chip-active-bg: var(--vision-accent-deep);
+    --vision-chip-active-bg: var(--vision-ink);
     --vision-chip-active-fg: #ffffff;
     --vision-hero-mesh:
-      radial-gradient(120% 80% at 50% -15%, rgba(3, 199, 90, 0.18), transparent 55%),
-      radial-gradient(80% 60% at 100% 0%, rgba(3, 169, 77, 0.1), transparent 50%),
-      radial-gradient(50% 40% at 0% 100%, var(--briclog-brick-soft), transparent 45%),
-      linear-gradient(180deg, #0a1510 0%, var(--vision-paper) 100%);
+      radial-gradient(110% 70% at 50% -12%, rgba(3, 199, 90, 0.1), transparent 58%),
+      linear-gradient(180deg, #ffffff 0%, var(--vision-paper) 100%);
     background: var(--vision-paper);
     color: var(--vision-ink);
   }
 
   .briclog-vision-page .briclog-vision-footer-cta {
-    border-top: 1px solid rgba(196, 220, 205, 0.1);
-    background: #0a1510;
+    border-top: 1px solid rgba(17, 17, 17, 0.08);
+    background: #111111;
   }
 }
 
@@ -1027,20 +1026,20 @@ button:enabled,
   }
 }
 
-/* ── Vision 2030 Admin — operator console ── */
+/* ── Vision 2040 Admin — same paper as guest/workspace ── */
 .briclog-admin-page {
   --admin-accent: #03c75a;
   --admin-accent-deep: #03a94d;
-  --admin-accent-soft: rgba(3, 199, 90, 0.1);
-  --admin-accent-ring: rgba(3, 199, 90, 0.22);
-  --admin-ink: #0f1a14;
-  --admin-paper: #f7faf8;
-  --admin-muted: #5a6b62;
-  --admin-line: rgba(15, 26, 20, 0.08);
-  --admin-line-strong: rgba(15, 26, 20, 0.14);
+  --admin-accent-soft: rgba(3, 199, 90, 0.09);
+  --admin-accent-ring: rgba(3, 199, 90, 0.16);
+  --admin-ink: #111111;
+  --admin-paper: #fcfcfa;
+  --admin-muted: #5f6b66;
+  --admin-line: rgba(17, 17, 17, 0.08);
+  --admin-line-strong: rgba(17, 17, 17, 0.14);
   --admin-panel: #ffffff;
-  --admin-shadow-soft: 0 8px 32px rgba(15, 26, 20, 0.06);
-  --admin-shadow-panel: 0 24px 80px rgba(15, 26, 20, 0.08);
+  --admin-shadow-soft: 0 6px 24px rgba(17, 17, 17, 0.045);
+  --admin-shadow-panel: 0 18px 56px rgba(17, 17, 17, 0.06);
 }
 
 /* /detail — 브릭로그 OS와 다른 제품 화면 (계정만 공유) */

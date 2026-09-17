@@ -9,17 +9,17 @@ import {
 
 const PULSE_STYLES = {
   ok: {
-    ring: "border-[var(--admin-accent-ring,rgba(3,199,90,0.28))] bg-gradient-to-br from-[var(--admin-accent-soft,rgba(3,199,90,0.08))] via-white to-white",
+    ring: "border-[var(--admin-accent-ring,rgba(3,199,90,0.22))] bg-[var(--admin-panel,#fff)]",
     dot: "bg-[var(--admin-accent-deep,#03a94d)]",
     label: "text-[var(--admin-accent-deep,#03a94d)]",
   },
   watch: {
-    ring: "border-amber-400/35 bg-gradient-to-br from-amber-50 via-white to-white",
+    ring: "border-amber-400/30 bg-[var(--admin-panel,#fff)]",
     dot: "bg-amber-500",
     label: "text-amber-700",
   },
   urgent: {
-    ring: "border-[#E42939]/30 bg-gradient-to-br from-[#FFF0F0] via-white to-white",
+    ring: "border-[#E42939]/25 bg-[var(--admin-panel,#fff)]",
     dot: "bg-[#E42939]",
     label: "text-[#E42939]",
   },
@@ -73,10 +73,10 @@ export default function AdminCommandCenter({
               {view.pulseLabel}
             </span>
           </div>
-          <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold leading-snug tracking-[-0.03em] text-[var(--admin-ink,#111111)]">
+          <h2 className="mt-4 text-[clamp(1.45rem,3.2vw,1.9rem)] font-semibold leading-[1.25] tracking-[-0.01em] text-[var(--admin-ink,#111111)]">
             {verdict}
           </h2>
-          <p className="mt-2 text-[14px] leading-relaxed text-[var(--admin-muted,#5F6B66)]">
+          <p className="mt-3 text-[15px] leading-[1.65] text-[var(--admin-muted,#5F6B66)]">
             {view.subline}
             {view.readiness != null ? ` · 준비도 ${view.readiness}` : ""}
           </p>
