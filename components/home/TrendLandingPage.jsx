@@ -1,25 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
 import { BRICLOG_CONTACT_EMAIL } from "@/lib/brand/support";
-import {
-  TREND_CATEGORY_LABELS,
-  TREND_CATEGORY_ORDER,
-} from "@/lib/trends/seedCatalog";
-
-const SEARCH_EXAMPLES = [
-  "ChatGPT",
-  "Gemini",
-  "Claude",
-  "Cursor",
-  "Veo",
-  "Sora",
-  "Midjourney",
-];
+import { LIVE_TREND_REFRESH_MS } from "@/lib/trends/liveConfig";
+import { TREND_CATEGORY_LABELS, TREND_CATEGORY_ORDER } from "@/lib/trends/seedCatalog";
 
 function matchesTrend(item, query) {
   const q = query.trim().toLowerCase();
@@ -36,43 +24,91 @@ function matchesTrend(item, query) {
   return haystack.includes(q);
 }
 
-function formatDelta(value) {
+function formatMovement(item) {
+  if (item.status === "new" && !item.previousRank) return "NEW";
+  if (item.rankMovement > 0) return `↑${item.rankMovement}`;
+  if (item.rankMovement < 0) return `↓${Math.abs(item.rankMovement)}`;
+  return "·";
+}
+
+function formatScoreChange(item) {
+  const value = item.hourlyChange;
   const sign = value > 0 ? "+" : "";
-  return `${sign}${value}%`;
+  return `${sign}${value}`;
 }
 
-function directionGlyph(direction) {
-  if (direction === "up") return "↑";
-  if (direction === "down") return "↓";
-  return "→";
+function movementTone(item) {
+  if (item.status === "new") return "text-[#03A94D]";
+  if (item.rankMovement > 0 || item.hourlyChange > 0) return "text-[#03A94D]";
+  if (item.rankMovement < 0 || item.hourlyChange < 0) return "text-[#C2410C]";
+  return "text-[#7B8680]";
 }
 
-export default function TrendLandingPage({
-  trendCatalog,
-  onAuthOpen,
-  onStart,
-}) {
+function TrendMiniList({ items = [] }) {
+  return (
+    <ul className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+      {items.map((item) => (
+        <li key={item.slug}>
+          <Link
+            href={`/trend/${item.slug}`}
+            className="flex items-center justify-between rounded-[18px] border border-[#E7ECE8] bg-white px-4 py-3 transition hover:border-[#111111]"
+          >
+            <span className="min-w-0">
+              <span className="block text-[12px] uppercase tracking-[0.14em] text-[#7B8680]">
+                {String(item.currentRank).padStart(2, "0")}
+              </span>
+              <span className="mt-1 block truncate text-[16px] font-semibold text-[#111111]">
+                {item.name}
+              </span>
+            </span>
+            <span className={`text-[13px] font-semibold ${movementTone(item)}`}>{formatMovement(item)}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default function TrendLandingPage({ trendCatalog, onAuthOpen, onStart }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [catalogState, setCatalogState] = useState(trendCatalog);
 
-  const items = useMemo(() => trendCatalog?.items || [], [trendCatalog]);
-  const filteredItems = useMemo(
-    () =>
-      items.filter((item) => {
-        if (activeCategory !== "all" && item.category !== activeCategory) return false;
-        return matchesTrend(item, query);
-      }),
-    [items, activeCategory, query]
-  );
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      if (document.visibilityState === "hidden") return;
+      try {
+        const res = await fetch("/api/trends/catalog", { cache: "no-store" });
+        const data = await res.json();
+        if (!cancelled && data?.catalog?.updatedAt) {
+          setCatalogState((prev) => {
+            if (prev?.updatedAt === data.catalog.updatedAt) return prev;
+            return data.catalog;
+          });
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    const id = window.setInterval(refresh, LIVE_TREND_REFRESH_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, []);
 
-  const topItems = filteredItems.slice(0, 10);
+  const items = useMemo(() => catalogState?.items || [], [catalogState]);
+  const topItems = useMemo(() => catalogState?.topItems || items.slice(0, 10), [catalogState, items]);
+  const tickerItems = useMemo(() => catalogState?.tickerItems || topItems.slice(0, 5), [catalogState, topItems]);
+  const risingItems = useMemo(() => catalogState?.risingItems || [], [catalogState]);
+  const newItems = useMemo(() => catalogState?.newItems || [], [catalogState]);
+
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return items
-      .filter((item) => matchesTrend(item, q))
-      .slice(0, 5);
+    return items.filter((item) => matchesTrend(item, q)).slice(0, 5);
   }, [items, query]);
 
   const exactMatch = useMemo(() => {
@@ -86,12 +122,20 @@ export default function TrendLandingPage({
     );
   }, [items, query]);
 
+  const filteredTopItems = useMemo(() => {
+    return topItems.filter((item) => {
+      if (activeCategory !== "all" && item.category !== activeCategory) return false;
+      return matchesTrend(item, query);
+    });
+  }, [topItems, activeCategory, query]);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    if (!query.trim()) {
-      scrollTo("trend-list");
-      return;
-    }
+    if (!query.trim()) return;
     const target = exactMatch || suggestions[0];
     if (target) {
       router.push(`/trend/${target.slug}`);
@@ -101,36 +145,24 @@ export default function TrendLandingPage({
     router.push(`/?topic=${encoded}#public-brand-test`);
   };
 
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const openSignup = () => onStart?.();
   const openLogin = () => onAuthOpen?.("login", "trend_home");
   const trendRequestHref = `mailto:${BRICLOG_CONTACT_EMAIL}?subject=${encodeURIComponent(
     "BRICLOG Trend 등록 요청"
   )}&body=${encodeURIComponent(query.trim())}`;
+  const liveLabel = catalogState?.live?.liveLabel || catalogState?.live?.updatedLabel || "UPDATED --:--";
 
   return (
     <div className="min-h-screen bg-[#FCFCFA] text-[#111111]">
-      <header className="sticky top-0 z-30 border-b border-[#E7ECE8]/80 bg-[#FCFCFA]/92 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-[#E7ECE8]/80 bg-[#FCFCFA]/94 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-          <Logo
-            showIcon
-            wordmark="BRICLOG"
-            iconSize={28}
-            className="items-center"
-            onClick={() => scrollTo("trend-search")}
-          />
+          <Logo showIcon wordmark="BRICLOG" iconSize={28} className="items-center" onClick={() => scrollTo("trend-search")} />
           <nav className="hidden items-center gap-4 text-[13px] font-medium text-[#4F5A56] md:flex">
             <button type="button" onClick={() => scrollTo("trend-list")} className="hover:text-[#111111]">
               TREND
             </button>
-            <button type="button" onClick={() => scrollTo("trend-search")} className="hover:text-[#111111]">
-              SEARCH
-            </button>
-            <button type="button" onClick={() => scrollTo("brief-preview")} className="hover:text-[#111111]">
-              APPLY
+            <button type="button" onClick={() => scrollTo("rising-list")} className="hover:text-[#111111]">
+              RISING
             </button>
             <button type="button" onClick={() => scrollTo("create-with-briclog")} className="hover:text-[#111111]">
               CREATE
@@ -159,41 +191,37 @@ export default function TrendLandingPage({
       </header>
 
       <main id="landing-main">
-        <section id="trend-search" className="px-4 pb-10 pt-12 md:px-6 md:pb-16 md:pt-20">
-          <div className="mx-auto max-w-5xl text-center">
-            <p className="text-[14px] font-semibold tracking-[0.16em] text-[#03A94D]">
-              BRICLOG
-            </p>
-            <h1 className="mx-auto mt-6 max-w-4xl text-[clamp(2.5rem,7vw,5.6rem)] font-semibold leading-[0.96] tracking-[-0.06em] text-[#111111]">
-              지금, AI에서
-              <br />
-              무슨 일이 일어나고 있을까?
-            </h1>
-            <p className="mt-4 text-[16px] leading-[1.7] text-[#5F6B66] md:text-[18px]">
-              What&apos;s happening in AI — right now.
-            </p>
-            <p className="mt-4 text-[13px] font-medium uppercase tracking-[0.18em] text-[#8A948F]">
-              Discover. Understand. Apply. Create.
-            </p>
+        <section id="trend-search" className="px-4 pb-12 pt-12 md:px-6 md:pb-14 md:pt-20">
+          <div className="mx-auto max-w-5xl">
+            <div className="text-center">
+              <p className="text-[13px] font-semibold tracking-[0.16em] text-[#111111]">BRICLOG</p>
+              <h1 className="mt-4 text-[clamp(2.3rem,6vw,4.9rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-[#111111]">
+                AI의 지금을 읽다.
+              </h1>
+              <p className="mt-4 text-[12px] font-medium uppercase tracking-[0.22em] text-[#7B8680]">
+                TREND · SEARCH · CREATE
+              </p>
+            </div>
 
-            <form onSubmit={handleSearchSubmit} className="mx-auto mt-9 max-w-4xl">
+            <form onSubmit={handleSearchSubmit} className="mx-auto mt-8 max-w-4xl">
               <label className="sr-only" htmlFor="trend-search-input">
                 AI 검색
               </label>
               <div className="overflow-hidden rounded-[34px] border border-[#DCE3DF] bg-white shadow-[0_24px_80px_rgba(17,17,17,0.06)]">
-                <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:px-6 sm:py-5">
+                <div className="flex items-center gap-3 px-4 py-4 sm:px-6 sm:py-5">
                   <input
                     id="trend-search-input"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="AI, 모델, 도구, 기술을 검색하세요"
+                    placeholder="AI를 검색하세요"
                     className="h-14 flex-1 border-0 bg-transparent px-1 text-[18px] text-[#111111] outline-none placeholder:text-[#8A948F] md:text-[22px]"
                   />
                   <button
                     type="submit"
-                    className="inline-flex h-[52px] items-center justify-center rounded-full bg-[#03C75A] px-6 text-[15px] font-semibold text-white hover:brightness-105"
+                    className="inline-flex h-[52px] min-w-[52px] items-center justify-center rounded-full bg-[#03C75A] px-5 text-[15px] font-semibold text-white hover:brightness-105"
+                    aria-label="검색"
                   >
-                    검색
+                    ⌕
                   </button>
                 </div>
                 {query.trim() ? (
@@ -208,9 +236,7 @@ export default function TrendLandingPage({
                               className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left hover:bg-[#F6F9F7]"
                             >
                               <span>
-                                <span className="block text-[15px] font-semibold text-[#111111]">
-                                  {item.name}
-                                </span>
+                                <span className="block text-[15px] font-semibold text-[#111111]">{item.name}</span>
                                 <span className="mt-1 block text-[12px] text-[#5F6B66]">
                                   {item.categoryLabel} · {item.description}
                                 </span>
@@ -225,9 +251,6 @@ export default function TrendLandingPage({
                         <p className="text-[15px] font-semibold text-[#111111]">
                           아직 BRICLOG Trend에 등록되지 않았습니다.
                         </p>
-                        <p className="mt-1 text-[13px] leading-[1.7] text-[#5F6B66]">
-                          1차 MVP에서는 curated seed와 DB 등록 항목만 보여줍니다.
-                        </p>
                         <a
                           href={trendRequestHref}
                           className="mt-3 inline-flex min-h-[40px] items-center rounded-full border border-[#DCE3DF] bg-white px-4 text-[13px] font-semibold text-[#111111]"
@@ -241,39 +264,45 @@ export default function TrendLandingPage({
               </div>
             </form>
 
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[12px] text-[#5F6B66]">
-              {SEARCH_EXAMPLES.map((example) => (
-                <button
-                  key={example}
-                  type="button"
-                  onClick={() => setQuery(example)}
-                  className="rounded-full border border-[#E7ECE8] bg-white px-3 py-1.5 hover:border-[#03C75A]/35 hover:text-[#111111]"
-                >
-                  {example}
-                </button>
-              ))}
+            <div className="mx-auto mt-6 max-w-4xl rounded-[24px] border border-[#E7ECE8] bg-white px-4 py-3">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7B8680]">
+                  LIVE · {liveLabel}
+                </p>
+                <p className="text-[11px] text-[#8A948F]">
+                  {catalogState?.live?.isLive ? "Hourly DB snapshot" : catalogState?.live?.liveLabel}
+                </p>
+              </div>
+              <ul className="mt-3 grid gap-2 md:grid-cols-4">
+                {tickerItems.map((item) => (
+                  <li key={item.slug} className="flex items-center justify-between border-t border-[#EEF2EF] pt-2 first:border-t-0 first:pt-0">
+                    <Link href={`/trend/${item.slug}`} className="flex min-w-0 flex-1 items-center justify-between gap-3 hover:text-[#03A94D]">
+                      <span className="truncate text-[14px] font-semibold">
+                        {String(item.currentRank).padStart(2, "0")} {item.name}
+                      </span>
+                      <span className={`text-[12px] font-semibold ${movementTone(item)}`}>{formatMovement(item)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
 
-        <section id="trend-list" className="border-t border-[#E7ECE8] px-4 py-10 md:px-6 md:py-14">
+        <section id="trend-list" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
-                  Live AI Trend
-                </p>
-                <h2 className="mt-3 text-[clamp(1.7rem,4vw,2.8rem)] font-semibold leading-[1.02] tracking-[-0.04em] text-[#111111]">
-                  지금 많이 움직이는 AI 흐름을
-                  <br className="hidden md:block" />
-                  한 번에 스캔하세요.
+                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">Live AI Trend</p>
+                <h2 className="mt-3 text-[clamp(1.8rem,4vw,2.9rem)] font-semibold leading-[1.02] tracking-[-0.04em] text-[#111111]">
+                  지금 가장 많이 움직이는 AI
                 </h2>
               </div>
               <div className="max-w-xl rounded-[22px] border border-[#E7ECE8] bg-white px-4 py-3 text-[12px] leading-[1.7] text-[#5F6B66]">
                 <strong className="text-[#111111]">
-                  {trendCatalog?.mode === "sample" ? "SAMPLE DATA" : "CACHED DATA"}
+                  {catalogState?.live?.isLive ? "LIVE" : catalogState?.mode === "sample" ? "SAMPLE" : "DELAYED"}
                 </strong>
-                <span className="ml-2">{trendCatalog?.note}</span>
+                <span className="ml-2">{catalogState?.note}</span>
               </div>
             </div>
 
@@ -298,26 +327,26 @@ export default function TrendLandingPage({
             </div>
 
             <div className="mt-6 overflow-hidden rounded-[28px] border border-[#E7ECE8] bg-white">
-              <div className="hidden grid-cols-[70px_minmax(0,1.5fr)_120px_90px_90px_130px] gap-4 border-b border-[#EEF2EF] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7B8680] md:grid">
+              <div className="hidden grid-cols-[72px_minmax(0,1.5fr)_110px_90px_100px_120px] gap-4 border-b border-[#EEF2EF] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7B8680] md:grid">
                 <span>Rank</span>
                 <span>Name</span>
                 <span>Category</span>
                 <span>Score</span>
-                <span>7D</span>
+                <span>Move</span>
                 <span>Updated</span>
               </div>
 
-              {topItems.length ? (
+              {filteredTopItems.length ? (
                 <ul>
-                  {topItems.map((item) => (
+                  {filteredTopItems.map((item) => (
                     <li key={item.slug} className="border-b border-[#EEF2EF] last:border-b-0">
                       <Link
                         href={`/trend/${item.slug}`}
-                        className="grid gap-3 px-4 py-4 transition hover:bg-[#F7FBF8] md:grid-cols-[70px_minmax(0,1.5fr)_120px_90px_90px_130px] md:items-center md:px-5"
+                        className="grid gap-3 px-4 py-4 transition hover:bg-[#F7FBF8] md:grid-cols-[72px_minmax(0,1.5fr)_110px_90px_100px_120px] md:items-center md:px-5"
                       >
                         <div className="flex items-center gap-3 md:block">
                           <span className="text-[20px] font-semibold tracking-[-0.04em] text-[#111111] md:text-[18px]">
-                            {String(item.rank).padStart(2, "0")}
+                            {String(item.currentRank).padStart(2, "0")}
                           </span>
                           <span className="rounded-full border border-[#E7ECE8] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5F6B66] md:hidden">
                             {item.categoryLabel}
@@ -327,31 +356,17 @@ export default function TrendLandingPage({
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-[16px] font-semibold text-[#111111]">{item.name}</span>
-                            <span
-                              className={`text-[12px] font-semibold ${
-                                item.change7d >= 0 ? "text-[#03A94D]" : "text-[#C2410C]"
-                              }`}
-                            >
-                              {directionGlyph(item.direction)} {formatDelta(item.change7d)}
-                            </span>
+                            <span className={`text-[12px] font-semibold ${movementTone(item)}`}>{item.status === "new" ? "NEW" : item.statusLabel}</span>
                           </div>
                           <p className="mt-1 truncate text-[13px] text-[#5F6B66]">{item.description}</p>
                         </div>
 
-                        <span className="hidden text-[12px] font-medium text-[#5F6B66] md:block">
-                          {item.categoryLabel}
+                        <span className="hidden text-[12px] font-medium text-[#5F6B66] md:block">{item.categoryLabel}</span>
+                        <span className="text-[22px] font-semibold tracking-[-0.05em] text-[#111111] md:text-[18px]">{item.trendScore}</span>
+                        <span className={`text-[13px] font-semibold ${movementTone(item)}`}>
+                          {formatMovement(item)} {item.status !== "new" ? `${formatScoreChange(item)} 1H` : ""}
                         </span>
-                        <span className="text-[22px] font-semibold tracking-[-0.05em] text-[#111111] md:text-[18px]">
-                          {item.trendScore}
-                        </span>
-                        <span
-                          className={`text-[13px] font-semibold ${
-                            item.change7d >= 0 ? "text-[#03A94D]" : "text-[#C2410C]"
-                          }`}
-                        >
-                          {formatDelta(item.change7d)}
-                        </span>
-                        <span className="text-[12px] text-[#7B8680]">{item.updatedLabel}</span>
+                        <span className="text-[12px] text-[#7B8680]">{item.liveLabel.replace("UPDATED ", "")}</span>
                       </Link>
                     </li>
                   ))}
@@ -359,63 +374,32 @@ export default function TrendLandingPage({
               ) : (
                 <div className="px-5 py-12 text-center">
                   <p className="text-[17px] font-semibold text-[#111111]">조건에 맞는 트렌드가 없습니다.</p>
-                  <p className="mt-2 text-[14px] leading-[1.7] text-[#5F6B66]">
-                    다른 카테고리를 보거나 검색어를 줄여 보세요.
-                  </p>
                 </div>
               )}
             </div>
           </div>
         </section>
 
-        <section id="brief-preview" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
+        <section id="rising-list" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto max-w-6xl">
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,420px)] lg:items-start">
+            <div className="grid gap-6 lg:grid-cols-2">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
-                  Apply
-                </p>
-                <h2 className="mt-3 text-[clamp(1.9rem,4vw,3.3rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-[#111111]">
-                  AI 소식을 보는 데서
-                  <br className="hidden md:block" />
-                  끝내지 않습니다.
+                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">What&apos;s Rising</p>
+                <h2 className="mt-3 text-[28px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111111]">
+                  최근 1시간 가장 빠르게 오른 AI
                 </h2>
-                <p className="mt-4 max-w-2xl text-[17px] leading-[1.8] text-[#4F5A56]">
-                  BRICLOG은 트렌드를 찾고, 왜 중요한지 이해한 다음, 내 브랜드에 어떤 소재와 채널로
-                  적용할지 정리해 실행으로 연결하는 작업실입니다.
-                </p>
+                <div className="mt-5">
+                  <TrendMiniList items={risingItems} />
+                </div>
               </div>
 
-              <div className="rounded-[28px] border border-[#111111] bg-[#111111] p-6 text-white">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/60">
-                  BRIEF PREVIEW
-                </p>
-                <div className="mt-5 space-y-4">
-                  <div className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">
-                      Trend
-                    </p>
-                    <p className="mt-2 text-[20px] font-semibold">Veo</p>
-                  </div>
-                  <div className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">
-                      Why It Matters
-                    </p>
-                    <p className="mt-2 text-[14px] leading-[1.75] text-white/78">
-                      영상 퀄리티 경쟁이 커질수록 브랜드는 무엇을 찍고 어떤 메시지로 전환할지 먼저
-                      정해야 합니다.
-                    </p>
-                  </div>
-                  <div className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55">
-                      Possible Angles
-                    </p>
-                    <ul className="mt-3 space-y-2 text-[14px] leading-[1.7] text-white/82">
-                      <li>1. 제품 사용 장면을 짧은 설명형 릴스로 재구성</li>
-                      <li>2. 블로그에서 영상 포맷 변화가 구매 설명을 어떻게 바꾸는지 정리</li>
-                      <li>3. 인스타 캡션용 한 문장 CTA와 댓글 유도 문장 분리</li>
-                    </ul>
-                  </div>
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">New</p>
+                <h2 className="mt-3 text-[28px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111111]">
+                  새롭게 감지된 AI
+                </h2>
+                <div className="mt-5">
+                  <TrendMiniList items={newItems.length ? newItems : tickerItems} />
                 </div>
               </div>
             </div>
@@ -424,36 +408,25 @@ export default function TrendLandingPage({
 
         <section id="create-with-briclog" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto max-w-6xl">
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,360px)] lg:items-end">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_360px] lg:items-end">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
-                  Create With BRICLOG
-                </p>
-                <h2 className="mt-3 text-[clamp(1.9rem,4vw,3.3rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-[#111111]">
-                  찾았다면, 이제 활용하세요.
+                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">Create With BRICLOG</p>
+                <h2 className="mt-3 text-[clamp(1.9rem,4vw,3.2rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-[#111111]">
+                  찾았다면,
+                  <br />
+                  이제 활용하세요.
                 </h2>
-                <p className="mt-4 max-w-2xl text-[17px] leading-[1.8] text-[#4F5A56]">
-                  지금 움직이는 흐름을 발견하고, 왜 중요한지 이해한 뒤, 브랜드의 콘텐츠로 바꿔보세요.
-                  기존 BRICLOG의 블로그, 스마트플레이스, 인스타 생성 기능은 그대로 이어집니다.
-                </p>
-
-                <div className="mt-8 flex flex-wrap items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#5F6B66]">
-                  <span>Discover</span>
+                <div className="mt-6 flex flex-wrap items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#5F6B66]">
+                  <span>TREND</span>
                   <span className="text-[#C6CFCA]">→</span>
-                  <span>Understand</span>
+                  <span>BRIEF</span>
                   <span className="text-[#C6CFCA]">→</span>
-                  <span>Apply</span>
-                  <span className="text-[#C6CFCA]">→</span>
-                  <span className="text-[#111111]">Create</span>
-                  <span className="text-[#C6CFCA]">→</span>
-                  <span className="text-[#111111]">Publish</span>
+                  <span className="text-[#111111]">CREATE</span>
                 </div>
               </div>
 
               <div className="rounded-[28px] border border-[#E7ECE8] bg-white p-6">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
-                  Existing Products
-                </p>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Channels</p>
                 <ul className="mt-4 space-y-3 text-[15px] text-[#111111]">
                   <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
                     <span className="font-semibold">BLOG</span>
@@ -475,9 +448,6 @@ export default function TrendLandingPage({
                 >
                   BRICLOG 시작하기
                 </button>
-                <p className="mt-3 text-[12px] leading-[1.7] text-[#5F6B66]">
-                  자동발행이 아니라, 초안을 만들고 복사해 게시하는 흐름은 그대로 유지합니다.
-                </p>
               </div>
             </div>
           </div>
@@ -487,42 +457,26 @@ export default function TrendLandingPage({
 
         <section className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-3">
-            <Link
-              href="/guides"
-              className="rounded-[24px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#03C75A]/35 hover:bg-[#F8FCF9]"
-            >
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
-                Guides
-              </p>
+            <Link href="/guides" className="rounded-[24px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#03C75A]/35 hover:bg-[#F8FCF9]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Guides</p>
               <p className="mt-3 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#111111]">
                 기존 검색 유입용 가이드 유지
               </p>
-              <p className="mt-2 text-[14px] leading-[1.75] text-[#4F5A56]">
-                블로그, 플레이스, 인스타 가이드를 그대로 두고 트렌드 흐름만 위에 얹습니다.
-              </p>
             </Link>
 
-            <Link
-              href="/help"
-              className="rounded-[24px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#03C75A]/35 hover:bg-[#F8FCF9]"
-            >
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
-                FAQ
-              </p>
+            <Link href="/help" className="rounded-[24px] border border-[#E7ECE8] bg-white p-5 transition hover:border-[#03C75A]/35 hover:bg-[#F8FCF9]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">FAQ</p>
               <p className="mt-3 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#111111]">
-                제품 정의는 그대로
-              </p>
-              <p className="mt-2 text-[14px] leading-[1.75] text-[#4F5A56]">
-                자동발행이 아니라 초안 생성 후 복사·게시하는 서비스라는 정의를 계속 유지합니다.
+                초안 생성 후 복사·게시
               </p>
             </Link>
 
             <div className="rounded-[24px] border border-[#E7ECE8] bg-white p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
-                Legal
-              </p>
-              <p className="mt-3 text-[20px] font-semibold leading-[1.2] tracking-[-0.03em] text-[#111111]">
-                도움말 · 약관 · 정책 연결
+              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">Brand Philosophy</p>
+              <p className="mt-3 text-[24px] font-semibold leading-[1.2] tracking-[-0.04em] text-[#111111]">
+                AI 시대,
+                <br />
+                중요한 것은 의도다.
               </p>
               <div className="mt-4 flex flex-wrap gap-3 text-[13px] font-medium text-[#03A94D]">
                 <Link href="/terms" className="hover:underline">

@@ -21,9 +21,9 @@ export async function generateMetadata({ params }) {
   return buildTrendPageMetadata(item, resolvePublicSiteUrl());
 }
 
-function formatChange(change) {
+function formatScoreDelta(change) {
   const sign = change > 0 ? "+" : "";
-  return `${sign}${change}%`;
+  return `${sign}${change}`;
 }
 
 export default async function TrendDetailPage({ params }) {
@@ -79,15 +79,27 @@ export default async function TrendDetailPage({ params }) {
                 </p>
                 <p
                   className={`mt-3 text-[14px] font-semibold ${
-                    trend.change7d >= 0 ? "text-[#03A94D]" : "text-[#C2410C]"
+                    trend.hourlyChange >= 0 ? "text-[#03A94D]" : "text-[#C2410C]"
                   }`}
                 >
-                  {trend.change7d >= 0 ? "↑" : "↓"} {formatChange(trend.change7d)} this week
+                  {trend.hourlyChange >= 0 ? "↑" : "↓"} {formatScoreDelta(trend.hourlyChange)} 1H
                 </p>
                 <dl className="mt-4 space-y-2 text-[13px] text-[#4F5A56]">
                   <div className="flex items-center justify-between gap-4">
                     <dt>STATUS</dt>
                     <dd className="font-semibold text-[#111111]">{trend.statusLabel}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <dt>RANK MOVE</dt>
+                    <dd className="font-semibold text-[#111111]">
+                      {trend.status === "new" && !trend.previousRank
+                        ? "NEW"
+                        : trend.rankMovement > 0
+                          ? `↑${trend.rankMovement}`
+                          : trend.rankMovement < 0
+                            ? `↓${Math.abs(trend.rankMovement)}`
+                            : "—"}
+                    </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <dt>LAST UPDATED</dt>
@@ -109,7 +121,7 @@ export default async function TrendDetailPage({ params }) {
 
               <section>
                 <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
-                  Why Is It Trending?
+                  Why Now?
                 </p>
                 <ul className="mt-4 space-y-3">
                   {trend.whyTrending.map((line) => (
@@ -128,6 +140,7 @@ export default async function TrendDetailPage({ params }) {
                   Why It Matters
                 </p>
                 <p className="mt-3 text-[17px] leading-[1.85] text-[#1E2623]">{trend.whyItMatters}</p>
+                <p className="mt-3 text-[13px] text-[#5F6B66]">{trend.freshnessLabel}</p>
               </section>
 
               {trend.briclogView ? (

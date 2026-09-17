@@ -189,6 +189,24 @@ export default function AdminPageClient() {
     }
   }, [showToast]);
 
+  const runTrendNow = useCallback(async () => {
+    try {
+      const data = await fetchWithAuth("/api/admin/trends/run?force=1", {
+        method: "POST",
+        timeoutMs: 60_000,
+      });
+      showToast(
+        data.idempotent
+          ? "동일 시간대 작업이 이미 실행되어 현재 결과를 유지합니다."
+          : "라이브 트렌드 업데이트를 실행했습니다.",
+        "success"
+      );
+      loadStats();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  }, [loadStats, showToast]);
+
   const loadAdvisory = useCallback(async () => {
     setAdvisoryLoading(true);
     try {
@@ -524,6 +542,15 @@ export default function AdminPageClient() {
                 </div>
                 {showDetailMetrics && (
                   <>
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void runTrendNow()}
+                        className="rounded-lg border border-[#111111] bg-[#111111] px-3 py-2 text-[12px] font-semibold text-white"
+                      >
+                        RUN NOW
+                      </button>
+                    </div>
                     <AdminDashboard
                       dashboard={stats.dashboard}
                       billing={stats.billing}
