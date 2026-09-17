@@ -12,6 +12,7 @@ import {
   buildSupabasePlaywrightStorage,
   applySupabaseSessionToContext,
 } from "./ensure-e2e-test-user.mjs";
+import { dismissBrandWorkspaceGate } from "./lib/e2eAuth.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -244,7 +245,12 @@ async function checkFocus(page, persona) {
       steps.push({ focus: f, ok: intro !== "still_open", detail: intro });
     } else if (f === "sample" || f === "pricing") {
       const sel =
-        f === "sample" ? "#landing-sample, [id*='sample']" : "#landing-stats, [id*='pricing']";
+        f === "sample"
+          ? "#landing-sample, #landing-sample-seo, [data-briclog-anchor='sample'], #public-brand-test"
+          : "#landing-pricing, #landing-pricing-seo, #pricing, [data-briclog-anchor='pricing'], [id*='pricing']";
+      await page
+        .waitForSelector(sel, { timeout: 20_000 })
+        .catch(() => null);
       const el = page.locator(sel).first();
       steps.push({ focus: f, ok: (await el.count()) > 0 });
     } else if (f === "generate" || f === "first_write") {
@@ -268,30 +274,36 @@ async function checkFocus(page, persona) {
       if (isMobileViewport(persona)) await ensureMobileFormPane(page);
       steps.push({ focus: f, ok: await hasBrandField(page) });
     } else if (f === "history") {
-      const heading = page.getByRole("heading", { name: /초안 기록/i });
+      const heading = page.getByRole("heading", {
+        name: /Library|재사용할 초안|초안 기록/i,
+      });
       if (await heading.count()) {
         steps.push({ focus: f, ok: true });
       } else {
         if (isMobileViewport(persona)) await openMobileDrawer(page, persona);
         const nav = (await sidebarNav(page)).getByRole("button", {
-          name: /초안 기록|^기록$/i,
+          name: /Library|초안 기록|^기록$/i,
         });
         steps.push({ focus: f, ok: (await nav.count()) > 0 });
       }
     } else if (f === "growth") {
-      const heading = page.getByRole("heading", { name: /브랜드 작업실/i });
+      const heading = page.getByRole("heading", {
+        name: /Briefs|지금 브랜드에|브랜드 작업실/i,
+      });
       if (await heading.count()) {
         steps.push({ focus: f, ok: true });
       } else {
         if (isMobileViewport(persona)) await openMobileDrawer(page, persona);
         const nav = (await sidebarNav(page)).getByRole("button", {
-          name: /브랜드 작업실|작업실/i,
+          name: /Briefs|브랜드 작업실|작업실/i,
         });
         steps.push({ focus: f, ok: (await nav.count()) > 0 });
       }
     } else if (f === "draft_review" || f === "review") {
       const panel =
-        (await page.getByRole("heading", { name: /붙여넣기 검수/i }).count()) > 0 ||
+        (await page.getByRole("heading", { name: /Review|붙여넣기 검수/i }).count()) >
+          0 ||
+        (await page.locator('[data-briclog-surface="review"]').count()) > 0 ||
         (await page.getByPlaceholder(/본문을 붙여 넣으세요/i).count()) > 0;
       steps.push({ focus: f, ok: panel });
     } else {
@@ -305,8 +317,13 @@ async function navigateMenu(page, menu, persona) {
   if (!menu) return true;
   const mobile = isMobileViewport(persona);
 
-  if (mobile && ["blog", "place", "insta"].includes(menu)) {
-    const labels = { blog: "이야기", place: "플레이스", insta: "인스타" };
+  if (mobile && ["blog", "place", "insta", "review"].includes(menu)) {
+    const labels = {
+      blog: /이야기/,
+      place: /플레이스/,
+      insta: /인스타/,
+      review: /Review|검수/,
+    };
     await closeMobileDrawerIfOpen(page);
     const bottom = page
       .locator('nav[aria-label="채널 바로가기"] button')
@@ -314,6 +331,7 @@ async function navigateMenu(page, menu, persona) {
     if (await bottom.count()) {
       await bottom.first().click({ timeout: 8000 }).catch(() => null);
       await page.waitForTimeout(700);
+      await dismissBrandWorkspaceGate(page);
       if (menu === "blog") await ensureMobileFormPane(page);
       return true;
     }
@@ -325,9 +343,9 @@ async function navigateMenu(page, menu, persona) {
     blog: /이야기/,
     place: /플레이스/,
     insta: /인스타/,
-    history: /초안 기록|^기록$/,
-    review: /붙여넣기 검수|^검수$/,
-    growth: /브랜드 작업실/,
+    history: /Library|초안 기록|^기록$/,
+    review: /Review|붙여넣기 검수|^검수$/,
+    growth: /Briefs|브랜드 작업실|작업실/,
   };
   const pattern = map[menu];
   if (!pattern) return true;
@@ -340,6 +358,7 @@ async function navigateMenu(page, menu, persona) {
   if (!(await btn.count())) return false;
   await btn.click({ timeout: 8000 }).catch(() => null);
   await page.waitForTimeout(800);
+  await dismissBrandWorkspaceGate(page);
   if (mobile) await closeMobileDrawerIfOpen(page);
   if (menu === "blog" && mobile) await ensureMobileFormPane(page);
   return true;
@@ -365,7 +384,12 @@ async function runPersona(page, persona, { loggedIn }) {
     if (!persona.needsAuth) {
       await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
       await page
-        .waitForSelector('[data-briclog-cta="start"], h1', { timeout: 25_000 })
+        .waitForSelector('[data-briclog-cta="start"]', { timeout: 30_000 })
+        .catch(() => null);
+      await page
+        .waitForSelector("#landing-sample, #landing-pricing, h1", {
+          timeout: 15_000,
+        })
         .catch(() => null);
       await contextPrepIntro(page, persona);
       const intro = await dismissIntro(page);
@@ -387,7 +411,9 @@ async function runPersona(page, persona, { loggedIn }) {
       await dismissIntro(page);
       await dismissWelcome(page);
       await waitForWorkspaceShell(page);
+      await dismissBrandWorkspaceGate(page);
       await navigateMenu(page, persona.primaryMenu, persona);
+      await dismissBrandWorkspaceGate(page);
       const blockers = await countBlockingOverlays(page);
       result.steps.push({
         step: "blockers",

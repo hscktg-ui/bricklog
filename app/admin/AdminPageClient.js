@@ -444,13 +444,14 @@ export default function AdminPageClient() {
   return (
     <div className={ADMIN_PAGE}>
       <div className={ADMIN_INNER}>
-        <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className={ADMIN_EYEBROW}>BRICLOG · Admin</p>
-            <h1 className={`${ADMIN_HEADLINE} md:text-[28px]`}>관리자</h1>
-            <p className={`${ADMIN_SUB} mt-1 text-[12px]`}>
+        <header className="mb-7 flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 max-w-xl">
+            <p className={ADMIN_EYEBROW}>System · Console</p>
+            <h1 className={`${ADMIN_HEADLINE}`}>오늘 해야 할 일</h1>
+            <p className={`${ADMIN_SUB} mt-2`}>
               {operatorEmail ? `${operatorEmail} · ` : ""}
-              가입 · 품질 · 시스템
+              상태 → 위험 → 유입 → 품질 → 운영 액션. 카드 나열이 아니라 한 문장으로
+              읽히게 둡니다.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2">

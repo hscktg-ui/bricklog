@@ -4,6 +4,11 @@ import { useMemo, useState } from "react";
 import Icon from "@/components/Icon";
 import { useBrandWorkspace } from "@/context/BrandWorkspaceContext";
 
+/**
+ * 브랜드 선택 게이트.
+ * z-index는 사이드바(z-50)·하단탭(z-45)보다 낮게 두어
+ * Review / Library 등 메뉴 진입을 가로막지 않는다.
+ */
 export default function BrandWorkspaceGate() {
   const {
     brands,
@@ -62,36 +67,43 @@ export default function BrandWorkspaceGate() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[80] flex items-center justify-center p-4">
+    <div
+      className="pointer-events-none fixed inset-0 z-[35] flex items-center justify-center p-4 lg:pl-[200px]"
+      data-briclog-gate="brand-workspace"
+    >
       <div
         role="presentation"
         aria-hidden
-        className="pointer-events-auto absolute inset-0 bg-[#191F28]/55 backdrop-blur-[2px]"
+        className="pointer-events-auto absolute inset-0 bg-[#111111]/45 backdrop-blur-[2px] lg:left-[200px]"
       />
       <div
         role="dialog"
         aria-labelledby="brand-workspace-gate-title"
         aria-describedby="brand-workspace-gate-desc"
-        className="pointer-events-auto relative z-10 flex max-h-[min(88vh,640px)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="pointer-events-auto relative z-10 flex max-h-[min(88vh,640px)] w-full max-w-md flex-col overflow-hidden rounded-[28px] border border-[rgba(17,17,17,0.08)] bg-white shadow-[0_24px_80px_rgba(17,17,17,0.18)]"
       >
-        <div className="border-b border-[#E5E8EB] px-5 py-4">
+        <div className="border-b border-[#EEF2EF] px-5 py-5">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8F9EF] text-[#03C75A]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#F0F7F2] text-[#03A94D]">
               <Icon name="layout" className="h-5 w-5" />
             </div>
             <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
+                Today · Brand
+              </p>
               <h2
                 id="brand-workspace-gate-title"
-                className="text-[17px] font-bold text-[#191F28]"
+                className="mt-1 text-[20px] font-semibold tracking-[-0.03em] text-[#111111]"
               >
                 어떤 브랜드로 시작할까요?
               </h2>
               <p
                 id="brand-workspace-gate-desc"
-                className="mt-1 text-[13px] leading-relaxed text-[#6B7684]"
+                className="mt-2 text-[13px] leading-relaxed text-[#5F6B66]"
               >
                 이전 브랜드 정보가 새 글에 섞이지 않도록, 먼저 브랜드를 고르거나
-                빈 상태로 시작해 주세요.
+                빈 상태로 시작해 주세요. Review·Library는 왼쪽 메뉴에서도 바로
+                열 수 있습니다.
               </p>
             </div>
           </div>
@@ -99,7 +111,7 @@ export default function BrandWorkspaceGate() {
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3">
           {sortedBrands.length === 0 ? (
-            <p className="rounded-xl bg-[#F9FAFB] px-4 py-3 text-[13px] text-[#6B7684]">
+            <p className="rounded-2xl bg-[#F7F8F7] px-4 py-3 text-[13px] text-[#5F6B66]">
               저장된 브랜드가 없습니다. 아래에서 빈 브랜드로 시작하거나, 글 작성
               중 새 브랜드가 자동 저장됩니다.
             </p>
@@ -111,14 +123,14 @@ export default function BrandWorkspaceGate() {
                     type="button"
                     disabled={busy}
                     onClick={() => handleSelect(brand.id)}
-                    className="flex w-full items-center justify-between rounded-xl border border-[#E5E8EB] px-4 py-3 text-left transition hover:border-[#03C75A] hover:bg-[#F6FFF9] disabled:opacity-60"
+                    className="flex w-full items-center justify-between rounded-2xl border border-[#E7ECE8] px-4 py-3 text-left transition hover:border-[#03C75A] hover:bg-[#F8FCF9] disabled:opacity-60"
                   >
                     <span>
-                      <span className="block text-[14px] font-semibold text-[#191F28]">
+                      <span className="block text-[14px] font-semibold text-[#111111]">
                         {brand.brandName || "이름 없음"}
                       </span>
                       {brand.region ? (
-                        <span className="mt-0.5 block text-[12px] text-[#8B95A1]">
+                        <span className="mt-0.5 block text-[12px] text-[#8A948F]">
                           {brand.region}
                           {brand.industry ? ` · ${brand.industry}` : ""}
                         </span>
@@ -132,12 +144,12 @@ export default function BrandWorkspaceGate() {
           )}
         </div>
 
-        <div className="border-t border-[#E5E8EB] px-5 py-4 space-y-2">
+        <div className="space-y-2 border-t border-[#EEF2EF] px-5 py-4">
           <button
             type="button"
             disabled={busy}
             onClick={handleAddBrand}
-            className="w-full rounded-xl bg-[#03C75A] px-4 py-3 text-[14px] font-semibold text-white transition hover:bg-[#02B350] disabled:opacity-60"
+            className="w-full rounded-full bg-[#111111] px-4 py-3 text-[14px] font-semibold text-white transition hover:opacity-92 disabled:opacity-60"
           >
             + 새 브랜드 추가
           </button>
@@ -145,7 +157,7 @@ export default function BrandWorkspaceGate() {
             type="button"
             disabled={busy}
             onClick={handleBlank}
-            className="w-full rounded-xl border border-dashed border-[#B0B8C1] px-4 py-3 text-[14px] font-medium text-[#4E5968] transition hover:border-[#03C75A] hover:bg-[#F6FFF9] hover:text-[#03C75A] disabled:opacity-60"
+            className="w-full rounded-full border border-dashed border-[#C6CFCA] px-4 py-3 text-[14px] font-medium text-[#4F5A56] transition hover:border-[#03C75A] hover:bg-[#F8FCF9] hover:text-[#03A94D] disabled:opacity-60"
           >
             빈 브랜드로 시작 (이전 브랜드 정보 사용 안 함)
           </button>

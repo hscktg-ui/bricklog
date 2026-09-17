@@ -289,15 +289,20 @@ export default function GrowthStudio({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4 md:p-6">
-      <div className="mb-4">
-        <h2 className="text-[18px] font-bold text-[#191F28]">브랜드 작업실</h2>
-        <p className="mt-1 text-[12px] text-[#8B95A1]">
+      <div className="mb-5 max-w-2xl">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
+          Brief
+        </p>
+        <h2 className="mt-1.5 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold tracking-[-0.03em] text-[#111111]">
+          지금 브랜드에 적용할 것
+        </h2>
+        <p className="mt-2 text-[14px] leading-relaxed text-[#5F6B66]">
           {brandName
-            ? `${brandName} — 톤·금지어는 바꾸면 자동 저장되고, 다음 글에 반영됩니다.`
-            : "사이드바에서 브랜드를 선택해 주세요."}
+            ? `${brandName} — 톤·금지어·추천 주제를 먼저 맞춘 뒤 Create로 이어집니다.`
+            : "사이드바에서 브랜드를 선택하면, 오늘 적용할 Brief가 열립니다."}
         </p>
         {usingArchiveFallback && (
-          <p className="mt-2 rounded-lg bg-[#F7F8FA] px-3 py-2 text-[12px] text-[#4E5968]">
+          <p className="mt-3 rounded-2xl bg-[#F7F8F7] px-3 py-2 text-[12px] text-[#4F5A56]">
             이 브랜드에 쌓인 최근 초안만 보여 드립니다. 서버에 상세 기록이 연결되면
             버전·검색까지 이어집니다.
           </p>
@@ -306,23 +311,23 @@ export default function GrowthStudio({
           <button
             type="button"
             onClick={onGoPlan}
-            className="mt-3 min-h-[40px] rounded-full border border-[#E8EBED] px-4 text-[12px] font-semibold text-[#4E5968] hover:border-[#03C75A] hover:text-[#191F28]"
+            className="mt-4 min-h-[44px] rounded-full bg-[#111111] px-5 text-[13px] font-semibold text-white hover:opacity-92"
           >
-            운영 계획·주간 리듬 보기
+            Plans · 주간 리듬 보기
           </button>
         ) : null}
       </div>
 
-      <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-[#E8EBED] pb-2">
+      <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-[#E7ECE8] pb-2">
         {visibleTabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-medium ${
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-medium ${
               tab === t.id
-                ? "bg-[#03C75A] text-white"
-                : "text-[#4E5968] hover:bg-[#F0F2F5]"
+                ? "bg-[#111111] text-white"
+                : "text-[#4F5A56] hover:bg-[#F0F2F5]"
             }`}
           >
             {t.label}

@@ -473,6 +473,8 @@ function DashboardLayout({
     activeBrand,
     brandsLoading,
     resetAllBrands,
+    brandWorkspaceGateOpen,
+    startBlankBrandSession,
   } = useBrandWorkspace();
   const [confirmFreshStart, setConfirmFreshStart] = useState(false);
   const [freshStartBusy, setFreshStartBusy] = useState(false);
@@ -674,6 +676,11 @@ function DashboardLayout({
         );
         return;
       }
+      /* Review·Library·Brief는 게이트가 메뉴를 막지 않도록 빈 세션으로 통과 */
+      const gateBypassMenus = new Set(["review", "history", "growth", "plan"]);
+      if (brandWorkspaceGateOpen && gateBypassMenus.has(target)) {
+        void startBlankBrandSession();
+      }
       startTransition(() => {
         if (showChannelWelcome) {
           if (["blog", "place", "insta", "image"].includes(target)) {
@@ -700,6 +707,8 @@ function DashboardLayout({
       setSelectedHistoryId,
       generationBusy,
       showToast,
+      brandWorkspaceGateOpen,
+      startBlankBrandSession,
     ]
   );
 
@@ -776,7 +785,7 @@ function DashboardLayout({
         />
       ) : null}
 
-      <div className="relative z-0 flex min-h-0 min-w-0 flex-1 pointer-events-auto">
+      <div className="relative flex min-h-0 min-w-0 flex-1 pointer-events-auto">
       <Sidebar
         activeMenu={activeMenu}
         onHome={goHome}
@@ -810,9 +819,10 @@ function DashboardLayout({
           onHome={goHome}
           userName={userLabel}
           activeMenu={activeMenu}
+          brandName={activeBrand?.brandName || ""}
           headerTitle={
             showChannelWelcome
-              ? "시작하기"
+              ? "Today"
               : firstStoryFocus
                 ? "오늘의 편집본"
                 : undefined

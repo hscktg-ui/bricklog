@@ -443,7 +443,10 @@ export async function navigateWorkspaceChannel(page, channel = "blog") {
     place: /^플레이스$/,
     insta: /^인스타$/,
     image: /^썸네일/,
-    plan: /^운영 계획$|^계획$|^이번 달/,
+    plan: /^Plans$|^운영 계획$|^계획$|^이번 달/,
+    review: /^Review$|^붙여넣기 검수$|^검수$/,
+    history: /^Library$|^초안 기록$|^기록$/,
+    growth: /^Briefs$|^브랜드 작업실$|^작업실$/,
   };
   const pattern = labels[channel] || labels.blog;
   const btn = page.getByRole("button", { name: pattern }).first();

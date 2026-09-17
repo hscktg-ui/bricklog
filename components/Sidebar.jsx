@@ -132,7 +132,7 @@ export default function Sidebar({
         role={mobileOpen ? "dialog" : undefined}
         aria-modal={mobileOpen ? true : undefined}
         aria-label={mobileOpen ? "작업 메뉴" : undefined}
-        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(240px,92vw)] max-w-[260px] flex-col border-r border-[var(--vision-line)] bg-[var(--vision-glass-strong)] shadow-[var(--vision-shadow-panel)] backdrop-blur-xl transition-transform duration-300 ease-out lg:static lg:h-auto lg:w-[200px] lg:max-w-none lg:translate-x-0 lg:shadow-none lg:backdrop-filter-none lg:bg-white ${asideMotionClass}`}
+        className={`fixed inset-y-0 left-0 z-[60] flex h-[100dvh] w-[min(240px,92vw)] max-w-[260px] flex-col border-r border-[var(--vision-line)] bg-[var(--vision-glass-strong)] shadow-[var(--vision-shadow-panel)] backdrop-blur-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:h-auto lg:w-[200px] lg:max-w-none lg:translate-x-0 lg:shadow-none lg:backdrop-filter-none lg:bg-white ${asideMotionClass}`}
       >
         {/* 헤더 */}
         <div className="flex shrink-0 items-center justify-between px-3 pt-3 pb-1">

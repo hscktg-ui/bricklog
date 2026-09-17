@@ -8,21 +8,21 @@ import {
   VISION_SUB,
 } from "@/lib/landing/vision2030Styles";
 
-/** 모바일 드로어 상단 — 하단 탭에 없는 운영 계획·기록 바로가기 */
+/** 모바일 드로어 상단 — Brief · Review · Library 바로가기 */
 export default function SidebarMobileShortcuts({
   activeMenu,
   onSelect,
   onClose,
 }) {
   const items = [
-    { id: "plan", ...CHANNEL_PRODUCTS.plan },
+    { id: "growth", ...CHANNEL_PRODUCTS.growth },
     { id: "review", ...CHANNEL_PRODUCTS.review },
     { id: "history", ...CHANNEL_PRODUCTS.history },
   ];
 
   return (
     <div className="mb-2 border-b border-[var(--vision-line)]/80 px-2 pb-2 lg:hidden">
-      <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>자주 쓰는 메뉴</p>
+      <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>Brief · Review · Library</p>
       <div className="grid grid-cols-3 gap-1.5">
         {items.map((item) => {
           const active = activeMenu === item.id;

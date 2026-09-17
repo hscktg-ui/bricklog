@@ -300,8 +300,17 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
         result?.preview ? "pb-32 sm:pb-36" : ""
       }`}
     >
-      <div id="landing-sample" className="sr-only" aria-hidden>
-        샘플 체험 섹션
+      <div
+        id="landing-sample-panel"
+        className="mx-auto mb-8 max-w-6xl scroll-mt-24"
+        data-briclog-anchor="sample"
+      >
+        <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
+          Sample
+        </p>
+        <p className="mt-2 text-[15px] text-[#5F6B66]">
+          브랜드 한 줄로 미리보기 — 가입 전에 결과 밀도를 확인하세요.
+        </p>
       </div>
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="max-w-lg">

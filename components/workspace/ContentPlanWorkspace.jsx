@@ -155,7 +155,7 @@ export default function ContentPlanWorkspace({
     return (
       <div className="flex flex-1 items-center justify-center p-8">
         <div className={`max-w-md px-6 py-8 text-center ${VISION_PANEL}`}>
-          <p className={VISION_EYEBROW}>운영 계획</p>
+          <p className={VISION_EYEBROW}>Plans</p>
           <p className={`mt-3 ${VISION_SUB}`}>
             브랜드를 선택하면 이번 달 주차별 글 일정이 잡힙니다.
           </p>
@@ -167,13 +167,13 @@ export default function ContentPlanWorkspace({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[var(--vision-paper)] p-4 sm:p-6">
       <header className="mx-auto w-full max-w-lg">
-        <p className={VISION_EYEBROW}>{plan.month}</p>
-        <h1 className="mt-2 text-[clamp(1.25rem,3vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
-          이번 달 운영
+        <p className={VISION_EYEBROW}>Plans · {plan.month}</p>
+        <h1 className="mt-2 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold tracking-[-0.03em] text-[var(--vision-ink)]">
+          이번 주 무엇을 쓸까
         </h1>
         <p className={`mt-2 ${VISION_SUB}`}>
           {input.brandName}
-          {input.region ? ` · ${input.region}` : ""} — 주차별로 날짜를 고르고 글쓰기로
+          {input.region ? ` · ${input.region}` : ""} — 주차별로 날짜를 고르고 Create로
           이어가세요.
         </p>
       </header>

@@ -10,9 +10,16 @@ import { fileURLToPath } from "url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function load(rel, names) {
-  const src = readFileSync(join(root, rel), "utf8").replace(/^export /gm, "");
+  const src = readFileSync(join(root, rel), "utf8")
+    .replace(/^import\s+.+?;\s*$/gm, "")
+    .replace(/^export /gm, "");
   // eslint-disable-next-line no-new-func
-  return new Function(`${src}; return { ${names.join(", ")} };`)();
+  return new Function(
+    `const getChannelHumanVoice = () => ({ sidebarDesc: "", role: "", promise: "" });
+     const DETAIL_PAGE_PRODUCT = { id: "detailPage", menuLabel: "상세", shortLabel: "상세", headerTitle: "상세", icon: "image" };
+     ${src};
+     return { ${names.join(", ")} };`
+  )();
 }
 
 function assert(cond, msg) {
@@ -36,11 +43,16 @@ for (const id of ["blog", "place", "insta", "plan", "history", "growth"]) {
   assert(menuIds.includes(id), `menu missing ${id}`);
 }
 
-assert(normalizeWorkspaceMenuId("review") === "plan", "review alias → plan");
+assert(menuIds.includes("review"), "menu missing review");
+
+assert(normalizeWorkspaceMenuId("review") === "review", "review is first-class");
 assert(normalizeWorkspaceMenuId("image") === "plan", "image alias → plan");
 
 for (const id of MAIN_CHANNEL_IDS) {
-  assert(channels.includes(id) || id === "insta", `MAIN_CHANNEL_IDS ${id}`);
+  assert(
+    channels.includes(id) || id === "insta" || id === "review" || id === "plan",
+    `MAIN_CHANNEL_IDS ${id}`
+  );
 }
 
 const minimal = { brandName: "테스트", region: "서울", topic: "오픈" };

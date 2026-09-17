@@ -6,11 +6,12 @@ import {
   ADMIN_TAB_IDLE,
 } from "@/lib/admin/adminVision2030Styles";
 
+/** 공개 홈 Discover → System 언어와 정렬 */
 const SECTIONS = [
-  { id: "now", label: "지금", hint: "오늘" },
-  { id: "growth", label: "가입·성장", hint: "퍼널" },
-  { id: "quality", label: "품질", hint: "배치" },
-  { id: "system", label: "시스템", hint: "상세" },
+  { id: "now", label: "Today", hint: "상태·위험" },
+  { id: "growth", label: "Inflow", hint: "가입·유입" },
+  { id: "quality", label: "Quality", hint: "트렌드·품질" },
+  { id: "system", label: "System", hint: "운영 액션" },
 ];
 
 /**

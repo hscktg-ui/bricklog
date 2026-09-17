@@ -337,24 +337,30 @@ export default function DraftReviewStudio({
   };
 
   return (
-    <div className="workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#F7F8FA] p-4 md:p-6">
-      <header className="mb-4">
-        <h1 className="text-[20px] font-bold text-[#191F28]">붙여넣기 검수</h1>
+    <div
+      className="workspace-shell flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#FCFCFA] p-4 md:p-6"
+      data-briclog-surface="review"
+    >
+      <header className="mb-5 max-w-2xl">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
+          Review
+        </p>
+        <h1 className="mt-1.5 text-[clamp(1.35rem,3vw,1.85rem)] font-semibold tracking-[-0.03em] text-[#111111]">
+          붙여넣기 검수
+        </h1>
         {simpleMode ? (
-          <p className="mt-1 text-[13px] text-[#6B7684]">
-            외부에서 쓴 글을 붙여 넣어 표현만 점검하세요. 새 글 쓰기는 「이야기」
-            메뉴에서 합니다.
+          <p className="mt-2 text-[14px] leading-relaxed text-[#5F6B66]">
+            외부에서 쓴 글을 붙여 넣어 표현만 점검하세요. 새 글 쓰기는 Create ·
+            이야기에서 합니다.
           </p>
         ) : (
-          <p className="mt-1 text-[13px] text-[#6B7684]">
-            ① 붙여 넣으면 <strong className="text-[#191F28]">무료 검수</strong>, ②
-            검수 후 <strong className="text-[#191F28]">글 개선</strong>으로
-            다듬습니다. 개선·보완은 새 글 쓰기와 같은 월간 횟수를 쓰며, 결과는
-            초안 기록에 남습니다.
+          <p className="mt-2 text-[14px] leading-relaxed text-[#5F6B66]">
+            ① 붙여 넣으면 무료 검수, ② 검수 후 글 개선으로 다듬습니다. 결과는
+            Library에 남습니다.
           </p>
         )}
         {limit != null && (
-          <p className="mt-1 text-[12px] text-[#8B95A1]">
+          <p className="mt-2 text-[12px] text-[#8A948F]">
             이번 달 콘텐츠 {usage?.content?.used ?? 0}/{limit}회
             {remaining != null ? ` · 남은 ${remaining}회` : ""}
           </p>

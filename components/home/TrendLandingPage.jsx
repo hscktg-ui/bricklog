@@ -178,8 +178,11 @@ export default function TrendLandingPage({
             <button type="button" onClick={() => scrollTo("trend-list")} className="hover:text-[#111111]">
               TREND
             </button>
-            <button type="button" onClick={() => scrollTo("rising-list")} className="hover:text-[#111111]">
-              RISING
+            <button type="button" onClick={() => scrollTo("public-brand-test")} className="hover:text-[#111111]">
+              SAMPLE
+            </button>
+            <button type="button" onClick={() => scrollTo("landing-pricing")} className="hover:text-[#111111]">
+              PLAN
             </button>
             <button type="button" onClick={() => scrollTo("create-with-briclog")} className="hover:text-[#111111]">
               CREATE
@@ -485,7 +488,11 @@ export default function TrendLandingPage({
                 </div>
               </div>
 
-              <div id="landing-pricing" className="rounded-[28px] border border-[#E7ECE8] bg-white p-6">
+              <div
+                id="landing-pricing"
+                data-briclog-anchor="pricing"
+                className="scroll-mt-24 rounded-[28px] border border-[#E7ECE8] bg-white p-6"
+              >
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#03A94D]">
                   Free Now
                 </p>

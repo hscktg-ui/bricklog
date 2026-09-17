@@ -31,12 +31,109 @@ export default function AdminDashboard({ dashboard, billing }) {
 
   return (
     <>
-      {publicBrandTest && (
-        <section className="mb-6 rounded-xl border border-[#03A94D]/25 bg-[#03C75A]/5 p-4">
-          <h2 className="text-[15px] font-bold text-[var(--admin-ink,#0f1a14)]">
-            가입 전 브랜드 테스트 (무료 시작)
+      {trendSystem && (
+        <section className="mb-6 rounded-[1.5rem] border border-[#111111]/10 bg-white p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5F6B66]">
+            Trend System
+          </p>
+          <h2 className="mt-1 text-[17px] font-semibold tracking-[-0.02em] text-[#111111]">
+            오늘 트렌드 파이프라인
           </h2>
-          <p className="mt-1 text-[12px] text-[#8B95A1]">
+          <p className="mt-1 text-[13px] text-[#5F6B66]">
+            매시간 수집 · 점수 재계산 · 순위 갱신 · 변화 기록
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <StatCard
+              label="마지막 업데이트"
+              value={
+                trendSystem.lastUpdate
+                  ? new Date(trendSystem.lastUpdate).toLocaleString("ko-KR", {
+                      timeZone: "Asia/Seoul",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "—"
+              }
+            />
+            <StatCard
+              label="다음 업데이트"
+              value={
+                trendSystem.nextUpdate
+                  ? new Date(trendSystem.nextUpdate).toLocaleString("ko-KR", {
+                      timeZone: "Asia/Seoul",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "—"
+              }
+            />
+            <StatCard label="상태" value={trendSystem.status || "—"} />
+            <StatCard
+              label="소스"
+              value={`${trendSystem.sourcesOnline ?? 0} / ${trendSystem.sourcesTotal ?? 0}`}
+            />
+            <StatCard
+              label="마지막 작업"
+              value={
+                trendSystem.lastJobDurationSec != null
+                  ? `${trendSystem.lastJobDurationSec} sec`
+                  : "—"
+              }
+            />
+          </div>
+          <div className="mt-4 grid gap-3 lg:grid-cols-2">
+            <HorizontalBars
+              title="Tracked Trends"
+              items={[{ label: "활성 엔티티", count: trendSystem.trendsTracked ?? 0 }]}
+              labelKey="label"
+            />
+            <HorizontalBars
+              title="Source Freshness"
+              items={(trendSystem.sources || []).map((source) => ({
+                label: source.sourceName,
+                count: source.recordsCollected ?? 0,
+              }))}
+              labelKey="label"
+            />
+          </div>
+          {(trendSystem.sources?.length ?? 0) > 0 && (
+            <ul className="mt-4 space-y-2 text-[12px] text-[#4E5968]">
+              {trendSystem.sources.map((source) => (
+                <li
+                  key={source.sourceName}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#EEF2EF] px-3 py-2"
+                >
+                  <span className="font-semibold text-[#191F28]">{source.sourceName}</span>
+                  <span>
+                    {source.lastError ? "ERROR" : source.lastSuccess ? "OK" : source.enabled ? "IDLE" : "OFF"}
+                  </span>
+                  <span>
+                    {source.lastSuccess
+                      ? new Date(source.lastSuccess).toLocaleString("ko-KR", {
+                          timeZone: "Asia/Seoul",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "—"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {publicBrandTest && (
+        <section className="mb-6 rounded-[1.5rem] border border-[#03A94D]/25 bg-[#03C75A]/5 p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#03A94D]">
+            Inflow
+          </p>
+          <h2 className="mt-1 text-[17px] font-semibold tracking-[-0.02em] text-[#111111]">
+            가입 전 브랜드 테스트
+          </h2>
+          <p className="mt-1 text-[13px] text-[#5F6B66]">
             {publicBrandTest.tableReady
               ? publicBrandTest.note
               : "public_test_runs 테이블 없음 — npm run apply:schema-v19-public-test"}
@@ -187,95 +284,6 @@ export default function AdminDashboard({ dashboard, billing }) {
               hint="최근 14일 기록 수"
             />
           </div>
-        </section>
-      )}
-
-      {trendSystem && (
-        <section className="mb-6 rounded-xl border border-[#111111]/10 bg-white p-4">
-          <h2 className="text-[15px] font-bold text-[#191F28]">TREND SYSTEM STATUS</h2>
-          <p className="mt-1 text-[12px] text-[#8B95A1]">
-            매시간 수집 · 점수 재계산 · 순위 갱신 · 변화 기록
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <StatCard
-              label="마지막 업데이트"
-              value={
-                trendSystem.lastUpdate
-                  ? new Date(trendSystem.lastUpdate).toLocaleString("ko-KR", {
-                      timeZone: "Asia/Seoul",
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "—"
-              }
-            />
-            <StatCard
-              label="다음 업데이트"
-              value={
-                trendSystem.nextUpdate
-                  ? new Date(trendSystem.nextUpdate).toLocaleString("ko-KR", {
-                      timeZone: "Asia/Seoul",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "—"
-              }
-            />
-            <StatCard label="상태" value={trendSystem.status || "—"} />
-            <StatCard
-              label="소스"
-              value={`${trendSystem.sourcesOnline ?? 0} / ${trendSystem.sourcesTotal ?? 0}`}
-            />
-            <StatCard
-              label="마지막 작업"
-              value={
-                trendSystem.lastJobDurationSec != null
-                  ? `${trendSystem.lastJobDurationSec} sec`
-                  : "—"
-              }
-            />
-          </div>
-          <div className="mt-4 grid gap-3 lg:grid-cols-2">
-            <HorizontalBars
-              title="Tracked Trends"
-              items={[{ label: "활성 엔티티", count: trendSystem.trendsTracked ?? 0 }]}
-              labelKey="label"
-            />
-            <HorizontalBars
-              title="Source Freshness"
-              items={(trendSystem.sources || []).map((source) => ({
-                label: source.sourceName,
-                count: source.recordsCollected ?? 0,
-              }))}
-              labelKey="label"
-            />
-          </div>
-          {(trendSystem.sources?.length ?? 0) > 0 && (
-            <ul className="mt-4 space-y-2 text-[12px] text-[#4E5968]">
-              {trendSystem.sources.map((source) => (
-                <li
-                  key={source.sourceName}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#EEF2EF] px-3 py-2"
-                >
-                  <span className="font-semibold text-[#191F28]">{source.sourceName}</span>
-                  <span>
-                    {source.lastError ? "ERROR" : source.lastSuccess ? "OK" : source.enabled ? "IDLE" : "OFF"}
-                  </span>
-                  <span>
-                    {source.lastSuccess
-                      ? new Date(source.lastSuccess).toLocaleString("ko-KR", {
-                          timeZone: "Asia/Seoul",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "—"}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
         </section>
       )}
 

@@ -3,11 +3,22 @@ import HeaderProfileMenu from "@/components/HeaderProfileMenu";
 import HeaderPlanControl from "@/components/workspace/HeaderPlanControl";
 import { channelHeaderTitle } from "@/lib/channels/channelProducts";
 
+const MENU_JOURNEY = {
+  growth: "Brief",
+  plan: "Brief",
+  blog: "Create",
+  place: "Create",
+  insta: "Create",
+  review: "Review",
+  history: "Library",
+};
+
 export default function Header({
   onHome,
   userName = "사용자",
   activeMenu = "blog",
   headerTitle,
+  brandName = "",
   onOpenSidebar,
   onPlanChange,
   billingPlanId = "free",
@@ -18,10 +29,14 @@ export default function Header({
   onLogout,
 }) {
   const title = headerTitle ?? channelHeaderTitle(activeMenu);
+  const journey = MENU_JOURNEY[activeMenu] || "Today";
   const showPlanControl = !demoMode && typeof onPlanChange === "function";
+  const contextLine = brandName
+    ? `${brandName}`
+    : "오늘 적용할 브랜드를 고르세요";
 
   return (
-    <header className="briclog-workspace-header sticky top-0 z-30 flex h-11 shrink-0 items-center justify-between gap-1.5 px-2.5 sm:h-12 sm:gap-2 sm:px-4 md:h-14 md:px-6">
+    <header className="briclog-workspace-header sticky top-0 z-30 flex h-12 shrink-0 items-center justify-between gap-1.5 border-b border-[var(--vision-line)] bg-[var(--vision-glass-strong)] px-2.5 backdrop-blur-xl sm:h-14 sm:gap-2 sm:px-4 md:px-6">
       <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-3">
         {onOpenSidebar ? (
           <button
@@ -33,9 +48,18 @@ export default function Header({
             <Icon name="menu" className="h-5 w-5" />
           </button>
         ) : null}
-        <h1 className="truncate text-[13px] font-semibold leading-tight tracking-[-0.01em] text-[var(--vision-ink)] sm:text-[15px] md:text-[16px]">
-          {title}
-        </h1>
+        <div className="min-w-0">
+          <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)] sm:text-[11px]">
+            {journey}
+            <span className="mx-1.5 text-[var(--vision-line-strong)]">·</span>
+            <span className="normal-case tracking-normal text-[var(--vision-muted)]">
+              {contextLine}
+            </span>
+          </p>
+          <h1 className="truncate text-[14px] font-semibold leading-tight tracking-[-0.02em] text-[var(--vision-ink)] sm:text-[16px] md:text-[17px]">
+            {title}
+          </h1>
+        </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">

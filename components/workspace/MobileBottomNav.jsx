@@ -63,11 +63,11 @@ export default function MobileBottomNav({
           moreActive ? "text-[var(--vision-accent)]" : "text-[var(--vision-muted)]"
         }`}
         aria-expanded={drawerOpen}
-        aria-label="전체 메뉴 · 운영 계획 · 기록"
+        aria-label="전체 메뉴 · Brief · Library"
       >
         <span className="flex flex-col items-center justify-center gap-0.5">
           <Icon name="menu" className="h-5 w-5 shrink-0" />
-          <span className="text-[10px] font-medium leading-none">더보기</span>
+          <span className="text-[10px] font-medium leading-none">More</span>
         </span>
       </button>
     </nav>
