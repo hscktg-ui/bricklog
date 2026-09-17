@@ -1,9 +1,5 @@
 import { ImageResponse } from "next/og";
-import {
-  BRAND_META_DESCRIPTION,
-  BRAND_META_TITLE_KO,
-  BRICLOG_SLOGAN,
-} from "@/lib/brand/copy";
+import { BRAND_META_TITLE_KO, BRICLOG_SLOGAN } from "@/lib/brand/copy";
 
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
 export const OG_IMAGE_ALT = `브릭로그 BRICLOG — ${BRICLOG_SLOGAN}`;
@@ -21,6 +17,7 @@ async function loadFonts() {
   return { regular, bold };
 }
 
+/** Vision 2040 OG — mark + one Korean line. No pill strip, no SEO paragraph dump. */
 export async function renderOgImage() {
   const { regular, bold } = await loadFonts();
 
@@ -33,46 +30,27 @@ export async function renderOgImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "64px 72px",
+          padding: "72px 80px",
           background: "#FCFCFA",
           fontFamily: "Pretendard",
         }}
       >
         <div
           style={{
-            position: "absolute",
-            top: 44,
-            left: 72,
-            right: 72,
-            height: 1,
-            background: "#E7ECE8",
-          }}
-        />
-        <div
-          style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-            marginTop: 16,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 26,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
             <div
               style={{
-                width: 88,
-                height: 88,
-                borderRadius: 24,
+                width: 96,
+                height: 96,
+                borderRadius: 26,
                 background: "#F7F8FA",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 position: "relative",
                 border: "1px solid #E7ECE8",
               }}
@@ -80,10 +58,10 @@ export async function renderOgImage() {
               <div
                 style={{
                   position: "absolute",
-                  left: 18,
-                  top: 18,
-                  width: 20,
-                  height: 20,
+                  left: 20,
+                  top: 20,
+                  width: 22,
+                  height: 22,
                   borderRadius: 6,
                   border: "4px solid #111111",
                   background: "#F7F8FA",
@@ -92,10 +70,10 @@ export async function renderOgImage() {
               <div
                 style={{
                   position: "absolute",
-                  left: 48,
-                  top: 18,
-                  width: 20,
-                  height: 20,
+                  left: 52,
+                  top: 20,
+                  width: 22,
+                  height: 22,
                   borderRadius: 6,
                   background: "#111111",
                 }}
@@ -103,47 +81,31 @@ export async function renderOgImage() {
               <div
                 style={{
                   position: "absolute",
-                  left: 33,
-                  top: 48,
-                  width: 20,
-                  height: 20,
+                  left: 36,
+                  top: 52,
+                  width: 22,
+                  height: 22,
                   borderRadius: 6,
                   background: "#03C75A",
                 }}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <div
-                style={{
-                  fontSize: 58,
-                  fontWeight: 700,
-                  color: "#111111",
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                {BRAND_META_TITLE_KO}
-              </div>
-              <div
-                style={{
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: "#03C75A",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Intent Before Output
-              </div>
+            <div
+              style={{
+                fontSize: 52,
+                fontWeight: 700,
+                color: "#111111",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {BRAND_META_TITLE_KO}
             </div>
           </div>
           <div
             style={{
-              padding: "14px 22px",
-              borderRadius: 999,
-              border: "1px solid #D7DDD9",
-              color: "#5F6B66",
-              fontSize: 22,
+              fontSize: 28,
               fontWeight: 500,
+              color: "#8A948F",
             }}
           >
             briclog.ai
@@ -154,74 +116,58 @@ export async function renderOgImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 18,
+            gap: 28,
             maxWidth: 980,
           }}
         >
           <div
             style={{
-            display: "flex",
-            flexDirection: "column",
-              fontSize: 78,
+              display: "flex",
+              flexDirection: "column",
+              fontSize: 72,
               fontWeight: 700,
               color: "#111111",
-              lineHeight: 1.08,
-              letterSpacing: "-0.06em",
+              lineHeight: 1.18,
+              letterSpacing: "-0.02em",
             }}
           >
-                Discover what is moving in AI rankings.
-                <br />
-                Apply it to your brand.
+            AI 순위·랭킹,
+            <br />
+            지금을 읽다.
           </div>
           <div
             style={{
-              fontSize: 32,
+              fontSize: 34,
               fontWeight: 400,
-              color: "#4F5A56",
-              lineHeight: 1.5,
-              maxWidth: 940,
+              color: "#5F6B66",
+              lineHeight: 1.45,
+              maxWidth: 860,
             }}
           >
-            {BRAND_META_DESCRIPTION}
+            움직이는 도구를 보고, 브랜드 초안까지.
           </div>
         </div>
 
         <div
           style={{
             display: "flex",
-            alignItems: "flex-end",
+            alignItems: "center",
             justifyContent: "space-between",
-            gap: 24,
+            width: "100%",
           }}
         >
           <div
             style={{
-              display: "flex",
-              gap: 12,
-              flexWrap: "wrap",
+              fontSize: 26,
+              fontWeight: 600,
+              color: "#03C75A",
             }}
           >
-            {["TREND SEARCH", "BRIEF", "BLOG", "SMARTPLACE", "INSTAGRAM"].map((label) => (
-              <div
-                key={label}
-                style={{
-                  padding: "12px 18px",
-                  borderRadius: 999,
-                  border: "1px solid #D7DDD9",
-                  background: label === "BRIEF" ? "#03C75A" : "#FFFFFF",
-                  color: label === "BRIEF" ? "#FFFFFF" : "#111111",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  letterSpacing: "0.04em",
-                }}
-              >
-                {label}
-              </div>
-            ))}
+            Intent before output
           </div>
           <div
             style={{
-              fontSize: 22,
+              fontSize: 26,
               color: "#8A948F",
               fontWeight: 400,
             }}
