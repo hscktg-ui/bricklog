@@ -18,6 +18,7 @@ import AdminSectionNav from "@/components/admin/AdminSectionNav";
 import AdminSignupFunnelPanel from "@/components/admin/AdminSignupFunnelPanel";
 import AdminCtaSourcePanel from "@/components/admin/AdminCtaSourcePanel";
 import AdminLoginHintsPanel from "@/components/admin/AdminLoginHintsPanel";
+import AdminTrendStrip from "@/components/admin/AdminTrendStrip";
 import { buildAdminCommandCenter } from "@/lib/admin/buildAdminCommandCenter";
 import { StatCard } from "@/components/admin/AdminCharts";
 import { isProfileAdmin } from "@/lib/auth/profileClient";
@@ -472,15 +473,18 @@ export default function AdminPageClient() {
           </ul>
         )}
 
-        <AdminCommandCenter view={commandCenter} loading={commandLoading} />
+        <AdminCommandCenter
+          view={commandCenter}
+          loading={commandLoading}
+          onNavigateSection={setAdminSection}
+          onRunTrend={runTrendNow}
+        />
 
         <AdminSectionNav active={adminSection} onChange={setAdminSection} />
 
         {adminSection === "now" && (
           <>
-            <AdminCtaSourcePanel funnel={signupFunnel} compact />
-            <AdminLoginHintsPanel funnel={signupFunnel} compact />
-            <AdminSignupFunnelPanel funnel={signupFunnel} compact />
+            {/* 상태·위험(커맨드) → 할 일 → 트렌드 → 유입 */}
             <AdminAdvisoryPanel
               advisory={advisory}
               loading={advisoryLoading}
@@ -490,6 +494,17 @@ export default function AdminPageClient() {
               onApproveInsight={approveInsight}
               compact
             />
+            <AdminTrendStrip
+              trendSystem={stats?.dashboard?.trendSystem || null}
+              onOpenSystem={() => {
+                setAdminSection("system");
+                setShowDetailMetrics(true);
+              }}
+              onRunTrend={runTrendNow}
+            />
+            <AdminCtaSourcePanel funnel={signupFunnel} compact />
+            <AdminLoginHintsPanel funnel={signupFunnel} compact />
+            <AdminSignupFunnelPanel funnel={signupFunnel} compact />
           </>
         )}
 

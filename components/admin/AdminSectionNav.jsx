@@ -10,8 +10,8 @@ import {
 const SECTIONS = [
   { id: "now", label: "Today", hint: "상태·위험" },
   { id: "growth", label: "Inflow", hint: "가입·유입" },
-  { id: "quality", label: "Quality", hint: "트렌드·품질" },
-  { id: "system", label: "System", hint: "운영 액션" },
+  { id: "quality", label: "Quality", hint: "배치·품질" },
+  { id: "system", label: "System", hint: "트렌드·운영" },
 ];
 
 /**

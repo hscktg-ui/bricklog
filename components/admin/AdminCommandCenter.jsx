@@ -1,90 +1,49 @@
 "use client";
 
 import {
+  ADMIN_CTA_ACCENT,
+  ADMIN_EYEBROW,
+  ADMIN_GHOST_BTN,
   ADMIN_PANEL,
-  ADMIN_SIGNAL_ACCENT,
 } from "@/lib/admin/adminVision2030Styles";
 
 const PULSE_STYLES = {
   ok: {
-    ring: "border-[var(--admin-accent-ring,rgba(3,199,90,0.28))] bg-gradient-to-br from-[var(--admin-accent-soft,rgba(3,199,90,0.1))] via-white to-white",
+    ring: "border-[var(--admin-accent-ring,rgba(3,199,90,0.28))] bg-gradient-to-br from-[var(--admin-accent-soft,rgba(3,199,90,0.08))] via-white to-white",
     dot: "bg-[var(--admin-accent-deep,#03a94d)]",
     label: "text-[var(--admin-accent-deep,#03a94d)]",
   },
   watch: {
-    ring: "border-amber-400/40 bg-gradient-to-br from-amber-50 via-white to-white",
+    ring: "border-amber-400/35 bg-gradient-to-br from-amber-50 via-white to-white",
     dot: "bg-amber-500",
     label: "text-amber-700",
   },
   urgent: {
-    ring: "border-[#E42939]/35 bg-gradient-to-br from-[#FFF0F0] via-white to-white",
+    ring: "border-[#E42939]/30 bg-gradient-to-br from-[#FFF0F0] via-white to-white",
     dot: "bg-[#E42939]",
     label: "text-[#E42939]",
   },
 };
 
-function ChannelTile({ ch }) {
-  const pct = ch.passRate ?? 0;
-  const target = ch.target ?? 90;
-  const barColor =
-    ch.status === "ok"
-      ? "bg-[#03A94D]"
-      : ch.status === "warn"
-        ? "bg-amber-500"
-        : ch.status === "fail"
-          ? "bg-[#E42939]"
-          : "bg-[#D1D6DB]";
-
-  return (
-    <div className={`${ADMIN_PANEL} bg-white/80 p-4 backdrop-blur-sm`}>
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[12px] font-medium text-[var(--admin-muted,#5a6b62)]">{ch.label}</p>
-        {ch.fraction ? (
-          <p className="text-[10px] text-[#8B95A1]">{ch.fraction}</p>
-        ) : null}
-      </div>
-      <p className="mt-2 text-[28px] font-bold tracking-tight text-[#191F28]">
-        {ch.passRate != null ? `${ch.passRate}%` : "—"}
-      </p>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#F2F4F6]">
-        <div
-          className={`h-full rounded-full ${barColor}`}
-          style={{ width: `${Math.min(100, pct)}%` }}
-        />
-      </div>
-      <p className="mt-1.5 text-[10px] text-[#8B95A1]">목표 {target}%</p>
-    </div>
-  );
-}
-
-function SignalPill({ signal }) {
-  const tone =
-    signal.tone === "accent"
-      ? ADMIN_SIGNAL_ACCENT
-      : signal.tone === "urgent"
-        ? "border-[#E42939]/25 bg-[#FFF5F5]"
-        : signal.tone === "watch"
-          ? "border-amber-200 bg-amber-50/80"
-          : "border-[var(--admin-line,rgba(15,26,20,0.08))] bg-white/90";
-
-  return (
-    <div className={`rounded-xl border px-3 py-2.5 ${tone}`}>
-      <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--admin-muted,#5a6b62)]">
-        {signal.label}
-      </p>
-      <p className="mt-0.5 text-[20px] font-bold text-[var(--admin-ink,#0f1a14)]">{signal.value}</p>
-    </div>
-  );
-}
-
 /**
- * @param {{ view?: ReturnType<typeof import("@/lib/admin/buildAdminCommandCenter").buildAdminCommandCenter> | null, loading?: boolean }} props
+ * Editorial command center — 1 status sentence · inline metrics · action buttons.
+ * @param {{
+ *   view?: object|null,
+ *   loading?: boolean,
+ *   onNavigateSection?: (id: string) => void,
+ *   onRunTrend?: () => void,
+ * }} props
  */
-export default function AdminCommandCenter({ view, loading = false }) {
+export default function AdminCommandCenter({
+  view,
+  loading = false,
+  onNavigateSection,
+  onRunTrend,
+}) {
   if (loading && !view) {
     return (
       <section className={`${ADMIN_PANEL} mb-6 p-8`}>
-        <p className="text-[14px] text-[var(--admin-muted,#5a6b62)]">현황을 정리하는 중…</p>
+        <p className="text-[14px] text-[var(--admin-muted,#5F6B66)]">현황을 정리하는 중…</p>
       </section>
     );
   }
@@ -92,79 +51,103 @@ export default function AdminCommandCenter({ view, loading = false }) {
   if (!view) return null;
 
   const pulse = PULSE_STYLES[view.pulse] || PULSE_STYLES.ok;
+  const metricLine = (view.signals || [])
+    .slice(0, 5)
+    .map((s) => `${s.label} ${s.value}`)
+    .join(" · ");
+  const channelLine = (view.channels || [])
+    .filter((ch) => ch.passRate != null)
+    .map((ch) => `${ch.label} ${ch.passRate}%`)
+    .join(" · ");
 
   return (
     <section
-      className={`mb-6 overflow-hidden rounded-3xl border p-6 shadow-sm md:p-8 ${pulse.ring}`}
+      className={`mb-6 overflow-hidden rounded-[1.75rem] border p-6 shadow-sm md:p-8 ${pulse.ring}`}
+      data-briclog-admin="command-center"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 max-w-3xl flex-1">
           <div className="flex items-center gap-2">
             <span className={`h-2.5 w-2.5 rounded-full ${pulse.dot}`} />
-            <span className={`text-[12px] font-semibold uppercase tracking-widest ${pulse.label}`}>
+            <span className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${pulse.label}`}>
               {view.pulseLabel}
             </span>
           </div>
-          <h2 className="mt-3 max-w-2xl text-[22px] font-bold leading-snug tracking-tight text-[#191F28] md:text-[26px]">
+          <h2 className="mt-3 text-[clamp(1.35rem,3vw,1.75rem)] font-semibold leading-snug tracking-[-0.03em] text-[var(--admin-ink,#111111)]">
             {view.headline}
           </h2>
-          <p className="mt-2 text-[13px] text-[#4E5968]">{view.subline}</p>
+          <p className="mt-2 text-[14px] leading-relaxed text-[var(--admin-muted,#5F6B66)]">
+            {view.subline}
+            {view.readiness != null ? ` · 준비도 ${view.readiness}` : ""}
+            {view.readinessBand ? ` (${view.readinessBand})` : ""}
+          </p>
+          {metricLine ? (
+            <p className="mt-3 text-[13px] leading-relaxed text-[var(--admin-ink,#111111)]">
+              {metricLine}
+            </p>
+          ) : null}
+          {channelLine ? (
+            <p className="mt-1 text-[12px] text-[var(--admin-muted,#5F6B66)]">
+              배치 · {channelLine}
+            </p>
+          ) : null}
           {view.topAlert ? (
-            <p className="mt-3 max-w-2xl rounded-xl bg-white/70 px-3 py-2 text-[12px] text-[#4E5968]">
+            <p className="mt-3 max-w-2xl rounded-2xl bg-white/75 px-3 py-2 text-[12px] text-[var(--admin-muted,#5F6B66)]">
               {view.topAlert}
             </p>
           ) : null}
         </div>
-
-        {view.readiness != null && (
-          <div className="shrink-0 rounded-2xl border border-[#E8EBED] bg-white px-5 py-4 text-center shadow-sm">
-            <p className="text-[10px] font-medium uppercase tracking-wide text-[#8B95A1]">
-              준비도
-            </p>
-            <p className="mt-1 text-[36px] font-bold leading-none text-[#191F28]">
-              {view.readiness}
-            </p>
-            {view.readinessBand ? (
-              <p className="mt-1 text-[11px] text-[#4E5968]">{view.readinessBand}</p>
-            ) : null}
-          </div>
-        )}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        {(view.channels || []).map((ch) => (
-          <ChannelTile key={ch.id} ch={ch} />
-        ))}
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-        {(view.signals || []).map((s) => (
-          <SignalPill key={s.id} signal={s} />
-        ))}
+      <div className="mt-5 flex flex-wrap gap-2">
+        <button
+          type="button"
+          className={ADMIN_CTA_ACCENT}
+          onClick={() => onNavigateSection?.("quality")}
+        >
+          품질 보기
+        </button>
+        <button
+          type="button"
+          className={ADMIN_GHOST_BTN}
+          onClick={() => onNavigateSection?.("growth")}
+        >
+          유입 보기
+        </button>
+        <button
+          type="button"
+          className={ADMIN_GHOST_BTN}
+          onClick={() => onNavigateSection?.("system")}
+        >
+          시스템
+        </button>
+        {typeof onRunTrend === "function" ? (
+          <button type="button" className={ADMIN_GHOST_BTN} onClick={() => void onRunTrend()}>
+            RUN NOW
+          </button>
+        ) : null}
       </div>
 
       {view.nowActions?.length > 0 ? (
-        <ul className="mt-5 space-y-2">
-          {view.nowActions.map((action) => (
-            <li
-              key={action.id}
-              className="flex flex-wrap items-start gap-3 rounded-2xl border border-[#E42939]/20 bg-white/90 px-4 py-3"
-            >
-              <span className="shrink-0 rounded-full bg-[#E42939] px-2 py-0.5 text-[10px] font-bold text-white">
-                지금
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-semibold text-[#191F28]">{action.title}</p>
-                <p className="mt-0.5 text-[12px] text-[#4E5968]">{action.advice}</p>
-                {action.action ? (
-                  <p className="mt-1 text-[11px] text-[#8B95A1]">{action.action}</p>
+        <div className="mt-5 border-t border-[var(--admin-line,rgba(17,17,17,0.08))] pt-4">
+          <p className={ADMIN_EYEBROW}>위험 · 지금</p>
+          <ul className="mt-2 space-y-2">
+            {view.nowActions.slice(0, 2).map((action) => (
+              <li key={action.id} className="text-[13px] leading-relaxed text-[var(--admin-ink,#111111)]">
+                <span className="font-semibold text-[#E42939]">지금</span>
+                <span className="mx-1.5 text-[var(--admin-muted,#5F6B66)]">·</span>
+                {action.title}
+                {action.advice ? (
+                  <span className="mt-0.5 block text-[12px] text-[var(--admin-muted,#5F6B66)]">
+                    {action.advice}
+                  </span>
                 ) : null}
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : view.watchCount > 0 ? (
-        <p className="mt-5 text-[12px] text-[#8B95A1]">
+        <p className="mt-5 text-[12px] text-[var(--admin-muted,#5F6B66)]">
           관찰·이번 주 항목 {view.watchCount}건 — 품질 탭에서 확인
         </p>
       ) : null}
