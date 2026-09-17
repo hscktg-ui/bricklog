@@ -44,6 +44,7 @@ for (const id of ["blog", "place", "insta", "plan", "history", "growth"]) {
 }
 
 assert(menuIds.includes("review"), "menu missing review");
+assert(menuIds.includes("today"), "menu missing today");
 
 assert(normalizeWorkspaceMenuId("review") === "review", "review is first-class");
 assert(normalizeWorkspaceMenuId("image") === "plan", "image alias → plan");

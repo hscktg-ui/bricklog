@@ -642,10 +642,10 @@ function DashboardLayout({
   const reopenChannelWelcome = useCallback(() => {
     const next = resetChannelOnboarding(user.id);
     setUserPrefs(next);
-    setActiveMenu(userPrefs.primaryChannel || "blog");
+    setActiveMenu("today");
     setSelectedHistoryId(null);
     setMobileOpen(false);
-  }, [user.id, userPrefs.primaryChannel, setMobileOpen]);
+  }, [user.id, setMobileOpen]);
 
   const handleBrandChange = useCallback(
     (brandId) => {
@@ -658,7 +658,7 @@ function DashboardLayout({
     (channelId) => {
       const next = completeChannelOnboarding(user.id, channelId);
       setUserPrefs(next);
-      setActiveMenu("plan");
+      setActiveMenu("today");
       setSelectedHistoryId(null);
       setMobileOpen(false);
     },
@@ -677,8 +677,14 @@ function DashboardLayout({
         );
         return;
       }
-      /* Review·Library·Brief는 게이트가 메뉴를 막지 않도록 빈 세션으로 통과 */
-      const gateBypassMenus = new Set(["review", "history", "growth", "plan"]);
+      /* Review·Library·Brief·Today는 게이트가 메뉴를 막지 않도록 빈 세션으로 통과 */
+      const gateBypassMenus = new Set([
+        "review",
+        "history",
+        "growth",
+        "plan",
+        "today",
+      ]);
       if (brandWorkspaceGateOpen && gateBypassMenus.has(target)) {
         void startBlankBrandSession();
       }
@@ -882,6 +888,7 @@ function DashboardLayout({
               blogInput={blogInput}
               brandName={activeBrand?.brandName || blogInput?.brandName || ""}
               region={activeBrand?.region || blogInput?.region || ""}
+              industry={activeBrand?.industry || blogInput?.industry || ""}
               hasPlace={Boolean(placeContent)}
               hasInsta={Boolean(instagramContent)}
               blogContent={blogContent}
@@ -1048,7 +1055,9 @@ function DashboardLayout({
         onToast={showToast}
         onPlanActivated={onBillingPlanRefresh}
       />
-      <BriclogAssistantHost suppress={showChannelWelcome || firstStoryFocus} />
+      <BriclogAssistantHost
+        suppress={showChannelWelcome || firstStoryFocus || showTodayScene}
+      />
       <DebugStatePublisher
         fragmentKey="dashboard"
         snapshot={{

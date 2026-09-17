@@ -477,7 +477,6 @@ export default function AdminPageClient() {
           view={commandCenter}
           loading={commandLoading}
           onNavigateSection={setAdminSection}
-          onRunTrend={runTrendNow}
         />
 
         <AdminSectionNav active={adminSection} onChange={setAdminSection} />

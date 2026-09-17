@@ -15,14 +15,14 @@ export default function SidebarMobileShortcuts({
   onClose,
 }) {
   const items = [
-    { id: "growth", ...CHANNEL_PRODUCTS.growth },
+    { id: "today", ...CHANNEL_PRODUCTS.today },
     { id: "review", ...CHANNEL_PRODUCTS.review },
     { id: "history", ...CHANNEL_PRODUCTS.history },
   ];
 
   return (
     <div className="mb-2 border-b border-[var(--vision-line)]/80 px-2 pb-2 lg:hidden">
-      <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>Brief · Review · Library</p>
+      <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>Today · Review · Library</p>
       <div className="grid grid-cols-3 gap-1.5">
         {items.map((item) => {
           const active = activeMenu === item.id;

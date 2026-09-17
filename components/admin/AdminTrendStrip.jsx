@@ -56,7 +56,7 @@ export default function AdminTrendStrip({
         <div className="flex flex-wrap gap-2">
           {typeof onRunTrend === "function" ? (
             <button type="button" className={ADMIN_GHOST_BTN} onClick={() => void onRunTrend()}>
-              RUN NOW
+              지금 트렌드 갱신
             </button>
           ) : null}
           {typeof onOpenSystem === "function" ? (

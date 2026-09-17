@@ -33,7 +33,6 @@ export default function AdminCommandCenter({
   view,
   loading = false,
   onNavigateSection,
-  onRunTrend,
 }) {
   if (loading && !view) {
     return (
@@ -55,6 +54,7 @@ export default function AdminCommandCenter({
     .map((ch) => `${ch.label} ${ch.passRate}%`)
     .join(" · ");
   const verdict =
+    view.editorialVerdict ||
     view.nowActions?.[0]?.title ||
     view.topAlert ||
     view.headline ||
@@ -115,11 +115,6 @@ export default function AdminCommandCenter({
         >
           시스템
         </button>
-        {typeof onRunTrend === "function" ? (
-          <button type="button" className={ADMIN_GHOST_BTN} onClick={() => void onRunTrend()}>
-            RUN NOW
-          </button>
-        ) : null}
       </div>
 
       {view.nowActions?.length > 1 ? (

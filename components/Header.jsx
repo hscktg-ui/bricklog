@@ -70,7 +70,17 @@ export default function Header({
             </p>
           )}
           <h1 className="truncate text-[14px] font-semibold leading-tight tracking-[-0.02em] text-[var(--vision-ink)] sm:text-[16px] md:text-[17px]">
-            {title}
+            {onHome && !isToday ? (
+              <button
+                type="button"
+                onClick={onHome}
+                className="truncate text-left hover:opacity-80"
+              >
+                {title}
+              </button>
+            ) : (
+              title
+            )}
           </h1>
         </div>
       </div>

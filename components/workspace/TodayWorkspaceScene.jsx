@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { buildBriclogNextSnapshot } from "@/lib/product/briclogNext";
+import {
+  buildBriclogNextSnapshot,
+  buildTodayVerdict,
+} from "@/lib/product/briclogNext";
 import {
   VISION_CTA_ACCENT,
   VISION_CTA_GHOST,
@@ -17,18 +20,23 @@ export default function TodayWorkspaceScene({
   blogInput = {},
   brandName = "",
   region = "",
+  industry = "",
   hasPlace = false,
   hasInsta = false,
   blogContent = null,
   onPrimaryAction,
   onSecondaryAction,
 }) {
+  const brand = (brandName || blogInput.brandName || "").trim();
+  const regionLine = (region || blogInput.region || "").trim();
+
   const snapshot = useMemo(
     () =>
       buildBriclogNextSnapshot(
         {
-          brandName: brandName || blogInput.brandName,
-          region: region || blogInput.region,
+          brandName: brand,
+          region: regionLine,
+          industry: industry || blogInput.industry || "",
           topic: blogInput.topic,
           contentOperatingPlan: blogInput.contentOperatingPlan,
         },
@@ -43,22 +51,13 @@ export default function TodayWorkspaceScene({
             "",
         }
       ),
-    [blogInput, brandName, region, hasPlace, hasInsta, blogContent]
+    [blogInput, brand, regionLine, industry, hasPlace, hasInsta, blogContent]
   );
 
-  const brand = (brandName || blogInput.brandName || "").trim();
-  const topic =
-    snapshot.primaryAction?.topic ||
-    snapshot.plan?.primaryTopic ||
-    blogInput.topic ||
-    "";
-  const verdict = topic
-    ? `오늘 「${topic}」를 쓰세요.`
-    : brand
-      ? `오늘 ${brand}의 다음 이야기를 남기세요.`
-      : "오늘, 남길 한 줄을 정하세요.";
-  const ctaLabel = snapshot.primaryAction?.label || "이야기 쓰기";
-  const menuId = snapshot.primaryAction?.menuId || "blog";
+  const today = useMemo(
+    () => buildTodayVerdict(snapshot, { brandName: brand }),
+    [snapshot, brand]
+  );
 
   return (
     <div
@@ -68,11 +67,11 @@ export default function TodayWorkspaceScene({
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-6 py-12 md:px-10 md:py-16">
         <p className={`${VISION_EYEBROW} text-center`}>Today</p>
         <h1 className="mt-5 text-center text-[clamp(2rem,6vw,3.25rem)] font-semibold leading-[1.05] tracking-[-0.04em] text-[var(--vision-ink,#111111)]">
-          {verdict}
+          {today.verdict}
         </h1>
         <p className={`mx-auto mt-5 max-w-md text-center ${VISION_SUB}`}>
           {brand
-            ? `${brand}${region || blogInput.region ? ` · ${region || blogInput.region}` : ""} — 30초 안에 오늘 할 일.`
+            ? `${brand}${regionLine ? ` · ${regionLine}` : ""} — 30초 안에 오늘 할 일.`
             : "브랜드를 고르면, 오늘 쓸 주제가 한 문장으로 잡힙니다."}
         </p>
 
@@ -82,13 +81,13 @@ export default function TodayWorkspaceScene({
             className={VISION_CTA_ACCENT}
             onClick={() =>
               onPrimaryAction?.({
-                menuId,
-                topic: topic || "",
-                label: ctaLabel,
+                menuId: today.menuId,
+                topic: today.topic,
+                label: today.ctaLabel,
               })
             }
           >
-            {ctaLabel}
+            {today.ctaLabel}
           </button>
           {typeof onSecondaryAction === "function" ? (
             <button
@@ -101,9 +100,9 @@ export default function TodayWorkspaceScene({
           ) : null}
         </div>
 
-        {snapshot.ok && snapshot.headline ? (
+        {today.headline ? (
           <p className="mx-auto mt-8 max-w-lg text-center text-[13px] leading-relaxed text-[var(--vision-muted,#5F6B66)]">
-            {snapshot.headline}
+            {today.headline}
           </p>
         ) : null}
       </div>
