@@ -1260,7 +1260,12 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 onChange={updatePlaceContent}
                 onSave={saveEditedPlace}
                 onCopy={() => {
-                  onCopy?.("place", placeContent);
+                  const text =
+                    placeContent.fullCopyText ||
+                    placeContent.body ||
+                    placeContent.notice ||
+                    "";
+                  onCopy?.(text);
                   trackContentEvent({
                     eventType: "copy_channel",
                     brandId,
@@ -1282,7 +1287,11 @@ const BlogEditorResults = memo(function BlogEditorResults({
                 onChange={updateInstagramContent}
                 onSave={saveEditedInstagram}
                 onCopy={() => {
-                  onCopy?.("instagram", instagramContent);
+                  const text =
+                    instagramContent.fullCopyText ||
+                    instagramContent.caption ||
+                    "";
+                  onCopy?.(text);
                   trackContentEvent({
                     eventType: "copy_channel",
                     brandId,

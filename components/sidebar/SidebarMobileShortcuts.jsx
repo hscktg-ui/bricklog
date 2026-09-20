@@ -8,7 +8,7 @@ import {
   VISION_SUB,
 } from "@/lib/landing/vision2030Styles";
 
-/** 모바일 드로어 상단 — Brief · Review · Library 바로가기 */
+/** 모바일 드로어 상단 — 오늘 · 검수 · 기록 바로가기 */
 export default function SidebarMobileShortcuts({
   activeMenu,
   onSelect,
@@ -22,7 +22,7 @@ export default function SidebarMobileShortcuts({
 
   return (
     <div className="mb-2 border-b border-[var(--vision-line)]/80 px-2 pb-2 lg:hidden">
-      <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>Today · Review · Library</p>
+      <p className={`px-2.5 pb-1.5 ${VISION_EYEBROW}`}>오늘 · 검수 · 기록</p>
       <div className="grid grid-cols-3 gap-1.5">
         {items.map((item) => {
           const active = activeMenu === item.id;

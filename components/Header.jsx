@@ -4,14 +4,14 @@ import HeaderPlanControl from "@/components/workspace/HeaderPlanControl";
 import { channelHeaderTitle } from "@/lib/channels/channelProducts";
 
 const MENU_JOURNEY = {
-  today: "Today",
-  growth: "Brief",
-  plan: "Brief",
-  blog: "Create",
-  place: "Create",
-  insta: "Create",
-  review: "Review",
-  history: "Library",
+  today: "오늘",
+  growth: "기획",
+  plan: "기획",
+  blog: "만들기",
+  place: "만들기",
+  insta: "만들기",
+  review: "검수",
+  history: "기록",
 };
 
 export default function Header({
@@ -30,8 +30,8 @@ export default function Header({
   onLogout,
 }) {
   const title = headerTitle ?? channelHeaderTitle(activeMenu);
-  const journey = MENU_JOURNEY[activeMenu] || "Today";
-  const isToday = activeMenu === "today" || headerTitle === "Today";
+  const journey = MENU_JOURNEY[activeMenu] || "오늘";
+  const isToday = activeMenu === "today" || headerTitle === "오늘" || headerTitle === "Today";
   const showPlanControl =
     !demoMode && !isToday && typeof onPlanChange === "function";
   const contextLine = isToday
@@ -57,14 +57,14 @@ export default function Header({
         ) : null}
         <div className="min-w-0">
           {isToday ? (
-            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)] sm:text-[11px]">
+            <p className="truncate text-[10px] font-medium tracking-[-0.01em] text-[var(--vision-muted)] sm:text-[11px]">
               {contextLine}
             </p>
           ) : (
-            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)] sm:text-[11px]">
+            <p className="truncate text-[10px] font-medium tracking-[-0.01em] text-[var(--vision-muted)] sm:text-[11px]">
               {journey}
               <span className="mx-1.5 text-[var(--vision-line-strong)]">·</span>
-              <span className="normal-case tracking-normal text-[var(--vision-muted)]">
+              <span className="text-[var(--vision-muted)]">
                 {contextLine}
               </span>
             </p>

@@ -55,7 +55,7 @@ function TrendMiniList({ items = [] }) {
             className="flex items-center justify-between rounded-[18px] border border-[#E7ECE8] bg-white px-4 py-3 transition hover:border-[#111111]"
           >
             <span className="min-w-0">
-              <span className="block text-[12px] uppercase tracking-[0.14em] text-[#7B8680]">
+              <span className="block text-[12px] font-medium tracking-[-0.02em] text-[#7B8680]">
                 {String(item.currentRank).padStart(2, "0")}
               </span>
               <span className="mt-1 block truncate text-[16px] font-semibold text-[#111111]">
@@ -162,7 +162,12 @@ export default function TrendLandingPage({
     }
     onStart?.();
   };
-  const openLogin = () => onAuthOpen?.("login", "trend_home");
+  const openLogin = () => {
+    if (query.trim()) {
+      stashLandingCreateIntent({ create: "blog", topic: query.trim() });
+    }
+    onAuthOpen?.("login", "trend_home");
+  };
   const trendRequestHref = `mailto:${BRICLOG_CONTACT_EMAIL}?subject=${encodeURIComponent(
     "BRICLOG Trend 등록 요청"
   )}&body=${encodeURIComponent(query.trim())}`;
@@ -173,11 +178,11 @@ export default function TrendLandingPage({
         trendContext: query.trim(),
       }).toString()}#public-brand-test`
     : "/#public-brand-test";
-  const liveLabel = catalogState?.live?.liveLabel || catalogState?.live?.updatedLabel || "UPDATED --:--";
+  const liveLabel = catalogState?.live?.liveLabel || catalogState?.live?.updatedLabel || "방금 갱신";
 
   return (
-    <div className="min-h-screen bg-[#FCFCFA] text-[#111111]">
-      <header className="sticky top-0 z-30 border-b border-[#E7ECE8]/80 bg-[#FCFCFA]/94 backdrop-blur">
+    <div className="briclog-vision-page min-h-screen bg-[var(--vision-paper,#FCFCFA)] text-[var(--vision-ink,#111111)]">
+      <header className="sticky top-0 z-30 border-b border-[var(--vision-line,#E7ECE8)]/80 bg-[var(--vision-paper,#FCFCFA)]/94 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
           <Logo showIcon wordmark="BRICLOG" iconSize={28} className="items-center" onClick={() => scrollTo("trend-search")} />
           <nav className="hidden items-center gap-5 text-[13px] font-medium text-[#5F6B66] md:flex">
@@ -211,7 +216,7 @@ export default function TrendLandingPage({
               data-briclog-cta="start"
               className="inline-flex min-h-[42px] items-center rounded-full bg-[#111111] px-4 text-[13px] font-semibold text-white hover:opacity-92"
             >
-              작업실
+              시작하기
             </button>
           </div>
         </div>
@@ -348,7 +353,7 @@ export default function TrendLandingPage({
                     key={category}
                     type="button"
                     onClick={() => setActiveCategory(category)}
-                    className={`rounded-full border px-4 py-2 text-[12px] font-semibold tracking-[0.1em] ${
+                    className={`rounded-full border px-4 py-2 text-[12px] font-semibold tracking-[-0.01em] ${
                       active
                         ? "border-[#111111] bg-[#111111] text-white"
                         : "border-[#E7ECE8] bg-white text-[#5F6B66] hover:text-[#111111]"
@@ -365,31 +370,31 @@ export default function TrendLandingPage({
                 <p>
                   {query.trim() ? (
                     <>
-                      Search results for <strong className="text-[#111111]">{query.trim()}</strong>
+                      <strong className="text-[#111111]">{query.trim()}</strong> 검색 결과
                     </>
                   ) : (
-                    <>Category filtered</>
+                    <>카테고리 필터</>
                   )}{" "}
-                  · {filteredTopItems.length} results
+                  · {filteredTopItems.length}건
                 </p>
                 <button
                   type="button"
                   onClick={() => router.push("/#trend-list")}
                   className="font-semibold text-[#111111] hover:text-[#03A94D]"
                 >
-                  Reset
+                  초기화
                 </button>
               </div>
             ) : null}
 
             <div className="mt-6 overflow-hidden rounded-[28px] border border-[#E7ECE8] bg-white">
-              <div className="hidden grid-cols-[72px_minmax(0,1.5fr)_110px_90px_100px_120px] gap-4 border-b border-[#EEF2EF] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7B8680] md:grid">
-                <span>Rank</span>
-                <span>Name</span>
-                <span>Category</span>
-                <span>Score</span>
-                <span>Move</span>
-                <span>Updated</span>
+              <div className="hidden grid-cols-[72px_minmax(0,1.5fr)_110px_90px_100px_120px] gap-4 border-b border-[#EEF2EF] px-5 py-3 text-[11px] font-semibold tracking-[-0.01em] text-[#7B8680] md:grid">
+                <span>순위</span>
+                <span>이름</span>
+                <span>분류</span>
+                <span>점수</span>
+                <span>변동</span>
+                <span>갱신</span>
               </div>
 
               {filteredTopItems.length ? (
@@ -404,7 +409,7 @@ export default function TrendLandingPage({
                           <span className="text-[20px] font-semibold tracking-[-0.04em] text-[#111111] md:text-[18px]">
                             {String(item.currentRank).padStart(2, "0")}
                           </span>
-                          <span className="rounded-full border border-[#E7ECE8] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5F6B66] md:hidden">
+                          <span className="rounded-full border border-[#E7ECE8] px-2 py-0.5 text-[10px] font-medium tracking-[-0.01em] text-[#5F6B66] md:hidden">
                             {item.categoryLabel}
                           </span>
                         </div>

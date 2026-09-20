@@ -305,8 +305,8 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
         className="mx-auto mb-8 max-w-6xl scroll-mt-24"
         data-briclog-anchor="sample"
       >
-        <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5F6B66]">
-          Sample
+        <p className="text-[12px] font-medium tracking-[-0.01em] text-[#5F6B66]">
+          샘플
         </p>
         <p className="mt-2 text-[15px] text-[#5F6B66]">
           브랜드 한 줄로 미리보기 — 가입 전에 결과 밀도를 확인하세요.
@@ -376,7 +376,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
             className={`${VISION_PANEL} p-6 md:p-7`}
           >
             <label className="block">
-              <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
+              <span className="text-[12px] font-medium tracking-[-0.01em] text-[var(--vision-muted)]">
                 브랜드명
               </span>
               <input
@@ -388,7 +388,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
               />
             </label>
             <label className="mt-5 block">
-              <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
+              <span className="text-[12px] font-medium tracking-[-0.01em] text-[var(--vision-muted)]">
                 지역
               </span>
               <input
@@ -400,7 +400,7 @@ export default function PublicBrandTestSection({ onSignup, onPreviewActiveChange
               />
             </label>
             <label className="mt-5 block">
-              <span className="text-[12px] font-semibold uppercase tracking-wide text-[var(--vision-muted)]">
+              <span className="text-[12px] font-medium tracking-[-0.01em] text-[var(--vision-muted)]">
                 오늘의 주제
               </span>
               <input

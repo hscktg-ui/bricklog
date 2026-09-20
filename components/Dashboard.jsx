@@ -684,7 +684,13 @@ function DashboardLayout({
     (channelId) => {
       const next = completeChannelOnboarding(user.id, channelId);
       setUserPrefs(next);
-      setActiveMenu("today");
+      // 랜딩 핸드오프가 있으면 Today로 되돌리지 않고 Create 유지
+      if (landingHandoffRef.current) {
+        const target = normalizeWorkspaceMenuId(channelId) || "blog";
+        setActiveMenu(["blog", "place", "insta", "plan"].includes(target) ? target : "blog");
+      } else {
+        setActiveMenu("today");
+      }
       setSelectedHistoryId(null);
       setMobileOpen(false);
     },
@@ -856,7 +862,7 @@ function DashboardLayout({
           brandName={activeBrand?.brandName || ""}
           headerTitle={
             showChannelWelcome || showTodayScene
-              ? "Today"
+              ? "오늘"
               : firstStoryFocus
                 ? "오늘의 편집본"
                 : undefined
@@ -880,7 +886,12 @@ function DashboardLayout({
           />
         )}
 
-        {!showChannelWelcome && !showTodayScene && rhythmTab === "studio" && (
+        {!showChannelWelcome &&
+          !showTodayScene &&
+          rhythmTab === "studio" &&
+          (Boolean(blogContent?.sections?.length) ||
+            Boolean(placeContent) ||
+            Boolean(instagramContent)) && (
           <BriclogNextHomeStrip
             activeMenu={activeMenu}
             blogInput={blogInput}
@@ -892,7 +903,10 @@ function DashboardLayout({
           />
         )}
 
-        {showRhythmTabs ? (
+        {showRhythmTabs &&
+        (Boolean(blogContent?.sections?.length) ||
+          Boolean(placeContent) ||
+          Boolean(instagramContent)) ? (
           <WorkspaceRhythmTabs active={rhythmTab} onChange={setRhythmTab} />
         ) : null}
 

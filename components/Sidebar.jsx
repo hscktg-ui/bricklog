@@ -189,7 +189,7 @@ export default function Sidebar({
             simpleMode
           ).map((section) => (
             <div key={section.id} className="mb-2 last:mb-0.5">
-              <p className="px-2.5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--vision-muted)]">
+              <p className="px-2.5 pb-1 pt-2 text-[10px] font-medium tracking-[-0.01em] text-[var(--vision-muted)]">
                 {section.label}
               </p>
               <ul className="space-y-0.5">

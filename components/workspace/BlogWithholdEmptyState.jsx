@@ -24,7 +24,7 @@ export default function BlogWithholdEmptyState({
       aria-live="polite"
     >
       <div className={`${VISION_PANEL} px-6 py-10`}>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--vision-muted)]">
+        <p className="text-[11px] font-medium tracking-[-0.01em] text-[var(--vision-muted)]">
           품질 기준
         </p>
         <p className={`mt-4 ${VISION_SUB}`}>{copy}</p>
