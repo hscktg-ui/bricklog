@@ -163,7 +163,7 @@ export async function renderOgImage() {
               color: "#03C75A",
             }}
           >
-            Intent before output
+            의도 먼저, 결과 다음
           </div>
           <div
             style={{

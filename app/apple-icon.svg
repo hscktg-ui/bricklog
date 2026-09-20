@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none" role="img" aria-label="BRICLOG">
-  <rect width="180" height="180" rx="44" fill="#F7F8FA"/>
-  <rect x="40" y="40" width="46" height="46" rx="12" fill="#F7F8FA" stroke="#111111" stroke-width="8"/>
-  <rect x="94" y="40" width="46" height="46" rx="12" fill="#111111"/>
-  <rect x="67" y="94" width="46" height="46" rx="12" fill="#03C75A"/>
-</svg>

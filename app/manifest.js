@@ -25,9 +25,9 @@ export default function manifest() {
         purpose: "any",
       },
       {
-        src: "/apple-touch-icon.svg",
+        src: "/apple-icon",
         sizes: "180x180",
-        type: "image/svg+xml",
+        type: "image/png",
         purpose: "any",
       },
       {
