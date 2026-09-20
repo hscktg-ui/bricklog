@@ -158,6 +158,7 @@ async function openWorkspace(page) {
   await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await dismissIntro(page);
   await dismissWorkspaceModals(page);
+  await dismissBrandWorkspaceGate(page);
   await page
     .waitForFunction(
       () => {
@@ -181,15 +182,19 @@ async function openWorkspace(page) {
     await syncE2eSessionToPage(page, BASE);
     await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
     await dismissWorkspaceModals(page);
+    await dismissBrandWorkspaceGate(page);
     await ensureSmokeBrand(page, BASE, smokeForm);
   }
+  await dismissBrandWorkspaceGate(page);
   await navigateWorkspaceChannel(page, "blog");
   await prepareChannelWorkspace(page, BASE, "blog").catch(() => null);
   let ready = await waitForWorkspaceReady(page, 60_000);
   if (!ready.ok) {
     await page.reload({ waitUntil: "domcontentloaded", timeout: 90_000 });
     await dismissWorkspaceModals(page);
+    await dismissBrandWorkspaceGate(page);
     await ensureSmokeBrand(page, BASE, smokeForm);
+    await dismissBrandWorkspaceGate(page);
     await navigateWorkspaceChannel(page, "blog");
     ready = await waitForWorkspaceReady(page, 45_000);
   }
@@ -692,11 +697,16 @@ async function runPersona(page, context, persona, errors, networkFails, apiTrace
         api.status < 400 &&
         api.body?.ok !== false &&
         !api.body?.withheld &&
+        api.body?.mode !== "research_gate" &&
         Boolean(api.body?.[contentKey]);
       if (!apiHasContent && api.apiError) {
         run.phases.apiNote = "ui_ok_without_channel_api";
       } else if (!apiHasContent) {
         run.phases.apiNote = api.body?.userMessage || "channel_api_no_content";
+        if (api.body?.withheld || api.body?.mode === "research_gate") {
+          run.errors.push(api.body?.userMessage || "channel_withheld");
+          throw new Error(api.body?.userMessage || "channel_withheld");
+        }
       }
       if (api.status && api.status >= 400 && !uiOk) {
         run.errors.push(`channel_api_${api.status}`);

@@ -273,6 +273,50 @@ export async function ensureSmokeBrand(page, baseUrl, form) {
   }
 
   await syncE2eSessionToPage(page, baseUrl);
+
+  // 브랜드 작업실 세션 고정 — 게이트가 다시 뜨지 않도록
+  if (brand?.id) {
+    await page
+      .evaluate((brandId) => {
+        try {
+          const payload = {
+            choice: "brand",
+            brandId,
+            at: Date.now(),
+          };
+          const raw =
+            Object.keys(localStorage)
+              .concat(Object.keys(sessionStorage))
+              .find((k) => /auth-token|supabase\.auth/i.test(k)) || "";
+          let userId = "anon";
+          try {
+            const tokenBlob =
+              localStorage.getItem(raw) || sessionStorage.getItem(raw) || "";
+            const parsed = tokenBlob ? JSON.parse(tokenBlob) : null;
+            userId =
+              parsed?.user?.id ||
+              parsed?.currentSession?.user?.id ||
+              parsed?.session?.user?.id ||
+              "anon";
+          } catch {
+            /* ignore */
+          }
+          const key = `briclog-brand-session-v1-${userId}`;
+          sessionStorage.setItem(key, JSON.stringify(payload));
+          localStorage.setItem(key, JSON.stringify(payload));
+          window.dispatchEvent(
+            new CustomEvent("briclog-brand-workspace-selected", {
+              detail: { brandId },
+            })
+          );
+        } catch {
+          /* ignore */
+        }
+      }, brand.id)
+      .catch(() => null);
+  }
+
+  await dismissBrandWorkspaceGate(page);
   return { ok: true, brandId: brand.id, brandName: form.brandName };
 }
 

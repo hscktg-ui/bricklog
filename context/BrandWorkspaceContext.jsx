@@ -75,6 +75,35 @@ export function BrandWorkspaceProvider({ children, userId, demoMode = false }) {
           return;
         }
       }
+
+      // 베타 첫 사용: 브랜드 1개면 바로 선택, 0개면 빈 세션으로 게이트 생략
+      if (!demoMode && userId) {
+        if (list.length === 1 && list[0]?.id) {
+          setBlankBrandMode(false);
+          setActiveBrandId(list[0].id);
+          setBrandWorkspaceGateOpen(false);
+          setBrandSessionReady(true);
+          writeBrandWorkspaceSession(userId, {
+            choice: "brand",
+            brandId: list[0].id,
+            at: Date.now(),
+          });
+          return;
+        }
+        if (list.length === 0) {
+          setBlankBrandMode(true);
+          setActiveBrandId(null);
+          setBrandWorkspaceGateOpen(false);
+          setBrandSessionReady(true);
+          writeBrandWorkspaceSession(userId, {
+            choice: "blank",
+            brandId: null,
+            at: Date.now(),
+          });
+          return;
+        }
+      }
+
       setBlankBrandMode(false);
       setActiveBrandId(null);
       setBrandWorkspaceGateOpen(!demoMode && Boolean(userId));

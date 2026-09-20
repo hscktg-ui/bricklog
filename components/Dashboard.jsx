@@ -11,6 +11,7 @@ import {
 import BlogEditor from "@/components/BlogEditor";
 import PlaceGenerator from "@/components/PlaceGenerator";
 import InstagramGenerator from "@/components/InstagramGenerator";
+import DetailPageGenerator from "@/components/DetailPageGenerator";
 import DailyTimelinessPanel from "@/components/DailyTimelinessPanel";
 import PricingModal from "@/components/billing/PricingModal";
 import { BrandWorkspaceProvider, useBrandWorkspace } from "@/context/BrandWorkspaceContext";
@@ -72,6 +73,7 @@ import MobileBottomNav from "@/components/workspace/MobileBottomNav";
 import { useMobileSidebar } from "@/hooks/useMobileSidebar";
 import DraftReviewStudio from "@/components/DraftReviewStudio";
 import { CHANNEL_PRODUCTS, normalizeWorkspaceMenuId } from "@/lib/channels/channelProducts";
+import { consumeLandingCreateIntent, stashLandingCreateIntent } from "@/lib/landing/landingCreateIntent";
 import {
   fetchGenerationById,
   fetchGenerations,
@@ -611,23 +613,43 @@ function DashboardLayout({
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const create = params.get("create") || "";
-    const topic = params.get("topic") || params.get("trendContext") || "";
-    const brandName = params.get("brandName") || "";
-    const region = params.get("region") || "";
+    let create = params.get("create") || "";
+    let topic = params.get("topic") || params.get("trendContext") || "";
+    let brandName = params.get("brandName") || "";
+    let region = params.get("region") || "";
+
+    if (create || topic || brandName || region) {
+      stashLandingCreateIntent({ create, topic, brandName, region });
+      consumeLandingCreateIntent();
+    } else {
+      const stored = consumeLandingCreateIntent();
+      if (stored) {
+        create = stored.create || "";
+        topic = stored.topic || "";
+        brandName = stored.brandName || "";
+        region = stored.region || "";
+      }
+    }
+
     if (!create && !topic && !brandName && !region) return;
 
     if (create === "plan") setActiveMenu("plan");
+    else if (create === "detail" || create === "detailPage" || create === "detail-page")
+      setActiveMenu("detailPage");
+    else if (create === "place") setActiveMenu("place");
+    else if (create === "insta" || create === "instagram") setActiveMenu("insta");
     else setActiveMenu("blog");
     setRhythmTab("studio");
     setSelectedHistoryId(null);
-    setBlogInput((prev) => ({
-      ...prev,
-      brandName: brandName.trim() || prev.brandName,
-      region: region.trim() || prev.region,
-      topic: topic.trim() || prev.topic,
-      mainKeyword: prev.mainKeyword || topic.trim() || "",
-    }));
+    if (create !== "detail" && create !== "detailPage" && create !== "detail-page") {
+      setBlogInput((prev) => ({
+        ...prev,
+        brandName: String(brandName || "").trim() || prev.brandName,
+        region: String(region || "").trim() || prev.region,
+        topic: String(topic || "").trim() || prev.topic,
+        mainKeyword: prev.mainKeyword || String(topic || "").trim() || "",
+      }));
+    }
 
     params.delete("create");
     params.delete("topic");
@@ -747,12 +769,12 @@ function DashboardLayout({
   const goBlog = () => setActiveMenu("blog");
   const navigate = (menu) => setActiveMenu(normalizeWorkspaceMenuId(menu));
 
-  const workspaceMenus = new Set(["blog", "place", "insta", "plan", "growth"]);
+  const workspaceMenus = new Set(["blog", "place", "insta", "detailPage", "plan", "growth"]);
   const showTodayScene = !showChannelWelcome && activeMenu === "today";
   const showRhythmTabs =
     !showChannelWelcome &&
     !showTodayScene &&
-    ["blog", "place", "insta", "growth"].includes(activeMenu);
+    ["blog", "place", "insta", "detailPage", "growth"].includes(activeMenu);
   const idleHintActive =
     !showChannelWelcome && !showTodayScene && workspaceMenus.has(activeMenu);
   const showProfileSetupBanner =
@@ -773,10 +795,6 @@ function DashboardLayout({
   useEffect(() => {
     setRhythmTab("studio");
   }, [activeMenu]);
-
-  useEffect(() => {
-    if (activeMenu === "detailPage") setActiveMenu("blog");
-  }, [activeMenu, setActiveMenu]);
 
   return (
     <div className="briclog-vision-workspace relative flex h-full min-h-0 flex-1 overflow-hidden">
@@ -971,6 +989,12 @@ function DashboardLayout({
               onCopy={(t) => handleCopy(t, "전체 콘텐츠가 복사되었습니다.")}
               userId={user.id}
               brandId={activeBrandId}
+            />
+          ) : activeMenu === "detailPage" ? (
+            <DetailPageGenerator
+              onCopy={(t) => handleCopy(t, "전체 콘텐츠가 복사되었습니다.")}
+              onToast={showToast}
+              surface="workspace"
             />
           ) : activeMenu === "growth" ? (
             <GrowthStudio

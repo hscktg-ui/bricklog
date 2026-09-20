@@ -949,6 +949,22 @@ const BlogEditorResults = memo(function BlogEditorResults({
     blogContent,
   ]);
 
+  const handleEditWithheldInputs = useCallback(() => {
+    clearBlogWithholdUi?.();
+    if (typeof window === "undefined") return;
+    window.requestAnimationFrame(() => {
+      const form =
+        document.querySelector('[data-briclog-generate="blog"]') ||
+        document.querySelector("form") ||
+        document.getElementById("blog-form");
+      form?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+      const topic =
+        document.querySelector('input[name="topic"], textarea[name="topic"]') ||
+        document.querySelector('[aria-label*="주제"]');
+      topic?.focus?.();
+    });
+  }, [clearBlogWithholdUi]);
+
   const handleToneRequestChange = useCallback(
     (toneRequest) => {
       setBlogInput((prev) => ({ ...prev, toneRequest }));
@@ -1066,6 +1082,7 @@ const BlogEditorResults = memo(function BlogEditorResults({
           <BlogWithholdEmptyState
             message={blogWithholdUi.message}
             onRegenerate={handleRegenerate}
+            onEditInputs={handleEditWithheldInputs}
             busy={regenerateBusy}
           />
         ) : showFullResult ? (

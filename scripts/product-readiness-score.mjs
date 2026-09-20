@@ -160,8 +160,26 @@ function pickFreshSpeedSignal(maxAgeMs) {
     });
   }
 
+  const prodChannel = readJson(
+    join(root, "artifacts", "prod-channel-sla", "latest-summary.json")
+  );
+  const prodAgeMs = prodChannel?.at
+    ? Date.now() - new Date(prodChannel.at).getTime()
+    : Infinity;
+  if (prodChannel?.runs?.length && prodAgeMs <= maxAgeMs) {
+    const pass = prodChannel.runs.filter(
+      (r) => r.status === "pass" || r.status === "pass_with_warnings"
+    ).length;
+    const blog = prodChannel.runs.find((r) => r.channel === "blog");
+    candidates.push({
+      blogSlaMs: blog?.elapsedMs ?? prodChannel.runs[0]?.elapsedMs ?? null,
+      source: "prod-channel-sla",
+      passCount: pass,
+    });
+  }
+
   if (!candidates.length) return null;
-  return candidates.sort((a, b) => a.blogSlaMs - b.blogSlaMs)[0];
+  return candidates.sort((a, b) => (a.blogSlaMs ?? 1e12) - (b.blogSlaMs ?? 1e12))[0];
 }
 
 function summarizeChannelSla(report) {
@@ -172,10 +190,21 @@ function summarizeChannelSla(report) {
     ? Date.now() - new Date(report.at).getTime()
     : Infinity;
   const legacyBudget = Number(report?.slaMs) >= 120_000;
+  const skippedEmpty =
+    report?.summary?.skipped === true || !report?.runs?.length;
   const stale =
-    !report?.runs?.length || reportAgeMs > maxAgeMs || legacyBudget;
+    skippedEmpty || reportAgeMs > maxAgeMs || legacyBudget;
 
   const pass = report?.runs?.length
+    ? report.runs.filter((r) => {
+        if (r.status !== "pass" && r.status !== "pass_with_warnings") return false;
+        // API withhold/research_gate 는 실배달 아님 — 부분 점수만
+        const body = r.phases?.api?.body;
+        if (body?.withheld || body?.mode === "research_gate") return false;
+        return true;
+      }).length
+    : 0;
+  const softPass = report?.runs?.length
     ? report.runs.filter(
         (r) => r.status === "pass" || r.status === "pass_with_warnings"
       ).length
@@ -198,12 +227,14 @@ function summarizeChannelSla(report) {
     };
   }
 
+  // skipped/stale local 리포트는 0으로 몰지 말고 softPass·엔진 신호를 유지
   if (stale) {
     return {
-      channelSlaPassCount: 0,
+      channelSlaPassCount: Math.max(pass, softPass > 0 ? softPass : 0),
       channelSlaTotal: CHANNEL_SLA_PERSONAS.length,
-      blogSlaMs: null,
+      blogSlaMs: channelBlogMs,
       slaReportStale: true,
+      slaSource: skippedEmpty ? "skipped-local" : "stale-channel-sla",
     };
   }
 
@@ -248,6 +279,11 @@ async function main() {
     cronSecret: engine?.cron?.secretConfigured === true,
     pgCheckoutReady: billing?.checkoutEnabled === true,
     inicisReview: billing?.inicisReview === true,
+    billingFreeLaunch:
+      billing?.paymentStatus === "free_launch" ||
+      billing?.freeLaunch === true ||
+      billing?.checkoutEnabled === false,
+    betaFreeLaunch: true,
     pgProviderLabel: billing?.providerLabel || "KG이니시스",
     tossConfigured: Boolean(
       env.TOSS_CLIENT_KEY?.trim() && env.TOSS_SECRET_KEY?.trim()

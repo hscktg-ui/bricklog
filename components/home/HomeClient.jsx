@@ -25,6 +25,7 @@ import Toast from "@/components/Toast";
 import { LOADING } from "@/lib/product/craft";
 import { isFastOnboarding } from "@/lib/config/productFlags";
 import { peekPublicTestSignupDraft } from "@/lib/publicTest/restorePublicTestSignupDraft";
+import { stashLandingIntentFromUrl } from "@/lib/landing/landingCreateIntent";
 
 const Dashboard = dynamic(() => import("@/components/Dashboard"), {
   ssr: false,
@@ -145,6 +146,7 @@ export default function HomeClient({
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
+    stashLandingIntentFromUrl(params);
     const err = params.get("error");
     if (err) {
       showToast(decodeURIComponent(err), "error");

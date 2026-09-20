@@ -5,7 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
+import PublicDetailPageInvite from "@/components/landing/PublicDetailPageInvite";
 import { BRICLOG_CONTACT_EMAIL } from "@/lib/brand/support";
+import { stashLandingCreateIntent } from "@/lib/landing/landingCreateIntent";
 import { LIVE_TREND_REFRESH_MS } from "@/lib/trends/liveConfig";
 import { TREND_CATEGORY_LABELS, TREND_CATEGORY_ORDER } from "@/lib/trends/seedCatalog";
 
@@ -155,7 +157,12 @@ export default function TrendLandingPage({
     router.push(`/?${params.toString()}#trend-list`);
   };
 
-  const openSignup = () => onStart?.();
+  const openSignup = () => {
+    if (query.trim()) {
+      stashLandingCreateIntent({ create: "blog", topic: query.trim() });
+    }
+    onStart?.();
+  };
   const openLogin = () => onAuthOpen?.("login", "trend_home");
   const trendRequestHref = `mailto:${BRICLOG_CONTACT_EMAIL}?subject=${encodeURIComponent(
     "BRICLOG Trend 등록 요청"
@@ -428,6 +435,12 @@ export default function TrendLandingPage({
                     <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                       <Link
                         href={createFromQueryHref}
+                        onClick={() =>
+                          stashLandingCreateIntent({
+                            create: "blog",
+                            topic: query.trim(),
+                          })
+                        }
                         className="inline-flex min-h-[44px] items-center rounded-full bg-[#111111] px-5 text-[13px] font-semibold text-white"
                       >
                         이 주제로 바로 활용하기
@@ -526,6 +539,8 @@ export default function TrendLandingPage({
         </section>
 
         <PublicBrandTestSection onSignup={(mode) => onAuthOpen?.(mode || "signup")} />
+
+        <PublicDetailPageInvite />
 
         <section className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-3">
