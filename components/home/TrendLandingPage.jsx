@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
-import PublicDetailPageInvite from "@/components/landing/PublicDetailPageInvite";
 import { BRICLOG_CONTACT_EMAIL } from "@/lib/brand/support";
 import { stashLandingCreateIntent } from "@/lib/landing/landingCreateIntent";
 import { LIVE_TREND_REFRESH_MS } from "@/lib/trends/liveConfig";
@@ -539,8 +538,6 @@ export default function TrendLandingPage({
         </section>
 
         <PublicBrandTestSection onSignup={(mode) => onAuthOpen?.(mode || "signup")} />
-
-        <PublicDetailPageInvite />
 
         <section className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-3">
