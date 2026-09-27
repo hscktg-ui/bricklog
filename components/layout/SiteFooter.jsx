@@ -8,7 +8,7 @@ import SiteFooterSocial from "@/components/layout/SiteFooterSocial";
 
 const LEGAL_LINKS = [
   { href: "/guides", label: "콘텐츠 가이드" },
-  { href: "/help", label: "도움말·FAQ" },
+  { href: "/help", label: "도움말" },
   { href: "/terms", label: "이용약관" },
   { href: "/privacy", label: "개인정보처리방침" },
   { href: "/refund", label: "환불정책" },
@@ -24,7 +24,7 @@ export default function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 md:flex-row md:items-end md:justify-between md:px-8">
         <div className="max-w-xl">
           <p className="text-[12px] font-semibold text-[var(--brand)]">
-            Intent before output
+            의도 먼저, 결과 다음
           </p>
           <p className="mt-3 text-[22px] font-semibold leading-snug tracking-[-0.01em] text-[var(--foreground)]">
             {BRAND_META_TITLE_KO}
