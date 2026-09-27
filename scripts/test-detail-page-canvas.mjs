@@ -20,6 +20,8 @@ assert.deepEqual(
 assert.equal(new Set(story.frames.map((f) => f.composition)).size >= 8, true);
 assert.ok(html.includes('data-mall-beat="hook"'));
 assert.ok(html.includes('data-mall-beat="listing"'));
+assert.ok(html.includes('data-composition="badge_row"'));
+assert.ok(html.includes('data-composition="photo_grid"'));
 assert.equal(html.includes("한 끼가 된다"), false);
 assert.equal(html.includes("씻고, 앉힌다"), false);
 assert.equal(html.includes("<button"), false);
