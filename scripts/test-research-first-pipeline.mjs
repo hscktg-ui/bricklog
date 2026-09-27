@@ -65,9 +65,27 @@ for (const [label, input] of [
 }
 
 const emptyDossier = runResearchFirstPipeline(emptyInput);
-const emptyGate = assertResearchFirstWritable(emptyInput);
-if (emptyGate.ok) {
-  console.error("FAIL: cafe without menu should block writing", emptyDossier.failReasons);
+if (emptyDossier.writable) {
+  console.error("FAIL: cafe without menu should not be writable", emptyDossier.failReasons);
+  process.exit(1);
+}
+
+// always-deliver(기본값)에서는 하드 차단 대신 thin research 표시 + 사유 노출 — 보류 판정은 품질 게이트가 한다
+const softGate = assertResearchFirstWritable(emptyInput);
+if (!softGate.ok || !softGate.thinResearchProceed) {
+  console.error("FAIL: thin research should proceed under always-deliver", softGate);
+  process.exit(1);
+}
+if (!softGate.reasons?.includes("industry_cafe_menu_missing")) {
+  console.error("FAIL: thin research must surface the industry gap", softGate.reasons);
+  process.exit(1);
+}
+
+process.env.BRICLOG_ALWAYS_DELIVER = "false";
+const strictGate = assertResearchFirstWritable(emptyInput);
+delete process.env.BRICLOG_ALWAYS_DELIVER;
+if (strictGate.ok || !strictGate.writingBlocked) {
+  console.error("FAIL: cafe without menu should block writing when always-deliver is off", strictGate);
   process.exit(1);
 }
 
@@ -76,7 +94,9 @@ console.log(
     {
       flowerWritable: true,
       chairWritable: true,
-      cafeBlocked: !emptyGate.ok,
+      cafeThinResearch: softGate.thinResearchProceed === true,
+      cafeReasons: softGate.reasons,
+      cafeBlockedWhenStrict: strictGate.ok === false,
       flowerOrganizedLines: runResearchFirstPipeline(flowerInput).organized.lines.slice(0, 6),
     },
     null,
