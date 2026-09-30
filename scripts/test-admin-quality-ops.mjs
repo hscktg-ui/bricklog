@@ -10,6 +10,24 @@ assert.ok(snap.targets.blog === 90, "blog target 90");
 assert.ok(Array.isArray(snap.deliveryTrust.tiers) && snap.deliveryTrust.tiers.length === 3);
 assert.ok(Array.isArray(snap.commands) && snap.commands.length >= 3);
 assert.ok(snap.dataSources && typeof snap.dataSources.prodNote === "string");
+assert.equal(
+  snap.rollout.some((item) => String(item.watch).includes("89.7")),
+  false,
+  "checklist must not freeze an old blog pass rate"
+);
+
+if (snap.crossChannel?.freshness?.stale) {
+  assert.ok(
+    snap.alerts.some((a) => a.id === "cross_batch_stale" && a.severity === "warn"),
+    "stale batch must warn"
+  );
+}
+if (snap.channelSla?.skipped) {
+  assert.ok(
+    snap.alerts.some((a) => a.id === "channel_sla_skipped"),
+    "skipped SLA must alert"
+  );
+}
 
 if (snap.crossChannel) {
   assert.ok(snap.crossChannel.byChannel?.blog, "blog channel when batch exists");

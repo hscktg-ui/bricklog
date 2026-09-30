@@ -51,6 +51,32 @@ const calm = buildAdminCommandCenter({
 });
 assert.equal(calm.pulse, "ok");
 
+const stale = buildAdminCommandCenter({
+  advisory: { headline: "ok", healthScore: 99, actions: [] },
+  qualityOps: {
+    crossChannel: {
+      passRate: 97.4,
+      freshness: { stale: true, label: "2000시간 전 (갱신 필요)" },
+      byChannel: { blog: { passRate: 92.3, status: "ok", target: 90 } },
+    },
+    readiness: {
+      total: 99,
+      band: "production",
+      freshness: { stale: true, label: "240시간 전 (갱신 필요)" },
+    },
+    channelSla: { skipped: true, skipReason: "workspace_missing" },
+    alerts: [
+      {
+        severity: "warn",
+        message: "교차 채널 배치가 2000시간 전 (갱신 필요)입니다. 이 통과율은 오늘 품질이 아닙니다.",
+      },
+    ],
+  },
+  errors: [],
+});
+assert.equal(stale.pulse, "watch");
+assert.match(stale.editorialVerdict, /오늘 품질이 아닙니다|오늘 품질로 읽지/);
+
 console.log("OK: admin-command-center", {
   pulse: view.pulse,
   blog: view.channels[0].passRate,

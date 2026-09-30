@@ -339,12 +339,18 @@ export default function AdminQualityOpsPanel({
                 통과 {channelSla.summary?.passed}/{channelSla.summary?.total}
                 {channelSla.blogAvgSec != null ? ` · 블로그 ~${channelSla.blogAvgSec}s` : ""}
               </p>
-              {(channelSla.overSlaOrError || []).length > 0 ? (
+              {channelSla.skipped ? (
+                <p className="mt-2 text-[11px] text-amber-800">
+                  측정 안 됨 · {channelSla.skipReason || "runs 없음"}
+                </p>
+              ) : (channelSla.overSlaOrError || []).length > 0 ? (
                 <p className="mt-2 text-[11px] text-amber-800">
                   SLA 초과: {channelSla.overSlaOrError.join(", ")}
                 </p>
+              ) : channelSla.summary?.total > 0 ? (
+                <p className="mt-2 text-[11px] text-[#03A94D]">측정분 SLA 내</p>
               ) : (
-                <p className="mt-2 text-[11px] text-[#03A94D]">4채널 SLA 내</p>
+                <p className="mt-2 text-[11px] text-amber-800">측정 결과 없음</p>
               )}
             </>
           ) : (
@@ -359,6 +365,7 @@ export default function AdminQualityOpsPanel({
               <p className="mt-1 text-[11px] text-[#8B95A1]">{blogProbe.freshness?.label}</p>
               <p className="mt-2 text-[12px] text-[#4E5968]">
                 통과율 {blogProbe.passRate ?? "—"}% · 실패 {blogProbe.failed ?? 0}건
+                {blogProbe.freshness?.stale ? " · 오늘 근거 아님" : ""}
               </p>
             </>
           ) : (
