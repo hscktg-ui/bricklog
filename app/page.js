@@ -4,6 +4,9 @@ import HomeClientLoader from "@/components/home/HomeClientLoader";
 import { buildTrendIndexJsonLd } from "@/lib/brand/seo";
 import { getTrendCatalog } from "@/lib/trends/catalog";
 
+/** 트렌드 카탈로그 시간 갱신에 맞춰 홈 HTML을 짧게 캐시 */
+export const revalidate = 300;
+
 export default async function HomePage({ searchParams }) {
   const trendCatalog = await getTrendCatalog();
   const params = await searchParams;

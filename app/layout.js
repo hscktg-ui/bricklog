@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import ConditionalSiteFooter from "@/components/layout/ConditionalSiteFooter";
 import SessionTelemetry from "@/components/analytics/SessionTelemetry";
 import JsonLdScript from "@/components/seo/JsonLdScript";
@@ -50,6 +52,8 @@ export default function RootLayout({ children }) {
         </Suspense>
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         <ConditionalSiteFooter />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
