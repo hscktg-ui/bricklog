@@ -179,14 +179,15 @@ export default function AdminPageClient() {
     };
   }, [loading, user, profile, verifyAdminByApi]);
 
-  const loadStats = useCallback(async () => {
+  const loadStats = useCallback(async (opts = {}) => {
+    const quiet = opts?.quiet === true;
     try {
       const data = await fetchWithAuth("/api/admin/stats");
       setStats(data.stats);
       setErrors(data.errors || []);
       setWarnings(data.warnings || []);
     } catch (err) {
-      showToast(err.message, "error");
+      if (!quiet) showToast(err.message, "error");
     }
   }, [showToast]);
 
@@ -208,15 +209,16 @@ export default function AdminPageClient() {
     }
   }, [loadStats, showToast]);
 
-  const loadAdvisory = useCallback(async () => {
-    setAdvisoryLoading(true);
+  const loadAdvisory = useCallback(async (opts = {}) => {
+    const quiet = opts?.quiet === true;
+    if (!quiet) setAdvisoryLoading(true);
     try {
       const data = await fetchWithAuth("/api/admin/advisory");
       setAdvisory(data.advisory || null);
     } catch (err) {
-      showToast(err.message, "error");
+      if (!quiet) showToast(err.message, "error");
     } finally {
-      setAdvisoryLoading(false);
+      if (!quiet) setAdvisoryLoading(false);
     }
   }, [showToast]);
 
@@ -229,15 +231,16 @@ export default function AdminPageClient() {
     }
   }, []);
 
-  const loadQualityOps = useCallback(async () => {
-    setQualityOpsLoading(true);
+  const loadQualityOps = useCallback(async (opts = {}) => {
+    const quiet = opts?.quiet === true;
+    if (!quiet) setQualityOpsLoading(true);
     try {
       const data = await fetchWithAuth("/api/admin/quality-ops");
       setQualityOps(data.snapshot || null);
     } catch {
-      setQualityOps(null);
+      if (!quiet) setQualityOps(null);
     } finally {
-      setQualityOpsLoading(false);
+      if (!quiet) setQualityOpsLoading(false);
     }
   }, []);
 
@@ -316,10 +319,29 @@ export default function AdminPageClient() {
   ]);
 
   useEffect(() => {
+    if (!user || !hasAdminAccess || accessChecking) return undefined;
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(() => {
+      loadStats({ quiet: true });
+      loadAdvisory({ quiet: true });
+      loadQualityOps({ quiet: true });
+      loadSignupFunnel();
+      loadProductOverview();
+    }, 60_000);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      pollRef.current = null;
     };
-  }, []);
+  }, [
+    user,
+    hasAdminAccess,
+    accessChecking,
+    loadStats,
+    loadAdvisory,
+    loadQualityOps,
+    loadSignupFunnel,
+    loadProductOverview,
+  ]);
 
   const commandCenter = useMemo(
     () =>

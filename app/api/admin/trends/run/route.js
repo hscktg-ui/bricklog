@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminApi } from "@/lib/api/adminGuard";
 import { runLiveTrendHourly } from "@/lib/trends/liveEngine";
 
@@ -16,7 +17,18 @@ export async function POST(request) {
 
   try {
     const result = await runLiveTrendHourly({ force, trigger: "admin" });
-    return NextResponse.json(result);
+    if (result?.ok !== false) {
+      try {
+        revalidatePath("/");
+        revalidatePath("/trend", "layout");
+      } catch {
+        /* ignore */
+      }
+    }
+    return NextResponse.json({
+      ...result,
+      revalidated: result?.ok !== false,
+    });
   } catch (error) {
     return NextResponse.json(
       { ok: false, error: error.message || "trend_run_failed" },

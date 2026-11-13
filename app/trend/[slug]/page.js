@@ -10,6 +10,9 @@ import {
 import { buildTrendJsonLd, buildTrendPageMetadata } from "@/lib/trends/seo";
 import { TREND_SEED_ITEMS } from "@/lib/trends/seedCatalog";
 
+/** 시간 수집 후 on-demand revalidate와 맞춘 짧은 ISR */
+export const revalidate = 300;
+
 export function generateStaticParams() {
   return TREND_SEED_ITEMS.map((item) => ({ slug: item.slug }));
 }

@@ -1,28 +1,14 @@
 import { NextResponse } from "next/server";
+import { authorizeCronRequest } from "@/lib/cron/cronAuth";
 import { runNightlyEvolutionPipeline } from "@/lib/cron/nightlyEvolutionPipeline";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-function getCronSecret() {
-  return (
-    process.env.BRICLOG_CRON_SECRET ||
-    process.env.CRON_SECRET ||
-    process.env.TREND_COLLECT_SECRET
-  );
-}
-
-export async function POST(request) {
-  const secret = getCronSecret();
-  if (!secret?.trim()) {
-    return NextResponse.json(
-      { error: "cron_secret_not_configured" },
-      { status: 503 }
-    );
-  }
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+async function handleNightlyEvolution(request) {
+  const authz = authorizeCronRequest(request);
+  if (!authz.ok) {
+    return NextResponse.json({ error: authz.error }, { status: authz.status });
   }
 
   const url = new URL(request.url);
@@ -40,10 +26,11 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
-  return NextResponse.json({
-    message:
-      "POST with Bearer CRON_SECRET. Auto-approves insights, refreshes evolution rules, runs bounded quality training + evolution lab. Schedule 01:30 KST.",
-    query: "?skipTraining=1&skipLab=1",
-  });
+/** Vercel Cron Jobs invoke GET with Bearer CRON_SECRET · KST 01:30 */
+export async function GET(request) {
+  return handleNightlyEvolution(request);
+}
+
+export async function POST(request) {
+  return handleNightlyEvolution(request);
 }

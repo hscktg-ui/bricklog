@@ -1,28 +1,14 @@
 import { NextResponse } from "next/server";
+import { authorizeCronRequest } from "@/lib/cron/cronAuth";
 import { runDailyDevelopPipeline } from "@/lib/cron/dailyDevelopPipeline";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
-function getCronSecret() {
-  return (
-    process.env.BRICLOG_CRON_SECRET ||
-    process.env.CRON_SECRET ||
-    process.env.TREND_COLLECT_SECRET
-  );
-}
-
-export async function POST(request) {
-  const secret = getCronSecret();
-  if (!secret?.trim()) {
-    return NextResponse.json(
-      { error: "cron_secret_not_configured" },
-      { status: 503 }
-    );
-  }
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+async function handleDailyDevelop(request) {
+  const authz = authorizeCronRequest(request);
+  if (!authz.ok) {
+    return NextResponse.json({ error: authz.error }, { status: authz.status });
   }
 
   const url = new URL(request.url);
@@ -55,10 +41,11 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
-  return NextResponse.json({
-    message:
-      "POST with Bearer CRON_SECRET. Runs yesterday KST usage aggregation + learning refresh. Schedule 00:00 KST. Operator digest (profiles, feedback) is in docs/daily-run-latest.md — optional 12:00 KST run for same-day preview: ?date=today with force=0.",
-    query: "?date=YYYY-MM-DD&force=1",
-  });
+/** Vercel Cron Jobs invoke GET with Bearer CRON_SECRET */
+export async function GET(request) {
+  return handleDailyDevelop(request);
+}
+
+export async function POST(request) {
+  return handleDailyDevelop(request);
 }

@@ -1,29 +1,14 @@
 import { NextResponse } from "next/server";
+import { authorizeCronRequest } from "@/lib/cron/cronAuth";
 import { runNoonDigestPipeline } from "@/lib/cron/noonDigestPipeline";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-function getCronSecret() {
-  return (
-    process.env.BRICLOG_CRON_SECRET ||
-    process.env.CRON_SECRET ||
-    process.env.TREND_COLLECT_SECRET
-  );
-}
-
-/** KST 12:00 운영 피드백 — 당일 부분 집계 */
-export async function POST(request) {
-  const secret = getCronSecret();
-  if (!secret?.trim()) {
-    return NextResponse.json(
-      { error: "cron_secret_not_configured" },
-      { status: 503 }
-    );
-  }
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+async function handleNoonDigest(request) {
+  const authz = authorizeCronRequest(request);
+  if (!authz.ok) {
+    return NextResponse.json({ error: authz.error }, { status: authz.status });
   }
 
   try {
@@ -46,9 +31,11 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
-  return NextResponse.json({
-    message:
-      "POST Bearer CRON_SECRET at KST 12:00. Writes docs/daily-digest-noon.md (today partial usage + profile health).",
-  });
+/** Vercel Cron Jobs invoke GET with Bearer CRON_SECRET · KST 12:00 */
+export async function GET(request) {
+  return handleNoonDigest(request);
+}
+
+export async function POST(request) {
+  return handleNoonDigest(request);
 }
