@@ -9,8 +9,15 @@ export async function GET(request) {
   if (gate.denied) return gate.denied;
   if (gate.rateLimited) return gate.rateLimited;
 
-  return NextResponse.json({
-    ok: true,
-    snapshot: getProductOverviewSnapshot(),
-  });
+  return NextResponse.json(
+    {
+      ok: true,
+      snapshot: getProductOverviewSnapshot(),
+    },
+    {
+      headers: {
+        "Cache-Control": "private, max-age=60, stale-while-revalidate=180",
+      },
+    }
+  );
 }

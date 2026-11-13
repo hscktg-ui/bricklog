@@ -28,7 +28,10 @@ export async function GET(request) {
     contentItemsRes,
     brandAssetsRes,
     performanceRes,
-    contentChannelRes,
+    channelBlogRes,
+    channelPlaceRes,
+    channelInstagramRes,
+    channelImageRes,
     imageTodayRes,
     subsFreeRes,
     subsBrandRes,
@@ -57,7 +60,22 @@ export async function GET(request) {
     db.from("content_items").select("id", { count: "exact", head: true }),
     db.from("brand_assets").select("id", { count: "exact", head: true }),
     db.from("content_performance").select("id", { count: "exact", head: true }),
-    db.from("content_items").select("channel"),
+    db
+      .from("content_items")
+      .select("id", { count: "exact", head: true })
+      .eq("channel", "blog"),
+    db
+      .from("content_items")
+      .select("id", { count: "exact", head: true })
+      .eq("channel", "place"),
+    db
+      .from("content_items")
+      .select("id", { count: "exact", head: true })
+      .eq("channel", "instagram"),
+    db
+      .from("content_items")
+      .select("id", { count: "exact", head: true })
+      .eq("channel", "image"),
     db
       .from("usage_logs")
       .select("id", { count: "exact", head: true })
@@ -87,7 +105,7 @@ export async function GET(request) {
       .from("content_events")
       .select("event_type, channel, brand_id")
       .gte("created_at", todayIso),
-    db.from("content_feedback").select("reaction"),
+    db.from("content_feedback").select("reaction").limit(4000),
     db
       .from("content_events")
       .select("brand_id")
@@ -95,17 +113,20 @@ export async function GET(request) {
       .not("brand_id", "is", null),
   ]);
 
-  const channelUsage = { blog: 0, place: 0, instagram: 0, image: 0, other: 0 };
-  let memoryTablesReady = true;
-  if (contentChannelRes.error) {
-    memoryTablesReady = false;
-  } else {
-    for (const row of contentChannelRes.data || []) {
-      const ch = row.channel || "other";
-      if (channelUsage[ch] !== undefined) channelUsage[ch] += 1;
-      else channelUsage.other += 1;
-    }
-  }
+  const channelScanFailed = [
+    channelBlogRes,
+    channelPlaceRes,
+    channelInstagramRes,
+    channelImageRes,
+  ].some((r) => r.error);
+  const channelUsage = {
+    blog: channelBlogRes.error ? 0 : channelBlogRes.count ?? 0,
+    place: channelPlaceRes.error ? 0 : channelPlaceRes.count ?? 0,
+    instagram: channelInstagramRes.error ? 0 : channelInstagramRes.count ?? 0,
+    image: channelImageRes.error ? 0 : channelImageRes.count ?? 0,
+    other: 0,
+  };
+  const memoryTablesReady = !contentItemsRes.error && !channelScanFailed;
 
   const memoryStats = {
     memoryTablesReady,

@@ -310,7 +310,7 @@ function ErrorsPanel() {
   useEffect(() => {
     void load();
     if (!autoRefresh) return undefined;
-    const id = setInterval(() => void load(), 15_000);
+    const id = setInterval(() => void load(), 45_000);
     return () => clearInterval(id);
   }, [load, autoRefresh]);
 
@@ -320,7 +320,7 @@ function ErrorsPanel() {
         <div>
           <h3 className="text-[15px] font-bold">오류 로그</h3>
           <p className="mt-1 text-[12px] text-[var(--admin-muted,#5a6b62)]">
-            15초마다 자동 갱신
+            45초마다 자동 갱신
           </p>
         </div>
         <label className="flex items-center gap-2 text-[12px] text-[#4E5968]">
@@ -473,7 +473,7 @@ export default function AdminOpsHub({ onToast, signupFunnel: funnelProp = null }
 
   useEffect(() => {
     void loadLive();
-    const id = setInterval(() => void loadLive(), 30_000);
+    const id = setInterval(() => void loadLive(), 60_000);
     return () => clearInterval(id);
   }, [loadLive]);
 

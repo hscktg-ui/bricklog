@@ -266,6 +266,50 @@ export default function AdminPageClient() {
     }
   }, [showToast]);
 
+  const loadBootstrap = useCallback(async () => {
+    setAdvisoryLoading(true);
+    setQualityOpsLoading(true);
+    try {
+      const data = await fetchWithAuth("/api/admin/bootstrap", {
+        timeoutMs: 60_000,
+      });
+      if (data.stats) setStats(data.stats);
+      setErrors(data.errors || []);
+      setWarnings(data.warnings || []);
+      setAdvisory(data.advisory || null);
+      setQualityOps(data.qualityOps || null);
+      setSignupFunnel(data.funnel || null);
+    } catch (err) {
+      showToast(err.message, "error");
+      // fallback parallel if bootstrap unavailable
+      await Promise.all([
+        loadStats(),
+        loadAdvisory(),
+        loadQualityOps(),
+        loadSignupFunnel(),
+      ]);
+    } finally {
+      setAdvisoryLoading(false);
+      setQualityOpsLoading(false);
+    }
+  }, [
+    showToast,
+    loadStats,
+    loadAdvisory,
+    loadQualityOps,
+    loadSignupFunnel,
+  ]);
+
+  const loadPulse = useCallback(async () => {
+    try {
+      const data = await fetchWithAuth("/api/admin/pulse");
+      if (data.funnel) setSignupFunnel(data.funnel);
+      if (data.qualityOps) setQualityOps(data.qualityOps);
+    } catch {
+      /* quiet */
+    }
+  }, []);
+
   const approveInsight = async (id) => {
     try {
       const data = await fetchWithAuth("/api/admin/insights/approve", {
@@ -300,33 +344,34 @@ export default function AdminPageClient() {
 
   useEffect(() => {
     if (!user || !hasAdminAccess || accessChecking) return;
-    loadStats();
-    loadAdvisory();
-    loadInsights();
-    loadProductOverview();
-    loadQualityOps();
-    loadSignupFunnel();
+    loadBootstrap();
+  }, [user, hasAdminAccess, accessChecking, loadBootstrap]);
+
+  useEffect(() => {
+    if (!user || !hasAdminAccess || accessChecking) return;
+    if (adminSection === "now") loadInsights();
+    if (adminSection === "growth") loadProductOverview();
   }, [
     user,
     hasAdminAccess,
     accessChecking,
-    loadStats,
-    loadAdvisory,
+    adminSection,
     loadInsights,
     loadProductOverview,
-    loadQualityOps,
-    loadSignupFunnel,
   ]);
 
   useEffect(() => {
     if (!user || !hasAdminAccess || accessChecking) return undefined;
     if (pollRef.current) clearInterval(pollRef.current);
+    let ticks = 0;
     pollRef.current = setInterval(() => {
-      loadStats({ quiet: true });
-      loadAdvisory({ quiet: true });
-      loadQualityOps({ quiet: true });
-      loadSignupFunnel();
-      loadProductOverview();
+      ticks += 1;
+      loadPulse();
+      // heavy refresh every ~3 min
+      if (ticks % 3 === 0) {
+        loadStats({ quiet: true });
+        loadAdvisory({ quiet: true });
+      }
     }, 60_000);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -336,11 +381,9 @@ export default function AdminPageClient() {
     user,
     hasAdminAccess,
     accessChecking,
+    loadPulse,
     loadStats,
     loadAdvisory,
-    loadQualityOps,
-    loadSignupFunnel,
-    loadProductOverview,
   ]);
 
   const commandCenter = useMemo(

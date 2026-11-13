@@ -63,7 +63,7 @@ export default function AutoEvolutionStatusPanel() {
 
   useEffect(() => {
     refresh();
-    const t = setInterval(refresh, 12_000);
+    const t = setInterval(refresh, 30_000);
     return () => clearInterval(t);
   }, [refresh]);
 

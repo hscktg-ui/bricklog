@@ -39,7 +39,7 @@ export async function GET(request) {
         .from("content_events")
         .select("event_type, channel, brand_id")
         .gte("created_at", todayIso),
-      db.from("content_feedback").select("reaction"),
+      db.from("content_feedback").select("reaction").limit(4000),
       db
         .from("content_events")
         .select("brand_id")
