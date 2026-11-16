@@ -321,7 +321,7 @@ const ContentFormContext = createContext(null);
 const ContentPipelineContext = createContext(null);
 
 const CHANNEL_UPGRADE_HINT =
-  "플레이스·인스타·프롬프트는 플러스(19,900원/월)부터 이용할 수 있습니다.";
+  "지금은 전 기능 무료입니다. 유료 전환 시 플러스·스튜디오 한도가 적용됩니다.";
 
 const INITIAL_GENERATING = {
   blog: false,

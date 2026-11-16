@@ -281,6 +281,7 @@
     "test:next-evolution": "node --import ./scripts/register-alias.mjs scripts/test-next-evolution-directive.mjs",
     "test:topic-lock-answer": "node --import ./scripts/register-alias.mjs scripts/test-topic-lock-answer.mjs",
     "test:seo-discoverability": "node scripts/test-seo-discoverability.mjs",
+    "test:prod-quality-positioning": "node --import ./scripts/register-alias.mjs scripts/test-prod-quality-positioning.mjs",
     "test:seo-prod": "node scripts/probe-seo-prod.mjs",
     "test:quality-pipeline": "node --import ./scripts/register-alias.mjs scripts/test-quality-pipeline-alignment.mjs",
     "test:channel-sla-fast": "node --import ./scripts/register-alias.mjs scripts/test-channel-sla-fast.mjs",
