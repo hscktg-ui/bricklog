@@ -5,6 +5,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import PublicBrandTestSection from "@/components/landing/public-test/PublicBrandTestSection";
+import LandingFaqSection from "@/components/landing/LandingFaqSection";
+import {
+  LANDING_PRIMARY_CTA,
+  LANDING_PRIMARY_SUB,
+  LANDING_SECONDARY_CTA,
+} from "@/lib/brand/copy";
 import { BRICLOG_CONTACT_EMAIL } from "@/lib/brand/support";
 import { stashLandingCreateIntent } from "@/lib/landing/landingCreateIntent";
 import { LIVE_TREND_REFRESH_MS } from "@/lib/trends/liveConfig";
@@ -22,7 +28,7 @@ function matchesTrend(item, query) {
   ]
     .join(" ")
     .toLowerCase();
-  return haystack.includes(q);
+  return haystack.includes(query);
 }
 
 function formatMovement(item) {
@@ -88,6 +94,37 @@ function TrendMiniList({ items = [], emptyMessage, metric = "score" }) {
   );
 }
 
+function resolveFreshnessBadge(catalogState) {
+  if (catalogState?.mode === "sample" || catalogState?.live?.freshnessState === "sample") {
+    return {
+      strong: "SAMPLE",
+      detail: catalogState?.note || "예시 데이터 · 실시간 변동 아님",
+    };
+  }
+  if (catalogState?.live?.isLive) {
+    return {
+      strong: "최근 수집",
+      detail: [
+        catalogState?.live?.updatedLabel,
+        catalogState?.live?.freshnessLabel,
+        catalogState?.note,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    };
+  }
+  return {
+    strong: catalogState?.live?.liveLabel || "수집 지연",
+    detail: [
+      catalogState?.live?.updatedLabel,
+      catalogState?.live?.freshnessLabel,
+      catalogState?.note,
+    ]
+      .filter(Boolean)
+      .join(" · "),
+  };
+}
+
 export default function TrendLandingPage({
   trendCatalog,
   initialQuery = "",
@@ -126,9 +163,13 @@ export default function TrendLandingPage({
 
   const items = useMemo(() => catalogState?.items || [], [catalogState]);
   const topItems = useMemo(() => catalogState?.topItems || items.slice(0, 10), [catalogState, items]);
-  const tickerItems = useMemo(() => catalogState?.tickerItems || topItems.slice(0, 5), [catalogState, topItems]);
   const risingItems = useMemo(() => catalogState?.risingItems || [], [catalogState]);
   const newItems = useMemo(() => catalogState?.newItems || [], [catalogState]);
+  const canShowHourlyClaims =
+    catalogState?.mode === "database" &&
+    catalogState?.live?.isLive === true &&
+    catalogState?.live?.freshnessState === "fresh";
+  const freshnessBadge = resolveFreshnessBadge(catalogState);
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -196,25 +237,24 @@ export default function TrendLandingPage({
         trendContext: query.trim(),
       }).toString()}#public-brand-test`
     : "/#public-brand-test";
-  const liveLabel = catalogState?.live?.liveLabel || catalogState?.live?.updatedLabel || "방금 갱신";
 
   return (
     <div className="briclog-vision-page min-h-screen bg-[var(--vision-paper,#FCFCFA)] text-[var(--vision-ink,#111111)]">
       <header className="sticky top-0 z-30 border-b border-[var(--vision-line,#E7ECE8)]/80 bg-[var(--vision-paper,#FCFCFA)]/94 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-          <Logo showIcon wordmark="BRICLOG" iconSize={28} className="items-center" onClick={() => scrollTo("trend-search")} />
+          <Logo showIcon wordmark="BRICLOG" iconSize={28} className="items-center" onClick={() => scrollTo("landing-hero")} />
           <nav className="hidden items-center gap-5 text-[13px] font-medium text-[#5F6B66] md:flex">
-            <button type="button" onClick={() => scrollTo("trend-list")} className="hover:text-[#111111]">
-              순위
-            </button>
             <button type="button" onClick={() => scrollTo("public-brand-test")} className="hover:text-[#111111]">
               샘플
             </button>
-            <button type="button" onClick={() => scrollTo("landing-pricing")} className="hover:text-[#111111]">
-              요금
-            </button>
             <button type="button" onClick={() => scrollTo("create-with-briclog")} className="hover:text-[#111111]">
-              만들기
+              기능
+            </button>
+            <button type="button" onClick={() => scrollTo("trend-list")} className="hover:text-[#111111]">
+              AI 트렌드
+            </button>
+            <button type="button" onClick={() => scrollTo("landing-faq")} className="hover:text-[#111111]">
+              FAQ
             </button>
             <Link href="/guides" className="hover:text-[#111111]">
               가이드
@@ -230,34 +270,133 @@ export default function TrendLandingPage({
             </button>
             <button
               type="button"
-              onClick={openSignup}
+              onClick={() => scrollTo("public-brand-test")}
               data-briclog-cta="start"
               className="inline-flex min-h-[42px] items-center rounded-full bg-[#111111] px-4 text-[13px] font-semibold text-white hover:opacity-92"
             >
-              시작하기
+              {LANDING_PRIMARY_CTA}
             </button>
           </div>
         </div>
       </header>
 
       <main id="landing-main">
-        <section id="trend-search" className="px-4 pb-14 pt-14 md:px-6 md:pb-20 md:pt-24">
-          <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[minmax(0,1fr)_252px] lg:gap-14">
-            <div>
-            <div>
-              <p className="text-[12px] font-medium tracking-[0.08em] text-[#5F6B66]">브릭로그 트렌드</p>
-              <h1 className="mt-4 break-keep text-[clamp(2rem,4.6vw,3.3rem)] leading-[1.16] text-[#111111]">
-                <span className="block font-semibold">지금 오르는 AI를</span>
-                <span className="block font-normal text-[#2C3531]">순위로 먼저 봅니다.</span>
-              </h1>
-              <p className="mt-5 max-w-md break-keep text-[16px] leading-[1.75] text-[#5F6B66] md:text-[17px]">
-                무엇이 움직였는지 확인하고, 그 흐름을 브랜드 글 초안까지 이어갑니다.
-              </p>
+        <section id="landing-hero" className="px-4 pb-12 pt-14 md:px-6 md:pb-16 md:pt-20">
+          <div className="mx-auto max-w-5xl">
+            <p className="text-[12px] font-medium tracking-[0.08em] text-[#5F6B66]">브랜드 콘텐츠 AI</p>
+            <h1 className="mt-4 break-keep text-[clamp(2.1rem,5vw,3.5rem)] leading-[1.14] text-[#111111]">
+              <span className="block font-semibold">브랜드의 생각을,</span>
+              <span className="block font-normal text-[#2C3531]">콘텐츠로.</span>
+            </h1>
+            <p className="mt-5 max-w-2xl break-keep text-[16px] leading-[1.75] text-[#5F6B66] md:text-[18px]">
+              브랜드명·지역·주제만 넣으면 네이버 블로그·스마트플레이스·인스타 초안이 한 흐름으로
+              나옵니다. 조사·검수 뒤 복사해 게시하고, 가입하면 작업실에서 이어갑니다.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => scrollTo("public-brand-test")}
+                data-briclog-cta="start"
+                className="inline-flex min-h-[48px] items-center rounded-full bg-[#03C75A] px-5 text-[14px] font-semibold text-white hover:brightness-105"
+              >
+                {LANDING_PRIMARY_CTA}
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollTo("trend-list")}
+                className="inline-flex min-h-[48px] items-center rounded-full border border-[#DCE3DF] bg-white px-5 text-[14px] font-semibold text-[#111111] hover:border-[#111111]"
+              >
+                {LANDING_SECONDARY_CTA}
+              </button>
             </div>
+            <p className="mt-4 text-[13px] leading-[1.7] text-[#5F6B66]">{LANDING_PRIMARY_SUB}</p>
 
-            <form onSubmit={handleSearchSubmit} className="mt-9">
+            <div className="mt-10 grid gap-3 sm:grid-cols-3">
+              {[
+                { title: "이야기", desc: "네이버 블로그 장문 초안" },
+                { title: "플레이스", desc: "스마트플레이스 공지 톤" },
+                { title: "인스타", desc: "캡션·장면 리듬" },
+              ].map((item) => (
+                <div key={item.title} className="rounded-[20px] border border-[#E7ECE8] bg-white px-4 py-4">
+                  <p className="text-[15px] font-semibold text-[#111111]">{item.title}</p>
+                  <p className="mt-1 text-[13px] leading-[1.6] text-[#5F6B66]">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <PublicBrandTestSection onSignup={(mode) => onAuthOpen?.(mode || "signup")} />
+
+        <section id="create-with-briclog" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_360px] lg:items-start">
+              <div>
+                <p className="text-[12px] font-medium text-[#5F6B66]">사용 방법</p>
+                <h2 className="mt-3 break-keep text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.2] text-[#111111]">
+                  <span className="block font-semibold">입력하면 초안,</span>
+                  <span className="block font-normal text-[#2C3531]">확인 후 복사합니다.</span>
+                </h2>
+                <ol className="mt-6 space-y-3 text-[15px] leading-[1.7] text-[#5F6B66]">
+                  <li>1. 브랜드명·지역·주제를 입력합니다.</li>
+                  <li>2. 블로그·플레이스·인스타 미리보기를 확인합니다.</li>
+                  <li>3. 가입 후 작업실에서 전체 초안과 기록을 이어갑니다.</li>
+                  <li>4. 각 채널 앱에 직접 복사해 게시합니다. 자동 업로드는 하지 않습니다.</li>
+                </ol>
+              </div>
+
+              <div
+                id="landing-pricing"
+                data-briclog-anchor="pricing"
+                className="scroll-mt-24 rounded-[22px] border border-[#E7ECE8] bg-white p-6"
+              >
+                <p className="text-[12px] font-medium text-[#03A94D]">지금 무료</p>
+                <p className="mt-3 break-keep text-[15px] leading-[1.7] text-[#5F6B66]">
+                  스튜디오급 기능을 결제 없이 이용할 수 있습니다. 약관의 유료 금액은 향후 결제
+                  연동 시 적용 예정이며, 현재는 청구되지 않습니다.
+                </p>
+                <ul className="mt-4 space-y-3 text-[15px] text-[#111111]">
+                  <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
+                    <span className="font-semibold">이야기</span>
+                    <span className="text-[13px] text-[#5F6B66]">블로그 초안</span>
+                  </li>
+                  <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
+                    <span className="font-semibold">플레이스</span>
+                    <span className="text-[13px] text-[#5F6B66]">공지 톤 분리</span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="font-semibold">인스타</span>
+                    <span className="text-[13px] text-[#5F6B66]">캡션 연결</span>
+                  </li>
+                </ul>
+                <button
+                  type="button"
+                  onClick={openSignup}
+                  data-briclog-cta="start"
+                  className="mt-6 inline-flex min-h-[48px] items-center rounded-full bg-[#111111] px-5 text-[14px] font-semibold text-white hover:opacity-92"
+                >
+                  가입 후 작업실에서 계속하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="trend-search" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
+          <div className="mx-auto max-w-5xl">
+            <p className="text-[12px] font-medium tracking-[0.08em] text-[#5F6B66]">AI 트렌드</p>
+            <h2 className="mt-3 break-keep text-[clamp(1.7rem,3.8vw,2.5rem)] leading-[1.2] text-[#111111]">
+              <span className="block font-semibold">AI 순위는 따로</span>
+              <span className="block font-normal text-[#2C3531]">필요할 때 살펴보세요.</span>
+            </h2>
+            <p className="mt-4 max-w-2xl break-keep text-[15px] leading-[1.75] text-[#5F6B66]">
+              콘텐츠 제작이 본 서비스입니다. 아래 순위는 운영자가 참고할 수 있는 보조 탐색
+              영역이며, 수집 상태와 출처를 함께 표시합니다.
+            </p>
+
+            <form onSubmit={handleSearchSubmit} className="mt-8">
               <label className="sr-only" htmlFor="trend-search-input">
-                AI 순위·랭킹 검색
+                AI 도구·모델 검색
               </label>
               <div className="overflow-hidden rounded-[22px] border border-[#E7ECE8] bg-white shadow-[0_12px_40px_rgba(17,17,17,0.05)]">
                 <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5 sm:py-4">
@@ -322,32 +461,9 @@ export default function TrendLandingPage({
                   <span className="text-[15px] font-semibold tabular-nums text-[#111111]">{items.length}</span>개 도구·모델을 추적합니다
                 </span>
                 <span className="text-[#C6CFCA]">·</span>
-                <span>{liveLabel}</span>
+                <span>{freshnessBadge.strong}</span>
               </p>
             </form>
-            </div>
-
-            <aside className="lg:pt-1">
-              <p className="text-[12px] font-medium text-[#5F6B66]">최근 순위 변동</p>
-              <ul className="mt-3 border-t border-[#EEF2EF]">
-                {tickerItems.map((item) => (
-                  <li key={item.slug} className="border-b border-[#EEF2EF]">
-                    <Link
-                      href={`/trend/${item.slug}`}
-                      className="flex items-baseline gap-3 py-2.5 transition hover:text-[#03A94D]"
-                    >
-                      <span className="w-7 shrink-0 text-[12px] tabular-nums text-[#8A948F]">
-                        {String(item.currentRank).padStart(2, "0")}
-                      </span>
-                      <span className="flex-1 break-keep text-[14px] font-medium text-[#111111]">{item.name}</span>
-                      <span className={`shrink-0 text-[12px] font-semibold tabular-nums ${deltaTone(item.rankMovement, item.status)}`}>
-                        {formatMovement(item)}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </aside>
           </div>
         </section>
 
@@ -355,23 +471,14 @@ export default function TrendLandingPage({
           <div className="mx-auto max-w-6xl">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-[12px] font-medium text-[#5F6B66]">실시간 순위</p>
+                <p className="text-[12px] font-medium text-[#5F6B66]">AI 도구 순위</p>
                 <h2 className="mt-3 break-keep text-[clamp(1.7rem,3.8vw,2.6rem)] font-semibold leading-[1.15] text-[#111111]">
-                  지금 AI 순위
+                  참고용 AI 순위
                 </h2>
               </div>
               <div className="max-w-xl rounded-[22px] border border-[#E7ECE8] bg-white px-4 py-3 text-[12px] leading-[1.7] text-[#5F6B66]">
-                <strong className="text-[#111111]">
-                  {catalogState?.live?.isLive
-                    ? "실시간"
-                    : catalogState?.mode === "sample"
-                      ? "샘플"
-                      : "수집 지연"}
-                </strong>
-                {catalogState?.live?.updatedLabel ? (
-                  <span className="ml-2 tabular-nums text-[#111111]">{catalogState.live.updatedLabel}</span>
-                ) : null}
-                {catalogState?.note ? <span className="ml-2">· {catalogState.note}</span> : null}
+                <strong className="text-[#111111]">{freshnessBadge.strong}</strong>
+                {freshnessBadge.detail ? <span className="ml-2">{freshnessBadge.detail}</span> : null}
               </div>
             </div>
 
@@ -457,7 +564,7 @@ export default function TrendLandingPage({
                           <span className="text-[17px] font-semibold tabular-nums text-[#111111] md:text-[18px]">
                             {item.trendScore}
                           </span>
-                          {item.status !== "new" && item.hourlyChange ? (
+                          {canShowHourlyClaims && item.status !== "new" && item.hourlyChange ? (
                             <span
                               className={`text-[12px] font-semibold tabular-nums ${deltaTone(item.hourlyChange, item.status)}`}
                             >
@@ -470,7 +577,7 @@ export default function TrendLandingPage({
                           <span
                             className={`text-[13px] font-semibold tabular-nums ${deltaTone(item.rankMovement, item.status)}`}
                           >
-                            {formatMovement(item)}
+                            {canShowHourlyClaims ? formatMovement(item) : "—"}
                           </span>
                         </span>
                       </Link>
@@ -492,7 +599,7 @@ export default function TrendLandingPage({
                         }
                         className="inline-flex min-h-[44px] items-center rounded-full bg-[#111111] px-5 text-[13px] font-semibold text-white"
                       >
-                        이 주제로 바로 활용하기
+                        이 주제로 콘텐츠 만들기
                       </Link>
                       <a
                         href={trendRequestHref}
@@ -514,12 +621,16 @@ export default function TrendLandingPage({
               <div>
                 <p className="text-[12px] font-medium text-[#5F6B66]">상승</p>
                 <h2 className="mt-3 break-keep text-[23px] font-semibold leading-[1.3] text-[#111111]">
-                  최근 1시간 가장 빠르게 오른 AI
+                  {canShowHourlyClaims ? "최근 수집에서 오른 AI" : "상승 후보"}
                 </h2>
                 <div className="mt-5">
                   <TrendMiniList
-                    items={risingItems}
-                    emptyMessage="최근 1시간 사이 순위가 오른 도구가 없습니다."
+                    items={canShowHourlyClaims ? risingItems : []}
+                    emptyMessage={
+                      canShowHourlyClaims
+                        ? "최근 수집에서 순위가 오른 도구가 없습니다."
+                        : "신선도가 확인된 수집 데이터가 있을 때만 상승 목록을 표시합니다."
+                    }
                   />
                 </div>
               </div>
@@ -527,13 +638,17 @@ export default function TrendLandingPage({
               <div>
                 <p className="text-[12px] font-medium text-[#5F6B66]">신규</p>
                 <h2 className="mt-3 break-keep text-[23px] font-semibold leading-[1.3] text-[#111111]">
-                  새롭게 감지된 AI
+                  {canShowHourlyClaims ? "이번 수집에서 새로 들어온 AI" : "신규 후보"}
                 </h2>
                 <div className="mt-5">
                   <TrendMiniList
-                    items={newItems}
+                    items={canShowHourlyClaims ? newItems : []}
                     metric="rank"
-                    emptyMessage="이번 수집에서 새로 들어온 도구는 없습니다."
+                    emptyMessage={
+                      canShowHourlyClaims
+                        ? "이번 수집에서 새로 들어온 도구는 없습니다."
+                        : "신선도가 확인된 수집 데이터가 있을 때만 신규 목록을 표시합니다."
+                    }
                   />
                 </div>
               </div>
@@ -541,66 +656,15 @@ export default function TrendLandingPage({
           </div>
         </section>
 
-        <section id="create-with-briclog" className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_360px] lg:items-start">
-              <div>
-                <p className="text-[12px] font-medium text-[#5F6B66]">만들기</p>
-                <h2 className="mt-3 break-keep text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.2] text-[#111111]">
-                  <span className="block font-semibold">순위를 봤다면,</span>
-                  <span className="block font-normal text-[#2C3531]">이제 글로 옮깁니다.</span>
-                </h2>
-                <div className="mt-5 flex flex-wrap items-center gap-2 text-[13px] font-medium text-[#5F6B66]">
-                  <span>순위</span>
-                  <span className="text-[#C6CFCA]">→</span>
-                  <span>브리프</span>
-                  <span className="text-[#C6CFCA]">→</span>
-                  <span className="text-[#111111]">초안</span>
-                </div>
-              </div>
-
-              <div
-                id="landing-pricing"
-                data-briclog-anchor="pricing"
-                className="scroll-mt-24 rounded-[22px] border border-[#E7ECE8] bg-white p-6"
-              >
-                <p className="text-[12px] font-medium text-[#03A94D]">지금 무료</p>
-                <ul className="mt-4 space-y-3 text-[15px] text-[#111111]">
-                  <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
-                    <span className="font-semibold">이야기</span>
-                    <span className="text-[13px] text-[#5F6B66]">블로그 초안</span>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-[#EEF2EF] pb-3">
-                    <span className="font-semibold">플레이스</span>
-                    <span className="text-[13px] text-[#5F6B66]">공지 톤 분리</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="font-semibold">인스타</span>
-                    <span className="text-[13px] text-[#5F6B66]">캡션 연결</span>
-                  </li>
-                </ul>
-                <button
-                  type="button"
-                  onClick={() => scrollTo("public-brand-test")}
-                  data-briclog-cta="start"
-                  className="mt-6 inline-flex min-h-[48px] items-center rounded-full bg-[#03C75A] px-5 text-[14px] font-semibold text-white hover:brightness-105"
-                >
-                  샘플로 시작하기
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <PublicBrandTestSection onSignup={(mode) => onAuthOpen?.(mode || "signup")} />
+        <LandingFaqSection />
 
         <section className="border-t border-[#E7ECE8] px-4 py-12 md:px-6 md:py-16">
           <div className="mx-auto grid max-w-6xl gap-9 md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-14">
             <div>
               <p className="text-[12px] font-medium text-[#5F6B66]">철학</p>
               <p className="mt-3 break-keep text-[clamp(1.5rem,3vw,2.1rem)] leading-[1.35] text-[#111111]">
-                <span className="font-semibold">AI 시대,</span>{" "}
-                <span className="font-normal text-[#2C3531]">중요한 것은 의도다.</span>
+                <span className="font-semibold">브랜드의 생각을,</span>{" "}
+                <span className="font-normal text-[#2C3531]">콘텐츠로.</span>
               </p>
             </div>
 

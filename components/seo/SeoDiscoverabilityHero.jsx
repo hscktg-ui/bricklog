@@ -4,6 +4,8 @@ import {
   BRAND_META_DESCRIPTION,
   BRAND_META_DESCRIPTION_EN,
   BRAND_META_TITLE_KO,
+  LANDING_PRIMARY_CTA,
+  LANDING_SECONDARY_CTA,
 } from "@/lib/brand/copy";
 import { GUIDE_PAGES } from "@/lib/seo/guidePages";
 
@@ -37,15 +39,21 @@ export default function SeoDiscoverabilityHero({
       return haystack.includes(query);
     })
     .slice(0, 10);
+  const freshness =
+    trendCatalog?.live?.freshnessLabel ||
+    trendCatalog?.live?.liveLabel ||
+    trendCatalog?.note ||
+    "";
+  const isSample = trendCatalog?.mode === "sample";
 
   return (
     <section id="briclog-seo-intro" className="sr-only" aria-label="브릭로그 서비스 소개">
-      <h1>{BRAND_META_TITLE_KO} — AI 순위·랭킹 트렌드 보기</h1>
+      <h1>{BRAND_META_TITLE_KO} — 브랜드의 생각을, 콘텐츠로</h1>
       <p>{BRAND_META_DESCRIPTION}</p>
       <p>
-        브릭로그는 AI 도구·모델 순위와 실시간 랭킹 트렌드를 보여 주고, 왜 움직이는지 설명한 뒤
-        네이버 블로그·스마트플레이스·인스타 초안으로 연결합니다. 구글 SEO·네이버 SEO·AI 검색·브리핑에
-        잡히기 쉬운 설명형 콘텐츠를 확인 후 복사해 게시합니다.
+        브릭로그는 브랜드명·지역·주제를 받아 네이버 블로그·스마트플레이스·인스타그램 초안을
+        만듭니다. 조사·검수 뒤 복사해 각 앱에 게시하고, 가입 후 작업실에서 브랜드 기록을
+        이어갑니다. AI 도구·모델 순위는 별도 섹션과 트렌드 페이지에서 탐색할 수 있습니다.
       </p>
       <p>
         {BRAND_LATEST_UPDATE.label}: {BRAND_LATEST_UPDATE.headline}
@@ -56,16 +64,20 @@ export default function SeoDiscoverabilityHero({
           <li key={line}>{line}</li>
         ))}
       </ul>
-      <h2>AI 순위 · 실시간 랭킹 Top 10</h2>
+      <h2>브랜드 콘텐츠 미리보기</h2>
       <p>
-        ChatGPT, Gemini, Claude, Midjourney 등 AI 도구·모델의 현재 순위, 변동, 점수를 한 화면에서
-        확인하세요. 구글·네이버에서 「AI 순위」「AI 랭킹」「AI 트렌드 보기」로 찾는 정보를
-        브릭로그가 정리합니다.
+        브랜드명·지역·주제를 입력하면 블로그·스마트플레이스·인스타 미리보기를 받을 수 있습니다.
+        마음에 들면 가입 후 작업실에서 전체 초안과 운영 기록을 이어가세요.
       </p>
-      <h2>Live AI Trend Ranking</h2>
+      <h2>AI 도구 순위·트렌드</h2>
       <p>
-        BRICLOG tracks live AI tool and model rankings for founders, marketers, operators, and
-        developers — then turns the insight into brand content drafts.
+        ChatGPT, Gemini, Claude, Midjourney 등 AI 도구·모델의 순위와 수집 상태를 확인할 수
+        있습니다.{" "}
+        {isSample
+          ? "현재 화면은 예시(SAMPLE) 구조일 수 있으며, 실시간 변동을 보장하지 않습니다."
+          : freshness
+            ? `최근 수집 상태: ${freshness}`
+            : "수집 시각과 출처는 트렌드 화면에서 확인할 수 있습니다."}
       </p>
       {query ? (
         <>
@@ -96,14 +108,14 @@ export default function SeoDiscoverabilityHero({
       </ol>
       <h2>구글·네이버 SEO와 AI 검색</h2>
       <p>
-        AI 순위·랭킹만 보고 끝내지 않습니다. 주제 권위, 경험·관찰, 브랜드·지역 엔티티를 넣어
-        구글 검색·네이버 검색·네이버 AI 브리핑에 인용되기 쉬운 초안 구조로 이어갑니다.
+        주제 권위, 경험·관찰, 브랜드·지역 엔티티를 넣어 구글 검색·네이버 검색에 읽히기 쉬운
+        설명형 초안 구조로 이어갑니다. 검색 상위 노출을 보장하지는 않습니다.
       </p>
       <nav aria-label="검색용 가이드 링크">
-        <Link href="/?landing=1" data-briclog-cta="start">
-          AI 순위·랭킹 트렌드 보기
+        <Link href="/?landing=1#public-brand-test" data-briclog-cta="start">
+          {LANDING_PRIMARY_CTA}
         </Link>
-        <Link href="/#trend-list">실시간 AI 랭킹</Link>
+        <Link href="/#trend-list">{LANDING_SECONDARY_CTA}</Link>
         <Link href="/guides/ai-trend-ranking">AI 도구 순위·랭킹 보는 법</Link>
         <Link href="/guides/naver-google-ai-seo">네이버·구글 AI 검색 SEO 가이드</Link>
         <Link href="/#public-brand-test" id="landing-sample">
@@ -120,10 +132,6 @@ export default function SeoDiscoverabilityHero({
             {page.title}
           </Link>
         ))}
-        <Link href="/help">자주 묻는 질문</Link>
-        <Link href="/guides">콘텐츠 가이드</Link>
-        <Link href="/terms">이용약관</Link>
-        <Link href="/privacy">개인정보처리방침</Link>
       </nav>
     </section>
   );
