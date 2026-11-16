@@ -14,14 +14,17 @@ import SkeletonPreview from "./SkeletonPreview";
 function EmptyState() {
   return (
     <div className="flex min-h-[280px] flex-col items-center justify-center px-4 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F9EF]">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F9EF] ring-1 ring-[#D9F2E4]">
         <Icon name="document" className="h-7 w-7 text-[#03C75A]" />
       </div>
       <p className="text-[15px] font-semibold text-[#191F28]">
         {EMPTY_STATE.title}
       </p>
-      <p className="mt-2 whitespace-pre-line text-[13px] leading-relaxed text-[#8B95A1]">
+      <p className="mt-2 max-w-sm whitespace-pre-line text-[13px] leading-relaxed text-[#8B95A1]">
         {EMPTY_STATE.description || EMPTY_STORY.body}
+      </p>
+      <p className="mt-4 text-[12px] leading-relaxed text-[#5F6B66]">
+        왼쪽에서 브랜드·지역·주제를 입력한 뒤 생성하면 이야기·플레이스·인스타 결과가 여기에 표시됩니다.
       </p>
     </div>
   );

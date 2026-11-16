@@ -93,13 +93,13 @@ export default async function TrendDetailPage({ params }) {
                 <p className="mt-2 text-[44px] font-semibold leading-none tracking-[-0.05em] text-[#111111]">
                   {trend.trendScore}
                 </p>
-                {trend.hourlyChange ? (
+                {trend.isLive && !trend.isSample && trend.hourlyChange ? (
                   <p
                     className={`mt-3 text-[14px] font-semibold ${
                       trend.hourlyChange > 0 ? "text-[#03A94D]" : "text-[#C2410C]"
                     }`}
                   >
-                    1시간 {formatScoreDelta(trend.hourlyChange)}
+                    최근 수집 대비 {formatScoreDelta(trend.hourlyChange)}
                   </p>
                 ) : null}
                 <dl className="mt-4 space-y-2 text-[13px] text-[#4F5A56]">
@@ -108,20 +108,30 @@ export default async function TrendDetailPage({ params }) {
                     <dd className="font-semibold text-[#111111]">{trend.statusLabel}</dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
+                    <dt>수집 상태</dt>
+                    <dd className="font-semibold text-[#111111]">
+                      {trend.isSample
+                        ? "SAMPLE"
+                        : trend.liveLabel || trend.freshnessLabel || "수집 기록"}
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
                     <dt>순위 변동</dt>
                     <dd className="font-semibold text-[#111111]">
-                      {trend.status === "new" && !trend.previousRank
-                        ? "신규"
-                        : trend.rankMovement > 0
-                          ? `↑${trend.rankMovement}`
-                          : trend.rankMovement < 0
-                            ? `↓${Math.abs(trend.rankMovement)}`
-                            : "—"}
+                      {trend.isSample || !trend.isLive
+                        ? "—"
+                        : trend.status === "new" && !trend.previousRank
+                          ? "신규"
+                          : trend.rankMovement > 0
+                            ? `↑${trend.rankMovement}`
+                            : trend.rankMovement < 0
+                              ? `↓${Math.abs(trend.rankMovement)}`
+                              : "—"}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <dt>수집 시각</dt>
-                    <dd className="font-semibold text-[#111111]">{trend.updatedLabel}</dd>
+                    <dd className="font-semibold text-[#111111]">{trend.updatedLabel || "—"}</dd>
                   </div>
                 </dl>
                 {trend.freshnessLabel ? (

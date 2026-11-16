@@ -97,13 +97,25 @@ function TrendMiniList({ items = [], emptyMessage, metric = "score" }) {
 function resolveFreshnessBadge(catalogState) {
   if (catalogState?.mode === "sample" || catalogState?.live?.freshnessState === "sample") {
     return {
+      tone: "sample",
       strong: "SAMPLE",
       detail: catalogState?.note || "예시 데이터 · 실시간 변동 아님",
     };
   }
+  if (catalogState?.live?.freshnessState === "missing" || !catalogState?.items?.length) {
+    return {
+      tone: "fail",
+      strong: "수집 실패·대기",
+      detail:
+        catalogState?.note ||
+        catalogState?.live?.freshnessLabel ||
+        "검증된 수집 데이터가 없어 순위를 확정하지 않습니다",
+    };
+  }
   if (catalogState?.live?.isLive) {
     return {
-      strong: "최근 수집",
+      tone: "ok",
+      strong: "수집 성공",
       detail: [
         catalogState?.live?.updatedLabel,
         catalogState?.live?.freshnessLabel,
@@ -114,6 +126,7 @@ function resolveFreshnessBadge(catalogState) {
     };
   }
   return {
+    tone: "warn",
     strong: catalogState?.live?.liveLabel || "수집 지연",
     detail: [
       catalogState?.live?.updatedLabel,
@@ -123,6 +136,13 @@ function resolveFreshnessBadge(catalogState) {
       .filter(Boolean)
       .join(" · "),
   };
+}
+
+function freshnessBadgeClass(tone) {
+  if (tone === "ok") return "border-[#CDEDD9] bg-[#F3FBF6] text-[#0F6B3A]";
+  if (tone === "warn") return "border-[#F0E0B8] bg-[#FFFBF2] text-[#8B5A00]";
+  if (tone === "fail") return "border-[#F0D0D0] bg-[#FFF7F7] text-[#9B1C1C]";
+  return "border-[#E7ECE8] bg-white text-[#111111]";
 }
 
 export default function TrendLandingPage({
@@ -476,9 +496,16 @@ export default function TrendLandingPage({
                   참고용 AI 순위
                 </h2>
               </div>
-              <div className="max-w-xl rounded-[22px] border border-[#E7ECE8] bg-white px-4 py-3 text-[12px] leading-[1.7] text-[#5F6B66]">
-                <strong className="text-[#111111]">{freshnessBadge.strong}</strong>
-                {freshnessBadge.detail ? <span className="ml-2">{freshnessBadge.detail}</span> : null}
+              <div
+                className={`max-w-xl rounded-[22px] border px-4 py-3 text-[12px] leading-[1.7] ${freshnessBadgeClass(
+                  freshnessBadge.tone
+                )}`}
+                data-trend-collect={freshnessBadge.tone || "sample"}
+              >
+                <strong>{freshnessBadge.strong}</strong>
+                {freshnessBadge.detail ? (
+                  <span className="ml-2 opacity-90">{freshnessBadge.detail}</span>
+                ) : null}
               </div>
             </div>
 

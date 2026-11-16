@@ -2,17 +2,25 @@
 export default function PageLoadingState({ message, hint = null }) {
   return (
     <div
-      className="flex min-h-[100dvh] flex-col items-center justify-center gap-3 bg-[#F7F8FA] p-6 text-center"
+      className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-[var(--vision-paper,#FCFCFA)] p-6 text-center"
       role="status"
       aria-live="polite"
+      aria-busy="true"
     >
-      <span className="briclog-spinner" aria-hidden />
-      <p className="text-[14px] text-[#8B95A1]">{message}</p>
+      <span
+        className="briclog-spinner h-8 w-8 rounded-full border-2 border-[#E7ECE8] border-t-[#03C75A]"
+        aria-hidden
+      />
+      <p className="text-[15px] font-medium text-[#111111]">{message}</p>
       {hint ? (
-        <p className="max-w-sm text-[12px] leading-relaxed text-[#B0B8C1]">
+        <p className="max-w-sm text-[13px] leading-relaxed text-[#5F6B66]">
           {hint}
         </p>
-      ) : null}
+      ) : (
+        <p className="max-w-sm text-[13px] leading-relaxed text-[#8A948F]">
+          잠시만 기다려 주세요. 네트워크가 느리면 새로고침 후 다시 시도할 수 있습니다.
+        </p>
+      )}
     </div>
   );
 }
