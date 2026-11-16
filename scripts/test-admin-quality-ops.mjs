@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
-import { getQualityOpsSnapshot, OPERATOR_ROLLOUT_CHECKLIST } from "../lib/admin/qualityOpsSnapshot.js";
+import {
+  getQualityOpsSnapshot,
+  getQualityOpsSnapshotAsync,
+  OPERATOR_ROLLOUT_CHECKLIST,
+} from "../lib/admin/qualityOpsSnapshot.js";
 
 const snap = getQualityOpsSnapshot();
 
@@ -10,6 +14,7 @@ assert.ok(snap.targets.blog === 90, "blog target 90");
 assert.ok(Array.isArray(snap.deliveryTrust.tiers) && snap.deliveryTrust.tiers.length === 3);
 assert.ok(Array.isArray(snap.commands) && snap.commands.length >= 3);
 assert.ok(snap.dataSources && typeof snap.dataSources.prodNote === "string");
+assert.ok(String(snap.dataSources.prodNote).includes("Supabase"));
 assert.equal(
   snap.rollout.some((item) => String(item.watch).includes("89.7")),
   false,
@@ -39,9 +44,19 @@ if (snap.readiness) {
   assert.ok(Array.isArray(snap.readiness.gaps), "gaps");
 }
 
+const asyncSnap = await getQualityOpsSnapshotAsync();
+assert.ok(asyncSnap.generatedAt, "async generatedAt");
+assert.ok(
+  asyncSnap.dataSources.crossChannelSource === null ||
+    ["supabase", "local_artifact"].includes(asyncSnap.dataSources.crossChannelSource),
+  "crossChannelSource tagged"
+);
+
 console.log("test:admin-quality-ops OK", {
   crossChannel: snap.crossChannel?.passRate ?? null,
   blog: snap.crossChannel?.byChannel?.blog?.passRate ?? null,
   readiness: snap.readiness?.total ?? null,
   alerts: snap.alerts?.length ?? 0,
+  asyncSource: asyncSnap.dataSources.crossChannelSource,
+  asyncAge: asyncSnap.crossChannel?.freshness?.ageHours ?? null,
 });

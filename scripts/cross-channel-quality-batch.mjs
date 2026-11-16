@@ -2,7 +2,7 @@
  * 크로스채널 품질 배치 — 210건+ (blog·place·instagram × 업종 × 지역)
  * Run: npm run test:cross-channel-batch
  */
-import { mkdirSync, writeFileSync, appendFileSync } from "fs";
+import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { buildMissionProseFallbackPack } from "../lib/llm/missionProseFallback.js";
@@ -246,20 +246,21 @@ function runOne(scenario) {
   }
 }
 
-export async function runCrossChannelQualityBatch(options = {}) {
-  mkdirSync(OUT_DIR, { recursive: true });
-  const scenarios = buildScenarios();
-  const startedAt = new Date().toISOString();
-  const results = [];
-
-  for (const scenario of scenarios) {
-    const row = runOne(scenario);
-    results.push(row);
-    if (options.append !== false) {
-      appendFileSync(REPORT_JSONL, `${JSON.stringify({ ...row, ts: startedAt })}\n`, "utf8");
+function loadJsonlResults() {
+  if (!existsSync(REPORT_JSONL)) return [];
+  const rows = [];
+  for (const line of readFileSync(REPORT_JSONL, "utf8").split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    try {
+      rows.push(JSON.parse(line));
+    } catch {
+      /* skip corrupt */
     }
   }
+  return rows;
+}
 
+function buildSummary(results, startedAt) {
   const pass = results.filter((r) => r.ok).length;
   const failReasons = {};
   for (const r of results.filter((x) => !x.ok)) {
@@ -294,8 +295,11 @@ export async function runCrossChannelQualityBatch(options = {}) {
     };
   }
 
-  const summary = {
+  const finishedAt = new Date().toISOString();
+  return {
     startedAt,
+    finishedAt,
+    generatedAt: finishedAt,
     total: results.length,
     pass,
     fail: results.length - pass,
@@ -314,20 +318,70 @@ export async function runCrossChannelQualityBatch(options = {}) {
         chars: r.chars,
       })),
   };
+}
 
+async function persistSummary(summary, { evolve = true } = {}) {
   writeFileSync(SUMMARY_JSON, JSON.stringify(summary, null, 2), "utf8");
-
   const persisted = await saveBatchSnapshot(BATCH_SNAPSHOT_KEYS.crossChannel, summary);
   if (persisted?.persisted === "supabase") {
     console.log("  persisted: supabase ops_batch_snapshots");
   }
+  let evolution = { applied: false };
+  if (evolve) {
+    evolution = applyBatchEvolutionFromReport(summary);
+  }
+  return { persisted, evolution };
+}
 
-  const evolution = applyBatchEvolutionFromReport(summary);
+export async function runCrossChannelQualityBatch(options = {}) {
+  mkdirSync(OUT_DIR, { recursive: true });
+  const scenarios = buildScenarios();
+  const resumeRows = options.resume ? loadJsonlResults() : [];
+  const doneIds = new Set(resumeRows.map((r) => r.id).filter(Boolean));
+  const startedAt =
+    resumeRows.find((r) => r.ts)?.ts || new Date().toISOString();
+  const results = [...resumeRows];
+  const total = scenarios.length;
+  const remaining = scenarios.filter((s) => !doneIds.has(s.id)).length;
+  console.log(
+    `cross-channel-batch: start ${total} scenarios @ ${startedAt}` +
+      (options.resume ? ` (resume skip ${doneIds.size}, remain ${remaining})` : "")
+  );
+
+  let ran = 0;
+  for (let i = 0; i < scenarios.length; i++) {
+    const scenario = scenarios[i];
+    if (doneIds.has(scenario.id)) continue;
+    const row = runOne(scenario);
+    results.push(row);
+    ran += 1;
+    if (options.append !== false) {
+      appendFileSync(REPORT_JSONL, `${JSON.stringify({ ...row, ts: startedAt })}\n`, "utf8");
+    }
+    const doneCount = results.length;
+    if (doneCount % 10 === 0 || doneCount === total || ran % 10 === 0) {
+      const passSoFar = results.filter((r) => r.ok).length;
+      console.log(
+        `cross-channel-batch: ${doneCount}/${total} pass ${passSoFar}/${doneCount} (${Math.round(
+          (passSoFar / Math.max(1, doneCount)) * 1000
+        ) / 10}%)`
+      );
+    }
+    if (doneCount % 20 === 0) {
+      const checkpoint = buildSummary(results, startedAt);
+      checkpoint.partial = true;
+      writeFileSync(SUMMARY_JSON, JSON.stringify(checkpoint, null, 2), "utf8");
+    }
+  }
+
+  const summary = buildSummary(results, startedAt);
+  summary.partial = false;
+  const { evolution } = await persistSummary(summary, { evolve: true });
 
   console.log(
-    `cross-channel-batch: ${pass}/${results.length} pass (${summary.passRate}%)`
+    `cross-channel-batch: ${summary.pass}/${results.length} pass (${summary.passRate}%)`
   );
-  for (const [ch, stat] of Object.entries(byChannel)) {
+  for (const [ch, stat] of Object.entries(summary.byChannel)) {
     console.log(`  ${ch}: ${stat.pass}/${stat.total} (${stat.passRate}%)`);
   }
   console.log(`  summary: ${SUMMARY_JSON}`);
@@ -338,11 +392,38 @@ export async function runCrossChannelQualityBatch(options = {}) {
   return { summary, evolution };
 }
 
+function loadEnvLocal() {
+  try {
+    for (const line of readFileSync(join(ROOT, ".env.local"), "utf8").split(/\r?\n/)) {
+      if (!line || line.startsWith("#")) continue;
+      const i = line.indexOf("=");
+      if (i < 0) continue;
+      const k = line.slice(0, i).trim();
+      let v = line.slice(i + 1).trim();
+      if (
+        (v.startsWith('"') && v.endsWith('"')) ||
+        (v.startsWith("'") && v.endsWith("'"))
+      ) {
+        v = v.slice(1, -1);
+      }
+      if (!process.env[k]) process.env[k] = v;
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 const isMain = process.argv[1]?.includes("cross-channel-quality-batch");
 if (isMain) {
-  if (process.argv.includes("--clear")) {
+  loadEnvLocal();
+  const resume = process.argv.includes("--resume");
+  if (process.argv.includes("--clear") && !resume) {
     writeFileSync(REPORT_JSONL, "", "utf8");
   }
-  const { summary } = await runCrossChannelQualityBatch({ append: !process.argv.includes("--clear") });
-  if (summary.pass < summary.total * 0.8) process.exit(1);
+  // --clear 는 jsonl 초기화만 하고, 실행 중에는 항상 append 해 중간 진행을 남긴다.
+  const { summary } = await runCrossChannelQualityBatch({
+    append: true,
+    resume,
+  });
+  if (summary.pass < summary.total * 0.8) process.exitCode = 1;
 }

@@ -6,7 +6,7 @@ import { PLANS } from "@/lib/billing/plans";
 import { aggregateFeedbackStats } from "@/lib/feedback/adminStats";
 import { fetchAdminDashboardExtras } from "@/lib/admin/fetchDashboardData";
 import { buildOperatorAdvisory } from "@/lib/admin/buildOperatorAdvisory";
-import { getQualityOpsSnapshot } from "@/lib/admin/qualityOpsSnapshot";
+import { getQualityOpsSnapshotAsync } from "@/lib/admin/qualityOpsSnapshot";
 import { fetchAdminLiveMetrics } from "@/lib/admin/liveMetrics";
 import { fetchSignupFunnelMetrics } from "@/lib/admin/signupFunnelMetrics";
 import { startOfTodayKstIso } from "@/lib/admin/kstTime";
@@ -211,7 +211,7 @@ export async function GET(request) {
     userCount: userCount ?? 0,
   });
 
-  const qualityOps = getQualityOpsSnapshot();
+  const qualityOps = await getQualityOpsSnapshotAsync();
 
   return NextResponse.json(
     {

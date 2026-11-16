@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/api/adminGuard";
 import { createServiceSupabase } from "@/lib/supabase/server";
-import { getQualityOpsSnapshot } from "@/lib/admin/qualityOpsSnapshot";
+import { getQualityOpsSnapshotAsync } from "@/lib/admin/qualityOpsSnapshot";
 import { fetchAdminLiveMetrics } from "@/lib/admin/liveMetrics";
 import { fetchSignupFunnelMetrics } from "@/lib/admin/signupFunnelMetrics";
 
@@ -33,7 +33,7 @@ export async function GET(request) {
       ok: true,
       live,
       funnel,
-      qualityOps: getQualityOpsSnapshot(),
+      qualityOps: await getQualityOpsSnapshotAsync(),
       pulsedAt: new Date().toISOString(),
     },
     {

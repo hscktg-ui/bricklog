@@ -1,14 +1,16 @@
 {
-  "startedAt": "2026-07-04T22:29:29.173Z",
+  "startedAt": "2026-11-16T03:41:24.361Z",
+  "finishedAt": "2026-11-16T04:14:19.173Z",
+  "generatedAt": "2026-11-16T04:14:19.173Z",
   "total": 234,
-  "pass": 228,
-  "fail": 6,
-  "passRate": 97.4,
+  "pass": 227,
+  "fail": 7,
+  "passRate": 97,
   "byChannel": {
     "blog": {
       "total": 78,
-      "pass": 72,
-      "passRate": 92.3
+      "pass": 71,
+      "passRate": 91
     },
     "place": {
       "total": 78,
@@ -22,12 +24,12 @@
     }
   },
   "failReasons": {
-    "first_delivery_human_editor": 4,
-    "first_delivery_editor_v95": 4,
-    "first_delivery_human_belief": 6,
-    "human_belief_low": 6,
-    "length_tier_under": 5,
-    "information_yield_low": 2
+    "first_delivery_human_belief": 5,
+    "human_belief_low": 5,
+    "length_tier_under": 6,
+    "first_delivery_human_editor": 5,
+    "first_delivery_editor_v95": 5,
+    "information_yield_low": 1
   },
   "failedSamples": [
     {
@@ -35,12 +37,32 @@
       "channel": "blog",
       "label": "음식점 · 인천 송도 · blog",
       "failReasons": [
+        "first_delivery_human_belief"
+      ],
+      "belief": 60,
+      "chars": 478
+    },
+    {
+      "id": "미용실_1_blog",
+      "channel": "blog",
+      "label": "미용실 · 인천 송도 · blog",
+      "failReasons": [
+        "first_delivery_human_belief"
+      ],
+      "belief": 60,
+      "chars": 476
+    },
+    {
+      "id": "광고대행_1_blog",
+      "channel": "blog",
+      "label": "광고대행사 · 홍대 · blog",
+      "failReasons": [
         "first_delivery_human_editor",
         "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
-      "belief": 60,
-      "chars": 388
+      "belief": 66,
+      "chars": 432
     },
     {
       "id": "광고대행_4_blog",
@@ -51,54 +73,45 @@
         "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
-      "belief": 58,
-      "chars": 268
+      "belief": 60,
+      "chars": 360
     },
     {
-      "id": "펜션_2_blog",
+      "id": "약국_0_blog",
       "channel": "blog",
-      "label": "펜션 · 인천 송도 · blog",
+      "label": "약국 · 제주 연동 · blog",
       "failReasons": [
         "first_delivery_human_editor",
         "first_delivery_editor_v95",
         "first_delivery_human_belief"
       ],
-      "belief": 51,
-      "chars": 873
-    },
-    {
-      "id": "법률_1_blog",
-      "channel": "blog",
-      "label": "법률 · 대전 둔산 · blog",
-      "failReasons": [
-        "first_delivery_human_editor",
-        "first_delivery_editor_v95",
-        "first_delivery_human_belief"
-      ],
-      "belief": 54,
-      "chars": 552
+      "belief": 45,
+      "chars": 1027
     },
     {
       "id": "세무_1_blog",
       "channel": "blog",
       "label": "세무 · 강남 · blog",
       "failReasons": [
-        "first_delivery_human_belief"
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95"
       ],
-      "belief": 60,
-      "chars": 451
+      "belief": 84,
+      "chars": 276
     },
     {
       "id": "노무_0_blog",
       "channel": "blog",
       "label": "노무 · 강남 · blog",
       "failReasons": [
-        "first_delivery_human_belief"
+        "first_delivery_human_editor",
+        "first_delivery_editor_v95"
       ],
-      "belief": 60,
-      "chars": 451
+      "belief": 84,
+      "chars": 276
     }
   ],
+  "partial": false,
   "snapshotKey": "cross_channel_batch_latest",
-  "storedAt": "2026-07-04T22:49:30.433Z"
+  "storedAt": "2026-11-16T04:18:49.886Z"
 }

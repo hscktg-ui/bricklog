@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/api/adminGuard";
-import { getQualityOpsSnapshot } from "@/lib/admin/qualityOpsSnapshot";
+import { getQualityOpsSnapshotAsync } from "@/lib/admin/qualityOpsSnapshot";
 
 export const runtime = "nodejs";
 
@@ -12,7 +12,7 @@ export async function GET(request) {
   return NextResponse.json(
     {
       ok: true,
-      snapshot: getQualityOpsSnapshot(),
+      snapshot: await getQualityOpsSnapshotAsync(),
     },
     {
       headers: {
