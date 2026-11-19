@@ -23,8 +23,13 @@ assert.equal(
 );
 assert.equal(
   resolvePublishGrade({ publishScore: 55, readiness: { status: "ready" } }).id,
-  "A",
-  "ready status wins over low score"
+  "B",
+  "ready alone must not promote low score to A"
+);
+assert.equal(
+  resolvePublishGrade({ publishScore: 80, readiness: { status: "ready" } }).id,
+  PUBLISH_GRADE_A.id,
+  "ready + strong score stays A"
 );
 assert.equal(axisQualityLabel(85), "우수");
 assert.equal(axisQualityLabel(70), "보통");
